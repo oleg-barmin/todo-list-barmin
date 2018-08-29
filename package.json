@@ -7,12 +7,14 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "qunit test/*-test.js",
+    "doc": "jsdoc src/todo-list.js -d doc"
   },
   "author": "barmin",
   "license": "ISC",
   "dependencies": {
     "jsdoc": "^3.5.5",
-    "qunit": "^2.6.2"
+    "qunit": "^2.6.2",
+    "uuid": "^3.3.2"
   }
 }
