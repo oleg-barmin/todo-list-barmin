@@ -10,9 +10,24 @@ class TodoList {
      * Creates TodoList instance.
      */
     constructor() {
-        this.tasksList = new Map();
+        this.tasksArray = [];
         this.idGenerator = new IdGenerator();
-        this.lasAddedTask = null;
+    }
+
+    _sortTasks() {
+        let sortFunction = function (firstTask, secondTask) {
+            if (firstTask.completed === secondTask.completed) {
+                let compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
+                if (compareByDateResult === 0) {
+                    return secondTask.content.localeCompare(firstTask.content);
+                }
+                return compareByDateResult;
+            }
+
+            return firstTask.completed ? 1 : -1;
+        };
+
+        this.tasksArray.sort(sortFunction);
     }
 
     /**
@@ -24,79 +39,87 @@ class TodoList {
     add(taskContent) {
         Preconditions.checkTaskContent(taskContent);
 
-        let taskID = this.idGenerator.generateID();
+        let taskId = this.idGenerator.generateID();
         let currentDate = new Date();
-        let taskToAdd = new Task(taskID, taskContent, currentDate);
+        let taskToAdd = new Task(taskId, taskContent, currentDate);
 
-        this.tasksList.set(taskID, taskToAdd);
+        this.tasksArray.push(taskToAdd);
+        this._sortTasks();
 
-
-        return taskID;
+        return taskId;
     }
 
     /**
      * Finds task by its ID.
      *
-     * @param {string} taskID id of desired task.
+     * @param {string} taskId id of desired task.
      * @returns {Task} task stored in database.
      * @private
      */
-    _getTaskById(taskID) {
-        Preconditions.isDefined(taskID, "task ID");
+    _getTaskById(taskId) {
+        Preconditions.isDefined(taskId, "task ID");
 
-        let storedTask = this.tasksList.get(taskID);
+        let desiredTask = this.tasksArray.find(element => element.ID === taskId);
 
-        if (!storedTask) {
-            throw new TaskNotFoundError(taskID);
+        if (desiredTask) {
+            return desiredTask;
         }
 
-        return storedTask;
-
+        throw new TaskNotFoundError(taskId);
     }
 
     /**
      * Marks desired task as completed.
      *
-     * @param {string} taskID id of desired task.
+     * @param {string} taskId id of desired task.
      */
-    complete(taskID) {
-        Preconditions.isDefined(taskID, "task ID");
+    complete(taskId) {
+        Preconditions.isDefined(taskId, "task ID");
 
-        let storedTask = this._getTaskById(taskID);
+        let storedTask = this._getTaskById(taskId);
 
         if (storedTask.completed) {
-            throw new TaskAlreadyCompletedException(taskID);
+            throw new TaskAlreadyCompletedException(taskId);
         }
 
         storedTask.completed = true;
+        this._sortTasks();
     }
 
     /**
      * Updates content of desired task.
      *
-     * @param {string} taskID id of the desired task
+     * @param {string} taskId id of the desired task
      * @param {string} updatedContent new content of desired task.
      */
-    update(taskID, updatedContent) {
-        Preconditions.isDefined(taskID, "task ID");
+    update(taskId, updatedContent) {
+        Preconditions.isDefined(taskId, "task ID");
         Preconditions.checkTaskContent(updatedContent);
 
-        let storedTask = this._getTaskById(taskID);
+        let storedTask = this._getTaskById(taskId);
 
         storedTask.content = updatedContent;
         storedTask.lastUpdateDate = new Date();
+        this._sortTasks();
     }
 
     /**
      * Removes task with given ID from to do list.
      *
-     * @param {string} taskID id of task to delete.
+     * @param {string} taskId id of task to delete.
      */
-    remove(taskID) {
-        Preconditions.isDefined(taskID, "task ID");
+    remove(taskId) {
+        Preconditions.isDefined(taskId, "task ID");
 
-        if (!this.tasksList.delete(taskID)) {
-            throw new TaskNotFoundError(taskID);
+        let desiredTask = this.tasksArray.find((element, index, array)=> {
+            if(element.ID === taskId){
+                array.splice(index, 1);
+                return true;
+            }
+        });
+
+        if(!desiredTask){
+            throw new TaskNotFoundError(taskId);
         }
     }
 
@@ -106,34 +129,7 @@ class TodoList {
      * @returns {*}
      */
     all() {
-        let compareByCreationDate = (firstTask, secondTask) => {
-            let compare = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
-            // if(compare===0){
-            //     return secondTask.lastUpdateDate
-            // }
-            return compare;
-        };
-        let sortFunction = function (firstTask, secondTask) {
-            if (firstTask.completed && !secondTask.completed) {
-                return 1;
-            }
-
-            if (!firstTask.completed && secondTask.completed) {
-                return -1;
-            }
-
-            if (firstTask.completed && secondTask.completed) {
-                return compareByCreationDate();
-            }
-
-            if (!firstTask.completed && !secondTask.completed) {
-                return compareByCreationDate(firstTask, secondTask);
-            }
-        };
-
-        return [...this.tasksList]
-            .sort((a, b) => sortFunction(a[1], b[1])) // sorts entities array.
-            .map(e => e[1]); // returns array of values.
+        return this.tasksArray;
     }
 }
 
@@ -195,12 +191,12 @@ class Preconditions {
      * @returns {string} string value if given string is not
      */
     static checkTaskContent(stringToCheck) {
-        if (!(stringToCheck || typeof stringToCheck !== "string")) {
+        if (!(stringToCheck && typeof stringToCheck === "string")) {
             throw new TaskContentError(stringToCheck)
         }
         stringToCheck = stringToCheck.trim();
         if (stringToCheck === "") {
-            throw TaskContentError(stringToCheck)
+            throw new TaskContentError(stringToCheck)
         }
         return stringToCheck;
     }
@@ -278,10 +274,10 @@ class TaskNotFoundError extends Error {
     /**
      * Crates TaskNotFoundError instance.
      *
-     * @param {string} taskID id if the task that was not found.
+     * @param {string} taskId id if the task that was not found.
      */
-    constructor(taskID) {
-        super(`Task with id ${taskID} was not found.`);
+    constructor(taskId) {
+        super(`Task with id ${taskId} was not found.`);
         this.name = this.constructor.name;
     }
 }
@@ -297,10 +293,10 @@ class TaskAlreadyCompletedException extends Error {
     /**
      * Crates TaskAlreadyCompletedException instance.
      *
-     * @param taskID {string} id of task which was already completed.
+     * @param taskId {string} id of task which was already completed.
      */
-    constructor(taskID) {
-        super(`Task with id ${taskID} is alredy completed.`);
+    constructor(taskId) {
+        super(`Task with id ${taskId} is alredy completed.`);
         this.name = this.constructor.name;
     }
 }
