@@ -17,11 +17,11 @@ class Task {
      * @param {Date} lastUpdateDate date when task was last updated (corresponds to
      * {@param creationDate} if task was not updated.
      */
-    constructor(id, content, completed, creationDate, lastUpdateDate) {
-        this.ID = id;
-        this.content = content;
+    constructor(id, content, completed = false, creationDate, lastUpdateDate = creationDate) {
+        this.ID = Preconditions.isDefined(id, "ID");
+        this.content = Preconditions.isDefined(content, "task content");
         this.completed = completed;
-        this.creationDate = creationDate;
+        this.creationDate = Preconditions.isDefined(creationDate, "date of creation");
         this.lastUpdateDate = lastUpdateDate;
     }
 }
