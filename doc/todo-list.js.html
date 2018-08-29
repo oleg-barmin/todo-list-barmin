@@ -27,6 +27,107 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
+ * Stores and manages all {@link Task}.
+ *
+ * Allows to add new tasks, marks them as completed,
+ * remove from list and update their contents.
+ */
+class TodoList {
+
+    /**
+     * Creates TodoList instance.
+     */
+    constructor() {
+        this.tasksList = new Map();
+        this.idGenerator = new IdGenerator();
+    }
+
+    /**
+     * Adds new task to TodoList.
+     *
+     * @param {string} taskContent content of the task to add.
+     * @returns {string} id of task that was added.
+     */
+    add(taskContent) {
+        Preconditions.checkTaskContent(taskContent);
+
+        let taskID = this.idGenerator.generateID();
+        let currentDate = new Date();
+        let taskToAdd = new Task(taskID, taskContent, currentDate);
+
+        this.tasksList.set(taskID, taskToAdd);
+
+        return taskID;
+    }
+
+    /**
+     * Finds task by its ID.
+     *
+     * @param {string} taskID id of desired task.
+     * @returns {Task} task stored in database.
+     * @private
+     */
+    _getTaskById(taskID) {
+        Preconditions.isDefined(taskID, "task ID");
+
+        let storedTask = this.tasksList.get(taskID);
+
+        if (!storedTask) {
+            throw new TaskNotFoundError(taskID);
+        }
+
+        return storedTask;
+
+    }
+
+    /**
+     * Marks desired task as completed.
+     *
+     * @param {string} taskID id of desired task.
+     */
+    complete(taskID) {
+        Preconditions.isDefined(taskID, "task ID");
+
+        let storedTask = this._getTaskById(taskID);
+
+        if (storedTask.completed) {
+            throw new TaskAlreadyCompletedException(taskID);
+        }
+
+        storedTask.completed = true;
+    }
+
+    /**
+     * Updates content of desired task.
+     *
+     * @param {string} taskID id of the desired task
+     * @param {string} updatedContent new content of desired task.
+     */
+    update(taskID, updatedContent) {
+        Preconditions.isDefined(taskID, "task ID");
+        Preconditions.checkTaskContent(updatedContent);
+
+        let storedTask = this._getTaskById(taskID);
+
+        storedTask.content = updatedContent;
+        storedTask.lastUpdateDate = new Date();
+    }
+
+    /**
+     * Removes task with given ID from todoList.
+     *
+     * @param {string} taskID id of
+     */
+    remove(taskID) {
+        Preconditions.isDefined(taskID, "task ID");
+
+        if (!this.tasksList.delete(taskID)) {
+            throw new TaskNotFoundError(taskID);
+        }
+    }
+}
+
+/**
  * Stores information about task.
  *
  * It stores task ID, its content, status (is it completed or not),
@@ -40,17 +141,14 @@ class Task {
      *
      * @param {string} id task id.
      * @param {string} content content of the task.
-     * @param {boolean} completed task status (is it completed or not).
      * @param {Date} creationDate date when task was created.
-     * @param {Date} lastUpdateDate date when task was last updated (corresponds to
-     * {@param creationDate} if task was not updated.
      */
-    constructor(id, content, completed, creationDate, lastUpdateDate) {
-        this.ID = id;
-        this.content = content;
-        this.completed = completed;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = lastUpdateDate;
+    constructor(id, content, creationDate) {
+        this.ID = Preconditions.isDefined(id, "ID");
+        this.content = Preconditions.isDefined(content, "task content");
+        this.completed = false;
+        this.creationDate = Preconditions.isDefined(creationDate, "date of creation");
+        this.lastUpdateDate = creationDate;
     }
 }
 
@@ -74,6 +172,50 @@ class Preconditions {
         }
         return value;
     }
+
+    /**
+     * Validates if given sting is not undefined, null or empty.
+     *
+     * @param {string} stringToCheck string that should be checked.
+     * @returns {string} string value if given string is not
+     */
+    static checkTaskContent(stringToCheck) {
+        if (!(stringToCheck || typeof stringToCheck !== "string")) {
+            throw new TaskContentError(stringToCheck)
+        }
+        stringToCheck = stringToCheck.trim();
+        if (stringToCheck === "") {
+            throw TaskContentError(stringToCheck)
+        }
+        return stringToCheck;
+    }
+}
+
+/**
+ * Generates uuid v4 id strings.
+ */
+class IdGenerator {
+
+    /**
+     * Creates IdGenerator instance.
+     */
+    constructor() {
+        if (typeof(require) !== 'undefined') {
+            this.uuidv4 = require('uuid/v4');
+            return
+        }
+
+        this.uuidv4 = uuidv4;
+    }
+
+    /**
+     * Generates uuid v4 IDs.
+     *
+     * @returns {string} ID generated uuid v4 ID.
+     */
+    generateID() {
+        return this.uuidv4()
+    }
 }
 
 /**
@@ -86,11 +228,64 @@ class ParameterIsNotDefinedError extends Error {
     /**
      * Creates ParameterIsNotDefinedError instance.
      *
-     * @param value parameters value.
-     * @param parameterName name of the parameter that was checked.
+     * @param {*} value parameters value.
+     * @param {string} parameterName name of the parameter that was checked.
      */
     constructor(value, parameterName) {
-        super(`Parameter ${parameterName} should be not null and not undefined, Actual value: '${value}'`);
+        super(`Parameter '${parameterName}' should be not null and not undefined, Actual value: '${value}'`);
+        this.name = this.constructor.name;
+    }
+}
+
+/**
+ * Custom error type which indicates that given task content is undefined, null or empty.
+ */
+class TaskContentError extends Error {
+
+    /**
+     * Creates TaskContentError instance.
+     *
+     * @param {string} value actual value of task content.
+     */
+    constructor(value) {
+        super(`Task content cannot be undefined, null or empty. Actual value: '${value}'`);
+        this.name = this.constructor.name;
+    }
+}
+
+/**
+ * Custom error type which indicates that desired task was not found.
+ *
+ * @extends Error
+ */
+class TaskNotFoundError extends Error {
+
+    /**
+     * Crates TaskNotFoundError instance.
+     *
+     * @param {string} taskID id if the task that was not found.
+     */
+    constructor(taskID) {
+        super(`Task with id ${taskID} was not found.`);
+        this.name = this.constructor.name;
+    }
+}
+
+
+/**
+ * Custom error type which indicates that task was already completed.
+ *
+ * @extends Error
+ */
+class TaskAlreadyCompletedException extends Error {
+
+    /**
+     * Crates TaskAlreadyCompletedException instance.
+     *
+     * @param taskID {string} id of task which was already completed.
+     */
+    constructor(taskID) {
+        super(`Task with id ${taskID} is alredy completed.`);
         this.name = this.constructor.name;
     }
 }
@@ -104,13 +299,13 @@ class ParameterIsNotDefinedError extends Error {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ParameterIsNotDefinedError.html">ParameterIsNotDefinedError</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="IdGenerator.html">IdGenerator</a></li><li><a href="ParameterIsNotDefinedError.html">ParameterIsNotDefinedError</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskContentError.html">TaskContentError</a></li><li><a href="TaskNotFoundError.html">TaskNotFoundError</a></li><li><a href="TodoList.html">TodoList</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Aug 29 2018 11:24:37 GMT+0300 (Eastern European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Aug 29 2018 12:52:21 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
