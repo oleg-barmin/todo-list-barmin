@@ -1,11 +1,12 @@
 /**
  * Stores information about task.
  *
- * <p>It stores task ID, its content, status (is it completed or not),
+ * It stores task ID, its content, status (is it completed or not),
  * date of creation and date of last update (if task wasn't updated
  * the date of creation equals to last update date).
  */
 class Task {
+
     /**
      * Creates task instance.
      *
@@ -21,7 +22,47 @@ class Task {
         this.content = content;
         this.completed = completed;
         this.creationDate = creationDate;
-        this.lastUpdateDate = lastUpdateDate || creationDate;
+        this.lastUpdateDate = lastUpdateDate;
     }
 }
 
+/**
+ * Static methods that help a method or constructor check whether it was invoked
+ * with correct parameters.
+ */
+class Preconditions {
+
+    /**
+     * Validates whether given argument is not null or undefined.
+     *
+     * @param {*} value the value of parameter being checked.
+     * @param {string} parameterName name of the parameter.
+     * @throws ParameterIsNotDefinedError if given parameter is null or undefined.
+     * @returns {*} value of the parameter if it is not null or undefined otherwise ParameterIsNotDefinedError is thrown.
+     */
+    static isDefined(value, parameterName) {
+        if (!value) {
+            throw new ParameterIsNotDefinedError(value, parameterName);
+        }
+        return value;
+    }
+}
+
+/**
+ * Custom error type which indicates that a null or undefined variable was found, when it shouldn't.
+ *
+ * @extends Error
+ */
+class ParameterIsNotDefinedError extends Error {
+
+    /**
+     * Creates ParameterIsNotDefinedError instance.
+     *
+     * @param value parameters value.
+     * @param parameterName name of the parameter that was checked.
+     */
+    constructor(value, parameterName) {
+        super(`Parameter ${parameterName} should be not null and not undefined, Actual value: '${value}'`);
+        this.name = this.constructor.name;
+    }
+}
