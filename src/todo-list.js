@@ -12,6 +12,7 @@ class TodoList {
     constructor() {
         this.tasksList = new Map();
         this.idGenerator = new IdGenerator();
+        this.lasAddedTask = null;
     }
 
     /**
@@ -28,6 +29,7 @@ class TodoList {
         let taskToAdd = new Task(taskID, taskContent, currentDate);
 
         this.tasksList.set(taskID, taskToAdd);
+
 
         return taskID;
     }
@@ -86,9 +88,9 @@ class TodoList {
     }
 
     /**
-     * Removes task with given ID from todoList.
+     * Removes task with given ID from to do list.
      *
-     * @param {string} taskID id of
+     * @param {string} taskID id of task to delete.
      */
     remove(taskID) {
         Preconditions.isDefined(taskID, "task ID");
@@ -96,6 +98,42 @@ class TodoList {
         if (!this.tasksList.delete(taskID)) {
             throw new TaskNotFoundError(taskID);
         }
+    }
+
+    /**
+     * Returns all tasks stored in to do list.
+     *
+     * @returns {*}
+     */
+    all() {
+        let compareByCreationDate = (firstTask, secondTask) => {
+            let compare = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
+            // if(compare===0){
+            //     return secondTask.lastUpdateDate
+            // }
+            return compare;
+        };
+        let sortFunction = function (firstTask, secondTask) {
+            if (firstTask.completed && !secondTask.completed) {
+                return 1;
+            }
+
+            if (!firstTask.completed && secondTask.completed) {
+                return -1;
+            }
+
+            if (firstTask.completed && secondTask.completed) {
+                return compareByCreationDate();
+            }
+
+            if (!firstTask.completed && !secondTask.completed) {
+                return compareByCreationDate(firstTask, secondTask);
+            }
+        };
+
+        return [...this.tasksList]
+            .sort((a, b) => sortFunction(a[1], b[1])) // sorts entities array.
+            .map(e => e[1]); // returns array of values.
     }
 }
 
@@ -121,6 +159,11 @@ class Task {
         this.completed = false;
         this.creationDate = Preconditions.isDefined(creationDate, "date of creation");
         this.lastUpdateDate = creationDate;
+    }
+
+    toString() {
+        return `Task: [ID = ${this.ID}, content = ${this.content}, completed = ${this.completed}, `
+            + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
     }
 }
 
@@ -220,7 +263,7 @@ class TaskContentError extends Error {
      * @param {string} value actual value of task content.
      */
     constructor(value) {
-        super(`Task content cannot be undefined, null or empty. Actual value: '${value}'`);
+        super(`Task content should be a string and cannot be undefined, null or empty. Actual value: '${value}'`);
         this.name = this.constructor.name;
     }
 }
@@ -260,4 +303,10 @@ class TaskAlreadyCompletedException extends Error {
         super(`Task with id ${taskID} is alredy completed.`);
         this.name = this.constructor.name;
     }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        TodoList: TodoList
+    };
 }
