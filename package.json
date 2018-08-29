@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "qunit test/*-test.js",
-    "doc": "jsdoc src/todo-list.js -d doc"
+    "doc": "jsdoc src/todo-list.js -d doc -c jsdoc.config.json"
   },
   "author": "barmin",
   "license": "ISC",
