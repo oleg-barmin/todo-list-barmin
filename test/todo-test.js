@@ -83,30 +83,29 @@ QUnit.test("complete ", assert => {
 
 
 QUnit.test("sort ", async function (assert) {
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
     const todoList = new TodoList();
-    const tasksArray = todoList._tasksArray;
 
     const firstTaskId = todoList.add("first task");
-    await sleep(1);
-
     const secondTaskId = todoList.add("second task");
-    await sleep(1);
-
     const thirdTaskId = todoList.add("third task");
-    await sleep(1);
-
     const fourthTaskId = todoList.add("fourth task");
-    await sleep(1);
 
-    assert.ok(
-        tasksArray[0].ID === fourthTaskId
-        && tasksArray[1].ID === thirdTaskId
-        && tasksArray[2].ID === secondTaskId
-        && tasksArray[3].ID === firstTaskId,
+    const firstTask = todoList._getTaskById(firstTaskId);
+    const secondTask = todoList._getTaskById(secondTaskId);
+    const thirdTask = todoList._getTaskById(thirdTaskId);
+    const fourthTask = todoList._getTaskById(fourthTaskId);
+
+    let tasksArray = todoList.all();
+    let expectedArray = [
+        fourthTask,
+        thirdTask,
+        secondTask,
+        firstTask
+    ];
+
+    assert.propEqual(
+        tasksArray,
+        expectedArray,
         "by last update date."
     );
 
@@ -114,18 +113,32 @@ QUnit.test("sort ", async function (assert) {
     todoList.complete(thirdTaskId);
     todoList.complete(fourthTaskId);
 
-    let allTasks = todoList.all();
+    tasksArray = todoList.all();
 
-    assert.ok(
-        allTasks[3].ID === thirdTaskId
-        && allTasks[2].ID === fourthTaskId,
+    expectedArray = [
+        secondTask,
+        firstTask,
+        fourthTask,
+        thirdTask
+    ];
+
+    assert.propEqual(
+        tasksArray,
+        expectedArray,
         " when task was marked as done."
     );
 
     todoList.update(firstTaskId, "updated third task");
 
-    allTasks = todoList.all();
-    assert.equal(allTasks[0].ID, firstTaskId, "when task was updated.");
+    tasksArray = todoList.all();
+    expectedArray = [
+        firstTask,
+        secondTask,
+        fourthTask,
+        thirdTask
+    ];
+
+    assert.propEqual(tasksArray, expectedArray, "when task was updated.");
 });
 
 QUnit.test("throw ", assert => {
