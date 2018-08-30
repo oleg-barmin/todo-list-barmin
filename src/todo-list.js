@@ -1,8 +1,46 @@
+"use strict";
+
 /**
  * Stores and manages all {@link Task}.
  *
  * Allows to add new tasks, marks them as completed,
  * remove from list and update their contents.
+ *
+ * Task is being sorted by:
+ * - Status (uncompleted tasks first, completed last).
+ * - Date of last update.
+ * - Lexicographically by content.
+ *
+ * Example:
+ * ```
+ *  const todoList = new TodoList();
+ *  const firstTaskId = todoList.add("first task");
+ *  const secondTaskId = todoList.add("second task");
+ *  const thirdTaskId = todoList.add("third task");
+ * ```
+ * Task list will be sorted by creation date:
+ * - third task
+ * - second task
+ * - first task
+ *
+ * Then lets complete third task.
+ * ```
+ * todoList.complete(thirdTaskId);
+ * ```
+ *
+ * Now list will look this way:
+ * - second task
+ * - first task
+ * - ~~third task~~
+ *
+ * if you update the first task, it will move to the top of the list.
+ * ```
+ * todoList.update(firstTaskId, "updated first task");
+ * ```
+ *
+ * - <b>updated first task</b>
+ * - second task
+ * - ~~third task~~
  */
 class TodoList {
 
@@ -10,24 +48,8 @@ class TodoList {
      * Creates TodoList instance.
      */
     constructor() {
-        this.tasksArray = [];
-        this.idGenerator = new IdGenerator();
-    }
-
-    _sortTasks() {
-        let sortFunction = function (firstTask, secondTask) {
-            if (firstTask.completed === secondTask.completed) {
-                let compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
-                if (compareByDateResult === 0) {
-                    return secondTask.content.localeCompare(firstTask.content);
-                }
-                return compareByDateResult;
-            }
-
-            return firstTask.completed ? 1 : -1;
-        };
-
-        this.tasksArray.sort(sortFunction);
+        this._tasksArray = [];
+        this._idGenerator = new IdGenerator();
     }
 
     /**
@@ -39,12 +61,11 @@ class TodoList {
     add(taskContent) {
         Preconditions.checkTaskContent(taskContent);
 
-        let taskId = this.idGenerator.generateID();
-        let currentDate = new Date();
-        let taskToAdd = new Task(taskId, taskContent, currentDate);
+        const taskId = this._idGenerator.generateID();
+        const currentDate = new Date();
+        const taskToAdd = new Task(taskId, taskContent, currentDate);
 
-        this.tasksArray.push(taskToAdd);
-        this._sortTasks();
+        this._tasksArray.unshift(taskToAdd);
 
         return taskId;
     }
@@ -59,7 +80,7 @@ class TodoList {
     _getTaskById(taskId) {
         Preconditions.isDefined(taskId, "task ID");
 
-        let desiredTask = this.tasksArray.find(element => element.ID === taskId);
+        const desiredTask = this._tasksArray.find(element => element.ID === taskId);
 
         if (desiredTask) {
             return desiredTask;
@@ -76,14 +97,25 @@ class TodoList {
     complete(taskId) {
         Preconditions.isDefined(taskId, "task ID");
 
-        let storedTask = this._getTaskById(taskId);
+        const storedTask = this._getTaskById(taskId);
 
         if (storedTask.completed) {
             throw new TaskAlreadyCompletedException(taskId);
         }
-
         storedTask.completed = true;
-        this._sortTasks();
+
+        this.remove(taskId);
+        const array = this._tasksArray;
+
+        let find = array.find(function (element, index, array) {
+            if (element.completed) {
+                array.splice(index, 0, storedTask);
+                return true;
+            }
+        });
+        if (!find) {
+            array.push(storedTask);
+        }
     }
 
     /**
@@ -96,11 +128,13 @@ class TodoList {
         Preconditions.isDefined(taskId, "task ID");
         Preconditions.checkTaskContent(updatedContent);
 
-        let storedTask = this._getTaskById(taskId);
+        const taskToUpdate = this._getTaskById(taskId);
 
-        storedTask.content = updatedContent;
-        storedTask.lastUpdateDate = new Date();
-        this._sortTasks();
+        taskToUpdate.content = updatedContent;
+        taskToUpdate.lastUpdateDate = new Date();
+
+        this.remove(taskId);
+        this._tasksArray.unshift(taskToUpdate);
     }
 
     /**
@@ -111,14 +145,14 @@ class TodoList {
     remove(taskId) {
         Preconditions.isDefined(taskId, "task ID");
 
-        let desiredTask = this.tasksArray.find((element, index, array)=> {
-            if(element.ID === taskId){
+        const desiredTask = this._tasksArray.find((element, index, array) => {
+            if (element.ID === taskId) {
                 array.splice(index, 1);
                 return true;
             }
         });
 
-        if(!desiredTask){
+        if (!desiredTask) {
             throw new TaskNotFoundError(taskId);
         }
     }
@@ -126,10 +160,10 @@ class TodoList {
     /**
      * Returns all tasks stored in to do list.
      *
-     * @returns {*}
+     * @returns {Array}
      */
     all() {
-        return this.tasksArray;
+        return this._tasksArray;
     }
 }
 
@@ -203,7 +237,7 @@ class Preconditions {
 }
 
 /**
- * Generates uuid v4 id strings.
+ * Generates uuid v4 ID strings.
  */
 class IdGenerator {
 

@@ -11,55 +11,55 @@ QUnit.test("add ", assert => {
     let firstTaskID = todoList.add(firstTaskContent);
     let firstTask = todoList._getTaskById(firstTaskID);
 
-    assert.equal(firstTask.content, firstTaskContent, "one task by content.");
+    assert.equal(firstTask.content, firstTaskContent, "task by content.");
 
     todoList = new TodoList();
     firstTaskContent = "first task";
     firstTaskID = todoList.add(firstTaskContent);
     firstTask = todoList._getTaskById(firstTaskID);
 
-    let secondTaskContent = "second task";
-    let secondTaskID = todoList.add(secondTaskContent);
-    let secondTask = todoList._getTaskById(secondTaskID);
+    const secondTaskContent = "second task";
+    const secondTaskID = todoList.add(secondTaskContent);
+    const secondTask = todoList._getTaskById(secondTaskID);
 
     assert.ok(
         firstTask.content === firstTaskContent
         && secondTask.content === secondTaskContent
-        && todoList.tasksArray.length === 2,
+        && todoList._tasksArray.length === 2,
         " multiple tasks by ID."
     );
 });
 
 QUnit.test("remove ", assert => {
-    let todoList = new TodoList();
+    const todoList = new TodoList();
 
-    let firstTaskContent = "first task";
-    let firstTaskID = todoList.add(firstTaskContent);
+    const firstTaskContent = "first task";
+    const firstTaskID = todoList.add(firstTaskContent);
 
-    let secondTaskContent = "second task";
+    const secondTaskContent = "second task";
     todoList.add(secondTaskContent);
 
     todoList.remove(firstTaskID);
 
     assert.ok(
-        todoList.tasksArray.length === 1
+        todoList._tasksArray.length === 1
         && todoList._getTaskById,
         "task from list by ID."
     );
 });
 
 QUnit.test("update ", assert => {
-    let todoList = new TodoList();
+    const todoList = new TodoList();
 
-    let firstTaskContent = "first task";
-    let firstTaskID = todoList.add(firstTaskContent);
+    const firstTaskContent = "first task";
+    const firstTaskID = todoList.add(firstTaskContent);
     todoList._getTaskById(firstTaskID);
 
-    let secondTaskContent = "second task";
-    let secondTaskID = todoList.add(secondTaskContent);
-    let secondTask = todoList._getTaskById(secondTaskID);
+    const secondTaskContent = "second task";
+    const secondTaskID = todoList.add(secondTaskContent);
+    const secondTask = todoList._getTaskById(secondTaskID);
 
-    let newSecondTaskContent = "new second task content";
+    const newSecondTaskContent = "new second task content";
     todoList.update(secondTaskID, newSecondTaskContent);
 
     assert.equal(
@@ -71,53 +71,75 @@ QUnit.test("update ", assert => {
 
 
 QUnit.test("complete ", assert => {
-    let todoList = new TodoList();
+    const todoList = new TodoList();
 
-    let firstTaskContent = "first task";
-    let taskID = todoList.add(firstTaskContent);
-    let firstTask = todoList._getTaskById(taskID);
+    const taskID = todoList.add("first task");
+    const task = todoList._getTaskById(taskID);
 
     todoList.complete(taskID);
 
-    assert.ok(firstTask.completed, "task.");
+    assert.ok(task.completed, "task by ID.");
 });
 
-QUnit.test("sort ", assert => {
-    let todoList = new TodoList();
 
-    let firstTaskID = todoList.add("first task");
-    todoList.add("second task");
-    let thirdTaskID = todoList.add("third task");
+QUnit.test("sort ", async function (assert) {
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-    todoList.complete(firstTaskID);
+    const todoList = new TodoList();
+    const tasksArray = todoList._tasksArray;
 
-    let allTodo = todoList.all();
+    const firstTaskId = todoList.add("first task");
+    await sleep(1);
 
-    assert.equal(allTodo[2].ID, firstTaskID, " when task is done.");
+    const secondTaskId = todoList.add("second task");
+    await sleep(1);
 
-    todoList.update(thirdTaskID, "updated third task");
-    allTodo = todoList.all();
+    const thirdTaskId = todoList.add("third task");
+    await sleep(1);
 
-    assert.equal(allTodo[0].ID, thirdTaskID, "when task updated.");
+    const fourthTaskId = todoList.add("fourth task");
+    await sleep(1);
+
+    assert.ok(
+        tasksArray[0].ID === fourthTaskId
+        && tasksArray[1].ID === thirdTaskId
+        && tasksArray[2].ID === secondTaskId
+        && tasksArray[3].ID === firstTaskId,
+        "by last update date."
+    );
+
+
+    todoList.complete(thirdTaskId);
+    todoList.complete(fourthTaskId);
+
+    let allTasks = todoList.all();
+
+    assert.ok(
+        allTasks[3].ID === thirdTaskId
+        && allTasks[2].ID === fourthTaskId,
+        " when task was marked as done."
+    );
+
+    todoList.update(firstTaskId, "updated third task");
+
+    allTasks = todoList.all();
+    assert.equal(allTasks[0].ID, firstTaskId, "when task was updated.");
 });
 
 QUnit.test("throw ", assert => {
-    let todoList = new TodoList();
+    const todoList = new TodoList();
 
-    let taskId = todoList.add("first task");
+    const taskId = todoList.add("first task");
     todoList.add("second task");
-    todoList.add("third task");
+    const thirdTaskId = todoList.add("third task");
+    todoList.complete(thirdTaskId);
 
     assert.throws(
         () => todoList.add(undefined),
         new TaskContentError(undefined),
         "TaskContentError if add task with undefined content."
-    );
-
-    assert.throws(
-        () => todoList.add(null),
-        new TaskContentError(null),
-        "TaskContentError if add task with null content."
     );
 
     assert.throws(
@@ -133,12 +155,6 @@ QUnit.test("throw ", assert => {
     );
 
     assert.throws(
-        () => todoList.complete(null),
-        new ParameterIsNotDefinedError(null, "task ID"),
-        "ParameterIsNotDefinedError if complete argument is null."
-    );
-
-    assert.throws(
         () => todoList.complete(""),
         new ParameterIsNotDefinedError("", "task ID"),
         "ParameterIsNotDefinedError if complete argument is empty string."
@@ -151,15 +167,15 @@ QUnit.test("throw ", assert => {
     );
 
     assert.throws(
-        () => todoList.update(undefined, "content"),
-        new ParameterIsNotDefinedError(undefined, "task ID"),
-        "ParameterIsNotDefinedError if update first argument is undefined."
+        () => todoList.complete(thirdTaskId),
+        new TaskAlreadyCompletedException(thirdTaskId),
+        "TaskAlreadyCompletedException when trying to complete completed task."
     );
 
     assert.throws(
-        () => todoList.update(null, "content"),
-        new ParameterIsNotDefinedError(null, "task ID"),
-        "ParameterIsNotDefinedError if update first argument is null."
+        () => todoList.update(undefined, "content"),
+        new ParameterIsNotDefinedError(undefined, "task ID"),
+        "ParameterIsNotDefinedError if update first argument is undefined."
     );
 
     assert.throws(
@@ -181,12 +197,6 @@ QUnit.test("throw ", assert => {
     );
 
     assert.throws(
-        () => todoList.update(taskId, null),
-        new TaskContentError(null),
-        "TaskContentError if update second argument is null."
-    );
-
-    assert.throws(
         () => todoList.update(taskId, ""),
         new TaskContentError(""),
         "TaskContentError if update second argument is empty string."
@@ -196,12 +206,6 @@ QUnit.test("throw ", assert => {
         () => todoList.remove(undefined),
         new ParameterIsNotDefinedError(undefined, "task ID"),
         "ParameterIsNotDefinedError if remove argument is undefined."
-    );
-
-    assert.throws(
-        () => todoList.remove(null),
-        new ParameterIsNotDefinedError(null, "task ID"),
-        "ParameterIsNotDefinedError if remove argument is null."
     );
 
     assert.throws(
