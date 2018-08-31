@@ -364,7 +364,7 @@ class Preconditions {
     static validateDate(dateToCheck, parameterName) {
         Preconditions.isDefined(dateToCheck, parameterName);
         if ((new Date() - dateToCheck) < 0) {
-            throw new Error("Date from future.")
+            throw new TaskDateException(dateToCheck)
         }
         return dateToCheck;
     }

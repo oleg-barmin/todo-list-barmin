@@ -3,6 +3,53 @@ if (typeof(require) !== 'undefined') {
     TodoList = todoListModule.TodoList;
 }
 
+QUnit.module("Preconditions should");
+QUnit.test("throw ", assert => {
+    assert.throws(
+        () => Preconditions.isDefined(undefined, "any parameter"),
+        new ParameterIsNotDefinedException(undefined, "any parameter"),
+        "ParameterIsNotDefinedException when isDefined() argument is undefined."
+    );
+
+    assert.throws(
+        () => Preconditions.isDefined(null, "any parameter"),
+        new ParameterIsNotDefinedException(null, "any parameter"),
+        "ParameterIsNotDefinedException when isDefined() argument is null."
+    );
+
+    assert.throws(
+        () => Preconditions.checkStringIsDefinedAndNotEmpty(undefined, "any string"),
+        new EmptyStringException(undefined, "any string"),
+        "EmptyStringException when checkStringIsDefinedAndNotEmpty() argument is undefined."
+    );
+
+    assert.throws(
+        () => Preconditions.checkStringIsDefinedAndNotEmpty(null, "any string"),
+        new EmptyStringException(null, "any string"),
+        "EmptyStringException when checkStringIsDefinedAndNotEmpty() argument is null."
+    );
+
+    assert.throws(
+        () => Preconditions.checkStringIsDefinedAndNotEmpty("", "any string"),
+        new EmptyStringException("", "any string"),
+        "EmptyStringException when checkStringIsDefinedAndNotEmpty() argument is empty."
+    );
+
+    assert.throws(
+        () => Preconditions.checkStringIsDefinedAndNotEmpty("    ", "any string"),
+        new EmptyStringException("", "any string"),
+        "EmptyStringException when checkStringIsDefinedAndNotEmpty() argument contains only of multiple spaces."
+    );
+
+    const futureDate = new Date();
+    futureDate.setFullYear(2020);
+    assert.throws(
+        () => Preconditions.validateDate(futureDate, "any date"),
+        new TaskDateException(futureDate),
+        "TaskDateException when validateDate() argument is date that point to future."
+    );
+});
+
 QUnit.module("TodoList should ");
 QUnit.test("add ", assert => {
     let todoList = new TodoList();
