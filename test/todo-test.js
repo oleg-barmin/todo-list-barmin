@@ -142,6 +142,24 @@ QUnit.test("generate ", assert => {
     assert.ok(!hasDuplicate, " unique id.")
 });
 
+QUnit.module("CloneUtils should");
+QUnit.test("clone ", assert => {
+    let objectToCopy = {
+        prop1 : "old",
+    };
+
+    let clonedObject = CloneUtils.cloneObject(objectToCopy);
+    objectToCopy.prop1 = "new";
+    assert.notDeepEqual(objectToCopy, clonedObject, "object.");
+
+    let arrayToCopy = [1,2,3,4];
+    let clonedArray = CloneUtils.cloneArray(arrayToCopy);
+    arrayToCopy[0] = 10;
+
+    assert.notDeepEqual(arrayToCopy, clonedArray, "arrays.")
+
+});
+
 QUnit.module("TodoList should ");
 QUnit.test("add ", assert => {
     let todoList = new TodoList();
