@@ -11,7 +11,7 @@ QUnit.test("add ", assert => {
     let firstTaskID = todoList.add(firstTaskContent);
     let firstTask = todoList._getTaskById(firstTaskID);
 
-    assert.equal(firstTask.content, firstTaskContent, "task by content.");
+    assert.equal(firstTask.description, firstTaskContent, "task by content.");
 
     todoList = new TodoList();
     firstTaskContent = "first task";
@@ -23,8 +23,8 @@ QUnit.test("add ", assert => {
     const secondTask = todoList._getTaskById(secondTaskID);
 
     assert.ok(
-        firstTask.content === firstTaskContent
-        && secondTask.content === secondTaskContent
+        firstTask.description === firstTaskContent
+        && secondTask.description === secondTaskContent
         && todoList._tasksArray.length === 2,
         " multiple tasks by ID."
     );
@@ -37,13 +37,13 @@ QUnit.test("remove ", assert => {
     const firstTaskID = todoList.add(firstTaskContent);
 
     const secondTaskContent = "second task";
-    todoList.add(secondTaskContent);
+    const secondTaskID = todoList.add(secondTaskContent);
 
     todoList.remove(firstTaskID);
 
     assert.ok(
         todoList._tasksArray.length === 1
-        && todoList._getTaskById,
+        && todoList._getTaskById(secondTaskID),
         "task from list by ID."
     );
 });
@@ -83,12 +83,22 @@ QUnit.test("complete ", assert => {
 
 
 QUnit.test("sort ", async function (assert) {
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
     const todoList = new TodoList();
 
     const firstTaskId = todoList.add("first task");
+    await sleep(1);
+
     const secondTaskId = todoList.add("second task");
+    await sleep(1);
+
     const thirdTaskId = todoList.add("third task");
+    await sleep(1);
+
     const fourthTaskId = todoList.add("fourth task");
+    await sleep(1);
 
     const firstTask = todoList._getTaskById(firstTaskId);
     const secondTask = todoList._getTaskById(secondTaskId);
@@ -151,32 +161,32 @@ QUnit.test("throw ", assert => {
 
     assert.throws(
         () => todoList.add(undefined),
-        new TaskContentError(undefined),
-        "TaskContentError if add task with undefined content."
+        new EmptyStringException(undefined, "task content"),
+        "EmptyStringException if add task with undefined content."
     );
 
     assert.throws(
         () => todoList.add(""),
-        new TaskContentError(""),
-        "TaskNotFoundError if add task with empty content."
+        new EmptyStringException("", "task content"),
+        "EmptyStringException if add task with empty content."
     );
 
     assert.throws(
         () => todoList.complete(undefined),
-        new ParameterIsNotDefinedError(undefined, "task ID"),
-        "ParameterIsNotDefinedError if complete argument is undefined."
+        new ParameterIsNotDefinedException(undefined, "task ID"),
+        "ParameterIsNotDefinedException if complete argument is undefined."
     );
 
     assert.throws(
-        () => todoList.complete(""),
-        new ParameterIsNotDefinedError("", "task ID"),
-        "ParameterIsNotDefinedError if complete argument is empty string."
+        () => todoList.complete(new TaskId("")),
+        new EmptyStringException("", "ID"),
+        "EmptyStringException if complete argument is empty string."
     );
 
     assert.throws(
-        () => todoList.complete("123"),
-        new TaskNotFoundError("123"),
-        "TaskNotFoundError if complete argument is non-existing ID."
+        () => todoList.complete(new TaskId("123")),
+        new TaskNotFoundException(new TaskId("123")),
+        "TaskNotFoundException if complete argument is non-existing ID."
     );
 
     assert.throws(
@@ -187,50 +197,50 @@ QUnit.test("throw ", assert => {
 
     assert.throws(
         () => todoList.update(undefined, "content"),
-        new ParameterIsNotDefinedError(undefined, "task ID"),
-        "ParameterIsNotDefinedError if update first argument is undefined."
+        new ParameterIsNotDefinedException(undefined, "task ID"),
+        "ParameterIsNotDefinedException if update first argument is undefined."
     );
 
     assert.throws(
         () => todoList.update("", "content"),
-        new ParameterIsNotDefinedError("", "task ID"),
-        "ParameterIsNotDefinedError if update first argument is empty string."
+        new ParameterIsNotDefinedException("", "task ID"),
+        "ParameterIsNotDefinedException if update first argument is empty string."
     );
 
     assert.throws(
-        () => todoList.update("123", "content"),
-        new TaskNotFoundError("123"),
-        "TaskNotFoundError if update first argument is non-existing ID."
+        () => todoList.update(new TaskId("123"), "content"),
+        new TaskNotFoundException(new TaskId("123")),
+        "TaskNotFoundException if update first argument is non-existing ID."
     );
 
     assert.throws(
         () => todoList.update(taskId, undefined),
-        new TaskContentError(undefined),
-        "TaskContentError if update second argument is undefined."
+        new EmptyStringException(undefined, "updated content"),
+        "EmptyStringException if update second argument is undefined."
     );
 
     assert.throws(
         () => todoList.update(taskId, ""),
-        new TaskContentError(""),
-        "TaskContentError if update second argument is empty string."
+        new EmptyStringException("", "updated content"),
+        "EmptyStringException if update second argument is empty string."
     );
 
     assert.throws(
         () => todoList.remove(undefined),
-        new ParameterIsNotDefinedError(undefined, "task ID"),
-        "ParameterIsNotDefinedError if remove argument is undefined."
+        new ParameterIsNotDefinedException(undefined, "task ID"),
+        "ParameterIsNotDefinedException if remove argument is undefined."
     );
 
     assert.throws(
-        () => todoList.remove(""),
-        new ParameterIsNotDefinedError("", "task ID"),
-        "ParameterIsNotDefinedError if remove argument is empty string."
+        () => todoList.remove(new TaskId("")),
+        new EmptyStringException("", "ID"),
+        "ParameterIsNotDefinedException if remove argument is empty string."
     );
 
     assert.throws(
-        () => todoList.remove("123"),
-        new TaskNotFoundError("123"),
-        "TaskNotFoundError if remove non-existing task."
+        () => todoList.remove(new TaskId("123")),
+        new TaskNotFoundException(new TaskId("123")),
+        "TaskNotFoundException if remove non-existing task."
     );
 
 });

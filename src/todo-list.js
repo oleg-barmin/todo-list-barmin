@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * Stores and manages all {@link Task}.
+ * Tasks to do.
  *
  * Allows to add new tasks, marks them as completed,
  * remove from list and update their contents.
@@ -45,132 +45,133 @@
 class TodoList {
 
     /**
-     * Creates TodoList instance.
+     * Creates `TodoList` instance.
      */
     constructor() {
         this._tasksArray = [];
-        this._idGenerator = new IdGenerator();
     }
 
     /**
-     * Adds new task to TodoList.
+     * Adds new task to `TodoList`.
      *
-     * @param {string} taskContent content of the task to add.
-     * @returns {string} id of task that was added.
+     * @param {string} taskContent content of the task to add
+     *
+     * @throws EmptyStringException if given task description is not defined or empty
+     *
+     * @returns {TaskId} id copy of id of task that was added
      */
     add(taskContent) {
-        Preconditions.checkTaskContent(taskContent);
+        Preconditions.checkStringIsDefinedAndNotEmpty(taskContent, "task content");
 
-        const taskId = this._idGenerator.generateID();
+        const taskId = new TaskId(IdGenerator.generateID());
         const currentDate = new Date();
         const taskToAdd = new Task(taskId, taskContent, currentDate);
+        this._tasksArray.push(taskToAdd);
 
-        this._tasksArray.unshift(taskToAdd);
+        TaskSorter.sortTasksArray(this._tasksArray);
 
-        return taskId;
+        return CloneUtils.cloneObject(taskId);
     }
 
     /**
      * Finds task by its ID.
      *
-     * @param {string} taskId id of desired task.
-     * @returns {Task} task stored in database.
+     * @param {TaskId} taskId ID of specified task
+     * @returns {Task} task task with specified ID
      * @private
      */
     _getTaskById(taskId) {
-        Preconditions.isDefined(taskId, "task ID");
-
-        const desiredTask = this._tasksArray.find(element => element.ID === taskId);
-
-        if (desiredTask) {
-            return desiredTask;
+        for (let cur of this._tasksArray) {
+            if (cur.id.compareTo(taskId) === 0) {
+                return cur;
+            }
         }
-
-        throw new TaskNotFoundError(taskId);
     }
 
     /**
-     * Marks desired task as completed.
+     * Finds task by ID and marks it as completed.
      *
-     * @param {string} taskId id of desired task.
+     * @param {TaskId} taskId ID of specified task
+     *
+     * @throws TaskNotFoundException if task with specified ID was not found
+     * @throws TaskAlreadyCompletedException if task with specified ID is already completed
      */
     complete(taskId) {
         Preconditions.isDefined(taskId, "task ID");
 
         const storedTask = this._getTaskById(taskId);
 
+        if (!storedTask) {
+            throw new TaskNotFoundException(taskId);
+        }
+
         if (storedTask.completed) {
             throw new TaskAlreadyCompletedException(taskId);
         }
         storedTask.completed = true;
-
-        this.remove(taskId);
-        const array = this._tasksArray;
-
-        let find = array.find(function (element, index, array) {
-            if (element.completed) {
-                array.splice(index, 0, storedTask);
-                return true;
-            }
-        });
-        if (!find) {
-            array.push(storedTask);
-        }
+        TaskSorter.sortTasksArray(this._tasksArray);
     }
 
     /**
-     * Updates content of desired task.
+     * Finds task by id and updates its content.
      *
-     * @param {string} taskId id of the desired task
-     * @param {string} updatedContent new content of desired task.
+     * @param {TaskId} taskId ID of the specified task
+     * @param {string} updatedContent new content of the task
+     *
+     * @throws TaskNotFoundException if task with specified ID was not found
      */
     update(taskId, updatedContent) {
         Preconditions.isDefined(taskId, "task ID");
-        Preconditions.checkTaskContent(updatedContent);
+        Preconditions.checkStringIsDefinedAndNotEmpty(updatedContent, "updated content");
 
         const taskToUpdate = this._getTaskById(taskId);
+
+        if (!taskToUpdate) {
+            throw new TaskNotFoundException(taskId);
+        }
 
         taskToUpdate.content = updatedContent;
         taskToUpdate.lastUpdateDate = new Date();
 
-        this.remove(taskId);
-        this._tasksArray.unshift(taskToUpdate);
+        TaskSorter.sortTasksArray(this._tasksArray);
     }
 
     /**
      * Removes task with given ID from to do list.
      *
-     * @param {string} taskId id of task to delete.
+     * @param {TaskId} taskId ID of task to delete
+     *
+     * @throws TaskNotFoundException if task with specified ID was not found
      */
     remove(taskId) {
         Preconditions.isDefined(taskId, "task ID");
 
         const desiredTask = this._tasksArray.find((element, index, array) => {
-            if (element.ID === taskId) {
+            if (element.id.compareTo(taskId) === 0) {
                 array.splice(index, 1);
                 return true;
             }
         });
 
         if (!desiredTask) {
-            throw new TaskNotFoundError(taskId);
+            throw new TaskNotFoundException(taskId);
         }
     }
 
     /**
      * Returns all tasks stored in to do list.
      *
-     * @returns {Array}
+     * @returns {Array} tasksArray copy of array with task
      */
     all() {
-        return this._tasksArray;
+        return CloneUtils.cloneArray(this._tasksArray);
     }
 }
 
 /**
- * Stores information about task.
+ * Task to do.
  *
- * It stores task ID, its content, status (is it completed or not),
+ * It stores task ID, its description, status (is it completed or not),
  * date of creation and date of last update (if task wasn't updated
  * the date of creation equals to last update date).
  */
@@ -179,21 +180,129 @@ class Task {
     /**
      * Creates task instance.
      *
-     * @param {string} id task id.
-     * @param {string} content content of the task.
-     * @param {Date} creationDate date when task was created.
+     * @param {TaskId} id task ID
+     * @param {string} description description of the task
+     * @param {Date} creationDate date when task was created
+     *
+     * @throws ParameterIsNotDefinedException if one of given parameters is not defined
+     * @throws TaskDateException if given date point to future
      */
-    constructor(id, content, creationDate) {
-        this.ID = Preconditions.isDefined(id, "ID");
-        this.content = Preconditions.isDefined(content, "task content");
+    constructor(id, description, creationDate) {
+        this.id = Preconditions.isDefined(id, "ID");
+        this.description = Preconditions.isDefined(description, "task description");
         this.completed = false;
-        this.creationDate = Preconditions.isDefined(creationDate, "date of creation");
+        this.creationDate = Preconditions.validateDate(creationDate, "date of creation");
         this.lastUpdateDate = creationDate;
     }
 
     toString() {
-        return `Task: [ID = ${this.ID}, content = ${this.content}, completed = ${this.completed}, `
+        return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
             + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
+    }
+}
+
+class TaskId {
+    constructor(id) {
+        Preconditions.checkStringIsDefinedAndNotEmpty(id, "ID");
+        this.id = id;
+    }
+
+    compareTo(taskId) {
+        if (!(taskId instanceof TaskId)) {
+            throw new TypeError("Object of TaskId was expected");
+        }
+
+        return this.id.localeCompare(taskId.id);
+    }
+}
+
+/**
+ * Stores algorithm to sort an array of  `Task`.
+ */
+class TaskSorter {
+
+    /**
+     * Sorts array of tasks by:
+     * - Status (uncompleted then completed).
+     * - Date of last update.
+     * - Lexicographically by content.
+     *
+     * @param {Array} array with tasks to sort
+     */
+    static sortTasksArray(array) {
+        array.sort((firstTask, secondTask) => {
+            if (firstTask.completed === secondTask.completed) {
+                let compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
+                if (compareByDateResult === 0) {
+                    let compareByDescriptionResult = secondTask.description.localeCompare(firstTask.description);
+                    if (compareByDateResult === 0) {
+                        return secondTask.id.compareTo(firstTask.id);
+                    }
+                    return compareByDescriptionResult;
+                }
+                return compareByDateResult;
+            }
+
+            return firstTask.completed ? 1 : -1;
+        });
+    }
+}
+
+/**
+ * Provides static methods to deep clone Arrays and Objects.
+ */
+class CloneUtils {
+
+    /**
+     * Deep copies given array and all it's elements.
+     *
+     * @param {Array} array array to copy
+     * @returns {Array} arrayCopy copy of given array
+     */
+    static cloneArray(array) {
+        if (!(array instanceof Array)) {
+            throw new TypeError("Array expected. Actual value: " + array)
+        }
+        let arrayCopy = [];
+
+        for (let i = 0; i < array.length; i++) {
+            let currentElement = array[i];
+            if (typeof currentElement === "object") {
+                arrayCopy[i] = CloneUtils.cloneObject(currentElement);
+                continue;
+            }
+            arrayCopy[i] = currentElement;
+        }
+        arrayCopy.__proto__ = Array.prototype;
+        return arrayCopy;
+    }
+
+    /**
+     * Deep copies given object.
+     *
+     * @param {*} objectToClone object to clone
+     * @returns {*} copy of Array
+     */
+    static cloneObject(objectToClone) {
+        if (typeof objectToClone !== "object") {
+            return objectToClone;
+        }
+        let objCopy = {};
+
+        for (let key in objectToClone) {
+            let currentProperty = objectToClone[key];
+            if (typeof currentProperty === "object") {
+                if (currentProperty instanceof Array) {
+                    objCopy[key] = CloneUtils.cloneArray(currentProperty);
+                    continue;
+                }
+                objCopy[key] = CloneUtils.cloneObject(currentProperty);
+                continue
+            }
+            objCopy[key] = currentProperty;
+        }
+        objCopy.__proto__ = objectToClone.constructor.prototype;
+        return objCopy;
     }
 }
 
@@ -208,12 +317,14 @@ class Preconditions {
      *
      * @param {*} value the value of parameter being checked.
      * @param {string} parameterName name of the parameter.
-     * @throws ParameterIsNotDefinedError if given parameter is null or undefined.
-     * @returns {*} value of the parameter if it is not null or undefined otherwise ParameterIsNotDefinedError is thrown.
+     *
+     * @throws ParameterIsNotDefinedException if given parameter is null or undefined.
+     *
+     * @returns {*} value of the parameter if it is not null or undefined otherwise ParameterIsNotDefinedException is thrown.
      */
     static isDefined(value, parameterName) {
         if (!value) {
-            throw new ParameterIsNotDefinedError(value, parameterName);
+            throw new ParameterIsNotDefinedException(value, parameterName);
         }
         return value;
     }
@@ -222,17 +333,40 @@ class Preconditions {
      * Validates if given sting is not undefined, null or empty.
      *
      * @param {string} stringToCheck string that should be checked.
+     * @param {string} stringName name of string being checked
+     *
+     * @throws EmptyStringException if given string is empty or undefined.
+     *
      * @returns {string} string value if given string is not
      */
-    static checkTaskContent(stringToCheck) {
+    static checkStringIsDefinedAndNotEmpty(stringToCheck, stringName) {
         if (!(stringToCheck && typeof stringToCheck === "string")) {
-            throw new TaskContentError(stringToCheck)
+            throw new EmptyStringException(stringToCheck, stringName)
         }
         stringToCheck = stringToCheck.trim();
         if (stringToCheck === "") {
-            throw new TaskContentError(stringToCheck)
+            throw new EmptyStringException(stringToCheck, stringName)
         }
         return stringToCheck;
+    }
+
+
+    /**
+     * Validates that given date point to future.
+     *
+     * @param {Date} dateToCheck date to validate
+     * @param {string} parameterName name of parameter being checked
+     *
+     * @throws TaskDateException if given date points to future
+     *
+     * @returns {Date} date given date if it is valid
+     */
+    static validateDate(dateToCheck, parameterName) {
+        Preconditions.isDefined(dateToCheck, parameterName);
+        if ((new Date() - dateToCheck) < 0) {
+            throw new Error("Date from future.")
+        }
+        return dateToCheck;
     }
 }
 
@@ -242,39 +376,30 @@ class Preconditions {
 class IdGenerator {
 
     /**
-     * Creates IdGenerator instance.
-     */
-    constructor() {
-        if (typeof(require) !== 'undefined') {
-            this.uuidv4 = require('uuid/v4');
-            return
-        }
-
-        this.uuidv4 = uuidv4;
-    }
-
-    /**
      * Generates uuid v4 IDs.
      *
      * @returns {string} ID generated uuid v4 ID.
      */
-    generateID() {
-        return this.uuidv4()
+    static generateID() {
+        if (typeof(require) !== 'undefined') {
+            return require('uuid/v4')();
+        }
+        return uuidv4();
     }
 }
 
 /**
- * Custom error type which indicates that a null or undefined variable was found, when it shouldn't.
+ * Custom error type which indicates that a null or undefined argument was found while it wasn't expected.
  *
  * @extends Error
  */
-class ParameterIsNotDefinedError extends Error {
+class ParameterIsNotDefinedException extends Error {
 
     /**
-     * Creates ParameterIsNotDefinedError instance.
+     * Creates `ParameterIsNotDefinedException` instance.
      *
-     * @param {*} value parameters value.
-     * @param {string} parameterName name of the parameter that was checked.
+     * @param {*} value parameters value
+     * @param {string} parameterName name of the parameter that was checked
      */
     constructor(value, parameterName) {
         super(`Parameter '${parameterName}' should be not null and not undefined, Actual value: '${value}'`);
@@ -283,35 +408,36 @@ class ParameterIsNotDefinedError extends Error {
 }
 
 /**
- * Custom error type which indicates that given task content is undefined, null or empty.
+ * Custom error type which indicates that given task description is undefined, null or empty.
  */
-class TaskContentError extends Error {
+class EmptyStringException extends Error {
 
     /**
-     * Creates TaskContentError instance.
+     * Creates `EmptyStringException` instance.
      *
-     * @param {string} value actual value of task content.
+     * @param {string} value actual value of task description
+     * @param {string} stringName name of the string that was checked
      */
-    constructor(value) {
-        super(`Task content should be a string and cannot be undefined, null or empty. Actual value: '${value}'`);
+    constructor(value, stringName) {
+        super(`String '${stringName}' should be a string and cannot be undefined, null or empty. Actual value: '${value}'`);
         this.name = this.constructor.name;
     }
 }
 
 /**
- * Custom error type which indicates that desired task was not found.
+ * Custom error type which indicates that task was not found.
  *
  * @extends Error
  */
-class TaskNotFoundError extends Error {
+class TaskNotFoundException extends Error {
 
     /**
-     * Crates TaskNotFoundError instance.
+     * Crates `TaskNotFoundException` instance.
      *
-     * @param {string} taskId id if the task that was not found.
+     * @param {TaskId} taskId ID if the task that was not found
      */
     constructor(taskId) {
-        super(`Task with id ${taskId} was not found.`);
+        super(`Task with ID ${taskId.id} was not found.`);
         this.name = this.constructor.name;
     }
 }
@@ -325,12 +451,30 @@ class TaskNotFoundError extends Error {
 class TaskAlreadyCompletedException extends Error {
 
     /**
-     * Crates TaskAlreadyCompletedException instance.
+     * Crates `TaskAlreadyCompletedException` instance.
      *
-     * @param taskId {string} id of task which was already completed.
+     * @param {TaskId} taskId  ID of task which was already completed.
      */
     constructor(taskId) {
-        super(`Task with id ${taskId} is alredy completed.`);
+        super(`Task with ID ${taskId.id} is alredy completed.`);
+        this.name = this.constructor.name;
+    }
+}
+
+/**
+ * Custom error type which indicates that date that was given to date point to future.
+ *
+ * @extends Error
+ */
+class TaskDateException extends Error {
+
+    /**
+     * Crates `TaskDateException` instance.
+     *
+     * @param {Date} date ID of task which was already completed.
+     */
+    constructor(date) {
+        super(`Given date '${date}' points to future.`);
         this.name = this.constructor.name;
     }
 }
