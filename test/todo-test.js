@@ -126,6 +126,22 @@ QUnit.test("sort ", assert => {
     );
 });
 
+QUnit.module("IdGenerator should");
+QUnit.test("generate ", assert => {
+    let set = new Set();
+
+    let hasDuplicate = false;
+    for(let i = 0; i<1000; i++){
+        let id = IdGenerator.generateID();
+        if(set.has(id)){
+            hasDuplicate = true;
+            break;
+        }
+        set.add(id);
+    }
+    assert.ok(!hasDuplicate, " unique id.")
+});
+
 QUnit.module("TodoList should ");
 QUnit.test("add ", assert => {
     let todoList = new TodoList();
