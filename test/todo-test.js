@@ -1,6 +1,4 @@
 if (typeof(require) !== 'undefined') {
-    todoListModule = require('../src/todo-list.js');
-    TodoList = todoListModule.TodoList;
 }
 
 QUnit.module("Preconditions should");
@@ -47,6 +45,84 @@ QUnit.test("throw ", assert => {
         () => Preconditions.validateDate(futureDate, "any date"),
         new TaskDateException(futureDate),
         "TaskDateException when validateDate() argument is date that point to future."
+    );
+});
+
+QUnit.module("TasksSorter should ");
+QUnit.test("sort ", assert => {
+    const firstDate = new Date("01 Jan 1970 00:00:00 GMT");
+    const secondDate = new Date("02 Jan 1970 00:00:00 GMT");
+    const thirdDate = new Date("03 Jan 1970 00:00:00 GMT");
+    const fourthDate = new Date("04 Jan 1970 00:00:00 GMT");
+
+    let firstTask = new Task(new TaskId("1"), "1", firstDate);
+    let secondTask = new Task(new TaskId("2"), "2", secondDate);
+    let thirdTask = new Task(new TaskId("3"), "3", thirdDate);
+    let fourthTask = new Task(new TaskId("4"), "4", fourthDate);
+
+    let array = [
+        firstTask,
+        fourthTask,
+        secondTask,
+        thirdTask
+    ];
+
+    TaskSorter.sortTasksArray(array);
+
+    assert.propEqual(
+        array,
+        [
+            fourthTask,
+            thirdTask,
+            secondTask,
+            firstTask
+        ],
+        " by date."
+    );
+
+    const sameDate = new Date();
+
+    firstTask.lastUpdateDate = sameDate;
+    secondTask.lastUpdateDate = sameDate;
+    thirdTask.lastUpdateDate = sameDate;
+    fourthTask.lastUpdateDate = sameDate;
+
+    array = [
+        firstTask,
+        fourthTask,
+        thirdTask,
+        secondTask
+    ];
+
+    TaskSorter.sortTasksArray(array);
+
+    assert.propEqual(
+        array,
+        [
+            firstTask,
+            secondTask,
+            thirdTask,
+            fourthTask
+        ],
+        " by description if dates are same."
+    );
+
+    const sameDescription = "same description";
+    firstTask.description = sameDescription;
+    secondTask.description = sameDescription;
+    thirdTask.description = sameDescription;
+    fourthTask.description = sameDescription;
+
+
+    assert.propEqual(
+        array,
+        [
+            firstTask,
+            secondTask,
+            thirdTask,
+            fourthTask
+        ],
+        " by ID if dates and descriptions are same."
     );
 });
 
@@ -128,11 +204,28 @@ QUnit.test("complete ", assert => {
     assert.ok(task.completed, "task by ID.");
 });
 
+QUnit.test("all ", assert => {
+    const todoList = new TodoList();
+
+    const firstTaskId = todoList.add("first task");
+    todoList.add("second task");
+    const arrayCopy = todoList.all();
+
+    todoList.remove(firstTaskId);
+
+    const newArray = todoList.all();
+    assert.notPropEqual(newArray, arrayCopy, "return copy of stored task list.");
+
+    arrayCopy[0].description = "modified";
+    assert.notPropEqual(arrayCopy[0], newArray[0], " copy of all tasks in the array");
+
+});
 
 QUnit.test("sort ", async function (assert) {
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
     const todoList = new TodoList();
 
     const firstTaskId = todoList.add("first task");

@@ -201,12 +201,27 @@ class Task {
     }
 }
 
+/**
+ * Used to identify tasks.
+ */
 class TaskId {
+
+    /**
+     * Creates `TaskId` instance.
+     *
+     * @param id ID to store
+     */
     constructor(id) {
         Preconditions.checkStringIsDefinedAndNotEmpty(id, "ID");
         this.id = id;
     }
 
+    /**
+     * Compares `TaskId` objects by stored id.
+     *
+     * @param taskId
+     * @returns {number}
+     */
     compareTo(taskId) {
         if (!(taskId instanceof TaskId)) {
             throw new TypeError("Object of TaskId was expected");
@@ -234,8 +249,8 @@ class TaskSorter {
             if (firstTask.completed === secondTask.completed) {
                 let compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
                 if (compareByDateResult === 0) {
-                    let compareByDescriptionResult = secondTask.description.localeCompare(firstTask.description);
-                    if (compareByDateResult === 0) {
+                    let compareByDescriptionResult = firstTask.description.localeCompare(secondTask.description);
+                    if (compareByDescriptionResult === 0) {
                         return secondTask.id.compareTo(firstTask.id);
                     }
                     return compareByDescriptionResult;

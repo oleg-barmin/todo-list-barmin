@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: IdGenerator</title>
+    <title>JSDoc: Class: EmptyStringException</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: IdGenerator</h1>
+    <h1 class="page-title">Class: EmptyStringException</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>IdGenerator<span class="signature">()</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>EmptyStringException<span class="signature">(value, stringName)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>Generates uuid v4 ID strings.</p></div>
+            <div class="class-description"><p>Custom error type which indicates that given task description is undefined, null or empty.</p></div>
         
     
 </header>
@@ -45,19 +45,95 @@
     
 
     
-    <h4 class="name" id="IdGenerator"><span class="type-signature"></span>new IdGenerator<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="EmptyStringException"><span class="type-signature"></span>new EmptyStringException<span class="signature">(value, stringName)</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
+<div class="description">
+    <p>Creates <code>EmptyStringException</code> instance.</p>
+</div>
 
 
 
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>actual value of task description</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>stringName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>name of the string that was checked</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -93,7 +169,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line391">line 391</a>
+        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line428">line 428</a>
     </li></ul></dd>
     
 
@@ -138,118 +214,6 @@
 
     
 
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".generateID"><span class="type-signature">(static) </span>generateID<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Generates uuid v4 IDs.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line398">line 398</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>ID generated uuid v4 ID.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
     
 
     

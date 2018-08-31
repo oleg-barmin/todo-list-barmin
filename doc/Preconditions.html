@@ -94,7 +94,7 @@ with correct parameters.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line204">line 204</a>
+        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line328">line 328</a>
     </li></ul></dd>
     
 
@@ -148,7 +148,7 @@ with correct parameters.</p></div>
     
 
     
-    <h4 class="name" id=".checkTaskContent"><span class="type-signature">(static) </span>checkTaskContent<span class="signature">(stringToCheck)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id=".checkStringIsDefinedAndNotEmpty"><span class="type-signature">(static) </span>checkStringIsDefinedAndNotEmpty<span class="signature">(stringToCheck, stringName)</span><span class="type-signature"> &rarr; {string}</span></h4>
     
 
     
@@ -212,6 +212,29 @@ with correct parameters.</p></div>
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>stringName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>name of string being checked</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -249,7 +272,7 @@ with correct parameters.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line227">line 227</a>
+        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line357">line 357</a>
     </li></ul></dd>
     
 
@@ -270,6 +293,18 @@ with correct parameters.</p></div>
 
 
 
+<h5>Throws:</h5>
+
+        
+
+    <div class="param-desc">
+    
+        <p>EmptyStringException if given string is empty or undefined.</p>
+    
+    </div>
+
+
+    
 
 
 <h5>Returns:</h5>
@@ -429,7 +464,7 @@ with correct parameters.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line214">line 214</a>
+        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line340">line 340</a>
     </li></ul></dd>
     
 
@@ -456,7 +491,7 @@ with correct parameters.</p></div>
 
     <div class="param-desc">
     
-        <p>ParameterIsNotDefinedError if given parameter is null or undefined.</p>
+        <p>ParameterIsNotDefinedException if given parameter is null or undefined.</p>
     
     </div>
 
@@ -468,7 +503,7 @@ with correct parameters.</p></div>
 
         
 <div class="param-desc">
-    <p>value of the parameter if it is not null or undefined otherwise ParameterIsNotDefinedError is thrown.</p>
+    <p>value of the parameter if it is not null or undefined otherwise ParameterIsNotDefinedException is thrown.</p>
 </div>
 
 
@@ -480,6 +515,198 @@ with correct parameters.</p></div>
     <dd>
         
 <span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".validateDate"><span class="type-signature">(static) </span>validateDate<span class="signature">(dateToCheck, parameterName)</span><span class="type-signature"> &rarr; {Date}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Validates that given date point to future.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dateToCheck</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Date</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>date to validate</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>parameterName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>name of parameter being checked</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line379">line 379</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+    <div class="param-desc">
+    
+        <p>TaskDateException if given date points to future</p>
+    
+    </div>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>date given date if it is valid</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Date</span>
 
 
     </dd>
@@ -507,13 +734,13 @@ with correct parameters.</p></div>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="IdGenerator.html">IdGenerator</a></li><li><a href="ParameterIsNotDefinedError.html">ParameterIsNotDefinedError</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskContentError.html">TaskContentError</a></li><li><a href="TaskNotFoundError.html">TaskNotFoundError</a></li><li><a href="TodoList.html">TodoList</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CloneUtils.html">CloneUtils</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="IdGenerator.html">IdGenerator</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskDateException.html">TaskDateException</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TodoList.html">TodoList</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Aug 30 2018 13:39:23 GMT+0300 (Eastern European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Aug 31 2018 15:18:11 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
