@@ -61,7 +61,7 @@ class TodoList {
      * @returns {TaskId} id copy of id of task that was added
      */
     add(taskContent) {
-        Preconditions.checkStringIsDefinedAndNotEmpty(taskContent, "task content");
+        Preconditions.checkStringNotEmpty(taskContent, "task content");
 
         const taskId = new TaskId(IdGenerator.generateID());
         const currentDate = new Date();
@@ -122,12 +122,16 @@ class TodoList {
      */
     update(taskId, updatedContent) {
         Preconditions.isDefined(taskId, "task ID");
-        Preconditions.checkStringIsDefinedAndNotEmpty(updatedContent, "updated content");
+        Preconditions.checkStringNotEmpty(updatedContent, "updated content");
 
         const taskToUpdate = this._getTaskById(taskId);
 
         if (!taskToUpdate) {
             throw new TaskNotFoundException(taskId);
+        }
+
+        if(taskToUpdate.completed){
+            throw new CannotUpdateCompletedTaskException(taskId);
         }
 
         taskToUpdate.content = updatedContent;
@@ -185,13 +189,14 @@ class Task {
      * @param {Date} creationDate date when task was created
      *
      * @throws ParameterIsNotDefinedException if one of given parameters is not defined
-     * @throws TaskDateException if given date point to future
+     * @throws DatePointsToFutureException if given date point to future
+     * @throws
      */
     constructor(id, description, creationDate) {
-        this.id = Preconditions.isDefined(id, "ID");
-        this.description = Preconditions.isDefined(description, "task description");
+        this.id = id;
+        this.description = description;
         this.completed = false;
-        this.creationDate = Preconditions.validateDate(creationDate, "date of creation");
+        this.creationDate = Preconditions.checkDateInPast(creationDate, "date of creation");
         this.lastUpdateDate = creationDate;
     }
 
@@ -212,7 +217,7 @@ class TaskId {
      * @param id ID to store
      */
     constructor(id) {
-        Preconditions.checkStringIsDefinedAndNotEmpty(id, "ID");
+        Preconditions.checkStringNotEmpty(id, "ID");
         this.id = id;
     }
 
@@ -354,7 +359,7 @@ class Preconditions {
      *
      * @returns {string} string value if given string is not
      */
-    static checkStringIsDefinedAndNotEmpty(stringToCheck, stringName) {
+    static checkStringNotEmpty(stringToCheck, stringName) {
         if (!(stringToCheck && typeof stringToCheck === "string")) {
             throw new EmptyStringException(stringToCheck, stringName)
         }
@@ -372,14 +377,14 @@ class Preconditions {
      * @param {Date} dateToCheck date to validate
      * @param {string} parameterName name of parameter being checked
      *
-     * @throws TaskDateException if given date points to future
+     * @throws DatePointsToFutureException if given date points to future
      *
      * @returns {Date} date given date if it is valid
      */
-    static validateDate(dateToCheck, parameterName) {
+    static checkDateInPast(dateToCheck, parameterName) {
         Preconditions.isDefined(dateToCheck, parameterName);
         if ((new Date() - dateToCheck) < 0) {
-            throw new TaskDateException(dateToCheck)
+            throw new DatePointsToFutureException(dateToCheck)
         }
         return dateToCheck;
     }
@@ -440,7 +445,7 @@ class EmptyStringException extends Error {
 }
 
 /**
- * Custom error type which indicates that task was not found.
+ * Indicates that task was not found.
  *
  * @extends Error
  */
@@ -459,7 +464,7 @@ class TaskNotFoundException extends Error {
 
 
 /**
- * Custom error type which indicates that task was already completed.
+ * Indicates that task was already completed.
  *
  * @extends Error
  */
@@ -477,19 +482,37 @@ class TaskAlreadyCompletedException extends Error {
 }
 
 /**
- * Custom error type which indicates that date that was given to date point to future.
+ * Indicates that date that was given to date point to future.
  *
  * @extends Error
  */
-class TaskDateException extends Error {
+class DatePointsToFutureException extends Error {
 
     /**
-     * Crates `TaskDateException` instance.
+     * Crates `DatePointsToFutureException` instance.
      *
-     * @param {Date} date ID of task which was already completed.
+     * @param {Date} date date which point to future.
      */
     constructor(date) {
         super(`Given date '${date}' points to future.`);
+        this.name = this.constructor.name;
+    }
+}
+
+/**
+ * Occurs when trying to update completed task.
+ *
+ * @extends Error
+ */
+class CannotUpdateCompletedTaskException extends Error {
+
+    /**
+     * Crates `CannotUpdateCompletedTaskException` instance.
+     *
+     * @param {TaskId} taskId ID of task which was already completed before update attempt.
+     */
+    constructor(taskId) {
+        super(`Completed tasks cannot be updated. Task with id: ${taskId} is completed.`);
         this.name = this.constructor.name;
     }
 }

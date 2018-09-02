@@ -16,35 +16,35 @@ QUnit.test("throw ", assert => {
     );
 
     assert.throws(
-        () => Preconditions.checkStringIsDefinedAndNotEmpty(undefined, "any string"),
+        () => Preconditions.checkStringNotEmpty(undefined, "any string"),
         new EmptyStringException(undefined, "any string"),
-        "EmptyStringException when checkStringIsDefinedAndNotEmpty() argument is undefined."
+        "EmptyStringException when checkStringNotEmpty() argument is undefined."
     );
 
     assert.throws(
-        () => Preconditions.checkStringIsDefinedAndNotEmpty(null, "any string"),
+        () => Preconditions.checkStringNotEmpty(null, "any string"),
         new EmptyStringException(null, "any string"),
-        "EmptyStringException when checkStringIsDefinedAndNotEmpty() argument is null."
+        "EmptyStringException when checkStringNotEmpty() argument is null."
     );
 
     assert.throws(
-        () => Preconditions.checkStringIsDefinedAndNotEmpty("", "any string"),
+        () => Preconditions.checkStringNotEmpty("", "any string"),
         new EmptyStringException("", "any string"),
-        "EmptyStringException when checkStringIsDefinedAndNotEmpty() argument is empty."
+        "EmptyStringException when checkStringNotEmpty() argument is empty."
     );
 
     assert.throws(
-        () => Preconditions.checkStringIsDefinedAndNotEmpty("    ", "any string"),
+        () => Preconditions.checkStringNotEmpty("    ", "any string"),
         new EmptyStringException("", "any string"),
-        "EmptyStringException when checkStringIsDefinedAndNotEmpty() argument contains only of multiple spaces."
+        "EmptyStringException when checkStringNotEmpty() argument contains only of multiple spaces."
     );
 
     const futureDate = new Date();
     futureDate.setFullYear(2020);
     assert.throws(
-        () => Preconditions.validateDate(futureDate, "any date"),
-        new TaskDateException(futureDate),
-        "TaskDateException when validateDate() argument is date that point to future."
+        () => Preconditions.checkDateInPast(futureDate, "any date"),
+        new DatePointsToFutureException(futureDate),
+        "DatePointsToFutureException when checkDateInPast() argument is date that point to future."
     );
 });
 
@@ -367,6 +367,12 @@ QUnit.test("throw ", assert => {
         () => todoList.complete(thirdTaskId),
         new TaskAlreadyCompletedException(thirdTaskId),
         "TaskAlreadyCompletedException when trying to complete completed task."
+    );
+
+    assert.throws(
+        () => todoList.update(thirdTaskId, "new content"),
+        new CannotUpdateCompletedTaskException(thirdTaskId),
+        "CannotUpdateCompletedTaskException if try to update completed task."
     );
 
     assert.throws(
