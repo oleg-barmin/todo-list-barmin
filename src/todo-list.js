@@ -3,8 +3,11 @@
 /**
  * Tasks to-do.
  *
- * Allows to add new tasks, marks them as completed,
- * remove from list and update their descriptions.
+ * Allows:
+ *  - add new tasks
+ *  - marks them as completed
+ *  - update their descriptions
+ *  - remove from list
  *
  * Task is being sorted by:
  * - Status (uncompleted tasks first, completed last).
@@ -164,7 +167,7 @@ class TodoList {
     }
 
     /**
-     * Returns all tasks stored in to-do list.
+     * Returns copy of all tasks stored in to-do list.
      *
      * @returns {Array} tasksArray copy of array with task
      */
@@ -239,6 +242,7 @@ class TaskId {
 
 /**
  * Stores algorithm to sort an array of  `Task`.
+ *
  */
 class TaskSorter {
 
@@ -247,6 +251,7 @@ class TaskSorter {
      * - Status (uncompleted then completed).
      * - Date of last update.
      * - Lexicographically by description.
+     * - Lexicographically by ID.
      *
      * @param {Array} array with tasks to sort
      */
@@ -270,12 +275,12 @@ class TaskSorter {
 }
 
 /**
- * Provides static methods to deep clone Arrays and Objects.
+ * Provides static methods to deep clone `Array` and `Object`.
  */
 class CloneUtils {
 
     /**
-     * Deep copies given array and all it's elements.
+     * Deep copies given `Array` and all it's elements.
      *
      * @param {Array} array array to copy
      * @returns {Array} arrayCopy copy of given array
@@ -299,7 +304,7 @@ class CloneUtils {
     }
 
     /**
-     * Deep copies given object.
+     * Deep copies given `Object`.
      *
      * @param {*} objectToClone object to clone
      * @returns {*} copy of Array
@@ -411,7 +416,7 @@ class IdGenerator {
 }
 
 /**
- * Custom error type which indicates that a null or undefined argument was found while it wasn't expected.
+ * Indicates that a null or undefined argument was found while it wasn't expected.
  *
  * @extends Error
  */
@@ -430,7 +435,7 @@ class ParameterIsNotDefinedException extends Error {
 }
 
 /**
- * Custom error type which indicates that given task description is undefined, null or empty.
+ * Indicates that given task description is undefined, null or empty.
  */
 class EmptyStringException extends Error {
 
