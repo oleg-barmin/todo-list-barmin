@@ -7,14 +7,16 @@
     "test": "test"
   },
   "scripts": {
-    "test": "qunit test/*-test.js",
-    "doc": "jsdoc src/todo-list.js -d doc -c jsdoc.config.json"
+    "test": "qunit test/test-bundle.js",
+    "doc": "jsdoc src/todo-list.js -d doc -c jsdoc.config.json",
+    "rollup":"rollup test/todo-test.js --format umd --file test/todo-test-bundle.js"
   },
   "author": "barmin",
   "license": "ISC",
   "dependencies": {
     "jsdoc": "^3.5.5",
     "qunit": "^2.6.2",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "rollup": "^0.65.0"
   }
 }

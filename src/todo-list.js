@@ -45,7 +45,7 @@
  * - second task
  * - ~~third task~~
  */
-class TodoList {
+export class TodoList {
 
     /**
      * Creates `TodoList` instance.
@@ -183,7 +183,7 @@ class TodoList {
  * date of creation and date of last update (if task wasn't updated
  * the date of creation equals to last update date).
  */
-class Task {
+export class Task {
 
     /**
      * Creates task instance.
@@ -212,7 +212,7 @@ class Task {
 /**
  * Used to identify tasks.
  */
-class TaskId {
+export class TaskId {
 
     /**
      * Creates `TaskId` instance.
@@ -242,7 +242,7 @@ class TaskId {
 /**
  * Stores algorithm to sort an array of  `Task`.
  */
-class TaskSorter {
+export class TaskSorter {
 
     /**
      * Sorts array of tasks by:
@@ -275,7 +275,7 @@ class TaskSorter {
 /**
  * Provides static methods to clone arrays of tasks and single tasks.
  */
-class TasksClone {
+export class TasksClone {
 
     /**
      * Deep copies given `Array` of `Task`.
@@ -334,7 +334,7 @@ class TasksClone {
  * Static methods that help a method or constructor check whether it was invoked
  * with correct parameters.
  */
-class Preconditions {
+export class Preconditions {
 
     /**
      * Validates whether given argument is not null or undefined.
@@ -398,7 +398,7 @@ class Preconditions {
 /**
  * Generates uuid v4 ID strings.
  */
-class IdGenerator {
+export class IdGenerator {
 
     /**
      * Generates uuid v4 IDs.
@@ -418,7 +418,7 @@ class IdGenerator {
  *
  * @extends Error
  */
-class ParameterIsNotDefinedException extends Error {
+export class ParameterIsNotDefinedException extends Error {
 
     /**
      * Creates `ParameterIsNotDefinedException` instance.
@@ -435,7 +435,7 @@ class ParameterIsNotDefinedException extends Error {
 /**
  * Indicates that given task description is undefined, null or empty.
  */
-class EmptyStringException extends Error {
+export class EmptyStringException extends Error {
 
     /**
      * Creates `EmptyStringException` instance.
@@ -454,7 +454,7 @@ class EmptyStringException extends Error {
  *
  * @extends Error
  */
-class TaskNotFoundException extends Error {
+export class TaskNotFoundException extends Error {
 
     /**
      * Crates `TaskNotFoundException` instance.
@@ -473,7 +473,7 @@ class TaskNotFoundException extends Error {
  *
  * @extends Error
  */
-class TaskAlreadyCompletedException extends Error {
+export class TaskAlreadyCompletedException extends Error {
 
     /**
      * Crates `TaskAlreadyCompletedException` instance.
@@ -491,7 +491,7 @@ class TaskAlreadyCompletedException extends Error {
  *
  * @extends Error
  */
-class DatePointsToFutureException extends Error {
+export class DatePointsToFutureException extends Error {
 
     /**
      * Crates `DatePointsToFutureException` instance.
@@ -509,7 +509,7 @@ class DatePointsToFutureException extends Error {
  *
  * @extends Error
  */
-class CannotUpdateCompletedTaskException extends Error {
+export class CannotUpdateCompletedTaskException extends Error {
 
     /**
      * Crates `CannotUpdateCompletedTaskException` instance.
@@ -520,10 +520,4 @@ class CannotUpdateCompletedTaskException extends Error {
         super(`Completed tasks cannot be updated. Task with ID: ${taskId} is completed.`);
         this.name = this.constructor.name;
     }
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        TodoList: TodoList
-    };
 }

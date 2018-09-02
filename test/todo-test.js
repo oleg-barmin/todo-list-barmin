@@ -1,5 +1,19 @@
-if (typeof(require) !== 'undefined') {
-}
+import "../src/todo-list"
+import {
+    TodoList,
+    Task,
+    IdGenerator,
+    TaskId,
+    Preconditions,
+    TaskSorter,
+    TasksClone,
+    CannotUpdateCompletedTaskException,
+    EmptyStringException,
+    ParameterIsNotDefinedException,
+    DatePointsToFutureException,
+    TaskAlreadyCompletedException,
+    TaskNotFoundException
+} from "../src/todo-list";
 
 QUnit.module("Preconditions should");
 QUnit.test("throw ", assert => {
