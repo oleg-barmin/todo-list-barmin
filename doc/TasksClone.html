@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: TaskSorter</title>
+    <title>JSDoc: Class: TasksClone</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: TaskSorter</h1>
+    <h1 class="page-title">Class: TasksClone</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>TaskSorter<span class="signature">()</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>TasksClone<span class="signature">()</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>Stores algorithm to sort an array of  <code>Task</code>.</p></div>
+            <div class="class-description"><p>Provides static methods to clone arrays of tasks and single tasks.</p></div>
         
     
 </header>
@@ -45,7 +45,7 @@
     
 
     
-    <h4 class="name" id="TaskSorter"><span class="type-signature"></span>new TaskSorter<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="TasksClone"><span class="type-signature"></span>new TasksClone<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -93,7 +93,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line245">line 245</a>
+        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line278">line 278</a>
     </li></ul></dd>
     
 
@@ -147,7 +147,7 @@
     
 
     
-    <h4 class="name" id=".sortTasksArray"><span class="type-signature">(static) </span>sortTasksArray<span class="signature">(array)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".cloneArray"><span class="type-signature">(static) </span>cloneArray<span class="signature">(array)</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
 
     
@@ -155,13 +155,7 @@
 
 
 <div class="description">
-    <p>Sorts array of tasks by:</p>
-<ul>
-<li>Status (uncompleted then completed).</li>
-<li>Date of last update.</li>
-<li>Lexicographically by description.</li>
-<li>Lexicographically by ID.</li>
-</ul>
+    <p>Deep copies given <code>Array</code> of <code>Task</code>.</p>
 </div>
 
 
@@ -213,7 +207,7 @@
 
             
 
-            <td class="description last"><p>with tasks to sort</p></td>
+            <td class="description last"><p>array to copy</p></td>
         </tr>
 
     
@@ -254,7 +248,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line256">line 256</a>
+        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line286">line 286</a>
     </li></ul></dd>
     
 
@@ -277,6 +271,185 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>arrayCopy copy of given array</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".cloneTask"><span class="type-signature">(static) </span>cloneTask<span class="signature">(objectToClone)</span><span class="type-signature"> &rarr; {<a href="Task.html">Task</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Deep copies given <code>Task</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>objectToClone</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Task.html">Task</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>object to clone</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="todo-list.js.html">todo-list.js</a>, <a href="todo-list.js.html#line310">line 310</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>copy of given <code>Task</code></p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Task.html">Task</a></span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 

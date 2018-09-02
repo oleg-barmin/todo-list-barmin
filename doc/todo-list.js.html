@@ -29,15 +29,18 @@
             <pre class="prettyprint source linenums"><code>"use strict";
 
 /**
- * Tasks to do.
+ * Tasks to-do.
  *
- * Allows to add new tasks, marks them as completed,
- * remove from list and update their contents.
+ * Allows:
+ *  - add new tasks
+ *  - marks them as completed
+ *  - update their descriptions
+ *  - remove from list
  *
  * Task is being sorted by:
  * - Status (uncompleted tasks first, completed last).
  * - Date of last update.
- * - Lexicographically by content.
+ * - Lexicographically by description.
  *
  * Example:
  * ```
@@ -82,23 +85,23 @@ class TodoList {
     /**
      * Adds new task to `TodoList`.
      *
-     * @param {string} taskContent content of the task to add
+     * @param {string} taskDescription description of the task to add
      *
      * @throws EmptyStringException if given task description is not defined or empty
      *
-     * @returns {TaskId} id copy of id of task that was added
+     * @returns {TaskId} id copy of ID of task that was added
      */
-    add(taskContent) {
-        Preconditions.checkStringIsDefinedAndNotEmpty(taskContent, "task content");
+    add(taskDescription) {
+        Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
         const taskId = new TaskId(IdGenerator.generateID());
         const currentDate = new Date();
-        const taskToAdd = new Task(taskId, taskContent, currentDate);
+        const taskToAdd = new Task(taskId, taskDescription, currentDate);
         this._tasksArray.push(taskToAdd);
 
         TaskSorter.sortTasksArray(this._tasksArray);
 
-        return CloneUtils.cloneObject(taskId);
+        return TasksClone.cloneTask(taskId);
     }
 
     /**
@@ -141,16 +144,17 @@ class TodoList {
     }
 
     /**
-     * Finds task by id and updates its content.
+     * Finds task by ID and updates its description.
      *
      * @param {TaskId} taskId ID of the specified task
-     * @param {string} updatedContent new content of the task
+     * @param {string} updatedDescription new description of the task
      *
      * @throws TaskNotFoundException if task with specified ID was not found
+     * @throws CannotUpdateCompletedTaskException if try to updated completed task
      */
-    update(taskId, updatedContent) {
+    update(taskId, updatedDescription) {
         Preconditions.isDefined(taskId, "task ID");
-        Preconditions.checkStringIsDefinedAndNotEmpty(updatedContent, "updated content");
+        Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
 
         const taskToUpdate = this._getTaskById(taskId);
 
@@ -158,14 +162,18 @@ class TodoList {
             throw new TaskNotFoundException(taskId);
         }
 
-        taskToUpdate.content = updatedContent;
+        if(taskToUpdate.completed){
+            throw new CannotUpdateCompletedTaskException(taskId);
+        }
+
+        taskToUpdate.description = updatedDescription;
         taskToUpdate.lastUpdateDate = new Date();
 
         TaskSorter.sortTasksArray(this._tasksArray);
     }
 
     /**
-     * Removes task with given ID from to do list.
+     * Removes task with given ID from to-do list.
      *
      * @param {TaskId} taskId ID of task to delete
      *
@@ -187,12 +195,12 @@ class TodoList {
     }
 
     /**
-     * Returns all tasks stored in to do list.
+     * Returns copy of all tasks stored in to-do list.
      *
      * @returns {Array} tasksArray copy of array with task
      */
     all() {
-        return CloneUtils.cloneArray(this._tasksArray);
+        return TasksClone.cloneArray(this._tasksArray);
     }
 }
 
@@ -212,14 +220,14 @@ class Task {
      * @param {string} description description of the task
      * @param {Date} creationDate date when task was created
      *
-     * @throws ParameterIsNotDefinedException if one of given parameters is not defined
-     * @throws TaskDateException if given date point to future
+     * @throws ParameterIsNotDefinedException if given date is undefined
+     * @throws DatePointsToFutureException if given date point to future
      */
     constructor(id, description, creationDate) {
-        this.id = Preconditions.isDefined(id, "ID");
-        this.description = Preconditions.isDefined(description, "task description");
+        this.id = id;
+        this.description = description;
         this.completed = false;
-        this.creationDate = Preconditions.validateDate(creationDate, "date of creation");
+        this.creationDate = Preconditions.checkDateInPast(creationDate, "date of creation");
         this.lastUpdateDate = creationDate;
     }
 
@@ -240,12 +248,12 @@ class TaskId {
      * @param id ID to store
      */
     constructor(id) {
-        Preconditions.checkStringIsDefinedAndNotEmpty(id, "ID");
+        Preconditions.checkStringNotEmpty(id, "ID");
         this.id = id;
     }
 
     /**
-     * Compares `TaskId` objects by stored id.
+     * Compares `TaskId` objects by stored ID.
      *
      * @param taskId
      * @returns {number}
@@ -268,7 +276,8 @@ class TaskSorter {
      * Sorts array of tasks by:
      * - Status (uncompleted then completed).
      * - Date of last update.
-     * - Lexicographically by content.
+     * - Lexicographically by description.
+     * - Lexicographically by ID.
      *
      * @param {Array} array with tasks to sort
      */
@@ -292,12 +301,12 @@ class TaskSorter {
 }
 
 /**
- * Provides static methods to deep clone Arrays and Objects.
+ * Provides static methods to clone arrays of tasks and single tasks.
  */
-class CloneUtils {
+class TasksClone {
 
     /**
-     * Deep copies given array and all it's elements.
+     * Deep copies given `Array` of `Task`.
      *
      * @param {Array} array array to copy
      * @returns {Array} arrayCopy copy of given array
@@ -311,7 +320,7 @@ class CloneUtils {
         for (let i = 0; i &lt; array.length; i++) {
             let currentElement = array[i];
             if (typeof currentElement === "object") {
-                arrayCopy[i] = CloneUtils.cloneObject(currentElement);
+                arrayCopy[i] = TasksClone.cloneTask(currentElement);
                 continue;
             }
             arrayCopy[i] = currentElement;
@@ -321,12 +330,12 @@ class CloneUtils {
     }
 
     /**
-     * Deep copies given object.
+     * Deep copies given `Task`.
      *
-     * @param {*} objectToClone object to clone
-     * @returns {*} copy of Array
+     * @param {Task} objectToClone object to clone
+     * @returns {Task} copy of given `Task`
      */
-    static cloneObject(objectToClone) {
+    static cloneTask(objectToClone) {
         if (typeof objectToClone !== "object") {
             return objectToClone;
         }
@@ -336,10 +345,10 @@ class CloneUtils {
             let currentProperty = objectToClone[key];
             if (typeof currentProperty === "object") {
                 if (currentProperty instanceof Array) {
-                    objCopy[key] = CloneUtils.cloneArray(currentProperty);
+                    objCopy[key] = TasksClone.cloneArray(currentProperty);
                     continue;
                 }
-                objCopy[key] = CloneUtils.cloneObject(currentProperty);
+                objCopy[key] = TasksClone.cloneTask(currentProperty);
                 continue
             }
             objCopy[key] = currentProperty;
@@ -382,7 +391,7 @@ class Preconditions {
      *
      * @returns {string} string value if given string is not
      */
-    static checkStringIsDefinedAndNotEmpty(stringToCheck, stringName) {
+    static checkStringNotEmpty(stringToCheck, stringName) {
         if (!(stringToCheck &amp;&amp; typeof stringToCheck === "string")) {
             throw new EmptyStringException(stringToCheck, stringName)
         }
@@ -400,14 +409,15 @@ class Preconditions {
      * @param {Date} dateToCheck date to validate
      * @param {string} parameterName name of parameter being checked
      *
-     * @throws TaskDateException if given date points to future
+     * @throws DatePointsToFutureException if given date points to future
+     * @throws ParameterIsNotDefinedException if given date is not defined
      *
      * @returns {Date} date given date if it is valid
      */
-    static validateDate(dateToCheck, parameterName) {
+    static checkDateInPast(dateToCheck, parameterName) {
         Preconditions.isDefined(dateToCheck, parameterName);
         if ((new Date() - dateToCheck) &lt; 0) {
-            throw new TaskDateException(dateToCheck)
+            throw new DatePointsToFutureException(dateToCheck)
         }
         return dateToCheck;
     }
@@ -432,7 +442,7 @@ class IdGenerator {
 }
 
 /**
- * Custom error type which indicates that a null or undefined argument was found while it wasn't expected.
+ * Indicates that a null or undefined argument was found while it wasn't expected.
  *
  * @extends Error
  */
@@ -451,7 +461,7 @@ class ParameterIsNotDefinedException extends Error {
 }
 
 /**
- * Custom error type which indicates that given task description is undefined, null or empty.
+ * Indicates that given task description is undefined, null or empty.
  */
 class EmptyStringException extends Error {
 
@@ -468,7 +478,7 @@ class EmptyStringException extends Error {
 }
 
 /**
- * Custom error type which indicates that task was not found.
+ * Indicates that task was not found.
  *
  * @extends Error
  */
@@ -487,7 +497,7 @@ class TaskNotFoundException extends Error {
 
 
 /**
- * Custom error type which indicates that task was already completed.
+ * Indicates that task was already completed.
  *
  * @extends Error
  */
@@ -505,19 +515,37 @@ class TaskAlreadyCompletedException extends Error {
 }
 
 /**
- * Custom error type which indicates that date that was given to date point to future.
+ * Indicates that date that was given to date point to future.
  *
  * @extends Error
  */
-class TaskDateException extends Error {
+class DatePointsToFutureException extends Error {
 
     /**
-     * Crates `TaskDateException` instance.
+     * Crates `DatePointsToFutureException` instance.
      *
-     * @param {Date} date ID of task which was already completed.
+     * @param {Date} date date which point to future.
      */
     constructor(date) {
         super(`Given date '${date}' points to future.`);
+        this.name = this.constructor.name;
+    }
+}
+
+/**
+ * Occurs when trying to update completed task.
+ *
+ * @extends Error
+ */
+class CannotUpdateCompletedTaskException extends Error {
+
+    /**
+     * Crates `CannotUpdateCompletedTaskException` instance.
+     *
+     * @param {TaskId} taskId ID of task which was already completed before update attempt.
+     */
+    constructor(taskId) {
+        super(`Completed tasks cannot be updated. Task with ID: ${taskId} is completed.`);
         this.name = this.constructor.name;
     }
 }
@@ -537,13 +565,13 @@ if (typeof module !== 'undefined' &amp;&amp; module.exports) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CloneUtils.html">CloneUtils</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="IdGenerator.html">IdGenerator</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskDateException.html">TaskDateException</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TodoList.html">TodoList</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="IdGenerator.html">IdGenerator</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TodoList.html">TodoList</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Aug 31 2018 15:35:13 GMT+0300 (Eastern European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 02 2018 21:41:39 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

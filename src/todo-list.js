@@ -73,7 +73,7 @@ class TodoList {
 
         TaskSorter.sortTasksArray(this._tasksArray);
 
-        return CloneUtils.cloneObject(taskId);
+        return TasksClone.cloneTask(taskId);
     }
 
     /**
@@ -172,7 +172,7 @@ class TodoList {
      * @returns {Array} tasksArray copy of array with task
      */
     all() {
-        return CloneUtils.cloneArray(this._tasksArray);
+        return TasksClone.cloneArray(this._tasksArray);
     }
 }
 
@@ -194,7 +194,6 @@ class Task {
      *
      * @throws ParameterIsNotDefinedException if given date is undefined
      * @throws DatePointsToFutureException if given date point to future
-     * @throws
      */
     constructor(id, description, creationDate) {
         this.id = id;
@@ -242,7 +241,6 @@ class TaskId {
 
 /**
  * Stores algorithm to sort an array of  `Task`.
- *
  */
 class TaskSorter {
 
@@ -275,12 +273,12 @@ class TaskSorter {
 }
 
 /**
- * Provides static methods to deep clone `Array` and `Object`.
+ * Provides static methods to clone arrays of tasks and single tasks.
  */
-class CloneUtils {
+class TasksClone {
 
     /**
-     * Deep copies given `Array` and all it's elements.
+     * Deep copies given `Array` of `Task`.
      *
      * @param {Array} array array to copy
      * @returns {Array} arrayCopy copy of given array
@@ -294,7 +292,7 @@ class CloneUtils {
         for (let i = 0; i < array.length; i++) {
             let currentElement = array[i];
             if (typeof currentElement === "object") {
-                arrayCopy[i] = CloneUtils.cloneObject(currentElement);
+                arrayCopy[i] = TasksClone.cloneTask(currentElement);
                 continue;
             }
             arrayCopy[i] = currentElement;
@@ -304,12 +302,12 @@ class CloneUtils {
     }
 
     /**
-     * Deep copies given `Object`.
+     * Deep copies given `Task`.
      *
-     * @param {*} objectToClone object to clone
-     * @returns {*} copy of Array
+     * @param {Task} objectToClone object to clone
+     * @returns {Task} copy of given `Task`
      */
-    static cloneObject(objectToClone) {
+    static cloneTask(objectToClone) {
         if (typeof objectToClone !== "object") {
             return objectToClone;
         }
@@ -319,10 +317,10 @@ class CloneUtils {
             let currentProperty = objectToClone[key];
             if (typeof currentProperty === "object") {
                 if (currentProperty instanceof Array) {
-                    objCopy[key] = CloneUtils.cloneArray(currentProperty);
+                    objCopy[key] = TasksClone.cloneArray(currentProperty);
                     continue;
                 }
-                objCopy[key] = CloneUtils.cloneObject(currentProperty);
+                objCopy[key] = TasksClone.cloneTask(currentProperty);
                 continue
             }
             objCopy[key] = currentProperty;
