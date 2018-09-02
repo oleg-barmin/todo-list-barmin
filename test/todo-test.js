@@ -1,19 +1,19 @@
-import "../src/todo-list"
 import {
     TodoList,
     Task,
-    IdGenerator,
     TaskId,
-    Preconditions,
-    TaskSorter,
     TasksClone,
-    CannotUpdateCompletedTaskException,
+    TaskSorter,
+    IdGenerator,
+    Preconditions,
     EmptyStringException,
-    ParameterIsNotDefinedException,
+    TaskNotFoundException,
     DatePointsToFutureException,
     TaskAlreadyCompletedException,
-    TaskNotFoundException
-} from "../src/todo-list";
+    ParameterIsNotDefinedException,
+    CannotUpdateCompletedTaskException
+} from "../src/todo-list-module";
+
 
 QUnit.module("Preconditions should");
 QUnit.test("throw ", assert => {
@@ -167,7 +167,7 @@ QUnit.test("return cloned ", assert => {
         innerObject: innerObject
     };
 
-    let clonedObject = TasksClone.cloneTask(objectToCopy);
+    let clonedObject = TasksClone.cloneObject(objectToCopy);
     assert.deepEqual(objectToCopy, clonedObject, "object with same properties.");
     objectToCopy.prop1 = "new";
     objectToCopy.innerObject.one = "modified";
@@ -190,7 +190,7 @@ QUnit.test("add ", assert => {
     let firstTaskID = todoList.add(firstTaskDescription);
     let firstTask = todoList._getTaskById(firstTaskID);
 
-    assert.equal(firstTask.description, firstTaskDescription, "task by description.");
+    assert.strictEqual(firstTask.description, firstTaskDescription, "task by description.");
 
     todoList = new TodoList();
     firstTaskDescription = "first task";
@@ -241,7 +241,7 @@ QUnit.test("update ", assert => {
     const newSecondTaskDescription = "new second task description";
     todoList.update(secondTaskID, newSecondTaskDescription);
 
-    assert.equal(
+    assert.strictEqual(
         secondTask.description,
         newSecondTaskDescription,
         "task list by ID."

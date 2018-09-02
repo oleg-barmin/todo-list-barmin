@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: lib/idGenerator.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,34 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: lib/idGenerator.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Generates uuid v4 ID strings.
+ */
+export class IdGenerator {
 
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+    /**
+     * Generates uuid v4 IDs.
+     *
+     * @returns {string} ID generated uuid v4 ID.
+     */
+    static generateID() {
+        if (typeof(require) !== 'undefined') {
+            return require('uuid/v4')();
+        }
+        return uuidv4();
+    }
+}</code></pre>
+        </article>
+    </section>
 
 
 
