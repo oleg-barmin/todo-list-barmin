@@ -164,24 +164,24 @@ QUnit.module("TodoList should ");
 QUnit.test("add ", assert => {
     let todoList = new TodoList();
 
-    let firstTaskContent = "first task";
-    let firstTaskID = todoList.add(firstTaskContent);
+    let firstTaskDescription = "first task";
+    let firstTaskID = todoList.add(firstTaskDescription);
     let firstTask = todoList._getTaskById(firstTaskID);
 
-    assert.equal(firstTask.description, firstTaskContent, "task by content.");
+    assert.equal(firstTask.description, firstTaskDescription, "task by description.");
 
     todoList = new TodoList();
-    firstTaskContent = "first task";
-    firstTaskID = todoList.add(firstTaskContent);
+    firstTaskDescription = "first task";
+    firstTaskID = todoList.add(firstTaskDescription);
     firstTask = todoList._getTaskById(firstTaskID);
 
-    const secondTaskContent = "second task";
-    const secondTaskID = todoList.add(secondTaskContent);
+    const secondTaskDescription = "second task";
+    const secondTaskID = todoList.add(secondTaskDescription);
     const secondTask = todoList._getTaskById(secondTaskID);
 
     assert.ok(
-        firstTask.description === firstTaskContent
-        && secondTask.description === secondTaskContent
+        firstTask.description === firstTaskDescription
+        && secondTask.description === secondTaskDescription
         && todoList._tasksArray.length === 2,
         " multiple tasks by ID."
     );
@@ -190,11 +190,11 @@ QUnit.test("add ", assert => {
 QUnit.test("remove ", assert => {
     const todoList = new TodoList();
 
-    const firstTaskContent = "first task";
-    const firstTaskID = todoList.add(firstTaskContent);
+    const firstTaskDescription = "first task";
+    const firstTaskID = todoList.add(firstTaskDescription);
 
-    const secondTaskContent = "second task";
-    const secondTaskID = todoList.add(secondTaskContent);
+    const secondTaskDescription = "second task";
+    const secondTaskID = todoList.add(secondTaskDescription);
 
     todoList.remove(firstTaskID);
 
@@ -208,20 +208,20 @@ QUnit.test("remove ", assert => {
 QUnit.test("update ", assert => {
     const todoList = new TodoList();
 
-    const firstTaskContent = "first task";
-    const firstTaskID = todoList.add(firstTaskContent);
+    const firstTaskDescription = "first task";
+    const firstTaskID = todoList.add(firstTaskDescription);
     todoList._getTaskById(firstTaskID);
 
-    const secondTaskContent = "second task";
-    const secondTaskID = todoList.add(secondTaskContent);
+    const secondTaskDescription = "second task";
+    const secondTaskID = todoList.add(secondTaskDescription);
     const secondTask = todoList._getTaskById(secondTaskID);
 
-    const newSecondTaskContent = "new second task content";
-    todoList.update(secondTaskID, newSecondTaskContent);
+    const newSecondTaskDescription = "new second task description";
+    todoList.update(secondTaskID, newSecondTaskDescription);
 
     assert.equal(
-        secondTask.content,
-        newSecondTaskContent,
+        secondTask.description,
+        newSecondTaskDescription,
         "task list by ID."
     );
 });
@@ -335,14 +335,14 @@ QUnit.test("throw ", assert => {
 
     assert.throws(
         () => todoList.add(undefined),
-        new EmptyStringException(undefined, "task content"),
-        "EmptyStringException if add task with undefined content."
+        new EmptyStringException(undefined, "task description"),
+        "EmptyStringException if add task with undefined description."
     );
 
     assert.throws(
         () => todoList.add(""),
-        new EmptyStringException("", "task content"),
-        "EmptyStringException if add task with empty content."
+        new EmptyStringException("", "task description"),
+        "EmptyStringException if add task with empty description."
     );
 
     assert.throws(
@@ -370,38 +370,38 @@ QUnit.test("throw ", assert => {
     );
 
     assert.throws(
-        () => todoList.update(thirdTaskId, "new content"),
+        () => todoList.update(thirdTaskId, "new description"),
         new CannotUpdateCompletedTaskException(thirdTaskId),
         "CannotUpdateCompletedTaskException if try to update completed task."
     );
 
     assert.throws(
-        () => todoList.update(undefined, "content"),
+        () => todoList.update(undefined, "description"),
         new ParameterIsNotDefinedException(undefined, "task ID"),
         "ParameterIsNotDefinedException if update first argument is undefined."
     );
 
     assert.throws(
-        () => todoList.update("", "content"),
+        () => todoList.update("", "description"),
         new ParameterIsNotDefinedException("", "task ID"),
         "ParameterIsNotDefinedException if update first argument is empty string."
     );
 
     assert.throws(
-        () => todoList.update(new TaskId("123"), "content"),
+        () => todoList.update(new TaskId("123"), "description"),
         new TaskNotFoundException(new TaskId("123")),
         "TaskNotFoundException if update first argument is non-existing ID."
     );
 
     assert.throws(
         () => todoList.update(taskId, undefined),
-        new EmptyStringException(undefined, "updated content"),
+        new EmptyStringException(undefined, "updated description"),
         "EmptyStringException if update second argument is undefined."
     );
 
     assert.throws(
         () => todoList.update(taskId, ""),
-        new EmptyStringException("", "updated content"),
+        new EmptyStringException("", "updated description"),
         "EmptyStringException if update second argument is empty string."
     );
 

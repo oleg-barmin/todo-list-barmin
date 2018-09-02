@@ -1,15 +1,15 @@
 "use strict";
 
 /**
- * Tasks to do.
+ * Tasks to-do.
  *
  * Allows to add new tasks, marks them as completed,
- * remove from list and update their contents.
+ * remove from list and update their descriptions.
  *
  * Task is being sorted by:
  * - Status (uncompleted tasks first, completed last).
  * - Date of last update.
- * - Lexicographically by content.
+ * - Lexicographically by description.
  *
  * Example:
  * ```
@@ -54,18 +54,18 @@ class TodoList {
     /**
      * Adds new task to `TodoList`.
      *
-     * @param {string} taskContent content of the task to add
+     * @param {string} taskDescription description of the task to add
      *
      * @throws EmptyStringException if given task description is not defined or empty
      *
-     * @returns {TaskId} id copy of id of task that was added
+     * @returns {TaskId} id copy of ID of task that was added
      */
-    add(taskContent) {
-        Preconditions.checkStringNotEmpty(taskContent, "task content");
+    add(taskDescription) {
+        Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
         const taskId = new TaskId(IdGenerator.generateID());
         const currentDate = new Date();
-        const taskToAdd = new Task(taskId, taskContent, currentDate);
+        const taskToAdd = new Task(taskId, taskDescription, currentDate);
         this._tasksArray.push(taskToAdd);
 
         TaskSorter.sortTasksArray(this._tasksArray);
@@ -113,16 +113,17 @@ class TodoList {
     }
 
     /**
-     * Finds task by id and updates its content.
+     * Finds task by ID and updates its description.
      *
      * @param {TaskId} taskId ID of the specified task
-     * @param {string} updatedContent new content of the task
+     * @param {string} updatedDescription new description of the task
      *
      * @throws TaskNotFoundException if task with specified ID was not found
+     * @throws CannotUpdateCompletedTaskException if try to updated completed task
      */
-    update(taskId, updatedContent) {
+    update(taskId, updatedDescription) {
         Preconditions.isDefined(taskId, "task ID");
-        Preconditions.checkStringNotEmpty(updatedContent, "updated content");
+        Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
 
         const taskToUpdate = this._getTaskById(taskId);
 
@@ -134,14 +135,14 @@ class TodoList {
             throw new CannotUpdateCompletedTaskException(taskId);
         }
 
-        taskToUpdate.content = updatedContent;
+        taskToUpdate.description = updatedDescription;
         taskToUpdate.lastUpdateDate = new Date();
 
         TaskSorter.sortTasksArray(this._tasksArray);
     }
 
     /**
-     * Removes task with given ID from to do list.
+     * Removes task with given ID from to-do list.
      *
      * @param {TaskId} taskId ID of task to delete
      *
@@ -163,7 +164,7 @@ class TodoList {
     }
 
     /**
-     * Returns all tasks stored in to do list.
+     * Returns all tasks stored in to-do list.
      *
      * @returns {Array} tasksArray copy of array with task
      */
@@ -188,7 +189,7 @@ class Task {
      * @param {string} description description of the task
      * @param {Date} creationDate date when task was created
      *
-     * @throws ParameterIsNotDefinedException if one of given parameters is not defined
+     * @throws ParameterIsNotDefinedException if given date is undefined
      * @throws DatePointsToFutureException if given date point to future
      * @throws
      */
@@ -222,7 +223,7 @@ class TaskId {
     }
 
     /**
-     * Compares `TaskId` objects by stored id.
+     * Compares `TaskId` objects by stored ID.
      *
      * @param taskId
      * @returns {number}
@@ -245,7 +246,7 @@ class TaskSorter {
      * Sorts array of tasks by:
      * - Status (uncompleted then completed).
      * - Date of last update.
-     * - Lexicographically by content.
+     * - Lexicographically by description.
      *
      * @param {Array} array with tasks to sort
      */
@@ -378,6 +379,7 @@ class Preconditions {
      * @param {string} parameterName name of parameter being checked
      *
      * @throws DatePointsToFutureException if given date points to future
+     * @throws ParameterIsNotDefinedException if given date is not defined
      *
      * @returns {Date} date given date if it is valid
      */
@@ -512,7 +514,7 @@ class CannotUpdateCompletedTaskException extends Error {
      * @param {TaskId} taskId ID of task which was already completed before update attempt.
      */
     constructor(taskId) {
-        super(`Completed tasks cannot be updated. Task with id: ${taskId} is completed.`);
+        super(`Completed tasks cannot be updated. Task with ID: ${taskId} is completed.`);
         this.name = this.constructor.name;
     }
 }
