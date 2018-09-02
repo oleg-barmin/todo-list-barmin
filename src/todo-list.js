@@ -134,7 +134,7 @@ class TodoList {
             throw new TaskNotFoundException(taskId);
         }
 
-        if(taskToUpdate.completed){
+        if (taskToUpdate.completed) {
             throw new CannotUpdateCompletedTaskException(taskId);
         }
 

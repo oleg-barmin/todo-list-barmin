@@ -131,9 +131,9 @@ QUnit.test("generate ", assert => {
     let set = new Set();
 
     let hasDuplicate = false;
-    for(let i = 0; i<1000; i++){
+    for (let i = 0; i < 1000; i++) {
         let id = IdGenerator.generateID();
-        if(set.has(id)){
+        if (set.has(id)) {
             hasDuplicate = true;
             break;
         }
@@ -143,20 +143,28 @@ QUnit.test("generate ", assert => {
 });
 
 QUnit.module("TasksClone should");
-QUnit.test("clone ", assert => {
+QUnit.test("return cloned ", assert => {
+    let innerObject = {
+        one: "one",
+        two: "two"
+    };
     let objectToCopy = {
-        prop1 : "old",
+        stringProperty: "old",
+        innerObject: innerObject
     };
 
     let clonedObject = TasksClone.cloneTask(objectToCopy);
+    assert.deepEqual(objectToCopy, clonedObject, "object with same properties.");
     objectToCopy.prop1 = "new";
-    assert.notDeepEqual(objectToCopy, clonedObject, "object.");
+    objectToCopy.innerObject.one = "modified";
+    assert.notDeepEqual(objectToCopy, clonedObject, "object with same properties but with a different reference.");
 
-    let arrayToCopy = [1,2,3,4];
+    let arrayToCopy = [1, 2, 3, 4];
     let clonedArray = TasksClone.cloneArray(arrayToCopy);
-    arrayToCopy[0] = 10;
 
-    assert.notDeepEqual(arrayToCopy, clonedArray, "arrays.")
+    assert.deepEqual(arrayToCopy, clonedArray, "array with same elements.");
+    arrayToCopy[0] = 10;
+    assert.notDeepEqual(arrayToCopy, clonedArray, "array with same elements but with a different references.");
 
 });
 
