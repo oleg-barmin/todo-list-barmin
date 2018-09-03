@@ -1,6 +1,6 @@
 "use strict";
 
-import {Preconditions} from "../lib/preconditions";
+import {Preconditions} from "../lib/preconditions.js";
 
 /**
  * Task to do.

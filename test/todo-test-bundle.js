@@ -86,6 +86,9 @@
             super(`Parameter '${parameterName}' should be not null and not undefined, Actual value: '${value}'`);
             this.name = this.constructor.name;
         }
+
+        code() {
+        }
     }
 
     /**

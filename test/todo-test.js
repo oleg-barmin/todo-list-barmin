@@ -1,18 +1,8 @@
-import {
-    TodoList,
-    Task,
-    TaskId,
-    TasksClone,
-    TaskSorter,
-    IdGenerator,
-    Preconditions,
-    EmptyStringException,
-    TaskNotFoundException,
-    DatePointsToFutureException,
-    TaskAlreadyCompletedException,
-    ParameterIsNotDefinedException,
-    CannotUpdateCompletedTaskException
-} from "../src/todo-list-module";
+import {TodoList, TaskSorter, TaskAlreadyCompletedException, CannotUpdateCompletedTaskException, TaskNotFoundException} from "../src/model/todo-list.js";
+import {Task, TaskId} from "../src/model/task";
+import {IdGenerator} from "../src/lib/idGenerator";
+import {TasksClone} from "../src/lib/todolists";
+import {Preconditions, ParameterIsNotDefinedException, DatePointsToFutureException, EmptyStringException} from "../src/lib/preconditions";
 
 
 QUnit.module("Preconditions should");
