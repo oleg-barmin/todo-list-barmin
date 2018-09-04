@@ -4,51 +4,72 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap 101 Template</title>
+    <title>To-Do List</title>
+
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/octicons/3.5.0/octicons.min.css">
 </head>
 <body>
 <div class="container">
-
-    <div class="row">
-        <h1>To-Do List</h1>
-    </div>
-
-    <div class="row">
-        <h4>Write down your tasks...</h4>
-    </div>
-
-
-    <div class="row">
-        <form class="form-inline col-12">
-            <div class="col-5">
-                <label>
-                    <textarea class="form-control w-100"></textarea>
-                </label>
-            </div>
-            <div class="col-1">
-                <button type="submit" class="form-control btn btn-primary">Add</button>
-            </div>
-            <div class="alert-danger m-2 col-6 border-1">
-                some error
-            </div>
-        </form>
-    </div>
-
-    <h3 class="row mt-3 mb-3">Your tasks:</h3>
-
-    <div class="row">
-        <div class="col-6 pl-0">
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <span class="pull-left mr-2">
-                        <b>1.</b>
-                    </span>
-                    task 1.
-                </li>
-            </ul>
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto">
+            <h1>To-Do</h1>
         </div>
     </div>
 
+    <div class="row justify-content-md-center no-gutters">
+        <div class="col">
+            <textarea class="form-control w-100"></textarea>
+        </div>
+        <div class="col col-1 align-self-end text-right">
+            <button class="btn btn-default btn-primary w-100">add</button>
+        </div>
+        <div class="w-100"></div>
+        <div class="col">
+            <label class="w-100 alert-danger">Exception msg</label>
+        </div>
+    </div>
+
+    <div id="tasks">
+        <div class="row no-gutters border border-light mt-2">
+            <input type="hidden" name="id" value="42179813496196">
+            <div class="col-md-auto pr-2">1.</div>
+            <div class="col-10">Tasks text....</div>
+            <div class="col text-right">
+                <button class="btn btn-light octicon octicon-check"></button>
+            </div>
+            <div class="col-md-auto text-right">
+                <button class="btn btn-light octicon octicon-trashcan"></button>
+            </div>
+        </div>
+        <div class="row no-gutters border border-light mt-2">
+            <input type="hidden" name="id" value="42179813496196">
+            <div class="col-md-auto pr-2">2.</div>
+            <div class="col-10">The "to do" collaboration mechanism has the following advantages:
+
+                the list of tasks is permanently visible in the talk page of the article, i.e. where most editors will see it.
+                articles with To-dos are automatically listed in the list of articles with To dos, so that additional editors
+                unaware of the article are also attracted to it. More specialized sub-categories can be defined for specific purposes</div>
+            <div class="col text-right">
+                <button class="btn btn-light octicon octicon-check"></button>
+            </div>
+            <div class="col-md-auto text-right">
+                <button class="btn btn-light octicon octicon-trashcan"></button>
+            </div>
+        </div>
+        <div class="row no-gutters border border-light mt-2">
+            <input type="hidden" name="id" value="42179813496196">
+            <div class="col-md-auto pr-2">3.</div>
+            <div class="col-10">Second tasks text....</div>
+            <div class="col text-right">
+                <button class="btn btn-light octicon octicon-check"></button>
+            </div>
+            <div class="col-md-auto text-right">
+                <button class="btn btn-light octicon octicon-trashcan"></button>
+            </div>
+        </div>
+
+    </div>
+</div>
 </div>
 </body>
