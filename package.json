@@ -9,7 +9,7 @@
   "scripts": {
     "test": "qunit test/todo-test-bundle.js",
     "doc": "jsdoc src -r -d doc -c jsdoc.config.json",
-    "rollup": "rollup test/todo-test.js --format umd --file test/todo-test-bundle.js"
+    "rollupTest": "rollup -c rollup.test.config.js"
   },
   "author": "barmin",
   "license": "ISC",
