@@ -1,7 +1,7 @@
-import {Preconditions, EmptyStringException} from "../lib/preconditions";
-import {Task, TaskId} from "./task";
-import {IdGenerator} from "../lib/idGenerator";
-import {TasksClone} from "../lib/todolists";
+import {Preconditions, EmptyStringException} from "../lib/preconditions.js";
+import {Task, TaskId} from "./task.js";
+import {IdGenerator} from "../lib/idGenerator.js";
+import {TasksClone} from "../lib/todolists.js";
 
 /**
  * Tasks to-do.
