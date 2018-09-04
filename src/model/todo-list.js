@@ -1,6 +1,6 @@
 import {Preconditions, EmptyStringException} from "../lib/preconditions.js";
-import {Task, TaskId} from "./task.js";
-import {IdGenerator} from "../lib/idGenerator.js";
+import {Task} from "./task.js";
+import {TaskIdGenerator} from "../lib/taskIdGenerator.js";
 import {TasksClone} from "../lib/todolists.js";
 
 /**
@@ -69,7 +69,7 @@ export class TodoList {
     add(taskDescription) {
         Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
-        const taskId = new TaskId(IdGenerator.generateID());
+        const taskId = TaskIdGenerator.generateID();
         const currentDate = new Date();
         const taskToAdd = new Task(taskId, taskDescription, currentDate);
         this._tasksArray.push(taskToAdd);

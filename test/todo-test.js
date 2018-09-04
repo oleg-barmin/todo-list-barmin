@@ -1,6 +1,7 @@
 import {TodoList, TaskSorter, TaskAlreadyCompletedException, CannotUpdateCompletedTaskException, TaskNotFoundException} from "../src/model/todo-list.js";
-import {Task, TaskId} from "../src/model/task";
-import {IdGenerator} from "../src/lib/idGenerator";
+import {Task} from "../src/model/task";
+import {TaskId} from "../src/lib/identifiers";
+import {TaskIdGenerator} from "../src/lib/taskIdGenerator";
 import {TasksClone} from "../src/lib/todolists";
 import {Preconditions, ParameterIsNotDefinedException, DatePointsToFutureException, EmptyStringException} from "../src/lib/preconditions";
 
@@ -130,13 +131,13 @@ QUnit.test("sort ", assert => {
     );
 });
 
-QUnit.module("IdGenerator should");
+QUnit.module("TaskIdGenerator should");
 QUnit.test("generate ", assert => {
     let set = new Set();
 
     let hasDuplicate = false;
     for (let i = 0; i < 1000; i++) {
-        let id = IdGenerator.generateID();
+        let id = TaskIdGenerator.generateID();
         if (set.has(id)) {
             hasDuplicate = true;
             break;
