@@ -1,5 +1,7 @@
 import {Application} from "./todo-list-app";
 
 $(function () {
-    new Application($(".todoList")[0]).start()
+    let todoLists = $(".todoList");
+    new Application($(todoLists[0])).start();
+    new Application($(todoLists[1])).start();
 });

@@ -3,13 +3,13 @@ import {AddTaskRequestEvent} from "../event/addTaskRequestEvent";
 import {EventTypeEnum} from "../event/event";
 
 export class AddTaskFormComponent extends TodoComponent {
-    constructor(selector, eventBus) {
-        super(selector, eventBus);
+    constructor(element, eventBus) {
+        super(element, eventBus);
 
     }
 
     render() {
-        let container = $(this.selector);
+        let container = this.element;
         container.empty();
         const descriptionTextAreaClass = "descriptionTextArea";
         const addTaskBtnClass = "addTaskBtn";

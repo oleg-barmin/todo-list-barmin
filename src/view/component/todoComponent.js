@@ -1,6 +1,6 @@
 export class TodoComponent {
-    constructor(selector, eventBus){
-        this.selector = selector;
+    constructor(element, eventBus){
+        this.element = element;
         this.eventBus = eventBus;
     }
 

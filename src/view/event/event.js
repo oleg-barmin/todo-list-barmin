@@ -7,8 +7,8 @@ export class Event {
 
 export class EventBus {
 
-    constructor(selector) {
-        this._transport = $(selector);
+    constructor(transport) {
+        this._transport = transport;
     }
 
     post(event) {

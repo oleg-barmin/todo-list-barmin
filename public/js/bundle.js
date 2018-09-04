@@ -10,8 +10,8 @@
 
     class EventBus {
 
-        constructor(selector) {
-            this._transport = $(selector);
+        constructor(transport) {
+            this._transport = transport;
         }
 
         post(event) {
@@ -40,8 +40,8 @@
     };
 
     class TodoComponent {
-        constructor(selector, eventBus){
-            this.selector = selector;
+        constructor(element, eventBus){
+            this.element = element;
             this.eventBus = eventBus;
         }
 
@@ -55,13 +55,13 @@
     }
 
     class AddTaskFormComponent extends TodoComponent {
-        constructor(selector, eventBus) {
-            super(selector, eventBus);
+        constructor(element, eventBus) {
+            super(element, eventBus);
 
         }
 
         render() {
-            let container = $(this.selector);
+            let container = this.element;
             container.empty();
             const descriptionTextAreaClass = "descriptionTextArea";
             const addTaskBtnClass = "addTaskBtn";
@@ -644,41 +644,52 @@
     }
 
     class TaskView extends TodoComponent {
-        constructor(selector, eventBus, number, task) {
-            super(selector, eventBus);
+        constructor(element, eventBus, number, task) {
+            super(element, eventBus);
             this.eventBus = eventBus;
             this.task = task;
             this.number = number;
         }
 
+        static htmlEncode(div, value) {
+            // return div.text(value).html()
+            return value;
+        }
+
         render() {
             const task = this.task;
             const number = this.number;
-            const taskComponent = $(this.selector);
+            const taskComponent = this.element;
+            const trashButtonClass = "trashButton";
+
+
+            const encodedDescription = TaskView.htmlEncode(undefined,task.description);
+            console.log(encodedDescription);
             taskComponent.append(
                 `<div class="row no-gutters border border-light mt-2">
                 <input type="hidden" name="taskId" value="${task.id}">
                 <div class="col-md-auto pr-2">${number}.</div>
-                <div class="col-10">${task.description}</div>
+                <div class="col-10 taskDescriptionDiv" style="white-space: pre-wrap;">${encodedDescription}</div>
                 <div class="col text-right">
                     <button class="btn btn-light octicon octicon-check"></button>
                 </div>
                 <div class="col-md-auto text-right">
-                    <button class="btn btn-light octicon octicon-trashcan"></button>
+                    <button class="${trashButtonClass} btn btn-light octicon octicon-trashcan"></button>
                 </div>
             </div>`
             );
-
+            this.element.find(".taskDescriptionDiv");
         }
+
     }
 
     class TodoWidgetComponent extends TodoComponent {
-        constructor(selector, eventBus) {
-            super(selector, eventBus);
+        constructor(element, eventBus) {
+            super(element, eventBus);
         }
 
         render() {
-            const todoWidgetDiv = $(this.selector);
+            const todoWidgetDiv = this.element;
             const self = this;
 
             todoWidgetDiv.empty();
@@ -687,7 +698,8 @@
                 let number = 1;
                 todoWidgetDiv.empty();
                 for (let curTask of event.data) {
-                    new TaskView(self.selector, self.eventBus, number, curTask).render();
+                    // self.element.append(`<div class="taskContainer row no-gutters border border-light mt-2"></div>`);
+                    new TaskView(self.element, self.eventBus, number, curTask).render();
                     number += 1;
                 }
             });
@@ -697,16 +709,29 @@
     }
 
     class Application {
-        constructor(rootSelector) {
-            this.root = rootSelector;
-            this.eventBus = new EventBus(".eventBus");
-            this.controller = new Controller(this.eventBus);
+        constructor(root) {
+            this.root = root;
+
         }
 
         start() {
-            let addForm = $(this.root).find(".addTaskForm");
-            let addTaskForm = new AddTaskFormComponent(addForm, this.eventBus);
-            let taskView = new TodoWidgetComponent(".todoWidget", this.eventBus);
+            this.root.append("<div class='container'></div>");
+            let container = $(this.root.find(".container")[0]);
+
+            container.append(`<div hidden class="eventBus"></div>
+        <div class="row justify-content-md-center">
+            <div class="col-md-auto">
+                <h1>To-Do</h1>
+            </div>
+        </div>
+        <div class="addTaskForm row justify-content-md-center no-gutters"></div>
+        <div class="todoWidget"></div>`);
+
+            this.eventBus = new EventBus(container.find(".eventBus"));
+            this.controller = new Controller(this.eventBus);
+
+            let addTaskForm = new AddTaskFormComponent(container.find(".addTaskForm"), this.eventBus);
+            let taskView = new TodoWidgetComponent(container.find(".todoWidget"), this.eventBus);
 
             addTaskForm.render();
             taskView.render();
@@ -715,7 +740,9 @@
     }
 
     $(function () {
-        new Application($(".todoList")[0]).start();
+        let todoLists = $(".todoList");
+        new Application($(todoLists[0])).start();
+        new Application($(todoLists[1])).start();
     });
 
 }());
