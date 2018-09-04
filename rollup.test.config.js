@@ -4,7 +4,4 @@ export default {
         file: 'test/todo-test-bundle.js',
         format: 'umd',
     },
-    globals:{
-      'jquery': 'JQuery'
-    }
 };
