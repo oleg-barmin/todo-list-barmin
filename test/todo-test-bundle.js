@@ -191,20 +191,23 @@
     }
 
     /**
-     * Generates uuid v4 ID strings.
+     * Generates unique TaskId for `Task`.
+     *
+     * Current implementation based on uuid v4.
      */
-    class IdGenerator {
+    class TaskIdGenerator {
 
         /**
-         * Generates uuid v4 IDs.
+         * Generates unique TaskID.
          *
-         * @returns {string} ID generated uuid v4 ID.
+         * @returns {TaskId} ID generated TaskID.
          */
         static generateID() {
             if (typeof(require) !== 'undefined') {
                 return require('uuid/v4')();
             }
-            return uuidv4();
+            const rawId = uuidv4();
+            return new TaskId(rawId);
         }
     }
 
@@ -332,7 +335,7 @@
         add(taskDescription) {
             Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
-            const taskId = new TaskId(IdGenerator.generateID());
+            const taskId = TaskIdGenerator.generateID();
             const currentDate = new Date();
             const taskToAdd = new Task(taskId, taskDescription, currentDate);
             this._tasksArray.push(taskToAdd);
@@ -655,13 +658,13 @@
         );
     });
 
-    QUnit.module("IdGenerator should");
+    QUnit.module("TaskIdGenerator should");
     QUnit.test("generate ", assert => {
         let set = new Set();
 
         let hasDuplicate = false;
         for (let i = 0; i < 1000; i++) {
-            let id = IdGenerator.generateID();
+            let id = TaskIdGenerator.generateID();
             if (set.has(id)) {
                 hasDuplicate = true;
                 break;
