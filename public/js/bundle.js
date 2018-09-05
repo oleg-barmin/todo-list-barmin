@@ -651,11 +651,6 @@
             this.number = number;
         }
 
-        static htmlEncode(div, value) {
-            // return div.text(value).html()
-            return value;
-        }
-
         render() {
             const task = this.task;
             const number = this.number;
@@ -742,7 +737,6 @@
     $(function () {
         let todoLists = $(".todoList");
         new Application($(todoLists[0])).start();
-        new Application($(todoLists[1])).start();
     });
 
 }());

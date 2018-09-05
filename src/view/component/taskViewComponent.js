@@ -8,11 +8,6 @@ export class TaskView extends TodoComponent {
         this.number = number;
     }
 
-    static htmlEncode(div, value) {
-        // return div.text(value).html()
-        return value;
-    }
-
     render() {
         const task = this.task;
         const number = this.number;
