@@ -15,10 +15,10 @@ export class Event {
 }
 
 /**
- * Allows to posts {@link Event} and subscribe on `EventType` to other classes can provide custom callbacks.
+ * Allows to posts {@link Event} and subscribe on `EventType` to process custom callbacks.
  *
  * When `Event` was posted all callbacks for `EventType` of occurred `Event` will be performed.
- * For `EventBus` work transport JQuery object should be provided.
+ * For `EventBus` work properly transport JQuery object should be provided.
  *
  * Example:
  * ```

@@ -1,18 +1,32 @@
 import {TodoComponent} from "./todoComponent";
 import {AddTaskRequestEvent} from "../event/addTaskRequestEvent";
-import {EventTypeEnum} from "../event/event";
+import {EventTypeEnumeration} from "../event/event";
 
+
+/**
+ * Component which responsible for rendering and processing of add task form.
+ */
 export class AddTaskFormComponent extends TodoComponent {
+
+    /**
+     * Creates `AddTaskFormComponent` instance.
+     *
+     * @param element element to render into
+     * @param {EventBus} eventBus `EventBus` to connect with controller
+     */
     constructor(element, eventBus) {
         super(element, eventBus);
-
     }
 
+    /**
+     * Renders tasks container and subscribes to necessary Events.
+     */
     render() {
-        let container = this.element;
-        container.empty();
+        const container = this.element;
         const descriptionTextAreaClass = "descriptionTextArea";
         const addTaskBtnClass = "addTaskBtn";
+
+        container.empty();
 
         container.append(`<div class="col">
                 <textarea class="${descriptionTextAreaClass} form-control w-100"></textarea>
@@ -29,7 +43,8 @@ export class AddTaskFormComponent extends TodoComponent {
         let descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
 
         const eventBus = this.eventBus;
-        eventBus.subscribe(EventTypeEnum.NewTaskAddedEvent, function () {
+
+        eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, function () {
             descriptionTextArea.val('');
         });
         addTaskBtn.click(() => {

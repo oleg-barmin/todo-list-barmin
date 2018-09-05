@@ -3,12 +3,25 @@ import {AddTaskFormComponent} from "./component/addTaskFormComponent";
 import {Controller} from "./controller";
 import {TodoWidgetComponent} from "./component/todoWidgetComponent";
 
-export class Application {
-    constructor(root) {
-        this.root = root;
+/**
+ * Starts a to-do list app.
+ */
+export class TodoListApp {
 
+    /**
+     * Creates `TodoListApp` instance.
+     *
+     * @param rootElement root JQuery element where to-do app will be deployed
+     */
+    constructor(rootElement) {
+        this.root = rootElement;
     }
 
+    /**
+     * Starts a `TodoListApp` for `rootElement` that was provided in constructor.
+     *
+     * Creates an environment for necessary components and renders them.
+     */
     start() {
         this.root.append("<div class='container'></div>");
         let container = $(this.root.find(".container")[0]);
@@ -30,6 +43,11 @@ export class Application {
 
         addTaskForm.render();
         taskView.render();
-
     }
 }
+
+
+$(function () {
+    let todoLists = $(".todoList");
+    new TodoListApp($(todoLists[0])).start();
+});

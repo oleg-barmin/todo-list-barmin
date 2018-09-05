@@ -1,70 +1,200 @@
-(function () {
+var bundle = (function (exports) {
     'use strict';
 
+    /**
+     * Transport object transfers data between {@link Controller} and TodoComponents.
+     *
+     * Is used in {@link EventBus}.
+     */
     class Event {
-        constructor(eventType, data) {
+        /**
+         * Creates `Event` instance.
+         *
+         * @param {EventType} eventType type of this event
+         */
+        constructor(eventType) {
             this.eventType = eventType;
-            this.data = data;
         }
     }
 
+    /**
+     * Allows to posts {@link Event} and subscribe on `EventType` to process custom callbacks.
+     *
+     * When `Event` was posted all callbacks for `EventType` of occurred `Event` will be performed.
+     * For `EventBus` work properly transport JQuery object should be provided.
+     *
+     * Example:
+     * ```
+     * const firstCustomEventType = new EventType("firstCustomEventType");
+     * const secondCustomEventType = new EventType("secondCustomEventType");
+     * const eventBus = new EventBus(transport);
+     * ```
+     *
+     * When eventBus and custom EventTypes was declared you can bind callbacks for this event types.
+     *
+     * ```
+     * eventBus.subscribe(firstCustomEventType, function(occurredEvent){
+     *     console.log("First callback, occurredEvent: " + occurredEvent.evenType.typeName);
+     * });
+     *
+     * eventBus.subscribe(firstCustomEventType, function(data){
+     *     console.log("Second callback, occurredEvent: " + occurredEvent.evenType.typeName);
+     * });
+     *
+     * eventBus.subscribe(secondCustomEventType, function(occurredEvent){
+     *     console.log("Third callback, occurredEvent: " + occurredEvent.evenType.typeName);
+     * });
+     * ```
+     *
+     * Now given callbacks will be performed, when `Event` with corresponded `EventType` will be occurred.
+     *
+     * ```
+     * //first and second callback will be performed
+     * eventBus.post(new Event(firstCustomEventType));
+     * ```
+     *
+     * Console output after post:
+     * <p>
+     * `
+     * First callback, occurredEvent: firstCustomEventType
+     * Second callback, occurredEvent: secondCustomEventType
+     * `
+     *
+     * if event of `secondCustomEventType` will be posted, only third callback will be processed.
+     * ```
+     * eventBus.post(new Event(secondCustomEventType));
+     * ```
+     *  Console output after post:
+     *  <p>
+     * `
+     * Third callback, occurredEvent: secondCustomEventType
+     * `
+     *
+     * Implementation of "event bus" design pattern, based on jquery.
+     */
     class EventBus {
 
+        /**
+         * Creates `EventBus` instance.
+         *
+         * @param transport transport JQuery object to bind `EventBus` on.
+         */
         constructor(transport) {
             this._transport = transport;
         }
 
+        /**
+         * Triggers all callback bound on `EventType` of given `Event`.
+         *
+         * @param {Event} event event which will be passed as argument to callbacks
+         *                which subscribed to the `EventType` of given event.
+         */
         post(event) {
             let typeName = event.eventType.typeName;
-            console.log(typeName + " was posted");
             this._transport.trigger(typeName, [event]);
         }
 
+        /**
+         * Binds given callback to desired `EventType`.
+         *
+         * @param {EventType} eventType `EventType` to which callback should be bound
+         * @param {Function} callback to bind onto `EventType`
+         */
         subscribe(eventType, callback) {
-            this._transport.on(eventType.typeName, function (event, data) {
-                callback(data);
+            this._transport.on(eventType.typeName, function (event, occurredEvent) {
+                callback(occurredEvent);
             });
         }
     }
 
+    /**
+     * Marks type of {@link Event} to {@link EventBus} bind and call callback of specified `EventType`.
+     */
     class EventType {
+        /**
+         * Creates `EventType` instance.
+         *
+         * @param {string} typeName string name of the `EventType` instance.
+         */
         constructor(typeName) {
             this.typeName = typeName;
         }
     }
 
 
-    const EventTypeEnum = {
+    const EventTypeEnumeration = {
         AddTaskRequest: new EventType("AddTaskRequest"),
         NewTaskAddedEvent: new EventType("NewTaskAddedEvent")
     };
 
+    /**
+     * Declares basic class for all sub-classes.
+     * Each `TodoComponent` sub-class should be connect with {@link EventBus},
+     * and contain a element to render into.
+     * Render method should be implemented to render the component into the `element`.
+     *
+     * @abstract
+     */
     class TodoComponent {
+
+        /**
+         * Saves given element to render into and `EventBus` to connect with controller.
+         *
+         * @param element element to render into
+         * @param {EventBus} eventBus `EventBus` to connect with controller
+         */
         constructor(element, eventBus){
             this.element = element;
             this.eventBus = eventBus;
         }
 
+        /**
+         * Renders component into given element.
+         */
         render(){}
     }
 
+    /**
+     * Event which occurred when new task was added on view.
+     * Transfers description of new task.
+     */
     class AddTaskRequestEvent extends Event{
+
+        /**
+         * Creates `AddTaskRequestEvent` instance.
+         *
+         * @param {string} taskDescription description of new task
+         */
         constructor(taskDescription){
-            super(EventTypeEnum.AddTaskRequest, taskDescription);
+            super(EventTypeEnumeration.AddTaskRequest);
+            this.taskDescription = taskDescription;
         }
     }
 
+    /**
+     * Component which responsible for rendering and processing of add task form.
+     */
     class AddTaskFormComponent extends TodoComponent {
+
+        /**
+         * Creates `AddTaskFormComponent` instance.
+         *
+         * @param element element to render into
+         * @param {EventBus} eventBus `EventBus` to connect with controller
+         */
         constructor(element, eventBus) {
             super(element, eventBus);
-
         }
 
+        /**
+         * Renders tasks container and subscribes to necessary Events.
+         */
         render() {
-            let container = this.element;
-            container.empty();
+            const container = this.element;
             const descriptionTextAreaClass = "descriptionTextArea";
             const addTaskBtnClass = "addTaskBtn";
+
+            container.empty();
 
             container.append(`<div class="col">
                 <textarea class="${descriptionTextAreaClass} form-control w-100"></textarea>
@@ -81,7 +211,8 @@
             let descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
 
             const eventBus = this.eventBus;
-            eventBus.subscribe(EventTypeEnum.NewTaskAddedEvent, function () {
+
+            eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, function () {
                 descriptionTextArea.val('');
             });
             addTaskBtn.click(() => {
@@ -622,28 +753,64 @@
         }
     }
 
+    /**
+     * Event which occurred when new task was added to model.
+     * Transfers array of Tasks;
+     *
+     * @extends Event
+     */
     class NewTaskAddedEvent extends Event{
+
+        /**
+         * Creates `NewTaskAddedEvent` instance.
+         *
+         * @param {Array} taskArray sorted array of task from model.
+         */
         constructor(taskArray){
-            super(EventTypeEnum.NewTaskAddedEvent);
-            this.data = taskArray;
+            super(EventTypeEnumeration.NewTaskAddedEvent);
+            this.taskArray = taskArray;
         }
     }
 
+    /**
+     * Connects model of To-do list - {@link TodoList} and To-do Components.
+     * Reacts on {@link Event} which occurred on view layer.
+     */
     class Controller {
+
+        /**
+         * Creates `Controller` instance and subscribes on necessary event types.
+         *
+         * @param {EventBus} eventBus evenBus to work with
+         */
         constructor(eventBus) {
             this.todoList = new TodoList();
             this.eventBus = eventBus;
 
             const self = this;
-            eventBus.subscribe(EventTypeEnum.AddTaskRequest, function (event) {
-                self.todoList.add(event.data);
+            eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (event) {
+                self.todoList.add(event.taskDescription);
                 self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
             });
         }
 
     }
 
-    class TaskView extends TodoComponent {
+    /**
+     * Component which responsible for rendering and processing of task.
+     *
+     * @extends TodoComponent
+     */
+    class TaskViewComponent extends TodoComponent {
+
+        /**
+         * Creates `TaskViewComponent` instance.
+         *
+         * @param element Jquery element to render into
+         * @param {EventBus} eventBus eventBust to subscribe and post events
+         * @param {Number} number number of the task in the list of tasks
+         * @param {Task} task task to render
+         */
         constructor(element, eventBus, number, task) {
             super(element, eventBus);
             this.eventBus = eventBus;
@@ -651,50 +818,64 @@
             this.number = number;
         }
 
+        /**
+         * Renders task into given element.
+         */
         render() {
             const task = this.task;
-            const number = this.number;
-            const taskComponent = this.element;
-            const trashButtonClass = "trashButton";
 
-
-            const encodedDescription = TaskView.htmlEncode(undefined,task.description);
-            console.log(encodedDescription);
-            taskComponent.append(
+            this.element.append(
                 `<div class="row no-gutters border border-light mt-2">
                 <input type="hidden" name="taskId" value="${task.id}">
-                <div class="col-md-auto pr-2">${number}.</div>
-                <div class="col-10 taskDescriptionDiv" style="white-space: pre-wrap;">${encodedDescription}</div>
+                <div class="col-md-auto pr-2">${this.number}.</div>
+                <div class="col-10" style="white-space: pre-wrap;">${task.description}</div>
                 <div class="col text-right">
                     <button class="btn btn-light octicon octicon-check"></button>
                 </div>
                 <div class="col-md-auto text-right">
-                    <button class="${trashButtonClass} btn btn-light octicon octicon-trashcan"></button>
+                    <button class="btn btn-light octicon octicon-trashcan"></button>
                 </div>
             </div>`
             );
-            this.element.find(".taskDescriptionDiv");
         }
-
     }
 
+    /**
+     * Renders list of tasks.
+     *
+     * When {@link NewTaskAddedEvent} happens gets new tasks,
+     * removes previous task list and renders new tasks from `NewTaskAddedEvent`.
+     * Uses {@link TaskViewComponent} for each task to render it.
+     *
+     * @extends TodoComponent
+     */
     class TodoWidgetComponent extends TodoComponent {
+
+        /**
+         * Creates `TodoWidgetComponent` instance.
+         *
+         * @param element JQuery element where all task should be appended
+         * @param {EventBus} eventBus `EventBus` to subscribe on necessary events.
+         */
         constructor(element, eventBus) {
             super(element, eventBus);
         }
 
+        /**
+         * Empties given container for tasks to populate it
+         * with new tasks when `NewTaskAddedEvent` will happen.
+         */
         render() {
             const todoWidgetDiv = this.element;
             const self = this;
 
             todoWidgetDiv.empty();
 
-            this.eventBus.subscribe(EventTypeEnum.NewTaskAddedEvent, function (event) {
+            this.eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, function (event) {
                 let number = 1;
                 todoWidgetDiv.empty();
-                for (let curTask of event.data) {
-                    // self.element.append(`<div class="taskContainer row no-gutters border border-light mt-2"></div>`);
-                    new TaskView(self.element, self.eventBus, number, curTask).render();
+                for (let curTask of event.taskArray) {
+                    new TaskViewComponent(self.element, self.eventBus, number, curTask).render();
                     number += 1;
                 }
             });
@@ -703,12 +884,25 @@
 
     }
 
-    class Application {
-        constructor(root) {
-            this.root = root;
+    /**
+     * Starts a to-do list app.
+     */
+    class TodoListApp {
 
+        /**
+         * Creates `TodoListApp` instance.
+         *
+         * @param rootElement root JQuery element where to-do app will be deployed
+         */
+        constructor(rootElement) {
+            this.root = rootElement;
         }
 
+        /**
+         * Starts a `TodoListApp` for `rootElement` that was provided in constructor.
+         *
+         * Creates an environment for necessary components and renders them.
+         */
         start() {
             this.root.append("<div class='container'></div>");
             let container = $(this.root.find(".container")[0]);
@@ -730,13 +924,17 @@
 
             addTaskForm.render();
             taskView.render();
-
         }
     }
 
+
     $(function () {
         let todoLists = $(".todoList");
-        new Application($(todoLists[0])).start();
+        new TodoListApp($(todoLists[0])).start();
     });
 
-}());
+    exports.TodoListApp = TodoListApp;
+
+    return exports;
+
+}({}));

@@ -11,7 +11,7 @@ export class Controller {
     /**
      * Creates `Controller` instance and subscribes on necessary event types.
      *
-     * @param {EventBus} eventBus evenBus to work with.
+     * @param {EventBus} eventBus evenBus to work with
      */
     constructor(eventBus) {
         this.todoList = new TodoList();
@@ -19,7 +19,7 @@ export class Controller {
 
         const self = this;
         eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (event) {
-            self.todoList.add(event.data);
+            self.todoList.add(event.taskDescription);
             self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()))
         });
     }
