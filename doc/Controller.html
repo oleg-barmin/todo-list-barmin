@@ -30,7 +30,7 @@
     
         <h2><span class="attribs"><span class="type-signature"></span></span>Controller<span class="signature">(eventBus)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>Connects model of To-do list - <a href="TodoList.html">TodoList</a> and To-do Components.
+            <div class="class-description"><p>Connects model of <a href="TodoList.html">TodoList</a> and <a href="TodoComponent.html">TodoComponent</a>.
 Reacts on <a href="Event.html">Event</a> which occurred on view layer.</p></div>
         
     
@@ -54,7 +54,9 @@ Reacts on <a href="Event.html">Event</a> which occurred on view layer.</p></div>
 
 
 <div class="description">
-    <p>Creates <code>Controller</code> instance and subscribes on necessary event types.</p>
+    <p>Creates <code>Controller</code> instance.</p>
+<p>During constuction of instance it creates new <a href="TodoList.html">TodoList</a> instance,
+where it will contains all tasks and EventBus to process occurred events.</p>
 </div>
 
 
@@ -147,7 +149,7 @@ Reacts on <a href="Event.html">Event</a> which occurred on view layer.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="view_controller.js.html">view/controller.js</a>, <a href="view_controller.js.html#line10">line 10</a>
+        <a href="view_controller.js.html">view/controller.js</a>, <a href="view_controller.js.html#line12">line 12</a>
     </li></ul></dd>
     
 
@@ -207,13 +209,13 @@ Reacts on <a href="Event.html">Event</a> which occurred on view layer.</p></div>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskFormComponent.html">AddTaskFormComponent</a></li><li><a href="AddTaskRequestEvent.html">AddTaskRequestEvent</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAddedEvent.html">NewTaskAddedEvent</a></li><li><a href="NewTaskValidationFailedEvent.html">NewTaskValidationFailedEvent</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskViewComponent.html">TaskViewComponent</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidgetComponent.html">TodoWidgetComponent</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskFormComponent.html">AddTaskFormComponent</a></li><li><a href="AddTaskRequestEvent.html">AddTaskRequestEvent</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAddedEvent.html">NewTaskAddedEvent</a></li><li><a href="NewTaskValidationFailedEvent.html">NewTaskValidationFailedEvent</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalRequest.html">TaskRemovalRequest</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskViewComponent.html">TaskViewComponent</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidgetComponent.html">TodoWidgetComponent</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 05 2018 15:19:36 GMT+0300 (Eastern European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 05 2018 20:09:38 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

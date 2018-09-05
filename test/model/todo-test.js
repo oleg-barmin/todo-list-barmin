@@ -159,7 +159,7 @@ QUnit.test("return cloned ", assert => {
     };
 
     let clonedObject = TasksClone.cloneObject(objectToCopy);
-    assert.strictEqual(objectToCopy, clonedObject, "object with same properties.");
+    assert.deepEqual(objectToCopy, clonedObject, "object with same properties.");
     objectToCopy.prop1 = "new";
     objectToCopy.innerObject.one = "modified";
     assert.notStrictEqual(objectToCopy, clonedObject, "object with same properties but with a different reference.");
@@ -167,7 +167,7 @@ QUnit.test("return cloned ", assert => {
     let arrayToCopy = [1, 2, 3, 4];
     let clonedArray = TasksClone.cloneArray(arrayToCopy);
 
-    assert.strictEqual(arrayToCopy, clonedArray, "array with same elements.");
+    assert.deepEqual(arrayToCopy, clonedArray, "array with same elements.");
     arrayToCopy[0] = 10;
     assert.notStrictEqual(arrayToCopy, clonedArray, "array with same elements but with a different references.");
 
@@ -308,6 +308,7 @@ QUnit.test("sort ", async function (assert) {
 
 
     todoList.complete(thirdTaskId);
+    await sleep(10);
     todoList.complete(fourthTaskId);
 
     tasksArray = todoList.all();

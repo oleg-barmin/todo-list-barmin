@@ -27,6 +27,8 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import {TodoComponent} from "./todoComponent";
+import {TaskRemovalRequest} from "../event/taskRemovalRequest";
+import {TaskCompletionRequested} from "../event/taskCompletionRequested";
 
 /**
  * Component which responsible for rendering and processing of task.
@@ -55,20 +57,33 @@ export class TaskViewComponent extends TodoComponent {
      */
     render() {
         const task = this.task;
+        const removeBtnClass = "removeBtn";
+        const completeBtnClass = "completeBtn";
 
         this.element.append(
-            `&lt;div class="row no-gutters border border-light mt-2">
-                &lt;input type="hidden" name="taskId" value="${task.id}">
-                &lt;div class="col-md-auto pr-2">${this.number}.&lt;/div>
+            `&lt;div class="col-md-auto pr-2">${this.number}.&lt;/div>
                 &lt;div class="col-10" style="white-space: pre-wrap;">${task.description}&lt;/div>
                 &lt;div class="col text-right">
-                    &lt;button class="btn btn-light octicon octicon-check">&lt;/button>
+                    &lt;button class="${completeBtnClass} btn btn-light octicon octicon-check">&lt;/button>
                 &lt;/div>
                 &lt;div class="col-md-auto text-right">
-                    &lt;button class="btn btn-light octicon octicon-trashcan">&lt;/button>
-                &lt;/div>
-            &lt;/div>`
+                    &lt;button class="${removeBtnClass} btn btn-light octicon octicon-trashcan">&lt;/button>
+                &lt;/div>`
         );
+
+
+        const removeBtn = this.element.find(`.${removeBtnClass}`);
+        const completeBtn = this.element.find(`.${completeBtnClass}`);
+        removeBtn.click(() => this.eventBus.post(new TaskRemovalRequest(task.id)));
+        completeBtn.click(() => {
+            this.eventBus.post(new TaskCompletionRequested(task.id));
+        });
+
+        if (task.completed) {
+            completeBtn.remove();
+            this.element.css({background: "#dddddd"})
+        }
+
     }
 }</code></pre>
         </article>
@@ -80,13 +95,13 @@ export class TaskViewComponent extends TodoComponent {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskFormComponent.html">AddTaskFormComponent</a></li><li><a href="AddTaskRequestEvent.html">AddTaskRequestEvent</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAddedEvent.html">NewTaskAddedEvent</a></li><li><a href="NewTaskValidationFailedEvent.html">NewTaskValidationFailedEvent</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskViewComponent.html">TaskViewComponent</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidgetComponent.html">TodoWidgetComponent</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskFormComponent.html">AddTaskFormComponent</a></li><li><a href="AddTaskRequestEvent.html">AddTaskRequestEvent</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAddedEvent.html">NewTaskAddedEvent</a></li><li><a href="NewTaskValidationFailedEvent.html">NewTaskValidationFailedEvent</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalRequest.html">TaskRemovalRequest</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskViewComponent.html">TaskViewComponent</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidgetComponent.html">TodoWidgetComponent</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 05 2018 15:19:36 GMT+0300 (Eastern European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 05 2018 20:09:38 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

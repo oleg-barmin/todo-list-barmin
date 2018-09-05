@@ -1,4 +1,6 @@
 import {TodoComponent} from "./todoComponent";
+import {TaskRemovalRequest} from "../event/taskRemovalRequest";
+import {TaskCompletionRequested} from "../event/taskCompletionRequested";
 
 /**
  * Component which responsible for rendering and processing of task.
@@ -27,19 +29,32 @@ export class TaskViewComponent extends TodoComponent {
      */
     render() {
         const task = this.task;
+        const removeBtnClass = "removeBtn";
+        const completeBtnClass = "completeBtn";
 
         this.element.append(
-            `<div class="row no-gutters border border-light mt-2">
-                <input type="hidden" name="taskId" value="${task.id}">
-                <div class="col-md-auto pr-2">${this.number}.</div>
+            `<div class="col-md-auto pr-2">${this.number}.</div>
                 <div class="col-10" style="white-space: pre-wrap;">${task.description}</div>
                 <div class="col text-right">
-                    <button class="btn btn-light octicon octicon-check"></button>
+                    <button class="${completeBtnClass} btn btn-light octicon octicon-check"></button>
                 </div>
                 <div class="col-md-auto text-right">
-                    <button class="btn btn-light octicon octicon-trashcan"></button>
-                </div>
-            </div>`
+                    <button class="${removeBtnClass} btn btn-light octicon octicon-trashcan"></button>
+                </div>`
         );
+
+
+        const removeBtn = this.element.find(`.${removeBtnClass}`);
+        const completeBtn = this.element.find(`.${completeBtnClass}`);
+        removeBtn.click(() => this.eventBus.post(new TaskRemovalRequest(task.id)));
+        completeBtn.click(() => {
+            this.eventBus.post(new TaskCompletionRequested(task.id));
+        });
+
+        if (task.completed) {
+            completeBtn.remove();
+            this.element.css({background: "#dddddd"})
+        }
+
     }
 }

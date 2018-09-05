@@ -125,7 +125,11 @@ var bundle = (function (exports) {
     const EventTypeEnumeration = {
         AddTaskRequest: new EventType("AddTaskRequest"),
         NewTaskAddedEvent: new EventType("NewTaskAddedEvent"),
-        NewTaskValidationFailed: new EventType("NewTaskValidationFailed")
+        NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
+        TaskCompletionRequested: new EventType("TaskCompletionRequested"),
+        TaskRemovalRequest: new EventType("TaskRemovalRequest"),
+        TaskCompletionFailed: new EventType("TaskCompletionFailed"),
+        TaskRemovalFail: new EventType("TaskRemovalFailed")
     };
 
     /**
@@ -615,6 +619,7 @@ var bundle = (function (exports) {
                 throw new TaskAlreadyCompletedException(taskId);
             }
             storedTask.completed = true;
+            storedTask.lastUpdateDate = new Date();
             TaskSorter.sortTasksArray(this._tasksArray);
         }
 
@@ -696,15 +701,15 @@ var bundle = (function (exports) {
         static sortTasksArray(array) {
             array.sort((firstTask, secondTask) => {
                 if (firstTask.completed === secondTask.completed) {
-                    let compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
-                    if (compareByDateResult === 0) {
-                        let compareByDescriptionResult = firstTask.description.localeCompare(secondTask.description);
-                        if (compareByDescriptionResult === 0) {
-                            return secondTask.id.compareTo(firstTask.id);
-                        }
+                    const compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
+                    if (compareByDateResult !== 0) {
+                        return compareByDateResult;
+                    }
+                    const compareByDescriptionResult = firstTask.description.localeCompare(secondTask.description);
+                    if (compareByDescriptionResult !== 0) {
                         return compareByDescriptionResult;
                     }
-                    return compareByDateResult;
+                    return secondTask.id.compareTo(firstTask.id);
                 }
 
                 return firstTask.completed ? 1 : -1;
@@ -803,13 +808,48 @@ var bundle = (function (exports) {
     }
 
     /**
-     * Connects model of To-do list - {@link TodoList} and To-do Components.
+     * Occurs when `TaskCompletionRequest` cannot be processed properly.
+     */
+    class TaskCompletionFailed extends Event {
+
+        /**
+         * Creates `TaskRemovalFailed` instance.
+         *
+         * @param {string} errorMsg description of error
+         */
+        constructor(errorMsg) {
+            super(EventTypeEnumeration.TaskCompletionFailed);
+            this.errorMsg = errorMsg;
+        }
+    }
+
+    /**
+     * Occurs when `TaskRemovalRequest` cannot be processed properly.
+     */
+    class TaskRemovalFailed extends Event {
+
+        /**
+         * Creates `TaskRemovalFailed` instance.
+         *
+         * @param {string} errorMsg description of error
+         */
+        constructor(errorMsg) {
+            super(EventTypeEnumeration.TaskRemovalFail);
+            this.errorMsg = errorMsg;
+        }
+    }
+
+    /**
+     * Connects model of {@link TodoList} and {@link TodoComponent}.
      * Reacts on {@link Event} which occurred on view layer.
      */
     class Controller {
 
         /**
-         * Creates `Controller` instance and subscribes on necessary event types.
+         * Creates `Controller` instance.
+         *
+         * During constuction of instance it creates new {@link TodoList} instance,
+         * where it will contains all tasks and EventBus to process occurred events.
          *
          * @param {EventBus} eventBus evenBus to work with
          */
@@ -818,16 +858,70 @@ var bundle = (function (exports) {
             this.eventBus = eventBus;
 
             const self = this;
-            eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (event) {
+            eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (occurredEvent) {
                 try {
-                    self.todoList.add(event.taskDescription);
+                    self.todoList.add(occurredEvent.taskDescription);
                     self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
                 } catch (e) {
                     self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
                 }
             });
+
+            eventBus.subscribe(EventTypeEnumeration.TaskRemovalRequest, function (occurredEvent) {
+                try {
+                    self.todoList.remove(occurredEvent.taskId);
+                    self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                } catch (e) {
+                    self.eventBus.post(new TaskRemovalFailed("Task removal fail."));
+                }
+            });
+
+            eventBus.subscribe(EventTypeEnumeration.TaskCompletionRequested, function (occurredEvent) {
+                try {
+                    self.todoList.complete(occurredEvent.taskId);
+                    self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                } catch (e) {
+                    self.eventBus.post(new TaskCompletionFailed("Task completion fail."));
+                }
+            });
         }
 
+    }
+
+    /**
+     * Occurs when task with specified id need to be removed.
+     *
+     * @extends Event
+     */
+    class TaskRemovalRequest extends Event {
+
+        /**
+         * Creates `TaskRemovalRequest` instance.
+         *
+         * @param {TaskId} taskId id of task to remove.
+         */
+        constructor(taskId) {
+            super(EventTypeEnumeration.TaskRemovalRequest);
+            this.taskId = taskId;
+        }
+    }
+
+    /**
+     * Occurs when task with specified id need to be completed.
+     *
+     * @extends Event
+     */
+    class TaskCompletionRequested extends Event {
+
+        /**
+         * Creates `TaskCompletionRequested` instance.
+         *
+         * @param {TaskId} taskId id of task to remove.
+         */
+        constructor(taskId) {
+            super(EventTypeEnumeration.TaskCompletionRequested);
+            this.taskId = taskId;
+        }
     }
 
     /**
@@ -857,20 +951,33 @@ var bundle = (function (exports) {
          */
         render() {
             const task = this.task;
+            const removeBtnClass = "removeBtn";
+            const completeBtnClass = "completeBtn";
 
             this.element.append(
-                `<div class="row no-gutters border border-light mt-2">
-                <input type="hidden" name="taskId" value="${task.id}">
-                <div class="col-md-auto pr-2">${this.number}.</div>
+                `<div class="col-md-auto pr-2">${this.number}.</div>
                 <div class="col-10" style="white-space: pre-wrap;">${task.description}</div>
                 <div class="col text-right">
-                    <button class="btn btn-light octicon octicon-check"></button>
+                    <button class="${completeBtnClass} btn btn-light octicon octicon-check"></button>
                 </div>
                 <div class="col-md-auto text-right">
-                    <button class="btn btn-light octicon octicon-trashcan"></button>
-                </div>
-            </div>`
+                    <button class="${removeBtnClass} btn btn-light octicon octicon-trashcan"></button>
+                </div>`
             );
+
+
+            const removeBtn = this.element.find(`.${removeBtnClass}`);
+            const completeBtn = this.element.find(`.${completeBtnClass}`);
+            removeBtn.click(() => this.eventBus.post(new TaskRemovalRequest(task.id)));
+            completeBtn.click(() => {
+                this.eventBus.post(new TaskCompletionRequested(task.id));
+            });
+
+            if (task.completed) {
+                completeBtn.remove();
+                this.element.css({background: "#dddddd"});
+            }
+
         }
     }
 
@@ -909,9 +1016,18 @@ var bundle = (function (exports) {
                 let number = 1;
                 todoWidgetDiv.empty();
                 for (let curTask of event.taskArray) {
-                    new TaskViewComponent(self.element, self.eventBus, number, curTask).render();
+                    self.element.append(`<div class="row no-gutters border border-light mt-2"></div>`);
+                    new TaskViewComponent(self.element.children().last(), self.eventBus, number, curTask).render();
                     number += 1;
                 }
+            });
+
+            this.eventBus.subscribe(EventTypeEnumeration.TaskCompletionFailed, function (event) {
+                alert(event.errorMsg);
+            });
+
+            this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFail, function (event) {
+                alert(event.errorMsg);
             });
 
         }

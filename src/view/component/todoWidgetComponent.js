@@ -37,9 +37,18 @@ export class TodoWidgetComponent extends TodoComponent {
             let number = 1;
             todoWidgetDiv.empty();
             for (let curTask of event.taskArray) {
-                new TaskViewComponent(self.element, self.eventBus, number, curTask).render();
+                self.element.append(`<div class="row no-gutters border border-light mt-2"></div>`);
+                new TaskViewComponent(self.element.children().last(), self.eventBus, number, curTask).render();
                 number += 1;
             }
+        })
+
+        this.eventBus.subscribe(EventTypeEnumeration.TaskCompletionFailed, function (event) {
+            alert(event.errorMsg);
+        });
+
+        this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFail, function (event) {
+            alert(event.errorMsg);
         })
 
     }

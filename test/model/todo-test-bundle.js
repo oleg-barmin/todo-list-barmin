@@ -123,6 +123,9 @@
         constructor(value, stringName) {
             super(`String '${stringName}' should be a string and cannot be undefined, null or empty. Actual value: '${value}'`);
             this.name = this.constructor.name;
+            if(value === ""){
+                this.message = "Task description cannot be empty.";
+            }
         }
     }
 
@@ -381,6 +384,7 @@
                 throw new TaskAlreadyCompletedException(taskId);
             }
             storedTask.completed = true;
+            storedTask.lastUpdateDate = new Date();
             TaskSorter.sortTasksArray(this._tasksArray);
         }
 
@@ -462,15 +466,15 @@
         static sortTasksArray(array) {
             array.sort((firstTask, secondTask) => {
                 if (firstTask.completed === secondTask.completed) {
-                    let compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
-                    if (compareByDateResult === 0) {
-                        let compareByDescriptionResult = firstTask.description.localeCompare(secondTask.description);
-                        if (compareByDescriptionResult === 0) {
-                            return secondTask.id.compareTo(firstTask.id);
-                        }
+                    const compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
+                    if (compareByDateResult !== 0) {
+                        return compareByDateResult;
+                    }
+                    const compareByDescriptionResult = firstTask.description.localeCompare(secondTask.description);
+                    if (compareByDescriptionResult !== 0) {
                         return compareByDescriptionResult;
                     }
-                    return compareByDateResult;
+                    return secondTask.id.compareTo(firstTask.id);
                 }
 
                 return firstTask.completed ? 1 : -1;
@@ -689,14 +693,14 @@
         assert.deepEqual(objectToCopy, clonedObject, "object with same properties.");
         objectToCopy.prop1 = "new";
         objectToCopy.innerObject.one = "modified";
-        assert.notDeepEqual(objectToCopy, clonedObject, "object with same properties but with a different reference.");
+        assert.notStrictEqual(objectToCopy, clonedObject, "object with same properties but with a different reference.");
 
         let arrayToCopy = [1, 2, 3, 4];
         let clonedArray = TasksClone.cloneArray(arrayToCopy);
 
         assert.deepEqual(arrayToCopy, clonedArray, "array with same elements.");
         arrayToCopy[0] = 10;
-        assert.notDeepEqual(arrayToCopy, clonedArray, "array with same elements but with a different references.");
+        assert.notStrictEqual(arrayToCopy, clonedArray, "array with same elements but with a different references.");
 
     });
 
@@ -835,6 +839,7 @@
 
 
         todoList.complete(thirdTaskId);
+        await sleep(10);
         todoList.complete(fourthTaskId);
 
         tasksArray = todoList.all();

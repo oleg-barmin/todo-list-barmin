@@ -128,7 +128,11 @@
     const EventTypeEnumeration = {
         AddTaskRequest: new EventType("AddTaskRequest"),
         NewTaskAddedEvent: new EventType("NewTaskAddedEvent"),
-        NewTaskValidationFailed: new EventType("NewTaskValidationFailed")
+        NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
+        TaskCompletionRequested: new EventType("TaskCompletionRequested"),
+        TaskRemovalRequest: new EventType("TaskRemovalRequest"),
+        TaskCompletionFailed: new EventType("TaskCompletionFailed"),
+        TaskRemovalFail: new EventType("TaskRemovalFailed")
     };
 
     /**
@@ -511,6 +515,7 @@
                 throw new TaskAlreadyCompletedException(taskId);
             }
             storedTask.completed = true;
+            storedTask.lastUpdateDate = new Date();
             TaskSorter.sortTasksArray(this._tasksArray);
         }
 
@@ -592,15 +597,15 @@
         static sortTasksArray(array) {
             array.sort((firstTask, secondTask) => {
                 if (firstTask.completed === secondTask.completed) {
-                    let compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
-                    if (compareByDateResult === 0) {
-                        let compareByDescriptionResult = firstTask.description.localeCompare(secondTask.description);
-                        if (compareByDescriptionResult === 0) {
-                            return secondTask.id.compareTo(firstTask.id);
-                        }
+                    const compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
+                    if (compareByDateResult !== 0) {
+                        return compareByDateResult;
+                    }
+                    const compareByDescriptionResult = firstTask.description.localeCompare(secondTask.description);
+                    if (compareByDescriptionResult !== 0) {
                         return compareByDescriptionResult;
                     }
-                    return compareByDateResult;
+                    return secondTask.id.compareTo(firstTask.id);
                 }
 
                 return firstTask.completed ? 1 : -1;
@@ -699,6 +704,38 @@
     }
 
     /**
+     * Occurs when `TaskCompletionRequest` cannot be processed properly.
+     */
+    class TaskCompletionFailed extends Event {
+
+        /**
+         * Creates `TaskRemovalFailed` instance.
+         *
+         * @param {string} errorMsg description of error
+         */
+        constructor(errorMsg) {
+            super(EventTypeEnumeration.TaskCompletionFailed);
+            this.errorMsg = errorMsg;
+        }
+    }
+
+    /**
+     * Occurs when `TaskRemovalRequest` cannot be processed properly.
+     */
+    class TaskRemovalFailed extends Event {
+
+        /**
+         * Creates `TaskRemovalFailed` instance.
+         *
+         * @param {string} errorMsg description of error
+         */
+        constructor(errorMsg) {
+            super(EventTypeEnumeration.TaskRemovalFail);
+            this.errorMsg = errorMsg;
+        }
+    }
+
+    /**
      * Connects model of {@link TodoList} and {@link TodoComponent}.
      * Reacts on {@link Event} which occurred on view layer.
      */
@@ -717,12 +754,30 @@
             this.eventBus = eventBus;
 
             const self = this;
-            eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (event) {
+            eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (occurredEvent) {
                 try {
-                    self.todoList.add(event.taskDescription);
+                    self.todoList.add(occurredEvent.taskDescription);
                     self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
                 } catch (e) {
                     self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
+                }
+            });
+
+            eventBus.subscribe(EventTypeEnumeration.TaskRemovalRequest, function (occurredEvent) {
+                try {
+                    self.todoList.remove(occurredEvent.taskId);
+                    self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                } catch (e) {
+                    self.eventBus.post(new TaskRemovalFailed("Task removal fail."));
+                }
+            });
+
+            eventBus.subscribe(EventTypeEnumeration.TaskCompletionRequested, function (occurredEvent) {
+                try {
+                    self.todoList.complete(occurredEvent.taskId);
+                    self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                } catch (e) {
+                    self.eventBus.post(new TaskCompletionFailed("Task completion fail."));
                 }
             });
         }
