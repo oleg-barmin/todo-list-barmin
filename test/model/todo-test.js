@@ -159,17 +159,17 @@ QUnit.test("return cloned ", assert => {
     };
 
     let clonedObject = TasksClone.cloneObject(objectToCopy);
-    assert.deepEqual(objectToCopy, clonedObject, "object with same properties.");
+    assert.strictEqual(objectToCopy, clonedObject, "object with same properties.");
     objectToCopy.prop1 = "new";
     objectToCopy.innerObject.one = "modified";
-    assert.notDeepEqual(objectToCopy, clonedObject, "object with same properties but with a different reference.");
+    assert.notStrictEqual(objectToCopy, clonedObject, "object with same properties but with a different reference.");
 
     let arrayToCopy = [1, 2, 3, 4];
     let clonedArray = TasksClone.cloneArray(arrayToCopy);
 
-    assert.deepEqual(arrayToCopy, clonedArray, "array with same elements.");
+    assert.strictEqual(arrayToCopy, clonedArray, "array with same elements.");
     arrayToCopy[0] = 10;
-    assert.notDeepEqual(arrayToCopy, clonedArray, "array with same elements but with a different references.");
+    assert.notStrictEqual(arrayToCopy, clonedArray, "array with same elements but with a different references.");
 
 });
 
