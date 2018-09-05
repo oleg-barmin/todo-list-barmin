@@ -14,14 +14,11 @@ export class TaskView extends TodoComponent {
         const taskComponent = this.element;
         const trashButtonClass = "trashButton";
 
-
-        const encodedDescription = TaskView.htmlEncode(undefined,task.description);
-        console.log(encodedDescription);
         taskComponent.append(
             `<div class="row no-gutters border border-light mt-2">
                 <input type="hidden" name="taskId" value="${task.id}">
                 <div class="col-md-auto pr-2">${number}.</div>
-                <div class="col-10 taskDescriptionDiv" style="white-space: pre-wrap;">${encodedDescription}</div>
+                <div class="col-10 taskDescriptionDiv" style="white-space: pre-wrap;">${task.description}</div>
                 <div class="col text-right">
                     <button class="btn btn-light octicon octicon-check"></button>
                 </div>
