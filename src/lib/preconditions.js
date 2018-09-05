@@ -117,5 +117,8 @@ export class EmptyStringException extends Error {
     constructor(value, stringName) {
         super(`String '${stringName}' should be a string and cannot be undefined, null or empty. Actual value: '${value}'`);
         this.name = this.constructor.name;
+        if(value === ""){
+            this.message = "Task description cannot be empty."
+        }
     }
 }

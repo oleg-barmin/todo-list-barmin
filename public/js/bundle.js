@@ -206,7 +206,7 @@ var bundle = (function (exports) {
             </div>
             <div class="w-100"></div>
             <div class="col">
-                <label class="errorMsgContainer invisible w-100 alert-danger">Exception msg</label>
+                <label class="errorMsgContainer invisible w-100 alert-danger"></label>
             </div>`);
 
             const addTaskBtn = container.find(`.${addTaskBtnClass}`);
@@ -222,6 +222,7 @@ var bundle = (function (exports) {
             });
             eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, event => {
                 errorLabel.removeClass("invisible");
+                errorLabel.empty();
                 errorLabel.append(event.errorMsg);
             });
 
@@ -353,6 +354,9 @@ var bundle = (function (exports) {
         constructor(value, stringName) {
             super(`String '${stringName}' should be a string and cannot be undefined, null or empty. Actual value: '${value}'`);
             this.name = this.constructor.name;
+            if(value === ""){
+                this.message = "Task description cannot be empty.";
+            }
         }
     }
 

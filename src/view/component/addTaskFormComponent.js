@@ -37,7 +37,7 @@ export class AddTaskFormComponent extends TodoComponent {
             </div>
             <div class="w-100"></div>
             <div class="col">
-                <label class="errorMsgContainer invisible w-100 alert-danger">Exception msg</label>
+                <label class="errorMsgContainer invisible w-100 alert-danger"></label>
             </div>`);
 
         const addTaskBtn = container.find(`.${addTaskBtnClass}`);
@@ -53,6 +53,7 @@ export class AddTaskFormComponent extends TodoComponent {
         });
         eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, event => {
             errorLabel.removeClass("invisible");
+            errorLabel.empty();
             errorLabel.append(event.errorMsg);
         });
 
