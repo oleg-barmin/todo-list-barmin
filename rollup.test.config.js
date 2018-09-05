@@ -1,7 +1,7 @@
 export default {
-    input: 'test/todo-test.js',
+    input: 'test/model/todo-test.js',
     output: {
-        file: 'test/todo-test-bundle.js',
+        file: 'test/model/todo-test-bundle.js',
         format: 'umd',
     },
 };

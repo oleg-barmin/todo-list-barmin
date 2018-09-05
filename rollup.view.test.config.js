@@ -1,7 +1,7 @@
 export default {
-    input: 'test/view-test.js',
+    input: 'test/view/view-test.js',
     output: {
-        file: 'test/view-test-bundle.js',
+        file: 'test/view/view-test-bundle.js',
         format: 'umd',
     },
 };

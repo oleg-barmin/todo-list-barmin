@@ -1,6 +1,6 @@
-import {EventBus} from "../src/view/event/event";
-import {EventType} from "../src/view/event/event";
-import {Event} from "../src/view/event/event";
+import {EventBus} from "../../src/view/event/event";
+import {EventType} from "../../src/view/event/event";
+import {Event} from "../../src/view/event/event";
 
 QUnit.module("EventBus should");
 QUnit.test("call ", assert => {
