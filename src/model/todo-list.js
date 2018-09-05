@@ -115,6 +115,7 @@ export class TodoList {
             throw new TaskAlreadyCompletedException(taskId);
         }
         storedTask.completed = true;
+        storedTask.lastUpdateDate = new Date();
         TaskSorter.sortTasksArray(this._tasksArray);
     }
 
@@ -196,15 +197,15 @@ export class TaskSorter {
     static sortTasksArray(array) {
         array.sort((firstTask, secondTask) => {
             if (firstTask.completed === secondTask.completed) {
-                let compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
-                if (compareByDateResult === 0) {
-                    let compareByDescriptionResult = firstTask.description.localeCompare(secondTask.description);
-                    if (compareByDescriptionResult === 0) {
-                        return secondTask.id.compareTo(firstTask.id);
-                    }
+                const compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
+                if (compareByDateResult !== 0) {
+                    return compareByDateResult;
+                }
+                const compareByDescriptionResult = firstTask.description.localeCompare(secondTask.description);
+                if (compareByDescriptionResult !== 0) {
                     return compareByDescriptionResult;
                 }
-                return compareByDateResult;
+                return secondTask.id.compareTo(firstTask.id);
             }
 
             return firstTask.completed ? 1 : -1;
