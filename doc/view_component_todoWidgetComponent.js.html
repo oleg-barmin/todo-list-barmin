@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: model/task.js</title>
+    <title>JSDoc: Source: view/component/todoWidgetComponent.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: model/task.js</h1>
+    <h1 class="page-title">Source: view/component/todoWidgetComponent.js</h1>
 
     
 
@@ -26,36 +26,52 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
+            <pre class="prettyprint source linenums"><code>import {TodoComponent} from "./todoComponent";
+import {EventTypeEnumeration} from "../event/event";
+import {TaskViewComponent} from "./taskViewComponent";
+
 /**
- * Task to do.
+ * Renders list of tasks.
  *
- * It stores task ID, its description, status (is it completed or not),
- * date of creation and date of last update (if task wasn't updated
- * the date of creation equals to last update date).
+ * When {@link NewTaskAddedEvent} happens gets new tasks,
+ * removes previous task list and renders new tasks from `NewTaskAddedEvent`.
+ * Uses {@link TaskViewComponent} for each task to render it.
+ *
+ * @extends TodoComponent
  */
-export class Task {
+export class TodoWidgetComponent extends TodoComponent {
 
     /**
-     * Creates task instance.
+     * Creates `TodoWidgetComponent` instance.
      *
-     * @param {TaskId} id task ID
-     * @param {string} description description of the task
-     * @param {Date} creationDate date when task was created
-     *
+     * @param element JQuery element where all task should be appended
+     * @param {EventBus} eventBus `EventBus` to subscribe on necessary events.
      */
-    constructor(id, description, creationDate) {
-        this.id = id;
-        this.description = description;
-        this.completed = false;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = creationDate;
+    constructor(element, eventBus) {
+        super(element, eventBus);
     }
 
-    toString() {
-        return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
-            + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
+    /**
+     * Empties given container for tasks to populate it
+     * with new tasks when `NewTaskAddedEvent` will happen.
+     */
+    render() {
+        const todoWidgetDiv = this.element;
+        const self = this;
+
+        todoWidgetDiv.empty();
+
+        this.eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, function (event) {
+            let number = 1;
+            todoWidgetDiv.empty();
+            for (let curTask of event.taskArray) {
+                new TaskViewComponent(self.element, self.eventBus, number, curTask).render();
+                number += 1;
+            }
+        })
+
     }
+
 }</code></pre>
         </article>
     </section>

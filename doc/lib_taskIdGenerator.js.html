@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: model/task.js</title>
+    <title>JSDoc: Source: lib/taskIdGenerator.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: model/task.js</h1>
+    <h1 class="page-title">Source: lib/taskIdGenerator.js</h1>
 
     
 
@@ -26,35 +26,26 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
+            <pre class="prettyprint source linenums"><code>import {TaskId} from "./identifiers";
+
 /**
- * Task to do.
+ * Generates unique TaskId for `Task`.
  *
- * It stores task ID, its description, status (is it completed or not),
- * date of creation and date of last update (if task wasn't updated
- * the date of creation equals to last update date).
+ * Current implementation based on uuid v4.
  */
-export class Task {
+export class TaskIdGenerator {
 
     /**
-     * Creates task instance.
+     * Generates unique TaskID.
      *
-     * @param {TaskId} id task ID
-     * @param {string} description description of the task
-     * @param {Date} creationDate date when task was created
-     *
+     * @returns {TaskId} ID generated TaskID.
      */
-    constructor(id, description, creationDate) {
-        this.id = id;
-        this.description = description;
-        this.completed = false;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = creationDate;
-    }
-
-    toString() {
-        return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
-            + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
+    static generateID() {
+        if (typeof(require) !== 'undefined') {
+            return require('uuid/v4')();
+        }
+        const rawId = uuidv4();
+        return new TaskId(rawId);
     }
 }</code></pre>
         </article>

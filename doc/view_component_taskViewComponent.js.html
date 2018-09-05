@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: model/task.js</title>
+    <title>JSDoc: Source: view/component/taskViewComponent.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: model/task.js</h1>
+    <h1 class="page-title">Source: view/component/taskViewComponent.js</h1>
 
     
 
@@ -26,35 +26,49 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
+            <pre class="prettyprint source linenums"><code>import {TodoComponent} from "./todoComponent";
+
 /**
- * Task to do.
+ * Component which responsible for rendering and processing of task.
  *
- * It stores task ID, its description, status (is it completed or not),
- * date of creation and date of last update (if task wasn't updated
- * the date of creation equals to last update date).
+ * @extends TodoComponent
  */
-export class Task {
+export class TaskViewComponent extends TodoComponent {
 
     /**
-     * Creates task instance.
+     * Creates `TaskViewComponent` instance.
      *
-     * @param {TaskId} id task ID
-     * @param {string} description description of the task
-     * @param {Date} creationDate date when task was created
-     *
+     * @param element Jquery element to render into
+     * @param {EventBus} eventBus eventBust to subscribe and post events
+     * @param {Number} number number of the task in the list of tasks
+     * @param {Task} task task to render
      */
-    constructor(id, description, creationDate) {
-        this.id = id;
-        this.description = description;
-        this.completed = false;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = creationDate;
+    constructor(element, eventBus, number, task) {
+        super(element, eventBus);
+        this.eventBus = eventBus;
+        this.task = task;
+        this.number = number;
     }
 
-    toString() {
-        return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
-            + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
+    /**
+     * Renders task into given element.
+     */
+    render() {
+        const task = this.task;
+
+        this.element.append(
+            `&lt;div class="row no-gutters border border-light mt-2">
+                &lt;input type="hidden" name="taskId" value="${task.id}">
+                &lt;div class="col-md-auto pr-2">${this.number}.&lt;/div>
+                &lt;div class="col-10" style="white-space: pre-wrap;">${task.description}&lt;/div>
+                &lt;div class="col text-right">
+                    &lt;button class="btn btn-light octicon octicon-check">&lt;/button>
+                &lt;/div>
+                &lt;div class="col-md-auto text-right">
+                    &lt;button class="btn btn-light octicon octicon-trashcan">&lt;/button>
+                &lt;/div>
+            &lt;/div>`
+        );
     }
 }</code></pre>
         </article>

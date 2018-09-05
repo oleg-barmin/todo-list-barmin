@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: model/task.js</title>
+    <title>JSDoc: Source: view/todo-list-app.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: model/task.js</h1>
+    <h1 class="page-title">Source: view/todo-list-app.js</h1>
 
     
 
@@ -26,37 +26,59 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
+            <pre class="prettyprint source linenums"><code>import {EventBus} from "./event/event";
+import {AddTaskFormComponent} from "./component/addTaskFormComponent";
+import {Controller} from "./controller";
+import {TodoWidgetComponent} from "./component/todoWidgetComponent";
+
 /**
- * Task to do.
- *
- * It stores task ID, its description, status (is it completed or not),
- * date of creation and date of last update (if task wasn't updated
- * the date of creation equals to last update date).
+ * Starts a to-do list app.
  */
-export class Task {
+export class TodoListApp {
 
     /**
-     * Creates task instance.
+     * Creates `TodoListApp` instance.
      *
-     * @param {TaskId} id task ID
-     * @param {string} description description of the task
-     * @param {Date} creationDate date when task was created
-     *
+     * @param rootElement root JQuery element where to-do app will be deployed
      */
-    constructor(id, description, creationDate) {
-        this.id = id;
-        this.description = description;
-        this.completed = false;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = creationDate;
+    constructor(rootElement) {
+        this.root = rootElement;
     }
 
-    toString() {
-        return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
-            + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
+    /**
+     * Starts a `TodoListApp` for `rootElement` that was provided in constructor.
+     *
+     * Creates an environment for necessary components and renders them.
+     */
+    start() {
+        this.root.append("&lt;div class='container'>&lt;/div>");
+        let container = $(this.root.find(".container")[0]);
+
+        container.append(`&lt;div hidden class="eventBus">&lt;/div>
+        &lt;div class="row justify-content-md-center">
+            &lt;div class="col-md-auto">
+                &lt;h1>To-Do&lt;/h1>
+            &lt;/div>
+        &lt;/div>
+        &lt;div class="addTaskForm row justify-content-md-center no-gutters">&lt;/div>
+        &lt;div class="todoWidget">&lt;/div>`);
+
+        this.eventBus = new EventBus(container.find(".eventBus"));
+        this.controller = new Controller(this.eventBus);
+
+        let addTaskForm = new AddTaskFormComponent(container.find(".addTaskForm"), this.eventBus);
+        let taskView = new TodoWidgetComponent(container.find(".todoWidget"), this.eventBus);
+
+        addTaskForm.render();
+        taskView.render();
     }
-}</code></pre>
+}
+
+
+$(function () {
+    let todoLists = $(".todoList");
+    new TodoListApp($(todoLists[0])).start();
+});</code></pre>
         </article>
     </section>
 

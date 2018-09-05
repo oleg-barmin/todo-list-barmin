@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: TaskAlreadyCompletedException</title>
+    <title>JSDoc: Class: TodoListApp</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: TaskAlreadyCompletedException</h1>
+    <h1 class="page-title">Class: TodoListApp</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>TaskAlreadyCompletedException<span class="signature">(taskId)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>TodoListApp<span class="signature">(rootElement)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>Indicates that task was already completed.</p></div>
+            <div class="class-description"><p>Starts a to-do list app.</p></div>
         
     
 </header>
@@ -45,7 +45,7 @@
     
 
     
-    <h4 class="name" id="TaskAlreadyCompletedException"><span class="type-signature"></span>new TaskAlreadyCompletedException<span class="signature">(taskId)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="TodoListApp"><span class="type-signature"></span>new TodoListApp<span class="signature">(rootElement)</span><span class="type-signature"></span></h4>
     
 
     
@@ -53,7 +53,7 @@
 
 
 <div class="description">
-    <p>Crates <code>TaskAlreadyCompletedException</code> instance.</p>
+    <p>Creates <code>TodoListApp</code> instance.</p>
 </div>
 
 
@@ -89,15 +89,10 @@
 
         <tr>
             
-                <td class="name"><code>taskId</code></td>
+                <td class="name"><code>rootElement</code></td>
             
 
             <td class="type">
-            
-                
-<span class="param-type"><a href="TaskId.html">TaskId</a></span>
-
-
             
             </td>
 
@@ -105,7 +100,7 @@
 
             
 
-            <td class="description last"><p>ID of task which was already completed.</p></td>
+            <td class="description last"><p>root JQuery element where to-do app will be deployed</p></td>
         </tr>
 
     
@@ -146,7 +141,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="model_todo-list.js.html">model/todo-list.js</a>, <a href="model_todo-list.js.html#line239">line 239</a>
+        <a href="view_todo-list-app.js.html">view/todo-list-app.js</a>, <a href="view_todo-list-app.js.html#line9">line 9</a>
     </li></ul></dd>
     
 
@@ -178,15 +173,53 @@
     </div>
 
     
-        <h3 class="subsection-title">Extends</h3>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         
+            
+
+    
+
+    
+    <h4 class="name" id="start"><span class="type-signature"></span>start<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
 
 
-    <ul>
-        <li>Error</li>
-    </ul>
 
+<div class="description">
+    <p>Starts a <code>TodoListApp</code> for <code>rootElement</code> that was provided in constructor.</p>
+<p>Creates an environment for necessary components and renders them.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
 
     
 
@@ -202,6 +235,48 @@
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="view_todo-list-app.js.html">view/todo-list-app.js</a>, <a href="view_todo-list-app.js.html#line25">line 25</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     
 
     

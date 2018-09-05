@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: model/task.js</title>
+    <title>JSDoc: Source: view/component/todoComponent.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: model/task.js</h1>
+    <h1 class="page-title">Source: view/component/todoComponent.js</h1>
 
     
 
@@ -26,36 +26,31 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
-/**
- * Task to do.
+            <pre class="prettyprint source linenums"><code>/**
+ * Declares basic class for all sub-classes.
+ * Each `TodoComponent` sub-class should be connect with {@link EventBus},
+ * and contain a element to render into.
+ * Render method should be implemented to render the component into the `element`.
  *
- * It stores task ID, its description, status (is it completed or not),
- * date of creation and date of last update (if task wasn't updated
- * the date of creation equals to last update date).
+ * @abstract
  */
-export class Task {
+export class TodoComponent {
 
     /**
-     * Creates task instance.
+     * Saves given element to render into and `EventBus` to connect with controller.
      *
-     * @param {TaskId} id task ID
-     * @param {string} description description of the task
-     * @param {Date} creationDate date when task was created
-     *
+     * @param element element to render into
+     * @param {EventBus} eventBus `EventBus` to connect with controller
      */
-    constructor(id, description, creationDate) {
-        this.id = id;
-        this.description = description;
-        this.completed = false;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = creationDate;
+    constructor(element, eventBus){
+        this.element = element;
+        this.eventBus = eventBus;
     }
 
-    toString() {
-        return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
-            + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
-    }
+    /**
+     * Renders component into given element.
+     */
+    render(){}
 }</code></pre>
         </article>
     </section>

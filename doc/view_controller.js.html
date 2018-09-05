@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: model/task.js</title>
+    <title>JSDoc: Source: view/controller.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: model/task.js</h1>
+    <h1 class="page-title">Source: view/controller.js</h1>
 
     
 
@@ -26,36 +26,32 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
+            <pre class="prettyprint source linenums"><code>import {TodoList} from "../model/todo-list";
+import {EventTypeEnumeration} from "./event/event";
+import {NewTaskAddedEvent} from "./event/newTaskAddedEvent";
+
 /**
- * Task to do.
- *
- * It stores task ID, its description, status (is it completed or not),
- * date of creation and date of last update (if task wasn't updated
- * the date of creation equals to last update date).
+ * Connects model of To-do list - {@link TodoList} and To-do Components.
+ * Reacts on {@link Event} which occurred on view layer.
  */
-export class Task {
+export class Controller {
 
     /**
-     * Creates task instance.
+     * Creates `Controller` instance and subscribes on necessary event types.
      *
-     * @param {TaskId} id task ID
-     * @param {string} description description of the task
-     * @param {Date} creationDate date when task was created
-     *
+     * @param {EventBus} eventBus evenBus to work with
      */
-    constructor(id, description, creationDate) {
-        this.id = id;
-        this.description = description;
-        this.completed = false;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = creationDate;
+    constructor(eventBus) {
+        this.todoList = new TodoList();
+        this.eventBus = eventBus;
+
+        const self = this;
+        eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (event) {
+            self.todoList.add(event.taskDescription);
+            self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()))
+        });
     }
 
-    toString() {
-        return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
-            + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
-    }
 }</code></pre>
         </article>
     </section>

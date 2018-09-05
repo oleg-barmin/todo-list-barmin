@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: model/task.js</title>
+    <title>JSDoc: Source: view/component/addTaskFormComponent.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: model/task.js</h1>
+    <h1 class="page-title">Source: view/component/addTaskFormComponent.js</h1>
 
     
 
@@ -26,36 +26,62 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
+            <pre class="prettyprint source linenums"><code>import {TodoComponent} from "./todoComponent";
+import {AddTaskRequestEvent} from "../event/addTaskRequestEvent";
+import {EventTypeEnumeration} from "../event/event";
+
+
 /**
- * Task to do.
- *
- * It stores task ID, its description, status (is it completed or not),
- * date of creation and date of last update (if task wasn't updated
- * the date of creation equals to last update date).
+ * Component which responsible for rendering and processing of add task form.
  */
-export class Task {
+export class AddTaskFormComponent extends TodoComponent {
 
     /**
-     * Creates task instance.
+     * Creates `AddTaskFormComponent` instance.
      *
-     * @param {TaskId} id task ID
-     * @param {string} description description of the task
-     * @param {Date} creationDate date when task was created
-     *
+     * @param element element to render into
+     * @param {EventBus} eventBus `EventBus` to connect with controller
      */
-    constructor(id, description, creationDate) {
-        this.id = id;
-        this.description = description;
-        this.completed = false;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = creationDate;
+    constructor(element, eventBus) {
+        super(element, eventBus);
     }
 
-    toString() {
-        return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
-            + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
+    /**
+     * Renders tasks container and subscribes to necessary Events.
+     */
+    render() {
+        const container = this.element;
+        const descriptionTextAreaClass = "descriptionTextArea";
+        const addTaskBtnClass = "addTaskBtn";
+
+        container.empty();
+
+        container.append(`&lt;div class="col">
+                &lt;textarea class="${descriptionTextAreaClass} form-control w-100">&lt;/textarea>
+            &lt;/div>
+            &lt;div class="col col-1 align-self-end text-right">
+                &lt;button class="${addTaskBtnClass} btn btn-default btn-primary w-100">add&lt;/button>
+            &lt;/div>
+            &lt;div class="w-100">&lt;/div>
+            &lt;div class="col">
+                &lt;label hidden class="w-100 alert-danger">Exception msg&lt;/label>
+            &lt;/div>`);
+
+        let addTaskBtn = container.find(`.${addTaskBtnClass}`);
+        let descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
+
+        const eventBus = this.eventBus;
+
+        eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, function () {
+            descriptionTextArea.val('');
+        });
+        addTaskBtn.click(() => {
+            eventBus.post(new AddTaskRequestEvent(descriptionTextArea.val()));
+        });
+
+
     }
+
 }</code></pre>
         </article>
     </section>

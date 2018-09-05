@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: model/task.js</title>
+    <title>JSDoc: Source: view/event/newTaskAddedEvent.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: model/task.js</h1>
+    <h1 class="page-title">Source: view/event/newTaskAddedEvent.js</h1>
 
     
 
@@ -26,35 +26,24 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
+            <pre class="prettyprint source linenums"><code>import {Event, EventTypeEnumeration} from "./event";
+
 /**
- * Task to do.
+ * Event which occurred when new task was added to model.
+ * Transfers array of Tasks;
  *
- * It stores task ID, its description, status (is it completed or not),
- * date of creation and date of last update (if task wasn't updated
- * the date of creation equals to last update date).
+ * @extends Event
  */
-export class Task {
+export class NewTaskAddedEvent extends Event{
 
     /**
-     * Creates task instance.
+     * Creates `NewTaskAddedEvent` instance.
      *
-     * @param {TaskId} id task ID
-     * @param {string} description description of the task
-     * @param {Date} creationDate date when task was created
-     *
+     * @param {Array} taskArray sorted array of task from model.
      */
-    constructor(id, description, creationDate) {
-        this.id = id;
-        this.description = description;
-        this.completed = false;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = creationDate;
-    }
-
-    toString() {
-        return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
-            + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
+    constructor(taskArray){
+        super(EventTypeEnumeration.NewTaskAddedEvent);
+        this.taskArray = taskArray;
     }
 }</code></pre>
         </article>
