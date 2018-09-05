@@ -25,6 +25,7 @@ export class AddTaskFormComponent extends TodoComponent {
         const container = this.element;
         const descriptionTextAreaClass = "descriptionTextArea";
         const addTaskBtnClass = "addTaskBtn";
+        const errorContainerClass = "errorMsgContainer";
 
         container.empty();
 
@@ -36,17 +37,25 @@ export class AddTaskFormComponent extends TodoComponent {
             </div>
             <div class="w-100"></div>
             <div class="col">
-                <label hidden class="w-100 alert-danger">Exception msg</label>
+                <label class="errorMsgContainer invisible w-100 alert-danger">Exception msg</label>
             </div>`);
 
-        let addTaskBtn = container.find(`.${addTaskBtnClass}`);
-        let descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
+        const addTaskBtn = container.find(`.${addTaskBtnClass}`);
+        const descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
+        const errorLabel = container.find(`.${errorContainerClass}`);
 
         const eventBus = this.eventBus;
 
-        eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, function () {
+        eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, () => {
             descriptionTextArea.val('');
+            errorLabel.empty();
+            errorLabel.addClass("invisible")
         });
+        eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, event => {
+            errorLabel.removeClass("invisible");
+            errorLabel.append(event.errorMsg);
+        });
+
         addTaskBtn.click(() => {
             eventBus.post(new AddTaskRequestEvent(descriptionTextArea.val()));
         });

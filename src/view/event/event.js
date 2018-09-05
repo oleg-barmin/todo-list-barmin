@@ -121,7 +121,8 @@ export class EventType {
 
 export const EventTypeEnumeration = {
     AddTaskRequest: new EventType("AddTaskRequest"),
-    NewTaskAddedEvent: new EventType("NewTaskAddedEvent")
+    NewTaskAddedEvent: new EventType("NewTaskAddedEvent"),
+    NewTaskValidationFailed: new EventType("NewTaskValidationFailed")
 };
 
 

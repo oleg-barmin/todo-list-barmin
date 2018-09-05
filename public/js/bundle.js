@@ -34,15 +34,15 @@ var bundle = (function (exports) {
      *
      * ```
      * eventBus.subscribe(firstCustomEventType, function(occurredEvent){
-     *     console.log("First callback, occurredEvent: " + occurredEvent.evenType.typeName);
+     *     console.log("First callback, occurredEvent: " + occurredEvent.eventType.typeName);
      * });
      *
-     * eventBus.subscribe(firstCustomEventType, function(data){
-     *     console.log("Second callback, occurredEvent: " + occurredEvent.evenType.typeName);
+     * eventBus.subscribe(firstCustomEventType, function(occurredEvent){
+     *     console.log("Second callback, occurredEvent: " + occurredEvent.eventType.typeName);
      * });
      *
      * eventBus.subscribe(secondCustomEventType, function(occurredEvent){
-     *     console.log("Third callback, occurredEvent: " + occurredEvent.evenType.typeName);
+     *     console.log("Third callback, occurredEvent: " + occurredEvent.eventType.typeName);
      * });
      * ```
      *
@@ -124,7 +124,8 @@ var bundle = (function (exports) {
 
     const EventTypeEnumeration = {
         AddTaskRequest: new EventType("AddTaskRequest"),
-        NewTaskAddedEvent: new EventType("NewTaskAddedEvent")
+        NewTaskAddedEvent: new EventType("NewTaskAddedEvent"),
+        NewTaskValidationFailed: new EventType("NewTaskValidationFailed")
     };
 
     /**
@@ -193,6 +194,7 @@ var bundle = (function (exports) {
             const container = this.element;
             const descriptionTextAreaClass = "descriptionTextArea";
             const addTaskBtnClass = "addTaskBtn";
+            const errorContainerClass = "errorMsgContainer";
 
             container.empty();
 
@@ -204,17 +206,25 @@ var bundle = (function (exports) {
             </div>
             <div class="w-100"></div>
             <div class="col">
-                <label hidden class="w-100 alert-danger">Exception msg</label>
+                <label class="errorMsgContainer invisible w-100 alert-danger">Exception msg</label>
             </div>`);
 
-            let addTaskBtn = container.find(`.${addTaskBtnClass}`);
-            let descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
+            const addTaskBtn = container.find(`.${addTaskBtnClass}`);
+            const descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
+            const errorLabel = container.find(`.${errorContainerClass}`);
 
             const eventBus = this.eventBus;
 
-            eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, function () {
+            eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, () => {
                 descriptionTextArea.val('');
+                errorLabel.empty();
+                errorLabel.addClass("invisible");
             });
+            eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, event => {
+                errorLabel.removeClass("invisible");
+                errorLabel.append(event.errorMsg);
+            });
+
             addTaskBtn.click(() => {
                 eventBus.post(new AddTaskRequestEvent(descriptionTextArea.val()));
             });
@@ -773,6 +783,22 @@ var bundle = (function (exports) {
     }
 
     /**
+     * Event which occurred when new task description validation failed.
+     */
+    class NewTaskValidationFailedEvent extends Event{
+
+        /**
+         * Creates `NewTaskValidationFailedEvent` instance.
+         *
+         * @param {string} errorMsg description of error
+         */
+        constructor(errorMsg){
+            super(EventTypeEnumeration.NewTaskValidationFailed);
+            this.errorMsg = errorMsg;
+        }
+    }
+
+    /**
      * Connects model of To-do list - {@link TodoList} and To-do Components.
      * Reacts on {@link Event} which occurred on view layer.
      */
@@ -789,8 +815,14 @@ var bundle = (function (exports) {
 
             const self = this;
             eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (event) {
-                self.todoList.add(event.taskDescription);
-                self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+
+                try {
+                    self.todoList.add(event.taskDescription);
+                    self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                } catch (e) {
+                    self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
+                }
+
             });
         }
 

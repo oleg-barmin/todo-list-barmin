@@ -1,6 +1,7 @@
 import {TodoList} from "../model/todo-list";
 import {EventTypeEnumeration} from "./event/event";
 import {NewTaskAddedEvent} from "./event/newTaskAddedEvent";
+import {NewTaskValidationFailedEvent} from "./event/newTaskValidationFailedEvent";
 
 /**
  * Connects model of To-do list - {@link TodoList} and To-do Components.
@@ -19,8 +20,14 @@ export class Controller {
 
         const self = this;
         eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (event) {
-            self.todoList.add(event.taskDescription);
-            self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()))
+
+            try {
+                self.todoList.add(event.taskDescription);
+                self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+            } catch (e) {
+                self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
+            }
+
         });
     }
 

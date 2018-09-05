@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: TasksClone</title>
+    <title>JSDoc: Class: NewTaskValidationFailedEvent</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: TasksClone</h1>
+    <h1 class="page-title">Class: NewTaskValidationFailedEvent</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>TasksClone<span class="signature">()</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>NewTaskValidationFailedEvent<span class="signature">(errorMsg)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>Provides static methods to clone arrays of tasks and single tasks.</p></div>
+            <div class="class-description"><p>Event which occurred when new task description validation failed.</p></div>
         
     
 </header>
@@ -45,19 +45,72 @@
     
 
     
-    <h4 class="name" id="TasksClone"><span class="type-signature"></span>new TasksClone<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="NewTaskValidationFailedEvent"><span class="type-signature"></span>new NewTaskValidationFailedEvent<span class="signature">(errorMsg)</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
+<div class="description">
+    <p>Creates <code>NewTaskValidationFailedEvent</code> instance.</p>
+</div>
 
 
 
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>errorMsg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>description of error</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -93,7 +146,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_todolists.js.html">lib/todolists.js</a>, <a href="lib_todolists.js.html#line4">line 4</a>
+        <a href="view_event_newTaskValidationFailedEvent.js.html">view/event/newTaskValidationFailedEvent.js</a>, <a href="view_event_newTaskValidationFailedEvent.js.html#line7">line 7</a>
     </li></ul></dd>
     
 
@@ -138,324 +191,6 @@
 
     
 
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".cloneArray"><span class="type-signature">(static) </span>cloneArray<span class="signature">(array)</span><span class="type-signature"> &rarr; {Array}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Deep copies given <code>Array</code> of <code>Task</code>.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>array</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>array to copy</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_todolists.js.html">lib/todolists.js</a>, <a href="lib_todolists.js.html#line12">line 12</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>arrayCopy copy of given array</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".cloneObject"><span class="type-signature">(static) </span>cloneObject<span class="signature">(objectToClone)</span><span class="type-signature"> &rarr; {*}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Deep copies given <code>Task</code>.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>objectToClone</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>object to clone</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_todolists.js.html">lib/todolists.js</a>, <a href="lib_todolists.js.html#line36">line 36</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>copy of given <code>Task</code></p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">*</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
     
 
     
