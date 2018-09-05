@@ -1,6 +1,10 @@
-import {EventBus} from "../../src/view/event/event";
+import {EventBus, EventTypeEnumeration} from "../../src/view/event/event";
 import {EventType} from "../../src/view/event/event";
 import {Event} from "../../src/view/event/event";
+import {Controller} from "../../src/view/controller";
+import {NewTaskAddedEvent} from "../../src/view/event/newTaskAddedEvent";
+import {AddTaskRequestEvent} from "../../src/view/event/addTaskRequestEvent";
+import {TodoList} from "../../src/model/todo-list";
 
 QUnit.module("EventBus should");
 QUnit.test("call ", assert => {
@@ -33,31 +37,27 @@ QUnit.test("call ", assert => {
 });
 
 QUnit.module("Controller should");
-QUnit.test("call ", assert => {
+QUnit.test("", assert => {
     let transportElement = $("#eventBus");
     const eventBus = new EventBus(transportElement);
 
-    const firstEventType = new EventType("firstEventType");
-    const secondEventType = new EventType("secondEventType");
+    const todoList = new TodoList();
+    const controller = new Controller(eventBus);
 
-    const firstEvent = new Event(firstEventType);
-    const secondEvent = new Event(secondEventType);
+    let newTaskAddedEventWasProduced = false;
+    let newTaskValidationFailed = false;
 
-    firstEvent.interaction = 0;
-    secondEvent.interaction = 0;
+    eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, () => newTaskAddedEventWasProduced = true);
+    eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, () => newTaskValidationFailed = true);
 
-    const callback = occurredEvent => occurredEvent.interaction += 1;
+    controller.todoList = todoList;
+    const taskDescription = "new task";
+    eventBus.post(new AddTaskRequestEvent(taskDescription));
+    eventBus.post(new AddTaskRequestEvent(""));
 
-    eventBus.subscribe(firstEventType, callback);
-    eventBus.subscribe(secondEventType, callback);
 
-    eventBus.post(firstEvent);
+    assert.strictEqual(todoList.all()[0].description, taskDescription, "add new task to TodoList.");
+    assert.ok(newTaskAddedEventWasProduced, "post a newTaskAddedEvent after success AddTaskRequestEvent process.");
+    assert.ok(newTaskAddedEventWasProduced, "post a newTaskAddedEventWasProduced if given task description is empty.");
 
-    assert.strictEqual(firstEvent.interaction, 1, "callback once for single post.");
-
-    eventBus.post(firstEvent);
-    eventBus.post(firstEvent);
-
-    assert.strictEqual(firstEvent.interaction, 3, "callback twice for two posts.");
-    assert.strictEqual(secondEvent.interaction, 0, "call only subscribed for this event callbacks.");
 });

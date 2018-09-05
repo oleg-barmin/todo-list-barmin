@@ -819,14 +819,12 @@ var bundle = (function (exports) {
 
             const self = this;
             eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (event) {
-
                 try {
                     self.todoList.add(event.taskDescription);
                     self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
                 } catch (e) {
                     self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
                 }
-
             });
         }
 
