@@ -56,7 +56,7 @@ export class TaskEdit extends TodoComponent {
         const errorLabel = this.element.find(`.${errorLabelClass}`);
 
         const descriptionRowsNumber = task.description.split(/\r\n|\r|\n/).length;
-        editTextArea.attr("rows",  descriptionRowsNumber > 10 ? 10 : descriptionRowsNumber);
+        editTextArea.attr("rows", descriptionRowsNumber > 10 ? 10 : descriptionRowsNumber);
 
         /**
          * Processes `TaskUpdateFailed` event.
@@ -73,7 +73,14 @@ export class TaskEdit extends TodoComponent {
 
         this.eventBus.subscribe(EventTypeEnumeration.TaskUpdateFailed, taskUpdateFailedCallback);
 
-        saveBtn.click(() => this.eventBus.post(new TaskUpdateRequest(this.task.id, editTextArea.val())));
+        saveBtn.click(() => {
+            const newTaskDescription = editTextArea.val();
+            if (newTaskDescription === task.description) {
+                this.eventBus.post(new CancelTaskEditing(task.id));
+                return;
+            }
+            this.eventBus.post(new TaskUpdateRequest(this.task.id, newTaskDescription));
+        });
         cancelBtn.click(() => this.eventBus.post(new CancelTaskEditing(task.id)));
     }
 }
