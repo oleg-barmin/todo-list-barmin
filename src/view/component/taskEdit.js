@@ -36,7 +36,7 @@ export class TaskEdit extends TodoComponent {
         this.element.append(
             `<div class="col-md-auto pr-2">${this.number}.</div>
                 <div class="col-10">
-                    <textarea style="white-space: pre-wrap;" class="${editDescriptionTextAreaClass} form-control">${task.description}</textarea>
+                    <textarea style="white-space: pre-wrap;" class="${editDescriptionTextAreaClass} form-control"></textarea>
                 </div>
                 <div class="col text-right">
                     <button class="${saveBtnClass} btn btn-light octicon octicon-check"></button>
@@ -57,6 +57,7 @@ export class TaskEdit extends TodoComponent {
 
         const descriptionRowsNumber = task.description.split(/\r\n|\r|\n/).length;
         editTextArea.attr("rows", descriptionRowsNumber > 10 ? 10 : descriptionRowsNumber);
+        editTextArea.focus().val(task.description);
 
         /**
          * Processes `TaskUpdateFailed` event.
