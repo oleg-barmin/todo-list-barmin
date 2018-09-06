@@ -127,7 +127,7 @@
 
     const EventTypeEnumeration = {
         AddTaskRequest: new EventType("AddTaskRequest"),
-        NewTaskAddedEvent: new EventType("NewTaskAddedEvent"),
+        NewTaskAdded: new EventType("NewTaskAdded"),
         TaskListUpdated: new EventType("TaskListUpdated"),
         NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
         TaskCompletionRequested: new EventType("TaskCompletionRequested"),
@@ -674,23 +674,23 @@
      *
      * @extends Event
      */
-    class NewTaskAddedEvent extends Event {
+    class NewTaskAdded extends Event {
 
         /**
-         * Creates `NewTaskAddedEvent` instance.
+         * Creates `NewTaskAdded` instance.
          */
         constructor() {
-            super(EventTypeEnumeration.NewTaskAddedEvent);
+            super(EventTypeEnumeration.NewTaskAdded);
         }
     }
 
     /**
      * Event which occurred when new task description validation failed.
      */
-    class NewTaskValidationFailedEvent extends Event{
+    class NewTaskValidationFailed extends Event{
 
         /**
-         * Creates `NewTaskValidationFailedEvent` instance.
+         * Creates `NewTaskValidationFailed` instance.
          *
          * @param {string} errorMsg description of error
          */
@@ -770,10 +770,10 @@
             eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (occurredEvent) {
                 try {
                     self.todoList.add(occurredEvent.taskDescription);
-                    self.eventBus.post(new NewTaskAddedEvent());
+                    self.eventBus.post(new NewTaskAdded());
                     self.eventBus.post(new TaskListUpdated(self.todoList.all()));
                 } catch (e) {
-                    self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
+                    self.eventBus.post(new NewTaskValidationFailed(e.message));
                 }
             });
 
@@ -802,10 +802,10 @@
      * Event which occurred when new task was added on view.
      * Transfers description of new task.
      */
-    class AddTaskRequestEvent extends Event{
+    class AddTaskRequest extends Event{
 
         /**
-         * Creates `AddTaskRequestEvent` instance.
+         * Creates `AddTaskRequest` instance.
          *
          * @param {string} taskDescription description of new task
          */
@@ -856,17 +856,17 @@
         let newTaskAddedEventWasProduced = false;
         let newTaskValidationFailed = false;
 
-        eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, () => newTaskAddedEventWasProduced = true);
+        eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, () => newTaskAddedEventWasProduced = true);
         eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, () => newTaskValidationFailed = true);
 
         controller.todoList = todoList;
         const taskDescription = "new task";
-        eventBus.post(new AddTaskRequestEvent(taskDescription));
-        eventBus.post(new AddTaskRequestEvent(""));
+        eventBus.post(new AddTaskRequest(taskDescription));
+        eventBus.post(new AddTaskRequest(""));
 
 
         assert.strictEqual(todoList.all()[0].description, taskDescription, "add new task to TodoList.");
-        assert.ok(newTaskAddedEventWasProduced, "post a newTaskAddedEvent after success AddTaskRequestEvent process.");
+        assert.ok(newTaskAddedEventWasProduced, "post a newTaskAddedEvent after success AddTaskRequest process.");
         assert.ok(newTaskAddedEventWasProduced, "post a newTaskAddedEventWasProduced if given task description is empty.");
 
     });

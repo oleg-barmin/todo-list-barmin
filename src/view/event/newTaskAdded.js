@@ -5,12 +5,12 @@ import {Event, EventTypeEnumeration} from "./event";
  *
  * @extends Event
  */
-export class NewTaskAddedEvent extends Event {
+export class NewTaskAdded extends Event {
 
     /**
-     * Creates `NewTaskAddedEvent` instance.
+     * Creates `NewTaskAdded` instance.
      */
     constructor() {
-        super(EventTypeEnumeration.NewTaskAddedEvent);
+        super(EventTypeEnumeration.NewTaskAdded);
     }
 }

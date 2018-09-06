@@ -4,10 +4,10 @@ import {Event, EventTypeEnumeration} from "./event";
 /**
  * Event which occurred when new task description validation failed.
  */
-export class NewTaskValidationFailedEvent extends Event{
+export class NewTaskValidationFailed extends Event{
 
     /**
-     * Creates `NewTaskValidationFailedEvent` instance.
+     * Creates `NewTaskValidationFailed` instance.
      *
      * @param {string} errorMsg description of error
      */

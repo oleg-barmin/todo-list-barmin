@@ -1,7 +1,7 @@
 import {TodoList} from "../model/todo-list";
 import {EventTypeEnumeration} from "./event/event";
-import {NewTaskAddedEvent} from "./event/newTaskAddedEvent";
-import {NewTaskValidationFailedEvent} from "./event/newTaskValidationFailedEvent";
+import {NewTaskAdded} from "./event/newTaskAdded";
+import {NewTaskValidationFailed} from "./event/newTaskValidationFailed";
 import {TaskCompletionFailed} from "./event/taskCompletionFailed";
 import {TaskRemovalFailed} from "./event/taskRemovalFailed";
 import {TaskListUpdated} from "./event/taskListUpdated";
@@ -28,10 +28,10 @@ export class Controller {
         eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (occurredEvent) {
             try {
                 self.todoList.add(occurredEvent.taskDescription);
-                self.eventBus.post(new NewTaskAddedEvent());
+                self.eventBus.post(new NewTaskAdded());
                 self.eventBus.post(new TaskListUpdated(self.todoList.all()));
             } catch (e) {
-                self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
+                self.eventBus.post(new NewTaskValidationFailed(e.message));
             }
         });
 

@@ -1,5 +1,5 @@
 import {TodoComponent} from "./todoComponent";
-import {AddTaskRequestEvent} from "../event/addTaskRequestEvent";
+import {AddTaskRequest} from "../event/addTaskRequest";
 import {EventTypeEnumeration} from "../event/event";
 
 
@@ -46,7 +46,7 @@ export class AddTaskForm extends TodoComponent {
 
         const eventBus = this.eventBus;
 
-        eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, () => {
+        eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, () => {
             descriptionTextArea.val('');
             errorLabel.empty();
             errorLabel.addClass("invisible")
@@ -58,7 +58,7 @@ export class AddTaskForm extends TodoComponent {
         });
 
         addTaskBtn.click(() => {
-            eventBus.post(new AddTaskRequestEvent(descriptionTextArea.val()));
+            eventBus.post(new AddTaskRequest(descriptionTextArea.val()));
         });
 
 

@@ -2,8 +2,8 @@ import {EventBus, EventTypeEnumeration} from "../../src/view/event/event";
 import {EventType} from "../../src/view/event/event";
 import {Event} from "../../src/view/event/event";
 import {Controller} from "../../src/view/controller";
-import {NewTaskAddedEvent} from "../../src/view/event/newTaskAddedEvent";
-import {AddTaskRequestEvent} from "../../src/view/event/addTaskRequestEvent";
+import {NewTaskAdded} from "../../src/view/event/newTaskAdded";
+import {AddTaskRequest} from "../../src/view/event/addTaskRequest";
 import {TodoList} from "../../src/model/todo-list";
 
 QUnit.module("EventBus should");
@@ -47,17 +47,17 @@ QUnit.test("", assert => {
     let newTaskAddedEventWasProduced = false;
     let newTaskValidationFailed = false;
 
-    eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, () => newTaskAddedEventWasProduced = true);
+    eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, () => newTaskAddedEventWasProduced = true);
     eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, () => newTaskValidationFailed = true);
 
     controller.todoList = todoList;
     const taskDescription = "new task";
-    eventBus.post(new AddTaskRequestEvent(taskDescription));
-    eventBus.post(new AddTaskRequestEvent(""));
+    eventBus.post(new AddTaskRequest(taskDescription));
+    eventBus.post(new AddTaskRequest(""));
 
 
     assert.strictEqual(todoList.all()[0].description, taskDescription, "add new task to TodoList.");
-    assert.ok(newTaskAddedEventWasProduced, "post a newTaskAddedEvent after success AddTaskRequestEvent process.");
+    assert.ok(newTaskAddedEventWasProduced, "post a newTaskAddedEvent after success AddTaskRequest process.");
     assert.ok(newTaskAddedEventWasProduced, "post a newTaskAddedEventWasProduced if given task description is empty.");
 
 });

@@ -4,10 +4,10 @@ import {Event, EventTypeEnumeration} from "./event";
  * Event which occurred when new task was added on view.
  * Transfers description of new task.
  */
-export class AddTaskRequestEvent extends Event{
+export class AddTaskRequest extends Event{
 
     /**
-     * Creates `AddTaskRequestEvent` instance.
+     * Creates `AddTaskRequest` instance.
      *
      * @param {string} taskDescription description of new task
      */

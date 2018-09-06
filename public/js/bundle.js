@@ -124,7 +124,7 @@ var bundle = (function (exports) {
 
     const EventTypeEnumeration = {
         AddTaskRequest: new EventType("AddTaskRequest"),
-        NewTaskAddedEvent: new EventType("NewTaskAddedEvent"),
+        NewTaskAdded: new EventType("NewTaskAdded"),
         TaskListUpdated: new EventType("TaskListUpdated"),
         NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
         TaskCompletionRequested: new EventType("TaskCompletionRequested"),
@@ -164,10 +164,10 @@ var bundle = (function (exports) {
      * Event which occurred when new task was added on view.
      * Transfers description of new task.
      */
-    class AddTaskRequestEvent extends Event{
+    class AddTaskRequest extends Event{
 
         /**
-         * Creates `AddTaskRequestEvent` instance.
+         * Creates `AddTaskRequest` instance.
          *
          * @param {string} taskDescription description of new task
          */
@@ -220,7 +220,7 @@ var bundle = (function (exports) {
 
             const eventBus = this.eventBus;
 
-            eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, () => {
+            eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, () => {
                 descriptionTextArea.val('');
                 errorLabel.empty();
                 errorLabel.addClass("invisible");
@@ -232,7 +232,7 @@ var bundle = (function (exports) {
             });
 
             addTaskBtn.click(() => {
-                eventBus.post(new AddTaskRequestEvent(descriptionTextArea.val()));
+                eventBus.post(new AddTaskRequest(descriptionTextArea.val()));
             });
 
 
@@ -778,23 +778,23 @@ var bundle = (function (exports) {
      *
      * @extends Event
      */
-    class NewTaskAddedEvent extends Event {
+    class NewTaskAdded extends Event {
 
         /**
-         * Creates `NewTaskAddedEvent` instance.
+         * Creates `NewTaskAdded` instance.
          */
         constructor() {
-            super(EventTypeEnumeration.NewTaskAddedEvent);
+            super(EventTypeEnumeration.NewTaskAdded);
         }
     }
 
     /**
      * Event which occurred when new task description validation failed.
      */
-    class NewTaskValidationFailedEvent extends Event{
+    class NewTaskValidationFailed extends Event{
 
         /**
-         * Creates `NewTaskValidationFailedEvent` instance.
+         * Creates `NewTaskValidationFailed` instance.
          *
          * @param {string} errorMsg description of error
          */
@@ -874,10 +874,10 @@ var bundle = (function (exports) {
             eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (occurredEvent) {
                 try {
                     self.todoList.add(occurredEvent.taskDescription);
-                    self.eventBus.post(new NewTaskAddedEvent());
+                    self.eventBus.post(new NewTaskAdded());
                     self.eventBus.post(new TaskListUpdated(self.todoList.all()));
                 } catch (e) {
-                    self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
+                    self.eventBus.post(new NewTaskValidationFailed(e.message));
                 }
             });
 
@@ -998,8 +998,8 @@ var bundle = (function (exports) {
     /**
      * Renders list of tasks.
      *
-     * When {@link NewTaskAddedEvent} happens gets new tasks,
-     * removes previous task list and renders new tasks from `NewTaskAddedEvent`.
+     * When {@link NewTaskAdded} happens gets new tasks,
+     * removes previous task list and renders new tasks from `NewTaskAdded`.
      * Uses {@link TaskView} for each task to render it.
      *
      * @extends TodoComponent
@@ -1018,7 +1018,7 @@ var bundle = (function (exports) {
 
         /**
          * Empties given container for tasks to populate it
-         * with new tasks when `NewTaskAddedEvent` will happen.
+         * with new tasks when `NewTaskAdded` will happen.
          */
         render() {
             const todoWidgetDiv = this.element;

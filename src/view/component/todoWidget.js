@@ -5,8 +5,8 @@ import {TaskView} from "./taskView";
 /**
  * Renders list of tasks.
  *
- * When {@link NewTaskAddedEvent} happens gets new tasks,
- * removes previous task list and renders new tasks from `NewTaskAddedEvent`.
+ * When {@link NewTaskAdded} happens gets new tasks,
+ * removes previous task list and renders new tasks from `NewTaskAdded`.
  * Uses {@link TaskView} for each task to render it.
  *
  * @extends TodoComponent
@@ -25,7 +25,7 @@ export class TodoWidget extends TodoComponent {
 
     /**
      * Empties given container for tasks to populate it
-     * with new tasks when `NewTaskAddedEvent` will happen.
+     * with new tasks when `NewTaskAdded` will happen.
      */
     render() {
         const todoWidgetDiv = this.element;
