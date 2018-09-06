@@ -58,7 +58,7 @@ export class AddTaskForm extends TodoComponent {
 
         /**
          * Processes `NewTaskValidationFailed`.
-         * Makes `errorLabel` visible and appends into it error message from `NewTaskValidationFailed` event.
+         * Makes `errorLabel` visible and appends into it error message from occurred `NewTaskValidationFailed` event.
          *
          * @param {NewTaskValidationFailed} newTaskValidationFailedEvent `NewTaskValidationFailed` with
          *        error message to display.

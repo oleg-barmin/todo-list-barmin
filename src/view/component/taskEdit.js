@@ -54,19 +54,22 @@ export class TaskEdit extends TodoComponent {
         const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
         const errorLabel = this.element.find(`.${errorLabelClass}`);
 
-        this.eventBus.subscribe(EventTypeEnumeration.TaskUpdateFailed, (occuredEvent) => {
+        /**
+         * Processes `TaskUpdateFailed` event.
+         * Makes `errorLabel` visible and appends into it error message from occurred `TaskUpdateFailed` event.
+         *
+         * @param {TaskUpdateFailed} taskUpdateFailedEvent occurred `TaskUpdateFailed` event
+         *         with error message to display.
+         */
+        const taskUpdateFailedCallback = (taskUpdateFailedEvent) => {
             errorLabel.removeClass("invisible");
             errorLabel.empty();
-            errorLabel.append(occuredEvent.errorMsg);
-        });
+            errorLabel.append(taskUpdateFailedEvent.errorMsg);
+        };
 
-        saveBtn.click(() => {
-            const newTaskDescription = editTextArea.val();
-            this.eventBus.post(new TaskUpdateRequest(this.task.id, newTaskDescription))
-        });
+        this.eventBus.subscribe(EventTypeEnumeration.TaskUpdateFailed, taskUpdateFailedCallback);
 
-        cancelBtn.click(() => {
-            this.eventBus.post(new CancelTaskEditing(task.id));
-        });
+        saveBtn.click(() => this.eventBus.post(new TaskUpdateRequest(this.task.id, editTextArea.val())));
+        cancelBtn.click(() => this.eventBus.post(new CancelTaskEditing(task.id)));
     }
 }
