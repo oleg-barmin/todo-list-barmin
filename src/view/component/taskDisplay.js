@@ -34,10 +34,11 @@ export class TaskDisplay extends TodoComponent {
         const removeBtnClass = "removeBtn";
         const completeBtnClass = "completeBtn";
         const editBtnClass = "editBtn";
+        const escapedTaskDescription = $('<div/>').text(this.task.description).html();
 
         this.element.append(
             `<div class="col-md-auto pr-2">${this.number}.</div>
-                <div class="col-9" style="white-space: pre-wrap;">${task.description}</div>
+                <div class="col-9" style="white-space: pre-wrap;">${escapedTaskDescription}</div>
                 <div class="col text-right">
                     <button class="${editBtnClass} btn btn-light octicon octicon-pencil"></button>
                 </div>
