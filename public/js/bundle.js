@@ -180,10 +180,10 @@ var bundle = (function (exports) {
     /**
      * Component which responsible for rendering and processing of add task form.
      */
-    class AddTaskFormComponent extends TodoComponent {
+    class AddTaskForm extends TodoComponent {
 
         /**
-         * Creates `AddTaskFormComponent` instance.
+         * Creates `AddTaskForm` instance.
          *
          * @param element element to render into
          * @param {EventBus} eventBus `EventBus` to connect with controller
@@ -943,10 +943,10 @@ var bundle = (function (exports) {
      *
      * @extends TodoComponent
      */
-    class TaskViewComponent extends TodoComponent {
+    class TaskView extends TodoComponent {
 
         /**
-         * Creates `TaskViewComponent` instance.
+         * Creates `TaskView` instance.
          *
          * @param element Jquery element to render into
          * @param {EventBus} eventBus eventBust to subscribe and post events
@@ -1000,14 +1000,14 @@ var bundle = (function (exports) {
      *
      * When {@link NewTaskAddedEvent} happens gets new tasks,
      * removes previous task list and renders new tasks from `NewTaskAddedEvent`.
-     * Uses {@link TaskViewComponent} for each task to render it.
+     * Uses {@link TaskView} for each task to render it.
      *
      * @extends TodoComponent
      */
-    class TodoWidgetComponent extends TodoComponent {
+    class TodoWidget extends TodoComponent {
 
         /**
-         * Creates `TodoWidgetComponent` instance.
+         * Creates `TodoWidget` instance.
          *
          * @param element JQuery element where all task should be appended
          * @param {EventBus} eventBus `EventBus` to subscribe on necessary events.
@@ -1031,7 +1031,7 @@ var bundle = (function (exports) {
                 todoWidgetDiv.empty();
                 for (let curTask of event.taskArray) {
                     self.element.append(`<div class="row no-gutters border border-light mt-2"></div>`);
-                    new TaskViewComponent(self.element.children().last(), self.eventBus, number, curTask).render();
+                    new TaskView(self.element.children().last(), self.eventBus, number, curTask).render();
                     number += 1;
                 }
             });
@@ -1083,8 +1083,8 @@ var bundle = (function (exports) {
             this.eventBus = new EventBus(container.find(".eventBus"));
             this.controller = new Controller(this.eventBus);
 
-            let addTaskForm = new AddTaskFormComponent(container.find(".addTaskForm"), this.eventBus);
-            let taskView = new TodoWidgetComponent(container.find(".todoWidget"), this.eventBus);
+            let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
+            let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
 
             addTaskForm.render();
             taskView.render();

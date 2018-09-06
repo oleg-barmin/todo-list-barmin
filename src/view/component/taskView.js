@@ -7,10 +7,10 @@ import {TaskCompletionRequested} from "../event/taskCompletionRequested";
  *
  * @extends TodoComponent
  */
-export class TaskViewComponent extends TodoComponent {
+export class TaskView extends TodoComponent {
 
     /**
-     * Creates `TaskViewComponent` instance.
+     * Creates `TaskView` instance.
      *
      * @param element Jquery element to render into
      * @param {EventBus} eventBus eventBust to subscribe and post events

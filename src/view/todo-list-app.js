@@ -1,7 +1,7 @@
 import {EventBus} from "./event/event";
-import {AddTaskFormComponent} from "./component/addTaskFormComponent";
+import {AddTaskForm} from "./component/addTaskForm";
 import {Controller} from "./controller";
-import {TodoWidgetComponent} from "./component/todoWidgetComponent";
+import {TodoWidget} from "./component/todoWidget";
 
 /**
  * Starts a to-do list app.
@@ -38,8 +38,8 @@ export class TodoListApp {
         this.eventBus = new EventBus(container.find(".eventBus"));
         this.controller = new Controller(this.eventBus);
 
-        let addTaskForm = new AddTaskFormComponent(container.find(".addTaskForm"), this.eventBus);
-        let taskView = new TodoWidgetComponent(container.find(".todoWidget"), this.eventBus);
+        let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
+        let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
 
         addTaskForm.render();
         taskView.render();

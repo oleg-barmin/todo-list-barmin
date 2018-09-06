@@ -6,10 +6,10 @@ import {EventTypeEnumeration} from "../event/event";
 /**
  * Component which responsible for rendering and processing of add task form.
  */
-export class AddTaskFormComponent extends TodoComponent {
+export class AddTaskForm extends TodoComponent {
 
     /**
-     * Creates `AddTaskFormComponent` instance.
+     * Creates `AddTaskForm` instance.
      *
      * @param element element to render into
      * @param {EventBus} eventBus `EventBus` to connect with controller
