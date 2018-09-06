@@ -73,6 +73,11 @@ export class AddTaskForm extends TodoComponent {
         eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, newTaskValidationFailedCallback);
 
         addTaskBtn.click(() => eventBus.post(new AddTaskRequest(descriptionTextArea.val())));
+        descriptionTextArea.keydown(keyboardEvent => {
+            if (keyboardEvent.ctrlKey && keyboardEvent.key === "Enter") {
+                eventBus.post(new AddTaskRequest(descriptionTextArea.val()));
+            }
+        });
     }
 
 }
