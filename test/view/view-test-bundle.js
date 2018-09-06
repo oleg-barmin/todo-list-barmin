@@ -760,8 +760,8 @@
         /**
          * Creates `TaskUpdateFailed` instance.
          *
-         * @param taskId id of task which updating was failed
-         * @param errorMsg error message to display on view
+         * @param {TaskId} taskId ID of task which updating was failed
+         * @param {string} errorMsg error message to display on view
          */
         constructor(taskId, errorMsg) {
             super(EventTypeEnumeration.TaskUpdateFailed);
@@ -779,8 +779,8 @@
         /**
          * Creates `Controller` instance.
          *
-         * During constuction of instance it creates new {@link TodoList} instance,
-         * where it will contains all tasks and EventBus to process occurred events.
+         * During construction of instance it creates new `TodoList` instance,
+         * where it will contains all tasks, and EventBus to process occurred events.
          *
          * @param {EventBus} eventBus evenBus to work with
          */
@@ -788,43 +788,84 @@
             this.todoList = new TodoList();
             this.eventBus = eventBus;
 
-            const self = this;
-            eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (occurredEvent) {
+            /**
+             * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
+             *
+             * if given description is valid:
+             *      1. Posts {@link NewTaskAdded}
+             *      2. Posts {@link TaskListUpdated} with new task list.
+             * Otherwise {@link NewTaskValidationFailed} will be posted
+             *
+             * @param {AddTaskRequest} addTaskEvent `AddTaskRequest` with description of the task to add.
+             */
+            const addTaskRequestCallback = addTaskEvent => {
                 try {
-                    self.todoList.add(occurredEvent.taskDescription);
-                    self.eventBus.post(new NewTaskAdded());
-                    self.eventBus.post(new TaskListUpdated(self.todoList.all()));
+                    this.todoList.add(addTaskEvent.taskDescription);
+                    this.eventBus.post(new NewTaskAdded());
+                    this.eventBus.post(new TaskListUpdated(this.todoList.all()));
                 } catch (e) {
-                    self.eventBus.post(new NewTaskValidationFailed(e.message));
+                    this.eventBus.post(new NewTaskValidationFailed(e.message));
                 }
-            });
+            };
 
-            eventBus.subscribe(EventTypeEnumeration.TaskRemovalRequest, function (occurredEvent) {
+            /**
+             * Removes task with ID stored in occurred `TaskRemovalRequest` from `TodoList`.
+             *
+             * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
+             * Otherwise: posts {@link TaskRemovalFailed}.
+             *
+             * @param {TaskRemovalRequest} taskRemovalEvent `TaskRemovalRequest` event with ID of the task to remove.
+             */
+            const taskRemovalRequestCallback = taskRemovalEvent => {
                 try {
-                    self.todoList.remove(occurredEvent.taskId);
-                    self.eventBus.post(new TaskListUpdated(self.todoList.all()));
+                    this.todoList.remove(taskRemovalEvent.taskId);
+                    this.eventBus.post(new TaskListUpdated(this.todoList.all()));
                 } catch (e) {
-                    self.eventBus.post(new TaskRemovalFailed("Task removal fail."));
+                    this.eventBus.post(new TaskRemovalFailed("Task removal fail."));
                 }
-            });
+            };
 
-            eventBus.subscribe(EventTypeEnumeration.TaskCompletionRequested, function (occurredEvent) {
+            /**
+             * Completes task in `TodoList` by ID which stored in occurred `TaskCompletionRequested`.
+             *
+             * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
+             * Otherwise: posts {@link TaskCompletionFailed}.
+             *
+             * @param {TaskCompletionRequested} taskCompletionEvent `TaskCompletionRequested` event
+             *        which contains ID of task to complete.
+             */
+            const taskCompletionRequestedCallback = taskCompletionEvent => {
                 try {
-                    self.todoList.complete(occurredEvent.taskId);
-                    self.eventBus.post(new TaskListUpdated(self.todoList.all()));
+                    this.todoList.complete(taskCompletionEvent.taskId);
+                    this.eventBus.post(new TaskListUpdated(this.todoList.all()));
                 } catch (e) {
-                    self.eventBus.post(new TaskCompletionFailed("Task completion fail."));
+                    this.eventBus.post(new TaskCompletionFailed("Task completion fail."));
                 }
-            });
+            };
 
-            eventBus.subscribe(EventTypeEnumeration.TaskUpdateRequest, function (occurredEvent) {
+            /**
+             * Updates task in `TodoList` by ID with new description.
+             * Both ID and new description are stored in occurred `TaskCompletionRequested` event.
+             *
+             * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
+             * Otherwise: posts {@link TaskUpdateFailed}.
+             *
+             * @param {TaskUpdateRequest} taskUpdateEvent `TaskUpdateRequest` event
+             *        which contains ID of task to update and its new description.
+             */
+            const taskUpdateRequestCallback = taskUpdateEvent => {
                 try {
-                    self.todoList.update(occurredEvent.taskId, occurredEvent.newTaskDescription);
-                    self.eventBus.post(new TaskListUpdated(self.todoList.all()));
+                    this.todoList.update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription);
+                    this.eventBus.post(new TaskListUpdated(this.todoList.all()));
                 } catch (e) {
-                    self.eventBus.post(new TaskUpdateFailed(occurredEvent.taskId, "New task description cannot be empty."));
+                    this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId, "New task description cannot be empty."));
                 }
-            });
+            };
+
+            eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, addTaskRequestCallback);
+            eventBus.subscribe(EventTypeEnumeration.TaskRemovalRequest, taskRemovalRequestCallback);
+            eventBus.subscribe(EventTypeEnumeration.TaskCompletionRequested, taskCompletionRequestedCallback);
+            eventBus.subscribe(EventTypeEnumeration.TaskUpdateRequest, taskUpdateRequestCallback);
         }
 
     }
@@ -856,7 +897,7 @@
         /**
          * Creates `TaskCompletionRequested` instance.
          *
-         * @param {TaskId} taskId id of task to remove.
+         * @param {TaskId} taskId ID of task to remove.
          */
         constructor(taskId) {
             super(EventTypeEnumeration.TaskCompletionRequested);
@@ -874,7 +915,7 @@
         /**
          * Creates `TaskRemovalRequest` instance.
          *
-         * @param {TaskId} taskId id of task to remove.
+         * @param {TaskId} taskId ID of task to remove.
          */
         constructor(taskId) {
             super(EventTypeEnumeration.TaskRemovalRequest);
@@ -890,8 +931,8 @@
         /**
          * Creates `TaskUpdateRequest` instance.
          *
-         * @param taskId id of task which description needs to be updated
-         * @param newTaskDescription new description of task.
+         * @param {TaskId} taskId ID of task which description needs to be updated
+         * @param {string} newTaskDescription new description of task.
          */
         constructor(taskId, newTaskDescription) {
             super(EventTypeEnumeration.TaskUpdateRequest);
