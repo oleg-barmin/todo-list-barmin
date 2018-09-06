@@ -46,22 +46,33 @@ export class AddTaskForm extends TodoComponent {
 
         const eventBus = this.eventBus;
 
-        eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, () => {
+        /**
+         * Processes `NewTaskAdded` event.
+         * Makes `descriptionTextArea` and `errorLabel` empty and invisible.
+         */
+        const newTaskAddedCallback = () => {
             descriptionTextArea.val('');
             errorLabel.empty();
             errorLabel.addClass("invisible")
-        });
-        eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, event => {
+        };
+
+        /**
+         * Processes `NewTaskValidationFailed`.
+         * Makes `errorLabel` visible and appends into it error message from `NewTaskValidationFailed` event.
+         *
+         * @param {NewTaskValidationFailed} newTaskValidationFailedEvent `NewTaskValidationFailed` with
+         *        error message to display.
+         */
+        const newTaskValidationFailedCallback = newTaskValidationFailedEvent => {
             errorLabel.removeClass("invisible");
             errorLabel.empty();
-            errorLabel.append(event.errorMsg);
-        });
+            errorLabel.append(newTaskValidationFailedEvent.errorMsg);
+        };
 
-        addTaskBtn.click(() => {
-            eventBus.post(new AddTaskRequest(descriptionTextArea.val()));
-        });
+        eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, newTaskAddedCallback);
+        eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, newTaskValidationFailedCallback);
 
-
+        addTaskBtn.click(() => eventBus.post(new AddTaskRequest(descriptionTextArea.val())));
     }
 
 }
