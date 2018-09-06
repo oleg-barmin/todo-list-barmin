@@ -125,6 +125,7 @@ var bundle = (function (exports) {
     const EventTypeEnumeration = {
         AddTaskRequest: new EventType("AddTaskRequest"),
         NewTaskAddedEvent: new EventType("NewTaskAddedEvent"),
+        TaskListUpdated: new EventType("TaskListUpdated"),
         NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
         TaskCompletionRequested: new EventType("TaskCompletionRequested"),
         TaskRemovalRequest: new EventType("TaskRemovalRequest"),
@@ -773,21 +774,17 @@ var bundle = (function (exports) {
     }
 
     /**
-     * Event which occurred when new task was added to model.
-     * Transfers array of Tasks;
+     * Occurs when controller adds new task to the model.
      *
      * @extends Event
      */
-    class NewTaskAddedEvent extends Event{
+    class NewTaskAddedEvent extends Event {
 
         /**
          * Creates `NewTaskAddedEvent` instance.
-         *
-         * @param {Array} taskArray sorted array of task from model.
          */
-        constructor(taskArray){
+        constructor() {
             super(EventTypeEnumeration.NewTaskAddedEvent);
-            this.taskArray = taskArray;
         }
     }
 
@@ -840,6 +837,22 @@ var bundle = (function (exports) {
     }
 
     /**
+     * Occurs when controller updated list of tasks.
+     */
+    class TaskListUpdated extends Event {
+
+        /**
+         * Creates `TaskListUpdated` instance.
+         *
+         * @param {Array} taskArray sorted array of task from model.
+         */
+        constructor(taskArray) {
+            super(EventTypeEnumeration.TaskListUpdated);
+            this.taskArray = taskArray;
+        }
+    }
+
+    /**
      * Connects model of {@link TodoList} and {@link TodoComponent}.
      * Reacts on {@link Event} which occurred on view layer.
      */
@@ -861,7 +874,8 @@ var bundle = (function (exports) {
             eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (occurredEvent) {
                 try {
                     self.todoList.add(occurredEvent.taskDescription);
-                    self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                    self.eventBus.post(new NewTaskAddedEvent());
+                    self.eventBus.post(new TaskListUpdated(self.todoList.all()));
                 } catch (e) {
                     self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
                 }
@@ -870,7 +884,7 @@ var bundle = (function (exports) {
             eventBus.subscribe(EventTypeEnumeration.TaskRemovalRequest, function (occurredEvent) {
                 try {
                     self.todoList.remove(occurredEvent.taskId);
-                    self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                    self.eventBus.post(new TaskListUpdated(self.todoList.all()));
                 } catch (e) {
                     self.eventBus.post(new TaskRemovalFailed("Task removal fail."));
                 }
@@ -879,7 +893,7 @@ var bundle = (function (exports) {
             eventBus.subscribe(EventTypeEnumeration.TaskCompletionRequested, function (occurredEvent) {
                 try {
                     self.todoList.complete(occurredEvent.taskId);
-                    self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                    self.eventBus.post(new TaskListUpdated(self.todoList.all()));
                 } catch (e) {
                     self.eventBus.post(new TaskCompletionFailed("Task completion fail."));
                 }
@@ -1012,7 +1026,7 @@ var bundle = (function (exports) {
 
             todoWidgetDiv.empty();
 
-            this.eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, function (event) {
+            this.eventBus.subscribe(EventTypeEnumeration.TaskListUpdated, function (event) {
                 let number = 1;
                 todoWidgetDiv.empty();
                 for (let curTask of event.taskArray) {

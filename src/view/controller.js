@@ -4,6 +4,7 @@ import {NewTaskAddedEvent} from "./event/newTaskAddedEvent";
 import {NewTaskValidationFailedEvent} from "./event/newTaskValidationFailedEvent";
 import {TaskCompletionFailed} from "./event/taskCompletionFailed";
 import {TaskRemovalFailed} from "./event/taskRemovalFailed";
+import {TaskListUpdated} from "./event/taskListUpdated";
 
 /**
  * Connects model of {@link TodoList} and {@link TodoComponent}.
@@ -27,7 +28,8 @@ export class Controller {
         eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (occurredEvent) {
             try {
                 self.todoList.add(occurredEvent.taskDescription);
-                self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                self.eventBus.post(new NewTaskAddedEvent());
+                self.eventBus.post(new TaskListUpdated(self.todoList.all()));
             } catch (e) {
                 self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
             }
@@ -36,7 +38,7 @@ export class Controller {
         eventBus.subscribe(EventTypeEnumeration.TaskRemovalRequest, function (occurredEvent) {
             try {
                 self.todoList.remove(occurredEvent.taskId);
-                self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                self.eventBus.post(new TaskListUpdated(self.todoList.all()));
             } catch (e) {
                 self.eventBus.post(new TaskRemovalFailed("Task removal fail."))
             }
@@ -45,7 +47,7 @@ export class Controller {
         eventBus.subscribe(EventTypeEnumeration.TaskCompletionRequested, function (occurredEvent) {
             try {
                 self.todoList.complete(occurredEvent.taskId);
-                self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                self.eventBus.post(new TaskListUpdated(self.todoList.all()));
             } catch (e) {
                 self.eventBus.post(new TaskCompletionFailed("Task completion fail."))
             }

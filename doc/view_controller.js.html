@@ -32,6 +32,7 @@ import {NewTaskAddedEvent} from "./event/newTaskAddedEvent";
 import {NewTaskValidationFailedEvent} from "./event/newTaskValidationFailedEvent";
 import {TaskCompletionFailed} from "./event/taskCompletionFailed";
 import {TaskRemovalFailed} from "./event/taskRemovalFailed";
+import {TaskListUpdated} from "./event/taskListUpdated";
 
 /**
  * Connects model of {@link TodoList} and {@link TodoComponent}.
@@ -55,7 +56,8 @@ export class Controller {
         eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, function (occurredEvent) {
             try {
                 self.todoList.add(occurredEvent.taskDescription);
-                self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                self.eventBus.post(new NewTaskAddedEvent());
+                self.eventBus.post(new TaskListUpdated(self.todoList.all()));
             } catch (e) {
                 self.eventBus.post(new NewTaskValidationFailedEvent(e.message));
             }
@@ -64,7 +66,7 @@ export class Controller {
         eventBus.subscribe(EventTypeEnumeration.TaskRemovalRequest, function (occurredEvent) {
             try {
                 self.todoList.remove(occurredEvent.taskId);
-                self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                self.eventBus.post(new TaskListUpdated(self.todoList.all()));
             } catch (e) {
                 self.eventBus.post(new TaskRemovalFailed("Task removal fail."))
             }
@@ -73,7 +75,7 @@ export class Controller {
         eventBus.subscribe(EventTypeEnumeration.TaskCompletionRequested, function (occurredEvent) {
             try {
                 self.todoList.complete(occurredEvent.taskId);
-                self.eventBus.post(new NewTaskAddedEvent(self.todoList.all()));
+                self.eventBus.post(new TaskListUpdated(self.todoList.all()));
             } catch (e) {
                 self.eventBus.post(new TaskCompletionFailed("Task completion fail."))
             }
@@ -90,13 +92,13 @@ export class Controller {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskFormComponent.html">AddTaskFormComponent</a></li><li><a href="AddTaskRequestEvent.html">AddTaskRequestEvent</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAddedEvent.html">NewTaskAddedEvent</a></li><li><a href="NewTaskValidationFailedEvent.html">NewTaskValidationFailedEvent</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalRequest.html">TaskRemovalRequest</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskViewComponent.html">TaskViewComponent</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidgetComponent.html">TodoWidgetComponent</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskFormComponent.html">AddTaskFormComponent</a></li><li><a href="AddTaskRequestEvent.html">AddTaskRequestEvent</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAddedEvent.html">NewTaskAddedEvent</a></li><li><a href="NewTaskValidationFailedEvent.html">NewTaskValidationFailedEvent</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskListUpdated.html">TaskListUpdated</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalRequest.html">TaskRemovalRequest</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskViewComponent.html">TaskViewComponent</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidgetComponent.html">TodoWidgetComponent</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 05 2018 20:09:38 GMT+0300 (Eastern European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Sep 06 2018 11:15:06 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

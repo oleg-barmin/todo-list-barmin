@@ -33,7 +33,7 @@ export class TodoWidgetComponent extends TodoComponent {
 
         todoWidgetDiv.empty();
 
-        this.eventBus.subscribe(EventTypeEnumeration.NewTaskAddedEvent, function (event) {
+        this.eventBus.subscribe(EventTypeEnumeration.TaskListUpdated, function (event) {
             let number = 1;
             todoWidgetDiv.empty();
             for (let curTask of event.taskArray) {
@@ -41,7 +41,7 @@ export class TodoWidgetComponent extends TodoComponent {
                 new TaskViewComponent(self.element.children().last(), self.eventBus, number, curTask).render();
                 number += 1;
             }
-        })
+        });
 
         this.eventBus.subscribe(EventTypeEnumeration.TaskCompletionFailed, function (event) {
             alert(event.errorMsg);
