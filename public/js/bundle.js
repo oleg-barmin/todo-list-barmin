@@ -224,22 +224,33 @@ var bundle = (function (exports) {
 
             const eventBus = this.eventBus;
 
-            eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, () => {
+            /**
+             * Processes `NewTaskAdded` event.
+             * Makes `descriptionTextArea` and `errorLabel` empty and invisible.
+             */
+            const newTaskAddedCallback = () => {
                 descriptionTextArea.val('');
                 errorLabel.empty();
                 errorLabel.addClass("invisible");
-            });
-            eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, event => {
+            };
+
+            /**
+             * Processes `NewTaskValidationFailed`.
+             * Makes `errorLabel` visible and appends into it error message from occurred `NewTaskValidationFailed` event.
+             *
+             * @param {NewTaskValidationFailed} newTaskValidationFailedEvent `NewTaskValidationFailed` with
+             *        error message to display.
+             */
+            const newTaskValidationFailedCallback = newTaskValidationFailedEvent => {
                 errorLabel.removeClass("invisible");
                 errorLabel.empty();
-                errorLabel.append(event.errorMsg);
-            });
+                errorLabel.append(newTaskValidationFailedEvent.errorMsg);
+            };
 
-            addTaskBtn.click(() => {
-                eventBus.post(new AddTaskRequest(descriptionTextArea.val()));
-            });
+            eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, newTaskAddedCallback);
+            eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, newTaskValidationFailedCallback);
 
-
+            addTaskBtn.click(() => eventBus.post(new AddTaskRequest(descriptionTextArea.val())));
         }
 
     }
@@ -1080,14 +1091,8 @@ var bundle = (function (exports) {
             const editBtn = this.element.find(`.${editBtnClass}`);
 
             removeBtn.click(() => this.eventBus.post(new TaskRemovalRequest(task.id)));
-
-            completeBtn.click(() => {
-                this.eventBus.post(new TaskCompletionRequested(task.id));
-            });
-
-            editBtn.click(() => {
-               this.eventBus.post(new StartTaskEditing(task.id));
-            });
+            completeBtn.click(() => this.eventBus.post(new TaskCompletionRequested(task.id)));
+            editBtn.click(() => this.eventBus.post(new StartTaskEditing(task.id)));
 
             if (task.completed) {
                 completeBtn.remove();
@@ -1186,20 +1191,23 @@ var bundle = (function (exports) {
             const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
             const errorLabel = this.element.find(`.${errorLabelClass}`);
 
-            this.eventBus.subscribe(EventTypeEnumeration.TaskUpdateFailed, (occuredEvent) => {
+            /**
+             * Processes `TaskUpdateFailed` event.
+             * Makes `errorLabel` visible and appends into it error message from occurred `TaskUpdateFailed` event.
+             *
+             * @param {TaskUpdateFailed} taskUpdateFailedEvent occurred `TaskUpdateFailed` event
+             *         with error message to display.
+             */
+            const taskUpdateFailedCallback = taskUpdateFailedEvent => {
                 errorLabel.removeClass("invisible");
                 errorLabel.empty();
-                errorLabel.append(occuredEvent.errorMsg);
-            });
+                errorLabel.append(taskUpdateFailedEvent.errorMsg);
+            };
 
-            saveBtn.click(() => {
-                const newTaskDescription = editTextArea.val();
-                this.eventBus.post(new TaskUpdateRequest(this.task.id, newTaskDescription));
-            });
+            this.eventBus.subscribe(EventTypeEnumeration.TaskUpdateFailed, taskUpdateFailedCallback);
 
-            cancelBtn.click(() => {
-                this.eventBus.post(new CancelTaskEditing(task.id));
-            });
+            saveBtn.click(() => this.eventBus.post(new TaskUpdateRequest(this.task.id, editTextArea.val())));
+            cancelBtn.click(() => this.eventBus.post(new CancelTaskEditing(task.id)));
         }
     }
 
@@ -1281,33 +1289,30 @@ var bundle = (function (exports) {
         }
 
         /**
-         * Empties given container for tasks to populate it
-         * with new tasks when `NewTaskAdded` will happen.
+         * Empties given container for tasks to populate it with new tasks.
          */
         render() {
-            const todoWidgetDiv = this.element;
-            const self = this;
+            this.element.empty();
 
-            todoWidgetDiv.empty();
-
-            this.eventBus.subscribe(EventTypeEnumeration.TaskListUpdated, function (event) {
-                let number = 1;
-                todoWidgetDiv.empty();
-                for (let curTask of event.taskArray) {
-                    self.element.append(`<div class="row no-gutters border border-light mt-2"></div>`);
-                    new TaskView(self.element.children().last(), self.eventBus, number, curTask).render();
-                    number += 1;
+            /**
+             * Processes `TaskListUpdated` event.
+             * Populates container of tasks with `TaskView` for each task stored in occurred `TaskListUpdated` event.
+             *
+             * @param {TaskListUpdated} taskListUpdatedEvent occurred `TaskListUpdated` event with array of new tasks.
+             */
+            const taskListUpdatedCallback = taskListUpdatedEvent => {
+                let indexNumbOfTask = 1;
+                this.element.empty();
+                for (let curTask of taskListUpdatedEvent.taskArray) {
+                    this.element.append(`<div class="row no-gutters border border-light mt-2"></div>`);
+                    new TaskView(this.element.children().last(), this.eventBus, indexNumbOfTask, curTask).render();
+                    indexNumbOfTask += 1;
                 }
-            });
+            };
 
-            this.eventBus.subscribe(EventTypeEnumeration.TaskCompletionFailed, function (event) {
-                alert(event.errorMsg);
-            });
-
-            this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFailed, function (event) {
-                alert(event.errorMsg);
-            });
-
+            this.eventBus.subscribe(EventTypeEnumeration.TaskListUpdated, taskListUpdatedCallback);
+            this.eventBus.subscribe(EventTypeEnumeration.TaskCompletionFailed, event => alert(event.errorMsg));
+            this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFailed, event => alert(event.errorMsg));
         }
 
     }

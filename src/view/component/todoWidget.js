@@ -24,33 +24,30 @@ export class TodoWidget extends TodoComponent {
     }
 
     /**
-     * Empties given container for tasks to populate it
-     * with new tasks when `NewTaskAdded` will happen.
+     * Empties given container for tasks to populate it with new tasks.
      */
     render() {
-        const todoWidgetDiv = this.element;
-        const self = this;
+        this.element.empty();
 
-        todoWidgetDiv.empty();
-
-        this.eventBus.subscribe(EventTypeEnumeration.TaskListUpdated, function (event) {
-            let number = 1;
-            todoWidgetDiv.empty();
-            for (let curTask of event.taskArray) {
-                self.element.append(`<div class="row no-gutters border border-light mt-2"></div>`);
-                new TaskView(self.element.children().last(), self.eventBus, number, curTask).render();
-                number += 1;
+        /**
+         * Processes `TaskListUpdated` event.
+         * Populates container of tasks with `TaskView` for each task stored in occurred `TaskListUpdated` event.
+         *
+         * @param {TaskListUpdated} taskListUpdatedEvent occurred `TaskListUpdated` event with array of new tasks.
+         */
+        const taskListUpdatedCallback = taskListUpdatedEvent => {
+            let indexNumbOfTask = 1;
+            this.element.empty();
+            for (let curTask of taskListUpdatedEvent.taskArray) {
+                this.element.append(`<div class="row no-gutters border border-light mt-2"></div>`);
+                new TaskView(this.element.children().last(), this.eventBus, indexNumbOfTask, curTask).render();
+                indexNumbOfTask += 1;
             }
-        });
+        };
 
-        this.eventBus.subscribe(EventTypeEnumeration.TaskCompletionFailed, function (event) {
-            alert(event.errorMsg);
-        });
-
-        this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFailed, function (event) {
-            alert(event.errorMsg);
-        })
-
+        this.eventBus.subscribe(EventTypeEnumeration.TaskListUpdated, taskListUpdatedCallback);
+        this.eventBus.subscribe(EventTypeEnumeration.TaskCompletionFailed, event => alert(event.errorMsg));
+        this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFailed, event => alert(event.errorMsg))
     }
 
 }

@@ -61,7 +61,7 @@ export class TaskEdit extends TodoComponent {
          * @param {TaskUpdateFailed} taskUpdateFailedEvent occurred `TaskUpdateFailed` event
          *         with error message to display.
          */
-        const taskUpdateFailedCallback = (taskUpdateFailedEvent) => {
+        const taskUpdateFailedCallback = taskUpdateFailedEvent => {
             errorLabel.removeClass("invisible");
             errorLabel.empty();
             errorLabel.append(taskUpdateFailedEvent.errorMsg);
