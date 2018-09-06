@@ -66,6 +66,7 @@ export class TaskDisplay extends TodoComponent {
 
         if (task.completed) {
             completeBtn.remove();
+            editBtn.remove();
             this.element.css({background: "#dddddd"})
         }
 
