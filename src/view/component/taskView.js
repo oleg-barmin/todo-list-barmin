@@ -1,9 +1,24 @@
 import {TodoComponent} from "./todoComponent";
-import {TaskRemovalRequest} from "../event/taskRemovalRequest";
-import {TaskCompletionRequested} from "../event/taskCompletionRequested";
+import {TaskDisplay} from "./taskDisplay";
+import {EventTypeEnumeration} from "../event/event";
+import {TaskEdit} from "./taskEdit";
 
 /**
- * Component which responsible for rendering and processing of task.
+ * Component which responsible for displaying of task.
+ *
+ * Has two states:
+ *  - {@link TaskDisplay}
+ *  - {@link TaskEdit}
+ *
+ *  In `TaskDisplay` state end user is able to:
+ *  - mark task as completed
+ *  - remove task
+ *  - switch to `TaskEdit` state
+ *
+ *  In `TaskEdit` state end user is able to:
+ *  - edit task description
+ *  - save new task description
+ *  - cancel editing (switch to `TaskDisplay` state)
  *
  * @extends TodoComponent
  */
@@ -25,36 +40,21 @@ export class TaskView extends TodoComponent {
     }
 
     /**
-     * Renders task into given element.
+     * Renders given task in `TaskDisplay` state.
      */
     render() {
-        const task = this.task;
-        const removeBtnClass = "removeBtn";
-        const completeBtnClass = "completeBtn";
-
-        this.element.append(
-            `<div class="col-md-auto pr-2">${this.number}.</div>
-                <div class="col-10" style="white-space: pre-wrap;">${task.description}</div>
-                <div class="col text-right">
-                    <button class="${completeBtnClass} btn btn-light octicon octicon-check"></button>
-                </div>
-                <div class="col-md-auto text-right">
-                    <button class="${removeBtnClass} btn btn-light octicon octicon-trashcan"></button>
-                </div>`
-        );
-
-
-        const removeBtn = this.element.find(`.${removeBtnClass}`);
-        const completeBtn = this.element.find(`.${completeBtnClass}`);
-        removeBtn.click(() => this.eventBus.post(new TaskRemovalRequest(task.id)));
-        completeBtn.click(() => {
-            this.eventBus.post(new TaskCompletionRequested(task.id));
+        new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+        this.eventBus.subscribe(EventTypeEnumeration.StartTaskEditing, (occurredEvent) => {
+            if(occurredEvent.taskId === this.task.id){
+                this.element.empty();
+                new TaskEdit(this.element, this.eventBus, this.number, this.task).render();
+            }
         });
-
-        if (task.completed) {
-            completeBtn.remove();
-            this.element.css({background: "#dddddd"})
-        }
-
+        this.eventBus.subscribe(EventTypeEnumeration.CancelTaskEditing, (occurredEvent) => {
+            if(occurredEvent.taskId === this.task.id){
+                this.element.empty();
+                new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+            }
+        });
     }
 }

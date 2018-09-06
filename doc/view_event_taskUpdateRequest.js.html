@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: view/event/taskCompletionFailed.js</title>
+    <title>JSDoc: Source: view/event/taskUpdateRequest.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: view/event/taskCompletionFailed.js</h1>
+    <h1 class="page-title">Source: view/event/taskUpdateRequest.js</h1>
 
     
 
@@ -29,19 +29,22 @@
             <pre class="prettyprint source linenums"><code>import {Event, EventTypeEnumeration} from "./event";
 
 /**
- * Occurs when `TaskCompletionRequest` cannot be processed properly.
+ * Occurs when end user submitted changes of a task description.
  */
-export class TaskCompletionFailed extends Event {
+export class TaskUpdateRequest extends Event{
 
     /**
-     * Creates `TaskRemovalFailed` instance.
+     * Creates `TaskUpdateRequest` instance.
      *
-     * @param {string} errorMsg description of error
+     * @param taskId id of task which description needs to be updated
+     * @param newTaskDescription new description of task.
      */
-    constructor(errorMsg) {
-        super(EventTypeEnumeration.TaskCompletionFailed);
-        this.errorMsg = errorMsg;
+    constructor(taskId, newTaskDescription) {
+        super(EventTypeEnumeration.TaskUpdateRequest);
+        this.taskId = taskId;
+        this.newTaskDescription = newTaskDescription;
     }
+
 }</code></pre>
         </article>
     </section>

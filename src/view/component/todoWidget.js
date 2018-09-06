@@ -47,7 +47,7 @@ export class TodoWidget extends TodoComponent {
             alert(event.errorMsg);
         });
 
-        this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFail, function (event) {
+        this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFailed, function (event) {
             alert(event.errorMsg);
         })
 

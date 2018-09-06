@@ -129,11 +129,15 @@
         AddTaskRequest: new EventType("AddTaskRequest"),
         NewTaskAdded: new EventType("NewTaskAdded"),
         TaskListUpdated: new EventType("TaskListUpdated"),
-        NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
         TaskCompletionRequested: new EventType("TaskCompletionRequested"),
         TaskRemovalRequest: new EventType("TaskRemovalRequest"),
+        StartTaskEditing: new EventType("StartTaskEditing"),
+        CancelTaskEditing: new EventType("CancelTaskEditing"),
+        TaskUpdateRequest: new EventType("TaskUpdateRequest"),
+        TaskRemovalFailed: new EventType("TaskRemovalFailed"),
         TaskCompletionFailed: new EventType("TaskCompletionFailed"),
-        TaskRemovalFail: new EventType("TaskRemovalFailed")
+        NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
+        TaskUpdateFailed: new EventType("TaskUpdateFailed")
     };
 
     /**
@@ -727,7 +731,7 @@
          * @param {string} errorMsg description of error
          */
         constructor(errorMsg) {
-            super(EventTypeEnumeration.TaskRemovalFail);
+            super(EventTypeEnumeration.TaskRemovalFailed);
             this.errorMsg = errorMsg;
         }
     }
@@ -792,6 +796,15 @@
                     self.eventBus.post(new TaskListUpdated(self.todoList.all()));
                 } catch (e) {
                     self.eventBus.post(new TaskCompletionFailed("Task completion fail."));
+                }
+            });
+
+            eventBus.subscribe(EventTypeEnumeration.TaskUpdateRequest, function (occurredEvent) {
+                try {
+                    self.todoList.update(occurredEvent.taskId, occurredEvent.newTaskDescription);
+                    self.eventBus.post(new TaskListUpdated(self.todoList.all()));
+                } catch (e) {
+                    self.eventBus.post(new TaskCompletionFailed("Task updated fail."));
                 }
             });
         }

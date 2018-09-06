@@ -52,6 +52,15 @@ export class Controller {
                 self.eventBus.post(new TaskCompletionFailed("Task completion fail."))
             }
         });
+
+        eventBus.subscribe(EventTypeEnumeration.TaskUpdateRequest, function (occurredEvent) {
+            try {
+                self.todoList.update(occurredEvent.taskId, occurredEvent.newTaskDescription);
+                self.eventBus.post(new TaskListUpdated(self.todoList.all()));
+            } catch (e) {
+                self.eventBus.post(new TaskCompletionFailed("Task updated fail."))
+            }
+        });
     }
 
 }

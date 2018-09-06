@@ -123,11 +123,15 @@ export const EventTypeEnumeration = {
     AddTaskRequest: new EventType("AddTaskRequest"),
     NewTaskAdded: new EventType("NewTaskAdded"),
     TaskListUpdated: new EventType("TaskListUpdated"),
-    NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
     TaskCompletionRequested: new EventType("TaskCompletionRequested"),
     TaskRemovalRequest: new EventType("TaskRemovalRequest"),
+    StartTaskEditing: new EventType("StartTaskEditing"),
+    CancelTaskEditing: new EventType("CancelTaskEditing"),
+    TaskUpdateRequest: new EventType("TaskUpdateRequest"),
+    TaskRemovalFailed: new EventType("TaskRemovalFailed"),
     TaskCompletionFailed: new EventType("TaskCompletionFailed"),
-    TaskRemovalFail: new EventType("TaskRemovalFailed")
+    NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
+    TaskUpdateFailed: new EventType("TaskUpdateFailed")
 };
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: view/event/taskCompletionFailed.js</title>
+    <title>JSDoc: Source: view/event/cancelTaskEditing.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: view/event/taskCompletionFailed.js</h1>
+    <h1 class="page-title">Source: view/event/cancelTaskEditing.js</h1>
 
     
 
@@ -29,18 +29,20 @@
             <pre class="prettyprint source linenums"><code>import {Event, EventTypeEnumeration} from "./event";
 
 /**
- * Occurs when `TaskCompletionRequest` cannot be processed properly.
+ * Occurs when end user tries to cancel a task editing.
+ *
+ * @extends Event
  */
-export class TaskCompletionFailed extends Event {
+export class CancelTaskEditing extends Event {
 
     /**
-     * Creates `TaskRemovalFailed` instance.
+     * Creates `CancelTaskEditing` instance.
      *
-     * @param {string} errorMsg description of error
+     * @param taskId id of a task which editing was canceled
      */
-    constructor(errorMsg) {
-        super(EventTypeEnumeration.TaskCompletionFailed);
-        this.errorMsg = errorMsg;
+    constructor(taskId) {
+        super(EventTypeEnumeration.CancelTaskEditing);
+        this.taskId = taskId;
     }
 }</code></pre>
         </article>

@@ -11,7 +11,7 @@ export class TaskRemovalFailed extends Event {
      * @param {string} errorMsg description of error
      */
     constructor(errorMsg) {
-        super(EventTypeEnumeration.TaskRemovalFail);
+        super(EventTypeEnumeration.TaskRemovalFailed);
         this.errorMsg = errorMsg;
     }
 }

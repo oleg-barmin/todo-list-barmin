@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: view/event/taskCompletionFailed.js</title>
+    <title>JSDoc: Source: view/component/taskEdit.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: view/event/taskCompletionFailed.js</h1>
+    <h1 class="page-title">Source: view/component/taskEdit.js</h1>
 
     
 
@@ -26,21 +26,63 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import {Event, EventTypeEnumeration} from "./event";
+            <pre class="prettyprint source linenums"><code>import {TodoComponent} from "./todoComponent";
+import {CancelTaskEditing} from "../event/cancelTaskEditing";
+import {TaskUpdateRequest} from "../event/taskUpdateRequest";
 
 /**
- * Occurs when `TaskCompletionRequest` cannot be processed properly.
+ * Component which responsible for rendering and processing of task in edit state.
+ *
+ * @extends TodoComponent
  */
-export class TaskCompletionFailed extends Event {
-
+export class TaskEdit extends TodoComponent {
     /**
-     * Creates `TaskRemovalFailed` instance.
+     * Creates `TaskEdit` instance.
      *
-     * @param {string} errorMsg description of error
+     * @param element Jquery element to render into
+     * @param {EventBus} eventBus eventBust to subscribe and post events
+     * @param {Number} number number of the task in the list of tasks
+     * @param {Task} task task to render
      */
-    constructor(errorMsg) {
-        super(EventTypeEnumeration.TaskCompletionFailed);
-        this.errorMsg = errorMsg;
+    constructor(element, eventBus, number, task) {
+        super(element, eventBus);
+        this.eventBus = eventBus;
+        this.task = task;
+        this.number = number;
+    }
+
+    render() {
+        const task = this.task;
+
+        const saveBtnClass = "saveBtn";
+        const cancelBtnClass = "cancelBtn";
+        const editDescriptionTextAreaClass = "editDescriptionTextArea";
+
+        this.element.append(
+            `&lt;div class="col-md-auto pr-2">${this.number}.&lt;/div>
+                &lt;div class="col-10">
+                    &lt;textarea style="white-space: pre-wrap;" class="${editDescriptionTextAreaClass} form-control">${task.description}&lt;/textarea>
+                &lt;/div>
+                &lt;div class="col text-right">
+                    &lt;button class="${saveBtnClass} btn btn-light octicon octicon-check">&lt;/button>
+                &lt;/div>
+                &lt;div class="col-md-auto text-right">
+                    &lt;button class="${cancelBtnClass} btn btn-light octicon octicon-x">&lt;/button>
+                &lt;/div>`
+        );
+
+        const saveBtn = this.element.find(`.${saveBtnClass}`);
+        const cancelBtn = this.element.find(`.${cancelBtnClass}`);
+        const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
+
+        saveBtn.click(() => {
+            const newTaskDescription = editTextArea.val();
+            this.eventBus.post(new TaskUpdateRequest(this.task.id, newTaskDescription))
+        });
+
+        cancelBtn.click(() => {
+            this.eventBus.post(new CancelTaskEditing(task.id));
+        });
     }
 }</code></pre>
         </article>

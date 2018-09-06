@@ -126,11 +126,15 @@ var bundle = (function (exports) {
         AddTaskRequest: new EventType("AddTaskRequest"),
         NewTaskAdded: new EventType("NewTaskAdded"),
         TaskListUpdated: new EventType("TaskListUpdated"),
-        NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
         TaskCompletionRequested: new EventType("TaskCompletionRequested"),
         TaskRemovalRequest: new EventType("TaskRemovalRequest"),
+        StartTaskEditing: new EventType("StartTaskEditing"),
+        CancelTaskEditing: new EventType("CancelTaskEditing"),
+        TaskUpdateRequest: new EventType("TaskUpdateRequest"),
+        TaskRemovalFailed: new EventType("TaskRemovalFailed"),
         TaskCompletionFailed: new EventType("TaskCompletionFailed"),
-        TaskRemovalFail: new EventType("TaskRemovalFailed")
+        NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
+        TaskUpdateFailed: new EventType("TaskUpdateFailed")
     };
 
     /**
@@ -831,7 +835,7 @@ var bundle = (function (exports) {
          * @param {string} errorMsg description of error
          */
         constructor(errorMsg) {
-            super(EventTypeEnumeration.TaskRemovalFail);
+            super(EventTypeEnumeration.TaskRemovalFailed);
             this.errorMsg = errorMsg;
         }
     }
@@ -898,6 +902,15 @@ var bundle = (function (exports) {
                     self.eventBus.post(new TaskCompletionFailed("Task completion fail."));
                 }
             });
+
+            eventBus.subscribe(EventTypeEnumeration.TaskUpdateRequest, function (occurredEvent) {
+                try {
+                    self.todoList.update(occurredEvent.taskId, occurredEvent.newTaskDescription);
+                    self.eventBus.post(new TaskListUpdated(self.todoList.all()));
+                } catch (e) {
+                    self.eventBus.post(new TaskCompletionFailed("Task updated fail."));
+                }
+            });
         }
 
     }
@@ -939,11 +952,29 @@ var bundle = (function (exports) {
     }
 
     /**
-     * Component which responsible for rendering and processing of task.
+     * Occurs when end user tries to edit a task.
+     *
+     * @extends Event
+     */
+    class StartTaskEditing extends Event {
+
+        /**
+         * Creates `StartTaskEditing` instance.
+         *
+         * @param taskId id of a task which editing was requested.
+         */
+        constructor(taskId) {
+            super(EventTypeEnumeration.StartTaskEditing);
+            this.taskId = taskId;
+        }
+    }
+
+    /**
+     * Component which responsible for rendering and processing of task in display state.
      *
      * @extends TodoComponent
      */
-    class TaskView extends TodoComponent {
+    class TaskDisplay extends TodoComponent {
 
         /**
          * Creates `TaskView` instance.
@@ -965,13 +996,18 @@ var bundle = (function (exports) {
          */
         render() {
             const task = this.task;
+
             const removeBtnClass = "removeBtn";
             const completeBtnClass = "completeBtn";
+            const editBtnClass = "editBtn";
 
             this.element.append(
                 `<div class="col-md-auto pr-2">${this.number}.</div>
-                <div class="col-10" style="white-space: pre-wrap;">${task.description}</div>
+                <div class="col-9" style="white-space: pre-wrap;">${task.description}</div>
                 <div class="col text-right">
+                    <button class="${editBtnClass} btn btn-light octicon octicon-pencil"></button>
+                </div>
+                <div class="col-md-auto text-right">
                     <button class="${completeBtnClass} btn btn-light octicon octicon-check"></button>
                 </div>
                 <div class="col-md-auto text-right">
@@ -982,9 +1018,16 @@ var bundle = (function (exports) {
 
             const removeBtn = this.element.find(`.${removeBtnClass}`);
             const completeBtn = this.element.find(`.${completeBtnClass}`);
+            const editBtn = this.element.find(`.${editBtnClass}`);
+
             removeBtn.click(() => this.eventBus.post(new TaskRemovalRequest(task.id)));
+
             completeBtn.click(() => {
                 this.eventBus.post(new TaskCompletionRequested(task.id));
+            });
+
+            editBtn.click(() => {
+               this.eventBus.post(new StartTaskEditing(task.id));
             });
 
             if (task.completed) {
@@ -992,6 +1035,155 @@ var bundle = (function (exports) {
                 this.element.css({background: "#dddddd"});
             }
 
+        }
+    }
+
+    /**
+     * Occurs when end user tries to cancel a task editing.
+     *
+     * @extends Event
+     */
+    class CancelTaskEditing extends Event {
+
+        /**
+         * Creates `CancelTaskEditing` instance.
+         *
+         * @param taskId id of a task which editing was canceled
+         */
+        constructor(taskId) {
+            super(EventTypeEnumeration.CancelTaskEditing);
+            this.taskId = taskId;
+        }
+    }
+
+    /**
+     * Occurs when end user submitted changes of a task description.
+     */
+    class TaskUpdateRequest extends Event{
+
+        /**
+         * Creates `TaskUpdateRequest` instance.
+         *
+         * @param taskId id of task which description needs to be updated
+         * @param newTaskDescription new description of task.
+         */
+        constructor(taskId, newTaskDescription) {
+            super(EventTypeEnumeration.TaskUpdateRequest);
+            this.taskId = taskId;
+            this.newTaskDescription = newTaskDescription;
+        }
+
+    }
+
+    /**
+     * Component which responsible for rendering and processing of task in edit state.
+     *
+     * @extends TodoComponent
+     */
+    class TaskEdit extends TodoComponent {
+        /**
+         * Creates `TaskEdit` instance.
+         *
+         * @param element Jquery element to render into
+         * @param {EventBus} eventBus eventBust to subscribe and post events
+         * @param {Number} number number of the task in the list of tasks
+         * @param {Task} task task to render
+         */
+        constructor(element, eventBus, number, task) {
+            super(element, eventBus);
+            this.eventBus = eventBus;
+            this.task = task;
+            this.number = number;
+        }
+
+        render() {
+            const task = this.task;
+
+            const saveBtnClass = "saveBtn";
+            const cancelBtnClass = "cancelBtn";
+            const editDescriptionTextAreaClass = "editDescriptionTextArea";
+
+            this.element.append(
+                `<div class="col-md-auto pr-2">${this.number}.</div>
+                <div class="col-10">
+                    <textarea style="white-space: pre-wrap;" class="${editDescriptionTextAreaClass} form-control">${task.description}</textarea>
+                </div>
+                <div class="col text-right">
+                    <button class="${saveBtnClass} btn btn-light octicon octicon-check"></button>
+                </div>
+                <div class="col-md-auto text-right">
+                    <button class="${cancelBtnClass} btn btn-light octicon octicon-x"></button>
+                </div>`
+            );
+
+            const saveBtn = this.element.find(`.${saveBtnClass}`);
+            const cancelBtn = this.element.find(`.${cancelBtnClass}`);
+            const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
+
+            saveBtn.click(() => {
+                const newTaskDescription = editTextArea.val();
+                this.eventBus.post(new TaskUpdateRequest(this.task.id, newTaskDescription));
+            });
+
+            cancelBtn.click(() => {
+                this.eventBus.post(new CancelTaskEditing(task.id));
+            });
+        }
+    }
+
+    /**
+     * Component which responsible for displaying of task.
+     *
+     * Has two states:
+     *  - {@link TaskDisplay}
+     *  - {@link TaskEdit}
+     *
+     *  In `TaskDisplay` state end user is able to:
+     *  - mark task as completed
+     *  - remove task
+     *  - switch to `TaskEdit` state
+     *
+     *  In `TaskEdit` state end user is able to:
+     *  - edit task description
+     *  - save new task description
+     *  - cancel editing (switch to `TaskDisplay` state)
+     *
+     * @extends TodoComponent
+     */
+    class TaskView extends TodoComponent {
+
+        /**
+         * Creates `TaskView` instance.
+         *
+         * @param element Jquery element to render into
+         * @param {EventBus} eventBus eventBust to subscribe and post events
+         * @param {Number} number number of the task in the list of tasks
+         * @param {Task} task task to render
+         */
+        constructor(element, eventBus, number, task) {
+            super(element, eventBus);
+            this.eventBus = eventBus;
+            this.task = task;
+            this.number = number;
+        }
+
+        /**
+         * Renders given task in `TaskDisplay` state.
+         */
+        render() {
+            new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+            this.eventBus.subscribe(EventTypeEnumeration.StartTaskEditing, (occurredEvent) => {
+                if(occurredEvent.taskId === this.task.id){
+                    this.element.empty();
+                    new TaskEdit(this.element, this.eventBus, this.number, this.task).render();
+                }
+            });
+            this.eventBus.subscribe(EventTypeEnumeration.CancelTaskEditing, (occurredEvent) => {
+                if(occurredEvent.taskId === this.task.id){
+                    this.element.empty();
+                    new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+                }
+            });
         }
     }
 
@@ -1040,7 +1232,7 @@ var bundle = (function (exports) {
                 alert(event.errorMsg);
             });
 
-            this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFail, function (event) {
+            this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFailed, function (event) {
                 alert(event.errorMsg);
             });
 
