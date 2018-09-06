@@ -9,6 +9,7 @@ import {EventTypeEnumeration} from "../event/event";
  * @extends TodoComponent
  */
 export class TaskEdit extends TodoComponent {
+
     /**
      * Creates `TaskEdit` instance.
      *
@@ -53,6 +54,9 @@ export class TaskEdit extends TodoComponent {
         const cancelBtn = this.element.find(`.${cancelBtnClass}`);
         const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
         const errorLabel = this.element.find(`.${errorLabelClass}`);
+
+        const descriptionRowsNumber = task.description.split(/\r\n|\r|\n/).length;
+        editTextArea.attr("rows",  descriptionRowsNumber > 10 ? 10 : descriptionRowsNumber);
 
         /**
          * Processes `TaskUpdateFailed` event.
