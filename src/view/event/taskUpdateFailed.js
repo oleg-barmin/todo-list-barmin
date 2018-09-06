@@ -8,8 +8,8 @@ export class TaskUpdateFailed extends Event {
     /**
      * Creates `TaskUpdateFailed` instance.
      *
-     * @param taskId id of task which updating was failed
-     * @param errorMsg error message to display on view
+     * @param {TaskId} taskId ID of task which updating was failed
+     * @param {string} errorMsg error message to display on view
      */
     constructor(taskId, errorMsg) {
         super(EventTypeEnumeration.TaskUpdateFailed);

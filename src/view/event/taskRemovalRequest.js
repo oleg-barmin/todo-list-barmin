@@ -10,7 +10,7 @@ export class TaskRemovalRequest extends Event {
     /**
      * Creates `TaskRemovalRequest` instance.
      *
-     * @param {TaskId} taskId id of task to remove.
+     * @param {TaskId} taskId ID of task to remove.
      */
     constructor(taskId) {
         super(EventTypeEnumeration.TaskRemovalRequest);

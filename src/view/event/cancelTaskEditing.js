@@ -10,7 +10,7 @@ export class CancelTaskEditing extends Event {
     /**
      * Creates `CancelTaskEditing` instance.
      *
-     * @param taskId id of a task which editing was canceled
+     * @param {TaskId} taskId ID of a task which editing was canceled
      */
     constructor(taskId) {
         super(EventTypeEnumeration.CancelTaskEditing);

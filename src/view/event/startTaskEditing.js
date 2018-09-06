@@ -10,7 +10,7 @@ export class StartTaskEditing extends Event {
     /**
      * Creates `StartTaskEditing` instance.
      *
-     * @param taskId id of a task which editing was requested.
+     * @param {TaskId} taskId ID of a task which editing was requested.
      */
     constructor(taskId) {
         super(EventTypeEnumeration.StartTaskEditing);
