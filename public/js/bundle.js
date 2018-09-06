@@ -857,6 +857,24 @@ var bundle = (function (exports) {
     }
 
     /**
+     * Occurs when `TaskUpdateRequest` cannot be processed.
+     */
+    class TaskUpdateFailed extends Event {
+
+        /**
+         * Creates `TaskUpdateFailed` instance.
+         *
+         * @param taskId id of task which updating was failed
+         * @param errorMsg error message to display on view
+         */
+        constructor(taskId, errorMsg) {
+            super(EventTypeEnumeration.TaskUpdateFailed);
+            this.errorMsg = errorMsg;
+            this.taskId = taskId;
+        }
+    }
+
+    /**
      * Connects model of {@link TodoList} and {@link TodoComponent}.
      * Reacts on {@link Event} which occurred on view layer.
      */
@@ -908,7 +926,7 @@ var bundle = (function (exports) {
                     self.todoList.update(occurredEvent.taskId, occurredEvent.newTaskDescription);
                     self.eventBus.post(new TaskListUpdated(self.todoList.all()));
                 } catch (e) {
-                    self.eventBus.post(new TaskCompletionFailed("Task updated fail."));
+                    self.eventBus.post(new TaskUpdateFailed(occurredEvent.taskId, "New task description cannot be empty."));
                 }
             });
         }
@@ -1102,6 +1120,7 @@ var bundle = (function (exports) {
             const saveBtnClass = "saveBtn";
             const cancelBtnClass = "cancelBtn";
             const editDescriptionTextAreaClass = "editDescriptionTextArea";
+            const errorLabelClass = "errorMsgLabel";
 
             this.element.append(
                 `<div class="col-md-auto pr-2">${this.number}.</div>
@@ -1113,12 +1132,23 @@ var bundle = (function (exports) {
                 </div>
                 <div class="col-md-auto text-right">
                     <button class="${cancelBtnClass} btn btn-light octicon octicon-x"></button>
-                </div>`
+                </div>
+                <div class="w-100"></div>
+                <div class="col">
+                <label class="${errorLabelClass} invisible w-100 alert-danger"></label>
+            </div>`
             );
 
             const saveBtn = this.element.find(`.${saveBtnClass}`);
             const cancelBtn = this.element.find(`.${cancelBtnClass}`);
             const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
+            const errorLabel = this.element.find(`.${errorLabelClass}`);
+
+            this.eventBus.subscribe(EventTypeEnumeration.TaskUpdateFailed, (occuredEvent) => {
+                errorLabel.removeClass("invisible");
+                errorLabel.empty();
+                errorLabel.append(occuredEvent.errorMsg);
+            });
 
             saveBtn.click(() => {
                 const newTaskDescription = editTextArea.val();

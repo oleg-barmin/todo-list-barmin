@@ -5,6 +5,7 @@ import {NewTaskValidationFailed} from "./event/newTaskValidationFailed";
 import {TaskCompletionFailed} from "./event/taskCompletionFailed";
 import {TaskRemovalFailed} from "./event/taskRemovalFailed";
 import {TaskListUpdated} from "./event/taskListUpdated";
+import {TaskUpdateFailed} from "./event/taskUpdateFailed";
 
 /**
  * Connects model of {@link TodoList} and {@link TodoComponent}.
@@ -58,7 +59,7 @@ export class Controller {
                 self.todoList.update(occurredEvent.taskId, occurredEvent.newTaskDescription);
                 self.eventBus.post(new TaskListUpdated(self.todoList.all()));
             } catch (e) {
-                self.eventBus.post(new TaskCompletionFailed("Task updated fail."))
+                self.eventBus.post(new TaskUpdateFailed(occurredEvent.taskId, "New task description cannot be empty."))
             }
         });
     }

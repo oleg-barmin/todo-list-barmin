@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: view/event/taskUpdateRequest.js</title>
+    <title>JSDoc: Class: TaskUpdateFailed</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,37 +17,201 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: view/event/taskUpdateRequest.js</h1>
+    <h1 class="page-title">Class: TaskUpdateFailed</h1>
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>import {Event, EventTypeEnumeration} from "./event";
+        <h2><span class="attribs"><span class="type-signature"></span></span>TaskUpdateFailed<span class="signature">(taskId, errorMsg)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description"><p>Occurs when <code>TaskUpdateRequest</code> cannot be processed.</p></div>
+        
+    
+</header>
 
-/**
- * Occurs when end user submitted changes of a task description.
- */
-export class TaskUpdateRequest extends Event{
+<article>
+    <div class="container-overview">
+    
+        
 
-    /**
-     * Creates `TaskUpdateRequest` instance.
-     *
-     * @param taskId id of task which description needs to be updated
-     * @param newTaskDescription new description of task.
-     */
-    constructor(taskId, newTaskDescription) {
-        super(EventTypeEnumeration.TaskUpdateRequest);
-        this.taskId = taskId;
-        this.newTaskDescription = newTaskDescription;
-    }
+    
+    <h2>Constructor</h2>
+    
 
-}</code></pre>
-        </article>
-    </section>
+    
+    <h4 class="name" id="TaskUpdateFailed"><span class="type-signature"></span>new TaskUpdateFailed<span class="signature">(taskId, errorMsg)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Creates <code>TaskUpdateFailed</code> instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>taskId</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>id of task which updating was failed</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>errorMsg</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>error message to display on view</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="view_event_taskUpdateFailed.js.html">view/event/taskUpdateFailed.js</a>, <a href="view_event_taskUpdateFailed.js.html#line6">line 6</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

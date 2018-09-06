@@ -1,6 +1,7 @@
 import {TodoComponent} from "./todoComponent";
 import {CancelTaskEditing} from "../event/cancelTaskEditing";
 import {TaskUpdateRequest} from "../event/taskUpdateRequest";
+import {EventTypeEnumeration} from "../event/event";
 
 /**
  * Component which responsible for rendering and processing of task in edit state.
@@ -29,6 +30,7 @@ export class TaskEdit extends TodoComponent {
         const saveBtnClass = "saveBtn";
         const cancelBtnClass = "cancelBtn";
         const editDescriptionTextAreaClass = "editDescriptionTextArea";
+        const errorLabelClass = "errorMsgLabel";
 
         this.element.append(
             `<div class="col-md-auto pr-2">${this.number}.</div>
@@ -40,12 +42,23 @@ export class TaskEdit extends TodoComponent {
                 </div>
                 <div class="col-md-auto text-right">
                     <button class="${cancelBtnClass} btn btn-light octicon octicon-x"></button>
-                </div>`
+                </div>
+                <div class="w-100"></div>
+                <div class="col">
+                <label class="${errorLabelClass} invisible w-100 alert-danger"></label>
+            </div>`
         );
 
         const saveBtn = this.element.find(`.${saveBtnClass}`);
         const cancelBtn = this.element.find(`.${cancelBtnClass}`);
         const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
+        const errorLabel = this.element.find(`.${errorLabelClass}`);
+
+        this.eventBus.subscribe(EventTypeEnumeration.TaskUpdateFailed, (occuredEvent) => {
+            errorLabel.removeClass("invisible");
+            errorLabel.empty();
+            errorLabel.append(occuredEvent.errorMsg);
+        });
 
         saveBtn.click(() => {
             const newTaskDescription = editTextArea.val();
