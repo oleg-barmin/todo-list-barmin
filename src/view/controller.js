@@ -30,8 +30,8 @@ export class Controller {
          * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
          *
          * if given description is valid:
-         *      1. Posts {@link NewTaskAdded}
-         *      2. Posts {@link TaskListUpdated} with new task list.
+         *      - posts {@link NewTaskAdded}
+         *      - posts {@link TaskListUpdated} with new task list.
          * Otherwise {@link NewTaskValidationFailed} will be posted
          *
          * @param {AddTaskRequest} addTaskEvent `AddTaskRequest` with description of the task to add.
