@@ -35,14 +35,14 @@ export class TaskEdit extends TodoComponent {
 
         this.element.append(
             `<div class="col-md-auto pr-2">${this.number}.</div>
-                <div class="col-10">
+                <div class="col-9">
                     <textarea style="white-space: pre-wrap;" class="${editDescriptionTextAreaClass} form-control"></textarea>
                 </div>
                 <div class="col text-right">
-                    <button class="${saveBtnClass} btn btn-light octicon octicon-check"></button>
+                    <button class="${saveBtnClass} btn btn-sm btn-primary">Save</button>
                 </div>
-                <div class="col-md-auto text-right">
-                    <button class="${cancelBtnClass} btn btn-light octicon octicon-x"></button>
+                <div class="col-sm-auto">
+                    <button class="${cancelBtnClass} btn btn-sm btn-light">Cancel</button>
                 </div>
                 <div class="w-100"></div>
                 <div class="col">
