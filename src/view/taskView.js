@@ -37,26 +37,28 @@ export class TaskView extends TodoComponent {
         this.eventBus = eventBus;
         this.task = task;
         this.number = number;
-        this.currentState = null;
+        this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
     }
 
     /**
      * Renders given task in `TaskDisplay` state.
      */
     render() {
-        this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+        this.currentState.render();
 
         const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.StartTaskEditing, occurredEvent => {
             if (occurredEvent.taskId === this.task.id) {
                 this.element.empty();
-                this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task).render();
+                this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task);
+                this.currentState.render();
             }
         });
 
         const cancelTaskEditingHandler = this.eventBus.subscribe(EventTypes.CancelTaskEditing, occurredEvent => {
             if (occurredEvent.taskId === this.task.id) {
                 this.element.empty();
-                this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+                this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                this.currentState.render();
             }
         });
 
