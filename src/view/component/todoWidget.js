@@ -39,7 +39,7 @@ export class TodoWidget extends TodoComponent {
             let indexNumbOfTask = 1;
             this.element.empty();
             for (let curTask of taskListUpdatedEvent.taskArray) {
-                this.element.append(`<div class="row no-gutters border border-light mt-2"></div>`);
+                this.element.append(`<div class="row no-gutters mt-2"></div>`);
                 new TaskView(this.element.children().last(), this.eventBus, indexNumbOfTask, curTask).render();
                 indexNumbOfTask += 1;
             }
