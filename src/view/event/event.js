@@ -19,7 +19,7 @@ export class Event {
  * Allows to posts {@link Event} and subscribe on `EventType` to process custom callbacks.
  *
  * When `Event` was posted all callbacks for `EventType` of occurred `Event` will be performed.
- * For `EventBus` work properly transport JQuery object should be provided.
+ * For `EventBus` work properly transport jQuery object should be provided.
  *
  * Example:
  * ```
@@ -68,14 +68,14 @@ export class Event {
  * Third callback, occurredEvent: secondCustomEventType
  * `
  *
- * Implementation of "event bus" design pattern, based on jquery.
+ * Implementation of "event bus" design pattern, based on jQuery.
  */
 export class EventBus {
 
     /**
      * Creates `EventBus` instance.
      *
-     * @param transport transport JQuery object to bind `EventBus` on.
+     * @param transport transport jQuery object to bind `EventBus` on.
      */
     constructor(transport) {
         this._transport = transport;

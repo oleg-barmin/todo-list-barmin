@@ -11,7 +11,7 @@ export class TodoListApp {
     /**
      * Creates `TodoListApp` instance.
      *
-     * @param rootElement root JQuery element where to-do app will be deployed
+     * @param rootElement root jQuery element where to-do app will be deployed
      */
     constructor(rootElement) {
         this.root = rootElement;
