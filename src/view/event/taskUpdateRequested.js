@@ -5,10 +5,10 @@ import {Event, EventTypes} from "./event";
  *
  * @extends Event
  */
-export class TaskUpdateRequest extends Event{
+export class TaskUpdateRequested extends Event{
 
     /**
-     * Creates `TaskUpdateRequest` instance.
+     * Creates `TaskUpdateRequested` instance.
      *
      * @param {TaskId} taskId ID of task which description needs to be updated
      * @param {string} newTaskDescription new description of task.

@@ -130,10 +130,10 @@
         NewTaskAdded: new EventType("NewTaskAdded"),
         TaskListUpdated: new EventType("TaskListUpdated"),
         TaskCompletionRequested: new EventType("TaskCompletionRequested"),
-        TaskRemovalRequest: new EventType("TaskRemovalRequest"),
-        StartTaskEditing: new EventType("StartTaskEditing"),
+        TaskRemovalRequest: new EventType("TaskRemovalRequested"),
+        StartTaskEditing: new EventType("TaskEditingStarted"),
         CancelTaskEditing: new EventType("CancelTaskEditing"),
-        TaskUpdateRequest: new EventType("TaskUpdateRequest"),
+        TaskUpdateRequest: new EventType("TaskUpdateRequested"),
         TaskRemovalFailed: new EventType("TaskRemovalFailed"),
         TaskCompletionFailed: new EventType("TaskCompletionFailed"),
         NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
@@ -721,7 +721,7 @@
     }
 
     /**
-     * Occurs when `TaskRemovalRequest` cannot be processed properly.
+     * Occurs when `TaskRemovalRequested` cannot be processed properly.
      */
     class TaskRemovalFailed extends Event {
 
@@ -753,7 +753,7 @@
     }
 
     /**
-     * Occurs when `TaskUpdateRequest` cannot be processed.
+     * Occurs when `TaskUpdateRequested` cannot be processed.
      */
     class TaskUpdateFailed extends Event {
 
@@ -809,12 +809,12 @@
             };
 
             /**
-             * Removes task with ID stored in occurred `TaskRemovalRequest` from `TodoList`.
+             * Removes task with ID stored in occurred `TaskRemovalRequested` from `TodoList`.
              *
              * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
              * Otherwise: posts {@link TaskRemovalFailed}.
              *
-             * @param {TaskRemovalRequest} taskRemovalEvent `TaskRemovalRequest` event with ID of the task to remove.
+             * @param {TaskRemovalRequest} taskRemovalEvent `TaskRemovalRequested` event with ID of the task to remove.
              */
             const taskRemovalRequestCallback = taskRemovalEvent => {
                 try {
@@ -850,7 +850,7 @@
              * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
              * Otherwise: posts {@link TaskUpdateFailed}.
              *
-             * @param {TaskUpdateRequest} taskUpdateEvent `TaskUpdateRequest` event
+             * @param {TaskUpdateRequest} taskUpdateEvent `TaskUpdateRequested` event
              *        which contains ID of task to update and its new description.
              */
             const taskUpdateRequestCallback = taskUpdateEvent => {
@@ -913,7 +913,7 @@
     class TaskRemovalRequest extends Event {
 
         /**
-         * Creates `TaskRemovalRequest` instance.
+         * Creates `TaskRemovalRequested` instance.
          *
          * @param {TaskId} taskId ID of task to remove.
          */
@@ -929,7 +929,7 @@
     class TaskUpdateRequest extends Event{
 
         /**
-         * Creates `TaskUpdateRequest` instance.
+         * Creates `TaskUpdateRequested` instance.
          *
          * @param {TaskId} taskId ID of task which description needs to be updated
          * @param {string} newTaskDescription new description of task.
@@ -1016,8 +1016,8 @@
 
         addedTask = todoList.all()[0];
 
-        assert.strictEqual(addedTask.description, newTaskDescription, "update task description when TaskUpdateRequest was posted.");
-        assert.ok(taskListUpdatedWasPosted, "post a TaskListUpdated after success process of TaskUpdateRequest.");
+        assert.strictEqual(addedTask.description, newTaskDescription, "update task description when TaskUpdateRequested was posted.");
+        assert.ok(taskListUpdatedWasPosted, "post a TaskListUpdated after success process of TaskUpdateRequested.");
         assert.ok(taskUpdateFailedWasPosted, "post TaskUpdateFailed if try to update task with empty description.");
 
 
@@ -1044,8 +1044,8 @@
         eventBus.post(new TaskRemovalRequest(addedTask.id));
         eventBus.post(new TaskRemovalRequest(addedTask.id));
 
-        assert.ok(todoList.all().length === 0, "remove task after TaskRemovalRequest was posted.");
-        assert.ok(taskListUpdatedWasPosted, "post a TaskListUpdated after TaskRemovalRequest was posted.");
+        assert.ok(todoList.all().length === 0, "remove task after TaskRemovalRequested was posted.");
+        assert.ok(taskListUpdatedWasPosted, "post a TaskListUpdated after TaskRemovalRequested was posted.");
         assert.ok(taskRemovalFailedWasPosted, "post a TaskRemovalFailed if try to remove task which doesn't exists in TodoList.");
     });
 

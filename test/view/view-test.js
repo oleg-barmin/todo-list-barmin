@@ -3,8 +3,8 @@ import {Controller} from "../../src/view/controller";
 import {AddTaskRequest} from "../../src/view/event/addTaskRequest";
 import {TodoList} from "../../src/model/todo-list";
 import {TaskCompletionRequested} from "../../src/view/event/taskCompletionRequested";
-import {TaskRemovalRequest} from "../../src/view/event/taskRemovalRequest";
-import {TaskUpdateRequest} from "../../src/view/event/taskUpdateRequest";
+import {TaskRemovalRequested} from "../../src/view/event/taskRemovalRequested";
+import {TaskUpdateRequested} from "../../src/view/event/taskUpdateRequested";
 
 QUnit.module("EventBus should");
 QUnit.test("call ", assert => {
@@ -75,13 +75,13 @@ QUnit.test("", assert => {
     const newTaskDescription = "new description of task.";
 
     eventBus.subscribe(EventTypes.TaskUpdateFailed, () => taskUpdateFailedWasPosted = true);
-    eventBus.post(new TaskUpdateRequest(addedTask.id, newTaskDescription));
-    eventBus.post(new TaskUpdateRequest(addedTask.id, ""));
+    eventBus.post(new TaskUpdateRequested(addedTask.id, newTaskDescription));
+    eventBus.post(new TaskUpdateRequested(addedTask.id, ""));
 
     addedTask = todoList.all()[0];
 
-    assert.strictEqual(addedTask.description, newTaskDescription, "update task description when TaskUpdateRequest was posted.");
-    assert.ok(taskListUpdatedWasPosted, "post a TaskListUpdated after success process of TaskUpdateRequest.");
+    assert.strictEqual(addedTask.description, newTaskDescription, "update task description when TaskUpdateRequested was posted.");
+    assert.ok(taskListUpdatedWasPosted, "post a TaskListUpdated after success process of TaskUpdateRequested.");
     assert.ok(taskUpdateFailedWasPosted, "post TaskUpdateFailed if try to update task with empty description.");
 
 
@@ -105,10 +105,10 @@ QUnit.test("", assert => {
     taskListUpdatedWasPosted = false;
 
     eventBus.subscribe(EventTypes.TaskRemovalFailed, () => taskRemovalFailedWasPosted = true);
-    eventBus.post(new TaskRemovalRequest(addedTask.id));
-    eventBus.post(new TaskRemovalRequest(addedTask.id));
+    eventBus.post(new TaskRemovalRequested(addedTask.id));
+    eventBus.post(new TaskRemovalRequested(addedTask.id));
 
-    assert.ok(todoList.all().length === 0, "remove task after TaskRemovalRequest was posted.");
-    assert.ok(taskListUpdatedWasPosted, "post a TaskListUpdated after TaskRemovalRequest was posted.");
+    assert.ok(todoList.all().length === 0, "remove task after TaskRemovalRequested was posted.");
+    assert.ok(taskListUpdatedWasPosted, "post a TaskListUpdated after TaskRemovalRequested was posted.");
     assert.ok(taskRemovalFailedWasPosted, "post a TaskRemovalFailed if try to remove task which doesn't exists in TodoList.")
 });

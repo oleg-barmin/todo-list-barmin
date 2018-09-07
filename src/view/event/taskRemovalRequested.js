@@ -5,10 +5,10 @@ import {Event, EventTypes} from "./event";
  *
  * @extends Event
  */
-export class TaskRemovalRequest extends Event {
+export class TaskRemovalRequested extends Event {
 
     /**
-     * Creates `TaskRemovalRequest` instance.
+     * Creates `TaskRemovalRequested` instance.
      *
      * @param {TaskId} taskId ID of task to remove.
      */

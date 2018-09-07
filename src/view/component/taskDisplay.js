@@ -1,7 +1,7 @@
 import {TodoComponent} from "./todoComponent";
-import {TaskRemovalRequest} from "../event/taskRemovalRequest";
+import {TaskRemovalRequested} from "../event/taskRemovalRequested";
 import {TaskCompletionRequested} from "../event/taskCompletionRequested";
-import {StartTaskEditing} from "../event/startTaskEditing";
+import {TaskEditingStarted} from "../event/taskEditingStarted";
 
 /**
  * Component which responsible for rendering and processing of task in display state.
@@ -58,10 +58,10 @@ export class TaskDisplay extends TodoComponent {
         const taskDescriptionDiv = this.element.find(`.${taskDescriptionDivClass}`);
 
         completeBtn.click(() => this.eventBus.post(new TaskCompletionRequested(task.id)));
-        editBtn.click(() => this.eventBus.post(new StartTaskEditing(task.id)));
+        editBtn.click(() => this.eventBus.post(new TaskEditingStarted(task.id)));
         removeBtn.click(() => {
             if(confirm("Delete the task?")) {
-                this.eventBus.post(new TaskRemovalRequest(task.id));
+                this.eventBus.post(new TaskRemovalRequested(task.id));
             }
         });
 

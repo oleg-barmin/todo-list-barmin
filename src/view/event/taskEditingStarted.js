@@ -5,10 +5,10 @@ import {Event, EventTypes} from "./event";
  *
  * @extends Event
  */
-export class StartTaskEditing extends Event {
+export class TaskEditingStarted extends Event {
 
     /**
-     * Creates `StartTaskEditing` instance.
+     * Creates `TaskEditingStarted` instance.
      *
      * @param {TaskId} taskId ID of a task which editing was requested.
      */

@@ -47,12 +47,12 @@ export class Controller {
         };
 
         /**
-         * Removes task with ID stored in occurred `TaskRemovalRequest` from `TodoList`.
+         * Removes task with ID stored in occurred `TaskRemovalRequested` from `TodoList`.
          *
          * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
          * Otherwise: posts {@link TaskRemovalFailed}.
          *
-         * @param {TaskRemovalRequest} taskRemovalEvent `TaskRemovalRequest` event with ID of the task to remove.
+         * @param {TaskRemovalRequested} taskRemovalEvent `TaskRemovalRequested` event with ID of the task to remove.
          */
         const taskRemovalRequestCallback = taskRemovalEvent => {
             try {
@@ -88,7 +88,7 @@ export class Controller {
          * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
          * Otherwise: posts {@link TaskUpdateFailed}.
          *
-         * @param {TaskUpdateRequest} taskUpdateEvent `TaskUpdateRequest` event
+         * @param {TaskUpdateRequested} taskUpdateEvent `TaskUpdateRequested` event
          *        which contains ID of task to update and its new description.
          */
         const taskUpdateRequestCallback = taskUpdateEvent => {

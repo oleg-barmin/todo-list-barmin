@@ -1,6 +1,6 @@
 import {TodoComponent} from "./todoComponent";
 import {CancelTaskEditing} from "../event/cancelTaskEditing";
-import {TaskUpdateRequest} from "../event/taskUpdateRequest";
+import {TaskUpdateRequested} from "../event/taskUpdateRequested";
 import {EventTypes} from "../event/event";
 
 /**
@@ -80,7 +80,7 @@ export class TaskEdit extends TodoComponent {
                 this.eventBus.post(new CancelTaskEditing(task.id));
                 return;
             }
-            this.eventBus.post(new TaskUpdateRequest(this.task.id, newTaskDescription));
+            this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription));
         });
         cancelBtn.click(() => this.eventBus.post(new CancelTaskEditing(task.id)));
     }
