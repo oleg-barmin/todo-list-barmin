@@ -57,6 +57,7 @@ export class Controller {
         const taskRemovalRequestCallback = taskRemovalEvent => {
             try {
                 this.todoList.remove(taskRemovalEvent.taskId);
+                this.eventBus.post(new TaskRemovalPerformed(taskRemovalEvent.taskId));
                 this.eventBus.post(new TaskListUpdated(this.todoList.all()));
             } catch (e) {
                 this.eventBus.post(new TaskRemovalFailed("Task removal fail."))
