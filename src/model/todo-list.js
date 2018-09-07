@@ -67,7 +67,7 @@ export class TodoList {
      * @returns {TaskId} id copy of ID of task that was added
      */
     add(taskDescription) {
-        Preconditions.checkStringNotEmpty(taskDescription, "task description");
+        taskDescription = Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
         const taskId = TaskIdGenerator.generateID();
         const currentDate = new Date();
@@ -130,7 +130,7 @@ export class TodoList {
      */
     update(taskId, updatedDescription) {
         Preconditions.isDefined(taskId, "task ID");
-        Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
+        updatedDescription = Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
 
         const taskToUpdate = this._getTaskById(taskId);
 
