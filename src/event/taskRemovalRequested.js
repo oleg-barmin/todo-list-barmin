@@ -1,7 +1,7 @@
 import {Event, EventTypes} from "./event";
 
 /**
- * Occurs when task with specified id need to be removed.
+ * Occurs when task with specified ID need to be removed.
  *
  * @extends Event
  */
