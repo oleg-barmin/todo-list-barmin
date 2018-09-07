@@ -97,11 +97,24 @@ export class EventBus {
      *
      * @param {EventType} eventType `EventType` to which callback should be bound
      * @param {Function} callback to bind onto `EventType`
+     *
+     * @return {Function} handler handler of `evenType` with given `callback`.
+     *          Should be used to unsubscribe if needed.
      */
     subscribe(eventType, callback) {
-        this._transport.on(eventType.typeName, function (event, occurredEvent) {
-            callback(occurredEvent)
-        });
+        const handler = (event, occurredEvent) => callback(occurredEvent);
+        this._transport.on(eventType.typeName, handler);
+        return handler;
+    }
+
+    /**
+     * Unsubscribes given `handler` from `eventType`.
+     *
+     * @param {EventType} eventType type of event to which handler was subscribed
+     * @param {Function} handler handler to unsubscribe
+     */
+    unsubscribe(eventType, handler){
+        this._transport.off(eventType.typeName, handler);
     }
 }
 
