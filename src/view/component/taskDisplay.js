@@ -64,7 +64,7 @@ export class TaskDisplay extends TodoComponent {
         if (task.completed) {
             completeBtn.remove();
             editBtn.remove();
-            taskDescriptionDiv.replaceWith(() => $("<del/>").append(taskDescriptionDiv.contents()));
+            taskDescriptionDiv.replaceWith(() => $(`<del style="white-space: pre-wrap;"/>`).append(taskDescriptionDiv.contents()));
         }
     }
 }
