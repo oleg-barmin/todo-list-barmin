@@ -76,10 +76,10 @@ export class EventBus {
      * @param transport transport jQuery object to bind `EventBus` on.
      */
     constructor(transport) {
-        if(!transport){
+        if (!transport) {
             throw new Error("Transport for `EventBus` should be defined.")
         }
-        if(!(transport instanceof $)){
+        if (!(transport instanceof $)) {
             throw new TypeError("jQuery object was expected.")
         }
         this._transport = transport;
@@ -92,6 +92,10 @@ export class EventBus {
      *                which subscribed to the `EventType` of given event.
      */
     post(event) {
+        if (!(event instanceof Event)) {
+            throw new TypeError("event argument should be instance of Event.");
+        }
+
         let typeName = event.eventType.typeName;
         this._transport.trigger(typeName, [event]);
     }
@@ -106,6 +110,13 @@ export class EventBus {
      *          Should be used to unsubscribe if needed.
      */
     subscribe(eventType, callback) {
+        if (!(eventType instanceof EventType)) {
+            throw new TypeError("eventType argument should be instance of eventType.");
+        }
+        if (!(callback instanceof Function)) {
+            throw new TypeError("callback argument should be instance of Function.");
+        }
+
         const handler = (event, occurredEvent) => callback(occurredEvent);
         this._transport.on(eventType.typeName, handler);
         return handler;
@@ -117,7 +128,7 @@ export class EventBus {
      * @param {EventType} eventType type of event to which handler was subscribed
      * @param {Function} handler handler to unsubscribe
      */
-    unsubscribe(eventType, handler){
+    unsubscribe(eventType, handler) {
         this._transport.off(eventType.typeName, handler);
     }
 }

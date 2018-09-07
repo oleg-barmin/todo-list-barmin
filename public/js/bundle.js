@@ -1,5 +1,8 @@
-var bundle = (function (exports) {
-    'use strict';
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+    typeof define === 'function' && define.amd ? define(['exports'], factory) :
+    (factory((global.bundle = {})));
+}(this, (function (exports) { 'use strict';
 
     /**
      * Is an event which happened in {@link TodoListApp} and marks what happened in `TodoListApp`.
@@ -79,6 +82,12 @@ var bundle = (function (exports) {
          * @param transport transport jQuery object to bind `EventBus` on.
          */
         constructor(transport) {
+            if (!transport) {
+                throw new Error("Transport for `EventBus` should be defined.")
+            }
+            if (!(transport instanceof $)) {
+                throw new TypeError("jQuery object was expected.")
+            }
             this._transport = transport;
         }
 
@@ -89,6 +98,10 @@ var bundle = (function (exports) {
          *                which subscribed to the `EventType` of given event.
          */
         post(event) {
+            if (!(event instanceof Event)) {
+                throw new TypeError("event argument should be instance of Event.");
+            }
+
             let typeName = event.eventType.typeName;
             this._transport.trigger(typeName, [event]);
         }
@@ -103,6 +116,13 @@ var bundle = (function (exports) {
          *          Should be used to unsubscribe if needed.
          */
         subscribe(eventType, callback) {
+            if (!(eventType instanceof EventType)) {
+                throw new TypeError("eventType argument should be instance of eventType.");
+            }
+            if (!(callback instanceof Function)) {
+                throw new TypeError("callback argument should be instance of Function.");
+            }
+
             const handler = (event, occurredEvent) => callback(occurredEvent);
             this._transport.on(eventType.typeName, handler);
             return handler;
@@ -114,7 +134,7 @@ var bundle = (function (exports) {
          * @param {EventType} eventType type of event to which handler was subscribed
          * @param {Function} handler handler to unsubscribe
          */
-        unsubscribe(eventType, handler){
+        unsubscribe(eventType, handler) {
             this._transport.off(eventType.typeName, handler);
         }
     }
@@ -1318,26 +1338,28 @@ var bundle = (function (exports) {
             this.eventBus = eventBus;
             this.task = task;
             this.number = number;
-            this.currentState = null;
+            this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
         }
 
         /**
          * Renders given task in `TaskDisplay` state.
          */
         render() {
-            this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+            this.currentState.render();
 
             const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.StartTaskEditing, occurredEvent => {
                 if (occurredEvent.taskId === this.task.id) {
                     this.element.empty();
-                    this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task).render();
+                    this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task);
+                    this.currentState.render();
                 }
             });
 
             const cancelTaskEditingHandler = this.eventBus.subscribe(EventTypes.CancelTaskEditing, occurredEvent => {
                 if (occurredEvent.taskId === this.task.id) {
                     this.element.empty();
-                    this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+                    this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                    this.currentState.render();
                 }
             });
 
@@ -1453,6 +1475,6 @@ var bundle = (function (exports) {
 
     exports.TodoListApp = TodoListApp;
 
-    return exports;
+    Object.defineProperty(exports, '__esModule', { value: true });
 
-}({}));
+})));
