@@ -156,7 +156,7 @@
 
     QUnit.module("EventBus should");
     QUnit.test("", assert => {
-        let transportElement = $("#eventBus");
+        const transportElement = $("#eventBus");
         const eventBus = new EventBus(transportElement);
 
         const firstEventType = new EventType("firstEventType");
@@ -212,6 +212,35 @@
             },
             TypeError,
             "TypeError if given transport is not a jQuery object."
+        );
+
+        const transportElement = $("#eventBus");
+        const eventBus = new EventBus(transportElement);
+
+        assert.throws(
+            () => {
+                eventBus.post("");
+            },
+            TypeError,
+            "TypeError if given post argument is not instance of Event."
+        );
+
+        assert.throws(
+            () => {
+                eventBus.subscribe("", "");
+            },
+            TypeError,
+            "TypeError if given subscribe eventType argument is no instance of EventType."
+        );
+
+        const eventType = new EventType("eventType");
+
+        assert.throws(
+            () => {
+                eventBus.subscribe(eventType, "");
+            },
+            TypeError,
+            "TypeError if given subscribe callback argument is no a Function."
         );
     });
 
