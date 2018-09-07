@@ -35,10 +35,11 @@ export class TaskDisplay extends TodoComponent {
         const completeBtnClass = "completeBtn";
         const editBtnClass = "editBtn";
         const escapedTaskDescription = $('<div/>').text(this.task.description).html();
+        const taskDescriptionDivClass = "taskDescription";
 
         this.element.append(
             `<div class="col-md-auto pr-2">${this.number}.</div>
-                <div class="col-9" style="white-space: pre-wrap;">${escapedTaskDescription}</div>
+                <div class="col-9 ${taskDescriptionDivClass}" style="white-space: pre-wrap;">${escapedTaskDescription}</div>
                 <div class="col text-right">
                     <button class="${editBtnClass} btn btn-light octicon octicon-pencil"></button>
                 </div>
@@ -54,6 +55,7 @@ export class TaskDisplay extends TodoComponent {
         const removeBtn = this.element.find(`.${removeBtnClass}`);
         const completeBtn = this.element.find(`.${completeBtnClass}`);
         const editBtn = this.element.find(`.${editBtnClass}`);
+        const taskDescriptionDiv = this.element.find(`.${taskDescriptionDivClass}`);
 
         removeBtn.click(() => this.eventBus.post(new TaskRemovalRequest(task.id)));
         completeBtn.click(() => this.eventBus.post(new TaskCompletionRequested(task.id)));
@@ -62,8 +64,7 @@ export class TaskDisplay extends TodoComponent {
         if (task.completed) {
             completeBtn.remove();
             editBtn.remove();
-            this.element.css({background: "#dddddd"})
+            taskDescriptionDiv.replaceWith(() => $("<del/>").append(taskDescriptionDiv.contents()));
         }
-
     }
 }
