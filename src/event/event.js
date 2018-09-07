@@ -76,6 +76,12 @@ export class EventBus {
      * @param transport transport jQuery object to bind `EventBus` on.
      */
     constructor(transport) {
+        if(!transport){
+            throw new Error("Transport for `EventBus` should be defined.")
+        }
+        if(!(transport instanceof $)){
+            throw new TypeError("jQuery object was expected.")
+        }
         this._transport = transport;
     }
 
