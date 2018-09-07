@@ -37,23 +37,35 @@ export class TaskView extends TodoComponent {
         this.eventBus = eventBus;
         this.task = task;
         this.number = number;
+        this.currentState = null;
     }
 
     /**
      * Renders given task in `TaskDisplay` state.
      */
     render() {
-        new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
-        this.eventBus.subscribe(EventTypeEnumeration.StartTaskEditing, (occurredEvent) => {
-            if(occurredEvent.taskId === this.task.id){
+        this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+
+        const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.StartTaskEditing, occurredEvent => {
+            if (occurredEvent.taskId === this.task.id) {
                 this.element.empty();
-                new TaskEdit(this.element, this.eventBus, this.number, this.task).render();
+                this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task).render();
             }
         });
-        this.eventBus.subscribe(EventTypeEnumeration.CancelTaskEditing, (occurredEvent) => {
-            if(occurredEvent.taskId === this.task.id){
+
+        const cancelTaskEditingHandler = this.eventBus.subscribe(EventTypes.CancelTaskEditing, occurredEvent => {
+            if (occurredEvent.taskId === this.task.id) {
                 this.element.empty();
-                new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+                this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task).render();
+            }
+        });
+
+        const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemovalPerformed, (occurredEvent) => {
+            if (occurredEvent.taskId === this.task.id) {
+                this.element.remove();
+                this.eventBus.unsubscribe(EventTypes.StartTaskEditing, startTaskEditingHandler);
+                this.eventBus.unsubscribe(EventTypes.CancelTaskEditing, cancelTaskEditingHandler);
+                this.eventBus.unsubscribe(EventTypes.TaskRemovalPerformed, taskRemovalPerformedHandler);
             }
         });
     }
