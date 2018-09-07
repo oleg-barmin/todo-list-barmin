@@ -47,10 +47,8 @@ export class AddTaskForm extends TodoComponent {
             let iconSpan = $("<div>");
             iconSpan.addClass("octicon");
             iconSpan.addClass("octicon-stop");
-            errorDiv.append("Error!");
             errorDiv.append(iconSpan);
-            errorDiv.append($("<br>"));
-            errorDiv.append(errorMsg)
+            errorDiv.append(" "+errorMsg)
         };
 
         const eventBus = this.eventBus;
