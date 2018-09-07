@@ -57,9 +57,13 @@ export class TaskDisplay extends TodoComponent {
         const editBtn = this.element.find(`.${editBtnClass}`);
         const taskDescriptionDiv = this.element.find(`.${taskDescriptionDivClass}`);
 
-        removeBtn.click(() => this.eventBus.post(new TaskRemovalRequest(task.id)));
         completeBtn.click(() => this.eventBus.post(new TaskCompletionRequested(task.id)));
         editBtn.click(() => this.eventBus.post(new StartTaskEditing(task.id)));
+        removeBtn.click(() => {
+            if(confirm("Delete the task?")) {
+                this.eventBus.post(new TaskRemovalRequest(task.id));
+            }
+        });
 
         if (task.completed) {
             completeBtn.remove();
