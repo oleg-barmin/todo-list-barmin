@@ -1,4 +1,4 @@
-import {Event, EventTypeEnumeration} from "./event";
+import {Event, EventTypes} from "./event";
 
 /**
  * Occurs when end user tries to cancel a task editing.
@@ -13,7 +13,7 @@ export class CancelTaskEditing extends Event {
      * @param {TaskId} taskId ID of a task which editing was canceled
      */
     constructor(taskId) {
-        super(EventTypeEnumeration.CancelTaskEditing);
+        super(EventTypes.CancelTaskEditing);
         this.taskId = taskId;
     }
 }

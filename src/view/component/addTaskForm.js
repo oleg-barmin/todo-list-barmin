@@ -1,6 +1,6 @@
 import {TodoComponent} from "./todoComponent";
 import {AddTaskRequest} from "../event/addTaskRequest";
-import {EventTypeEnumeration} from "../event/event";
+import {EventTypes} from "../event/event";
 
 
 /**
@@ -69,8 +69,8 @@ export class AddTaskForm extends TodoComponent {
             errorLabel.append(newTaskValidationFailedEvent.errorMsg);
         };
 
-        eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, newTaskAddedCallback);
-        eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, newTaskValidationFailedCallback);
+        eventBus.subscribe(EventTypes.NewTaskAdded, newTaskAddedCallback);
+        eventBus.subscribe(EventTypes.NewTaskValidationFailed, newTaskValidationFailedCallback);
 
         addTaskBtn.click(() => eventBus.post(new AddTaskRequest(descriptionTextArea.val())));
         descriptionTextArea.keydown(keyboardEvent => {

@@ -1,7 +1,9 @@
-import {Event, EventTypeEnumeration} from "./event";
+import {Event, EventTypes} from "./event";
 
 /**
  * Occurs when `TaskCompletionRequest` cannot be processed properly.
+ *
+ * @extends Event
  */
 export class TaskCompletionFailed extends Event {
 
@@ -11,7 +13,7 @@ export class TaskCompletionFailed extends Event {
      * @param {string} errorMsg description of error
      */
     constructor(errorMsg) {
-        super(EventTypeEnumeration.TaskCompletionFailed);
+        super(EventTypes.TaskCompletionFailed);
         this.errorMsg = errorMsg;
     }
 }

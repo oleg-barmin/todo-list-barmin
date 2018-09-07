@@ -1,4 +1,4 @@
-import {Event, EventTypeEnumeration} from "./event";
+import {Event, EventTypes} from "./event";
 
 /**
  * Occurs when end user tries to edit a task.
@@ -13,7 +13,7 @@ export class StartTaskEditing extends Event {
      * @param {TaskId} taskId ID of a task which editing was requested.
      */
     constructor(taskId) {
-        super(EventTypeEnumeration.StartTaskEditing);
+        super(EventTypes.StartTaskEditing);
         this.taskId = taskId;
     }
 }

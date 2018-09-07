@@ -1,7 +1,9 @@
-import {Event, EventTypeEnumeration} from "./event";
+import {Event, EventTypes} from "./event";
 
 /**
  * Occurs when controller updated list of tasks.
+ *
+ * @extends Event
  */
 export class TaskListUpdated extends Event {
 
@@ -11,7 +13,7 @@ export class TaskListUpdated extends Event {
      * @param {Array} taskArray sorted array of task from model.
      */
     constructor(taskArray) {
-        super(EventTypeEnumeration.TaskListUpdated);
+        super(EventTypes.TaskListUpdated);
         this.taskArray = taskArray;
     }
 }

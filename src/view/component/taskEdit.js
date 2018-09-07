@@ -1,7 +1,7 @@
 import {TodoComponent} from "./todoComponent";
 import {CancelTaskEditing} from "../event/cancelTaskEditing";
 import {TaskUpdateRequest} from "../event/taskUpdateRequest";
-import {EventTypeEnumeration} from "../event/event";
+import {EventTypes} from "../event/event";
 
 /**
  * Component which responsible for rendering and processing of task in edit state.
@@ -72,7 +72,7 @@ export class TaskEdit extends TodoComponent {
             errorLabel.append(taskUpdateFailedEvent.errorMsg);
         };
 
-        this.eventBus.subscribe(EventTypeEnumeration.TaskUpdateFailed, taskUpdateFailedCallback);
+        this.eventBus.subscribe(EventTypes.TaskUpdateFailed, taskUpdateFailedCallback);
 
         saveBtn.click(() => {
             const newTaskDescription = editTextArea.val();

@@ -1,11 +1,12 @@
 import {TodoList} from "../model/todo-list";
-import {EventTypeEnumeration} from "./event/event";
+import {EventTypes} from "./event/event";
 import {NewTaskAdded} from "./event/newTaskAdded";
 import {NewTaskValidationFailed} from "./event/newTaskValidationFailed";
 import {TaskCompletionFailed} from "./event/taskCompletionFailed";
 import {TaskRemovalFailed} from "./event/taskRemovalFailed";
 import {TaskListUpdated} from "./event/taskListUpdated";
 import {TaskUpdateFailed} from "./event/taskUpdateFailed";
+import {TaskRemovalPerformed} from "./event/taskRemovalPerformed";
 
 /**
  * Connects model of {@link TodoList} and {@link TodoComponent}.
@@ -99,10 +100,10 @@ export class Controller {
             }
         };
 
-        eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, addTaskRequestCallback);
-        eventBus.subscribe(EventTypeEnumeration.TaskRemovalRequest, taskRemovalRequestCallback);
-        eventBus.subscribe(EventTypeEnumeration.TaskCompletionRequested, taskCompletionRequestedCallback);
-        eventBus.subscribe(EventTypeEnumeration.TaskUpdateRequest, taskUpdateRequestCallback);
+        eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
+        eventBus.subscribe(EventTypes.TaskRemovalRequest, taskRemovalRequestCallback);
+        eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
+        eventBus.subscribe(EventTypes.TaskUpdateRequest, taskUpdateRequestCallback);
     }
 
 }

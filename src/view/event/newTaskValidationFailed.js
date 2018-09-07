@@ -1,8 +1,10 @@
-import {Event, EventTypeEnumeration} from "./event";
+import {Event, EventTypes} from "./event";
 
 
 /**
  * Event which occurred when new task description validation failed.
+ *
+ * @extends Event
  */
 export class NewTaskValidationFailed extends Event{
 
@@ -12,7 +14,7 @@ export class NewTaskValidationFailed extends Event{
      * @param {string} errorMsg description of error
      */
     constructor(errorMsg){
-        super(EventTypeEnumeration.NewTaskValidationFailed);
+        super(EventTypes.NewTaskValidationFailed);
         this.errorMsg = errorMsg;
     }
 }

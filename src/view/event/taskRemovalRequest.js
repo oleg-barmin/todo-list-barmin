@@ -1,4 +1,4 @@
-import {Event, EventTypeEnumeration} from "./event";
+import {Event, EventTypes} from "./event";
 
 /**
  * Occurs when task with specified id need to be removed.
@@ -13,7 +13,7 @@ export class TaskRemovalRequest extends Event {
      * @param {TaskId} taskId ID of task to remove.
      */
     constructor(taskId) {
-        super(EventTypeEnumeration.TaskRemovalRequest);
+        super(EventTypes.TaskRemovalRequest);
         this.taskId = taskId;
     }
 }

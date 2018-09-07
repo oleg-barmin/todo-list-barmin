@@ -1,4 +1,4 @@
-import {Event, EventTypeEnumeration} from "./event";
+import {Event, EventTypes} from "./event";
 
 /**
  * Occurs when controller adds new task to the model.
@@ -11,6 +11,6 @@ export class NewTaskAdded extends Event {
      * Creates `NewTaskAdded` instance.
      */
     constructor() {
-        super(EventTypeEnumeration.NewTaskAdded);
+        super(EventTypes.NewTaskAdded);
     }
 }

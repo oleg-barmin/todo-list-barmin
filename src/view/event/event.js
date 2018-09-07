@@ -4,6 +4,7 @@
  * Is used in {@link EventBus}.
  */
 export class Event {
+
     /**
      * Creates `Event` instance.
      *
@@ -108,6 +109,7 @@ export class EventBus {
  * Marks type of {@link Event} to {@link EventBus} bind and call callback of specified `EventType`.
  */
 export class EventType {
+
     /**
      * Creates `EventType` instance.
      *
@@ -119,7 +121,7 @@ export class EventType {
 }
 
 
-export const EventTypeEnumeration = {
+export const EventTypes = {
     AddTaskRequest: new EventType("AddTaskRequest"),
     NewTaskAdded: new EventType("NewTaskAdded"),
     TaskListUpdated: new EventType("TaskListUpdated"),
@@ -131,7 +133,8 @@ export const EventTypeEnumeration = {
     TaskRemovalFailed: new EventType("TaskRemovalFailed"),
     TaskCompletionFailed: new EventType("TaskCompletionFailed"),
     NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
-    TaskUpdateFailed: new EventType("TaskUpdateFailed")
+    TaskUpdateFailed: new EventType("TaskUpdateFailed"),
+    TaskRemovalPerformed: new EventType("TaskRemovalPerformed")
 };
 
 

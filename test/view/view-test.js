@@ -1,4 +1,4 @@
-import {Event, EventBus, EventType, EventTypeEnumeration} from "../../src/view/event/event";
+import {Event, EventBus, EventType, EventTypes} from "../../src/view/event/event";
 import {Controller} from "../../src/view/controller";
 import {AddTaskRequest} from "../../src/view/event/addTaskRequest";
 import {TodoList} from "../../src/model/todo-list";
@@ -49,9 +49,9 @@ QUnit.test("", assert => {
     let newTaskValidationFailedWasPosted = false;
     let taskListUpdatedWasPosted = false;
 
-    eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, () => newTaskAddedWasPosted = true);
-    eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, () => newTaskValidationFailedWasPosted = true);
-    eventBus.subscribe(EventTypeEnumeration.TaskListUpdated, () => taskListUpdatedWasPosted = true);
+    eventBus.subscribe(EventTypes.NewTaskAdded, () => newTaskAddedWasPosted = true);
+    eventBus.subscribe(EventTypes.NewTaskValidationFailed, () => newTaskValidationFailedWasPosted = true);
+    eventBus.subscribe(EventTypes.TaskListUpdated, () => taskListUpdatedWasPosted = true);
 
 
     //adding new task test.
@@ -74,7 +74,7 @@ QUnit.test("", assert => {
     taskListUpdatedWasPosted = false;
     const newTaskDescription = "new description of task.";
 
-    eventBus.subscribe(EventTypeEnumeration.TaskUpdateFailed, () => taskUpdateFailedWasPosted = true);
+    eventBus.subscribe(EventTypes.TaskUpdateFailed, () => taskUpdateFailedWasPosted = true);
     eventBus.post(new TaskUpdateRequest(addedTask.id, newTaskDescription));
     eventBus.post(new TaskUpdateRequest(addedTask.id, ""));
 
@@ -89,7 +89,7 @@ QUnit.test("", assert => {
     let taskCompletionFailedWasPosted = false;
     taskListUpdatedWasPosted = false;
 
-    eventBus.subscribe(EventTypeEnumeration.TaskCompletionFailed, () => taskCompletionFailedWasPosted = true);
+    eventBus.subscribe(EventTypes.TaskCompletionFailed, () => taskCompletionFailedWasPosted = true);
     eventBus.post(new TaskCompletionRequested(addedTask.id));
     eventBus.post(new TaskCompletionRequested(addedTask.id));
 
@@ -104,7 +104,7 @@ QUnit.test("", assert => {
     let taskRemovalFailedWasPosted = false;
     taskListUpdatedWasPosted = false;
 
-    eventBus.subscribe(EventTypeEnumeration.TaskRemovalFailed, () => taskRemovalFailedWasPosted = true);
+    eventBus.subscribe(EventTypes.TaskRemovalFailed, () => taskRemovalFailedWasPosted = true);
     eventBus.post(new TaskRemovalRequest(addedTask.id));
     eventBus.post(new TaskRemovalRequest(addedTask.id));
 

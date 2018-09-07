@@ -1,7 +1,9 @@
-import {Event, EventTypeEnumeration} from "./event";
+import {Event, EventTypes} from "./event";
 
 /**
  * Occurs when `TaskUpdateRequest` cannot be processed.
+ *
+ * @extends Event
  */
 export class TaskUpdateFailed extends Event {
 
@@ -12,7 +14,7 @@ export class TaskUpdateFailed extends Event {
      * @param {string} errorMsg error message to display on view
      */
     constructor(taskId, errorMsg) {
-        super(EventTypeEnumeration.TaskUpdateFailed);
+        super(EventTypes.TaskUpdateFailed);
         this.errorMsg = errorMsg;
         this.taskId = taskId;
     }

@@ -1,6 +1,6 @@
 import {TodoComponent} from "./todoComponent";
 import {TaskDisplay} from "./taskDisplay";
-import {EventTypeEnumeration} from "../event/event";
+import {EventTypes} from "../event/event";
 import {TaskEdit} from "./taskEdit";
 
 /**

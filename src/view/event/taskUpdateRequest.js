@@ -1,7 +1,9 @@
-import {Event, EventTypeEnumeration} from "./event";
+import {Event, EventTypes} from "./event";
 
 /**
  * Occurs when end user submitted changes of a task description.
+ *
+ * @extends Event
  */
 export class TaskUpdateRequest extends Event{
 
@@ -12,7 +14,7 @@ export class TaskUpdateRequest extends Event{
      * @param {string} newTaskDescription new description of task.
      */
     constructor(taskId, newTaskDescription) {
-        super(EventTypeEnumeration.TaskUpdateRequest);
+        super(EventTypes.TaskUpdateRequest);
         this.taskId = taskId;
         this.newTaskDescription = newTaskDescription;
     }

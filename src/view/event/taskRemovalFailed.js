@@ -1,7 +1,9 @@
-import {Event, EventTypeEnumeration} from "./event";
+import {Event, EventTypes} from "./event";
 
 /**
  * Occurs when `TaskRemovalRequest` cannot be processed properly.
+ *
+ * @extends Event
  */
 export class TaskRemovalFailed extends Event {
 
@@ -11,7 +13,7 @@ export class TaskRemovalFailed extends Event {
      * @param {string} errorMsg description of error
      */
     constructor(errorMsg) {
-        super(EventTypeEnumeration.TaskRemovalFailed);
+        super(EventTypes.TaskRemovalFailed);
         this.errorMsg = errorMsg;
     }
 }

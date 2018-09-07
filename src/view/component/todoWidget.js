@@ -1,5 +1,5 @@
 import {TodoComponent} from "./todoComponent";
-import {EventTypeEnumeration} from "../event/event";
+import {EventTypes} from "../event/event";
 import {TaskView} from "./taskView";
 
 /**
@@ -45,9 +45,9 @@ export class TodoWidget extends TodoComponent {
             }
         };
 
-        this.eventBus.subscribe(EventTypeEnumeration.TaskListUpdated, taskListUpdatedCallback);
-        this.eventBus.subscribe(EventTypeEnumeration.TaskCompletionFailed, event => alert(event.errorMsg));
-        this.eventBus.subscribe(EventTypeEnumeration.TaskRemovalFailed, event => alert(event.errorMsg))
+        this.eventBus.subscribe(EventTypes.TaskListUpdated, taskListUpdatedCallback);
+        this.eventBus.subscribe(EventTypes.TaskCompletionFailed, event => alert(event.errorMsg));
+        this.eventBus.subscribe(EventTypes.TaskRemovalFailed, event => alert(event.errorMsg))
     }
 
 }
