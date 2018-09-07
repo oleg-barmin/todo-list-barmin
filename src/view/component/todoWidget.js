@@ -36,13 +36,13 @@ export class TodoWidget extends TodoComponent {
          * @param {TaskListUpdated} taskListUpdatedEvent occurred `TaskListUpdated` event with array of new tasks.
          */
         const taskListUpdatedCallback = taskListUpdatedEvent => {
-            let indexNumbOfTask = 1;
+            let taskIndex = 1;
             this.element.empty();
-            for (let curTask of taskListUpdatedEvent.taskArray) {
+            taskListUpdatedEvent.taskArray.forEach((element) => {
                 this.element.append(`<div class="row no-gutters mt-2"></div>`);
-                new TaskView(this.element.children().last(), this.eventBus, indexNumbOfTask, curTask).render();
-                indexNumbOfTask += 1;
-            }
+                new TaskView(this.element.children().last(), this.eventBus, taskIndex, element).render();
+                taskIndex++;
+            });
         };
 
         this.eventBus.subscribe(EventTypes.TaskListUpdated, taskListUpdatedCallback);
