@@ -1,4 +1,4 @@
-import {TodoList} from "../model/todo-list";
+import {TodoList} from "./model/todo-list";
 import {EventTypes} from "./event/event";
 import {NewTaskAdded} from "./event/newTaskAdded";
 import {NewTaskValidationFailed} from "./event/newTaskValidationFailed";
@@ -9,8 +9,7 @@ import {TaskUpdateFailed} from "./event/taskUpdateFailed";
 import {TaskRemovalPerformed} from "./event/taskRemovalPerformed";
 
 /**
- * Connects model of {@link TodoList} and {@link TodoComponent}.
- * Reacts on {@link Event} which occurred on view layer.
+ * Event based facade for {@link TodoList}.
  */
 export class Controller {
 

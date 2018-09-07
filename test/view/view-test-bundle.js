@@ -5,11 +5,10 @@
 }(this, (function () { 'use strict';
 
     /**
-     * Transport object transfers data between {@link Controller} and TodoComponents.
-     *
-     * Is used in {@link EventBus}.
+     * Is an event which happened in {@link TodoListApp} and marks what happened in `TodoListApp`.
      */
     class Event {
+
         /**
          * Creates `Event` instance.
          *
@@ -24,7 +23,7 @@
      * Allows to posts {@link Event} and subscribe on `EventType` to process custom callbacks.
      *
      * When `Event` was posted all callbacks for `EventType` of occurred `Event` will be performed.
-     * For `EventBus` work properly transport JQuery object should be provided.
+     * For `EventBus` work properly transport jQuery object should be provided.
      *
      * Example:
      * ```
@@ -73,21 +72,21 @@
      * Third callback, occurredEvent: secondCustomEventType
      * `
      *
-     * Implementation of "event bus" design pattern, based on jquery.
+     * Implementation of "event bus" design pattern, based on jQuery.
      */
     class EventBus {
 
         /**
          * Creates `EventBus` instance.
          *
-         * @param transport transport JQuery object to bind `EventBus` on.
+         * @param transport transport jQuery object to bind `EventBus` on.
          */
         constructor(transport) {
             this._transport = transport;
         }
 
         /**
-         * Triggers all callback bound on `EventType` of given `Event`.
+         * Performs all callback bounded on `EventType` of given `Event`.
          *
          * @param {Event} event event which will be passed as argument to callbacks
          *                which subscribed to the `EventType` of given event.
@@ -98,15 +97,28 @@
         }
 
         /**
-         * Binds given callback to desired `EventType`.
+         * Subscribes given callback to desired `EventType`.
          *
          * @param {EventType} eventType `EventType` to which callback should be bound
          * @param {Function} callback to bind onto `EventType`
+         *
+         * @return {Function} handler handler of `evenType` with given `callback`.
+         *          Should be used to unsubscribe if needed.
          */
         subscribe(eventType, callback) {
-            this._transport.on(eventType.typeName, function (event, occurredEvent) {
-                callback(occurredEvent);
-            });
+            const handler = (event, occurredEvent) => callback(occurredEvent);
+            this._transport.on(eventType.typeName, handler);
+            return handler;
+        }
+
+        /**
+         * Unsubscribes given `handler` from `eventType`.
+         *
+         * @param {EventType} eventType type of event to which handler was subscribed
+         * @param {Function} handler handler to unsubscribe
+         */
+        unsubscribe(eventType, handler){
+            this._transport.off(eventType.typeName, handler);
         }
     }
 
@@ -114,6 +126,7 @@
      * Marks type of {@link Event} to {@link EventBus} bind and call callback of specified `EventType`.
      */
     class EventType {
+
         /**
          * Creates `EventType` instance.
          *
@@ -125,7 +138,7 @@
     }
 
 
-    const EventTypeEnumeration = {
+    const EventTypes = {
         AddTaskRequest: new EventType("AddTaskRequest"),
         NewTaskAdded: new EventType("NewTaskAdded"),
         TaskListUpdated: new EventType("TaskListUpdated"),
@@ -137,7 +150,8 @@
         TaskRemovalFailed: new EventType("TaskRemovalFailed"),
         TaskCompletionFailed: new EventType("TaskCompletionFailed"),
         NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
-        TaskUpdateFailed: new EventType("TaskUpdateFailed")
+        TaskUpdateFailed: new EventType("TaskUpdateFailed"),
+        TaskRemovalPerformed: new EventType("TaskRemovalPerformed")
     };
 
     /**
@@ -164,7 +178,7 @@
         }
 
         /**
-         * Validates if given sting is not undefined, null or empty.
+         * Validates if given string is not undefined, null or empty.
          *
          * @param {string} stringToCheck string that should be checked.
          * @param {string} stringName name of string being checked
@@ -472,7 +486,7 @@
          * @returns {TaskId} id copy of ID of task that was added
          */
         add(taskDescription) {
-            Preconditions.checkStringNotEmpty(taskDescription, "task description");
+            taskDescription = Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
             const taskId = TaskIdGenerator.generateID();
             const currentDate = new Date();
@@ -535,7 +549,7 @@
          */
         update(taskId, updatedDescription) {
             Preconditions.isDefined(taskId, "task ID");
-            Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
+            updatedDescription = Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
 
             const taskToUpdate = this._getTaskById(taskId);
 
@@ -684,12 +698,14 @@
          * Creates `NewTaskAdded` instance.
          */
         constructor() {
-            super(EventTypeEnumeration.NewTaskAdded);
+            super(EventTypes.NewTaskAdded);
         }
     }
 
     /**
      * Event which occurred when new task description validation failed.
+     *
+     * @extends Event
      */
     class NewTaskValidationFailed extends Event{
 
@@ -699,13 +715,15 @@
          * @param {string} errorMsg description of error
          */
         constructor(errorMsg){
-            super(EventTypeEnumeration.NewTaskValidationFailed);
+            super(EventTypes.NewTaskValidationFailed);
             this.errorMsg = errorMsg;
         }
     }
 
     /**
      * Occurs when `TaskCompletionRequest` cannot be processed properly.
+     *
+     * @extends Event
      */
     class TaskCompletionFailed extends Event {
 
@@ -715,13 +733,15 @@
          * @param {string} errorMsg description of error
          */
         constructor(errorMsg) {
-            super(EventTypeEnumeration.TaskCompletionFailed);
+            super(EventTypes.TaskCompletionFailed);
             this.errorMsg = errorMsg;
         }
     }
 
     /**
      * Occurs when `TaskRemovalRequested` cannot be processed properly.
+     *
+     * @extends Event
      */
     class TaskRemovalFailed extends Event {
 
@@ -731,13 +751,15 @@
          * @param {string} errorMsg description of error
          */
         constructor(errorMsg) {
-            super(EventTypeEnumeration.TaskRemovalFailed);
+            super(EventTypes.TaskRemovalFailed);
             this.errorMsg = errorMsg;
         }
     }
 
     /**
      * Occurs when controller updated list of tasks.
+     *
+     * @extends Event
      */
     class TaskListUpdated extends Event {
 
@@ -747,13 +769,15 @@
          * @param {Array} taskArray sorted array of task from model.
          */
         constructor(taskArray) {
-            super(EventTypeEnumeration.TaskListUpdated);
+            super(EventTypes.TaskListUpdated);
             this.taskArray = taskArray;
         }
     }
 
     /**
      * Occurs when `TaskUpdateRequested` cannot be processed.
+     *
+     * @extends Event
      */
     class TaskUpdateFailed extends Event {
 
@@ -764,15 +788,29 @@
          * @param {string} errorMsg error message to display on view
          */
         constructor(taskId, errorMsg) {
-            super(EventTypeEnumeration.TaskUpdateFailed);
+            super(EventTypes.TaskUpdateFailed);
             this.errorMsg = errorMsg;
             this.taskId = taskId;
         }
     }
 
     /**
-     * Connects model of {@link TodoList} and {@link TodoComponent}.
-     * Reacts on {@link Event} which occurred on view layer.
+     * Occurs when processing of `TaskRemovalRequested` event was performed successfully.
+     */
+    class TaskRemovalPerformed extends Event{
+
+        /**
+         * Creates `TaskRemovalPerformed` instance.
+         * @param taskId ID of the task, which removal was performed
+         */
+        constructor(taskId){
+            super(EventTypes.TaskRemovalPerformed);
+            this.taskId = taskId;
+        }
+    }
+
+    /**
+     * Event based facade for {@link TodoList}.
      */
     class Controller {
 
@@ -792,8 +830,8 @@
              * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
              *
              * if given description is valid:
-             *      1. Posts {@link NewTaskAdded}
-             *      2. Posts {@link TaskListUpdated} with new task list.
+             *      - posts {@link NewTaskAdded}
+             *      - posts {@link TaskListUpdated} with new task list.
              * Otherwise {@link NewTaskValidationFailed} will be posted
              *
              * @param {AddTaskRequest} addTaskEvent `AddTaskRequest` with description of the task to add.
@@ -814,11 +852,12 @@
              * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
              * Otherwise: posts {@link TaskRemovalFailed}.
              *
-             * @param {TaskRemovalRequest} taskRemovalEvent `TaskRemovalRequested` event with ID of the task to remove.
+             * @param {TaskRemovalRequested} taskRemovalEvent `TaskRemovalRequested` event with ID of the task to remove.
              */
             const taskRemovalRequestCallback = taskRemovalEvent => {
                 try {
                     this.todoList.remove(taskRemovalEvent.taskId);
+                    this.eventBus.post(new TaskRemovalPerformed(taskRemovalEvent.taskId));
                     this.eventBus.post(new TaskListUpdated(this.todoList.all()));
                 } catch (e) {
                     this.eventBus.post(new TaskRemovalFailed("Task removal fail."));
@@ -850,7 +889,7 @@
              * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
              * Otherwise: posts {@link TaskUpdateFailed}.
              *
-             * @param {TaskUpdateRequest} taskUpdateEvent `TaskUpdateRequested` event
+             * @param {TaskUpdateRequested} taskUpdateEvent `TaskUpdateRequested` event
              *        which contains ID of task to update and its new description.
              */
             const taskUpdateRequestCallback = taskUpdateEvent => {
@@ -862,10 +901,10 @@
                 }
             };
 
-            eventBus.subscribe(EventTypeEnumeration.AddTaskRequest, addTaskRequestCallback);
-            eventBus.subscribe(EventTypeEnumeration.TaskRemovalRequest, taskRemovalRequestCallback);
-            eventBus.subscribe(EventTypeEnumeration.TaskCompletionRequested, taskCompletionRequestedCallback);
-            eventBus.subscribe(EventTypeEnumeration.TaskUpdateRequest, taskUpdateRequestCallback);
+            eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
+            eventBus.subscribe(EventTypes.TaskRemovalRequest, taskRemovalRequestCallback);
+            eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
+            eventBus.subscribe(EventTypes.TaskUpdateRequest, taskUpdateRequestCallback);
         }
 
     }
@@ -873,6 +912,8 @@
     /**
      * Event which occurred when new task was added on view.
      * Transfers description of new task.
+     *
+     * @extends Event
      */
     class AddTaskRequest extends Event{
 
@@ -882,7 +923,7 @@
          * @param {string} taskDescription description of new task
          */
         constructor(taskDescription){
-            super(EventTypeEnumeration.AddTaskRequest);
+            super(EventTypes.AddTaskRequest);
             this.taskDescription = taskDescription;
         }
     }
@@ -900,7 +941,7 @@
          * @param {TaskId} taskId ID of task to remove.
          */
         constructor(taskId) {
-            super(EventTypeEnumeration.TaskCompletionRequested);
+            super(EventTypes.TaskCompletionRequested);
             this.taskId = taskId;
         }
     }
@@ -910,7 +951,7 @@
      *
      * @extends Event
      */
-    class TaskRemovalRequest extends Event {
+    class TaskRemovalRequested extends Event {
 
         /**
          * Creates `TaskRemovalRequested` instance.
@@ -918,15 +959,17 @@
          * @param {TaskId} taskId ID of task to remove.
          */
         constructor(taskId) {
-            super(EventTypeEnumeration.TaskRemovalRequest);
+            super(EventTypes.TaskRemovalRequest);
             this.taskId = taskId;
         }
     }
 
     /**
      * Occurs when end user submitted changes of a task description.
+     *
+     * @extends Event
      */
-    class TaskUpdateRequest extends Event{
+    class TaskUpdateRequested extends Event{
 
         /**
          * Creates `TaskUpdateRequested` instance.
@@ -935,7 +978,7 @@
          * @param {string} newTaskDescription new description of task.
          */
         constructor(taskId, newTaskDescription) {
-            super(EventTypeEnumeration.TaskUpdateRequest);
+            super(EventTypes.TaskUpdateRequest);
             this.taskId = taskId;
             this.newTaskDescription = newTaskDescription;
         }
@@ -985,9 +1028,9 @@
         let newTaskValidationFailedWasPosted = false;
         let taskListUpdatedWasPosted = false;
 
-        eventBus.subscribe(EventTypeEnumeration.NewTaskAdded, () => newTaskAddedWasPosted = true);
-        eventBus.subscribe(EventTypeEnumeration.NewTaskValidationFailed, () => newTaskValidationFailedWasPosted = true);
-        eventBus.subscribe(EventTypeEnumeration.TaskListUpdated, () => taskListUpdatedWasPosted = true);
+        eventBus.subscribe(EventTypes.NewTaskAdded, () => newTaskAddedWasPosted = true);
+        eventBus.subscribe(EventTypes.NewTaskValidationFailed, () => newTaskValidationFailedWasPosted = true);
+        eventBus.subscribe(EventTypes.TaskListUpdated, () => taskListUpdatedWasPosted = true);
 
 
         //adding new task test.
@@ -1010,9 +1053,9 @@
         taskListUpdatedWasPosted = false;
         const newTaskDescription = "new description of task.";
 
-        eventBus.subscribe(EventTypeEnumeration.TaskUpdateFailed, () => taskUpdateFailedWasPosted = true);
-        eventBus.post(new TaskUpdateRequest(addedTask.id, newTaskDescription));
-        eventBus.post(new TaskUpdateRequest(addedTask.id, ""));
+        eventBus.subscribe(EventTypes.TaskUpdateFailed, () => taskUpdateFailedWasPosted = true);
+        eventBus.post(new TaskUpdateRequested(addedTask.id, newTaskDescription));
+        eventBus.post(new TaskUpdateRequested(addedTask.id, ""));
 
         addedTask = todoList.all()[0];
 
@@ -1025,7 +1068,7 @@
         let taskCompletionFailedWasPosted = false;
         taskListUpdatedWasPosted = false;
 
-        eventBus.subscribe(EventTypeEnumeration.TaskCompletionFailed, () => taskCompletionFailedWasPosted = true);
+        eventBus.subscribe(EventTypes.TaskCompletionFailed, () => taskCompletionFailedWasPosted = true);
         eventBus.post(new TaskCompletionRequested(addedTask.id));
         eventBus.post(new TaskCompletionRequested(addedTask.id));
 
@@ -1040,9 +1083,9 @@
         let taskRemovalFailedWasPosted = false;
         taskListUpdatedWasPosted = false;
 
-        eventBus.subscribe(EventTypeEnumeration.TaskRemovalFailed, () => taskRemovalFailedWasPosted = true);
-        eventBus.post(new TaskRemovalRequest(addedTask.id));
-        eventBus.post(new TaskRemovalRequest(addedTask.id));
+        eventBus.subscribe(EventTypes.TaskRemovalFailed, () => taskRemovalFailedWasPosted = true);
+        eventBus.post(new TaskRemovalRequested(addedTask.id));
+        eventBus.post(new TaskRemovalRequested(addedTask.id));
 
         assert.ok(todoList.all().length === 0, "remove task after TaskRemovalRequested was posted.");
         assert.ok(taskListUpdatedWasPosted, "post a TaskListUpdated after TaskRemovalRequested was posted.");

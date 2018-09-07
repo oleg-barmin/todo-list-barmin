@@ -28,7 +28,7 @@
         }
 
         /**
-         * Validates if given sting is not undefined, null or empty.
+         * Validates if given string is not undefined, null or empty.
          *
          * @param {string} stringToCheck string that should be checked.
          * @param {string} stringName name of string being checked
@@ -336,7 +336,7 @@
          * @returns {TaskId} id copy of ID of task that was added
          */
         add(taskDescription) {
-            Preconditions.checkStringNotEmpty(taskDescription, "task description");
+            taskDescription = Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
             const taskId = TaskIdGenerator.generateID();
             const currentDate = new Date();
@@ -399,7 +399,7 @@
          */
         update(taskId, updatedDescription) {
             Preconditions.isDefined(taskId, "task ID");
-            Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
+            updatedDescription = Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
 
             const taskToUpdate = this._getTaskById(taskId);
 

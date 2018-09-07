@@ -22,7 +22,7 @@ export class Preconditions {
     }
 
     /**
-     * Validates if given sting is not undefined, null or empty.
+     * Validates if given string is not undefined, null or empty.
      *
      * @param {string} stringToCheck string that should be checked.
      * @param {string} stringName name of string being checked

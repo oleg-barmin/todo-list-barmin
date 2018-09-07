@@ -1,7 +1,7 @@
 import {EventBus} from "./event/event";
-import {AddTaskForm} from "./component/addTaskForm";
+import {AddTaskForm} from "./view/addTaskForm";
 import {Controller} from "./controller";
-import {TodoWidget} from "./component/todoWidget";
+import {TodoWidget} from "./view/todoWidget";
 
 /**
  * Starts a to-do list app.

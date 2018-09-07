@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: view/todoWidget.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: view/todoWidget.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {TodoComponent} from "./todoComponent";
+import {EventTypes} from "../event/event";
+import {TaskView} from "./taskView";
+
+/**
+ * Renders list of tasks.
+ *
+ * When {@link NewTaskAdded} happens gets new tasks,
+ * removes previous task list and renders new tasks from `NewTaskAdded`.
+ * Uses {@link TaskView} for each task to render it.
+ *
+ * @extends TodoComponent
+ */
+export class TodoWidget extends TodoComponent {
+
+    /**
+     * Creates `TodoWidget` instance.
+     *
+     * @param element JQuery element where all task should be appended
+     * @param {EventBus} eventBus `EventBus` to subscribe on necessary events.
+     */
+    constructor(element, eventBus) {
+        super(element, eventBus);
+    }
+
+    /**
+     * Empties given container for tasks to populate it with new tasks.
+     */
+    render() {
+        this.element.empty();
+
+        /**
+         * Processes `TaskListUpdated` event.
+         * Populates container of tasks with `TaskView` for each task stored in occurred `TaskListUpdated` event.
+         *
+         * @param {TaskListUpdated} taskListUpdatedEvent occurred `TaskListUpdated` event with array of new tasks.
+         */
+        const taskListUpdatedCallback = taskListUpdatedEvent => {
+            let taskIndex = 1;
+            this.element.empty();
+            taskListUpdatedEvent.taskArray.forEach((element) => {
+                this.element.append(`&lt;div class="row no-gutters mt-2">&lt;/div>`);
+                new TaskView(this.element.children().last(), this.eventBus, taskIndex, element).render();
+                taskIndex++;
+            });
+        };
+
+        this.eventBus.subscribe(EventTypes.TaskListUpdated, taskListUpdatedCallback);
+        this.eventBus.subscribe(EventTypes.TaskCompletionFailed, event => alert(event.errorMsg));
+        this.eventBus.subscribe(EventTypes.TaskRemovalFailed, event => alert(event.errorMsg))
+    }
+
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskForm.html">AddTaskForm</a></li><li><a href="AddTaskRequest.html">AddTaskRequest</a></li><li><a href="CancelTaskEditing.html">CancelTaskEditing</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAdded.html">NewTaskAdded</a></li><li><a href="NewTaskValidationFailed.html">NewTaskValidationFailed</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskDisplay.html">TaskDisplay</a></li><li><a href="TaskEdit.html">TaskEdit</a></li><li><a href="TaskEditingStarted.html">TaskEditingStarted</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskListUpdated.html">TaskListUpdated</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalPerformed.html">TaskRemovalPerformed</a></li><li><a href="TaskRemovalRequested.html">TaskRemovalRequested</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskUpdateFailed.html">TaskUpdateFailed</a></li><li><a href="TaskUpdateRequested.html">TaskUpdateRequested</a></li><li><a href="TaskView.html">TaskView</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidget.html">TodoWidget</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Sep 07 2018 13:53:41 GMT+0300 (Eastern European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

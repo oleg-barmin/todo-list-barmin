@@ -1,10 +1,10 @@
-import {Event, EventBus, EventType, EventTypes} from "../../src/view/event/event";
-import {Controller} from "../../src/view/controller";
-import {AddTaskRequest} from "../../src/view/event/addTaskRequest";
+import {Event, EventBus, EventType, EventTypes} from "../../src/event/event";
+import {Controller} from "../../src/controller";
+import {AddTaskRequest} from "../../src/event/addTaskRequest";
 import {TodoList} from "../../src/model/todo-list";
-import {TaskCompletionRequested} from "../../src/view/event/taskCompletionRequested";
-import {TaskRemovalRequested} from "../../src/view/event/taskRemovalRequested";
-import {TaskUpdateRequested} from "../../src/view/event/taskUpdateRequested";
+import {TaskCompletionRequested} from "../../src/event/taskCompletionRequested";
+import {TaskRemovalRequested} from "../../src/event/taskRemovalRequested";
+import {TaskUpdateRequested} from "../../src/event/taskUpdateRequested";
 
 QUnit.module("EventBus should");
 QUnit.test("call ", assert => {
