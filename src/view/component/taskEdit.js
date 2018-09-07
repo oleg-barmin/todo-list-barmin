@@ -46,7 +46,7 @@ export class TaskEdit extends TodoComponent {
                 </div>
                 <div class="w-100"></div>
                 <div class="col">
-                <label class="${errorLabelClass} invisible w-100 alert-danger"></label>
+                <label class="${errorLabelClass} alert alert-danger invisible w-100 alert-danger"></label>
             </div>`
         );
 

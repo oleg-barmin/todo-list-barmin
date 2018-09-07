@@ -32,41 +32,50 @@ export class AddTaskForm extends TodoComponent {
         container.append(`<div class="col">
                 <textarea class="${descriptionTextAreaClass} form-control w-100"></textarea>
             </div>
-            <div class="col col-1 align-self-end text-right">
-                <button class="${addTaskBtnClass} btn btn-default btn-primary w-100">add</button>
+            <div class="col col-1 align-self-end">
+                <button class="${addTaskBtnClass} btn btn-default btn-primary w-100">Add</button>
             </div>
             <div class="w-100"></div>
-            <div class="col">
-                <label class="errorMsgContainer invisible w-100 alert-danger"></label>
+            <div class="col alert alert-danger invisible errorMsgContainer w-100 pl-3" role="alert">
             </div>`);
 
         const addTaskBtn = container.find(`.${addTaskBtnClass}`);
         const descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
-        const errorLabel = container.find(`.${errorContainerClass}`);
+        const errorDiv = container.find(`.${errorContainerClass}`);
+        const showErrorCallback = (errorMsg) =>{
+            errorDiv.empty();
+            let iconSpan = $("<div>");
+            iconSpan.addClass("octicon");
+            iconSpan.addClass("octicon-stop");
+            errorDiv.append("Error!");
+            errorDiv.append(iconSpan);
+            errorDiv.append($("<br>"));
+            errorDiv.append(errorMsg)
+        };
 
         const eventBus = this.eventBus;
 
+
         /**
          * Processes `NewTaskAdded` event.
-         * Makes `descriptionTextArea` and `errorLabel` empty and invisible.
+         * Makes `descriptionTextArea` and `errorDiv` empty and invisible.
          */
         const newTaskAddedCallback = () => {
             descriptionTextArea.val('');
-            errorLabel.empty();
-            errorLabel.addClass("invisible")
+            errorDiv.empty();
+            errorDiv.addClass("invisible")
         };
 
         /**
          * Processes `NewTaskValidationFailed`.
-         * Makes `errorLabel` visible and appends into it error message from occurred `NewTaskValidationFailed` event.
+         * Makes `errorDiv` visible and appends into it error message from occurred `NewTaskValidationFailed` event.
          *
          * @param {NewTaskValidationFailed} newTaskValidationFailedEvent `NewTaskValidationFailed` with
          *        error message to display.
          */
         const newTaskValidationFailedCallback = newTaskValidationFailedEvent => {
-            errorLabel.removeClass("invisible");
-            errorLabel.empty();
-            errorLabel.append(newTaskValidationFailedEvent.errorMsg);
+            errorDiv.removeClass("invisible");
+            showErrorCallback(newTaskValidationFailedEvent.errorMsg);
         };
 
         eventBus.subscribe(EventTypes.NewTaskAdded, newTaskAddedCallback);

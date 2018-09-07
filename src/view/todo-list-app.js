@@ -32,7 +32,7 @@ export class TodoListApp {
                 <h1>To-Do</h1>
             </div>
         </div>
-        <div class="addTaskForm row justify-content-md-center no-gutters"></div>
+        <div class="addTaskForm row justify-content-md-center"></div>
         <div class="todoWidget"></div>`);
 
         this.eventBus = new EventBus(container.find(".eventBus"));
