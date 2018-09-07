@@ -32,7 +32,7 @@
         
             <div class="class-description"><p>Allows to posts <a href="Event.html">Event</a> and subscribe on <code>EventType</code> to process custom callbacks.</p>
 <p>When <code>Event</code> was posted all callbacks for <code>EventType</code> of occurred <code>Event</code> will be performed.
-For <code>EventBus</code> work properly transport JQuery object should be provided.</p>
+For <code>EventBus</code> work properly transport jQuery object should be provided.</p>
 <p>Example:</p>
 <pre class="prettyprint source"><code>const firstCustomEventType = new EventType(&quot;firstCustomEventType&quot;);
 const secondCustomEventType = new EventType(&quot;secondCustomEventType&quot;);
@@ -57,7 +57,7 @@ Second callback, occurredEvent: secondCustomEventType</code></p>
 <pre class="prettyprint source"><code>eventBus.post(new Event(secondCustomEventType));</code></pre><p> Console output after post:
  <p>
 <code>Third callback, occurredEvent: secondCustomEventType</code></p>
-<p>Implementation of &quot;event bus&quot; design pattern, based on jquery.</p></div>
+<p>Implementation of &quot;event bus&quot; design pattern, based on jQuery.</p></div>
         
     
 </header>
@@ -127,7 +127,7 @@ Second callback, occurredEvent: secondCustomEventType</code></p>
 
             
 
-            <td class="description last"><p>transport JQuery object to bind <code>EventBus</code> on.</p></td>
+            <td class="description last"><p>transport jQuery object to bind <code>EventBus</code> on.</p></td>
         </tr>
 
     
@@ -168,7 +168,7 @@ Second callback, occurredEvent: secondCustomEventType</code></p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="view_event_event.js.html">view/event/event.js</a>, <a href="view_event_event.js.html#line72">line 72</a>
+        <a href="event_event.js.html">event/event.js</a>, <a href="event_event.js.html#line71">line 71</a>
     </li></ul></dd>
     
 
@@ -230,7 +230,7 @@ Second callback, occurredEvent: secondCustomEventType</code></p>
 
 
 <div class="description">
-    <p>Triggers all callback bound on <code>EventType</code> of given <code>Event</code>.</p>
+    <p>Performs all callback bounded on <code>EventType</code> of given <code>Event</code>.</p>
 </div>
 
 
@@ -324,7 +324,7 @@ Second callback, occurredEvent: secondCustomEventType</code></p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="view_event_event.js.html">view/event/event.js</a>, <a href="view_event_event.js.html#line89">line 89</a>
+        <a href="event_event.js.html">event/event.js</a>, <a href="event_event.js.html#line94">line 94</a>
     </li></ul></dd>
     
 
@@ -358,7 +358,7 @@ Second callback, occurredEvent: secondCustomEventType</code></p>
     
 
     
-    <h4 class="name" id="subscribe"><span class="type-signature"></span>subscribe<span class="signature">(eventType, callback)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="subscribe"><span class="type-signature"></span>subscribe<span class="signature">(eventType, callback)</span><span class="type-signature"> &rarr; {function}</span></h4>
     
 
     
@@ -366,7 +366,7 @@ Second callback, occurredEvent: secondCustomEventType</code></p>
 
 
 <div class="description">
-    <p>Binds given callback to desired <code>EventType</code>.</p>
+    <p>Subscribes given callback to desired <code>EventType</code>.</p>
 </div>
 
 
@@ -482,7 +482,188 @@ Second callback, occurredEvent: secondCustomEventType</code></p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="view_event_event.js.html">view/event/event.js</a>, <a href="view_event_event.js.html#line100">line 100</a>
+        <a href="event_event.js.html">event/event.js</a>, <a href="event_event.js.html#line112">line 112</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>handler handler of <code>evenType</code> with given <code>callback</code>.
+         Should be used to unsubscribe if needed.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">function</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="unsubscribe"><span class="type-signature"></span>unsubscribe<span class="signature">(eventType, handler)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Unsubscribes given <code>handler</code> from <code>eventType</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>eventType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="EventType.html">EventType</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>type of event to which handler was subscribed</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>handler</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>handler to unsubscribe</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="event_event.js.html">event/event.js</a>, <a href="event_event.js.html#line131">line 131</a>
     </li></ul></dd>
     
 
@@ -526,13 +707,13 @@ Second callback, occurredEvent: secondCustomEventType</code></p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskForm.html">AddTaskForm</a></li><li><a href="AddTaskRequest.html">AddTaskRequest</a></li><li><a href="CancelTaskEditing.html">CancelTaskEditing</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAdded.html">NewTaskAdded</a></li><li><a href="NewTaskValidationFailed.html">NewTaskValidationFailed</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="StartTaskEditing.html">StartTaskEditing</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskDisplay.html">TaskDisplay</a></li><li><a href="TaskEdit.html">TaskEdit</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskListUpdated.html">TaskListUpdated</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalRequest.html">TaskRemovalRequest</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskUpdateFailed.html">TaskUpdateFailed</a></li><li><a href="TaskUpdateRequest.html">TaskUpdateRequest</a></li><li><a href="TaskView.html">TaskView</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidget.html">TodoWidget</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskForm.html">AddTaskForm</a></li><li><a href="AddTaskRequest.html">AddTaskRequest</a></li><li><a href="CancelTaskEditing.html">CancelTaskEditing</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAdded.html">NewTaskAdded</a></li><li><a href="NewTaskValidationFailed.html">NewTaskValidationFailed</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskDisplay.html">TaskDisplay</a></li><li><a href="TaskEdit.html">TaskEdit</a></li><li><a href="TaskEditingStarted.html">TaskEditingStarted</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskListUpdated.html">TaskListUpdated</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalPerformed.html">TaskRemovalPerformed</a></li><li><a href="TaskRemovalRequested.html">TaskRemovalRequested</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskUpdateFailed.html">TaskUpdateFailed</a></li><li><a href="TaskUpdateRequested.html">TaskUpdateRequested</a></li><li><a href="TaskView.html">TaskView</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidget.html">TodoWidget</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Sep 06 2018 15:45:34 GMT+0300 (Eastern European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Sep 07 2018 15:33:52 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
