@@ -16,11 +16,12 @@ export class TodoWidget extends TodoComponent {
     /**
      * Creates `TodoWidget` instance.
      *
-     * @param element JQuery element where all task should be appended
+     * @param {jQuery} element JQuery element where all task should be appended
      * @param {EventBus} eventBus `EventBus` to subscribe on necessary events.
      */
     constructor(element, eventBus) {
         super(element, eventBus);
+        this.taskViewArray = [];
     }
 
     /**
@@ -28,6 +29,10 @@ export class TodoWidget extends TodoComponent {
      */
     render() {
         this.element.empty();
+
+        const findTaskViewCallback = taskId =>{
+            return this.taskViewArray.find(element => element.task.id.compareTo(taskId) === 0)
+        };
 
         /**
          * Processes `TaskListUpdated` event.
@@ -37,9 +42,21 @@ export class TodoWidget extends TodoComponent {
          */
         const taskListUpdatedCallback = taskListUpdatedEvent => {
             this.element.empty();
-            taskListUpdatedEvent.taskArray.forEach((element, index) => {
-                this.element.append(`<div class="row no-gutters mt-2"></div>`);
-                new TaskView(this.element.children().last(), this.eventBus, ++index, element).render();
+
+            this.taskViewArray = taskListUpdatedEvent.taskArray.map((task, index) => {
+
+                const taskContainer = this.element.append(`<div class="row no-gutters mt-2"></div>`).children().last();
+                const taskViewWithCurrentTask = findTaskViewCallback(task.id);
+
+                if(taskViewWithCurrentTask){
+                    taskViewWithCurrentTask.element.remove();
+                    taskViewWithCurrentTask.render(taskContainer, ++index, task);
+                    return taskViewWithCurrentTask;
+                }
+
+                const newTaskView = new TaskView(taskContainer, this.eventBus, ++index, task);
+                newTaskView.render();
+                return newTaskView;
             });
         };
 
