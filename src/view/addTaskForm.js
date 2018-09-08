@@ -11,7 +11,7 @@ export class AddTaskForm extends TodoComponent {
     /**
      * Creates `AddTaskForm` instance.
      *
-     * @param element element to render into
+     * @param {jQuery} element jQuery element to render into
      * @param {EventBus} eventBus `EventBus` to connect with controller
      */
     constructor(element, eventBus) {
@@ -42,17 +42,21 @@ export class AddTaskForm extends TodoComponent {
         const addTaskBtn = container.find(`.${addTaskBtnClass}`);
         const descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
         const errorDiv = container.find(`.${errorContainerClass}`);
-        const showErrorCallback = (errorMsg) =>{
+        const eventBus = this.eventBus;
+
+        /**
+         * Renders given error message under `descriptionTextAreaClass`.
+         *
+         * @param {string} errorMsg error message to render
+         */
+        const showErrorCallback = errorMsg => {
             errorDiv.empty();
             let iconSpan = $("<div>");
             iconSpan.addClass("octicon");
             iconSpan.addClass("octicon-stop");
             errorDiv.append(iconSpan);
-            errorDiv.append(" "+errorMsg)
+            errorDiv.append(" " + errorMsg)
         };
-
-        const eventBus = this.eventBus;
-
 
         /**
          * Processes `NewTaskAdded` event.
@@ -81,7 +85,7 @@ export class AddTaskForm extends TodoComponent {
 
         addTaskBtn.click(() => eventBus.post(new AddTaskRequest(descriptionTextArea.val())));
         descriptionTextArea.keydown(keyboardEvent => {
-            if (keyboardEvent.ctrlKey && keyboardEvent.key === "Enter") {
+            if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === "Enter") {
                 eventBus.post(new AddTaskRequest(descriptionTextArea.val()));
             }
         });

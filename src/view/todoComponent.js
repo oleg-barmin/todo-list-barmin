@@ -11,7 +11,7 @@ export class TodoComponent {
     /**
      * Saves given element to render into and `EventBus` to connect with controller.
      *
-     * @param element element to render into
+     * @param {jQuery} element jQuery element to render into
      * @param {EventBus} eventBus `EventBus` to connect with controller
      */
     constructor(element, eventBus){

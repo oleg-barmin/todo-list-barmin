@@ -13,7 +13,7 @@ export class TaskDisplay extends TodoComponent {
     /**
      * Creates `TaskView` instance.
      *
-     * @param element Jquery element to render into
+     * @param {jQuery} element jQuery element to render into
      * @param {EventBus} eventBus eventBust to subscribe and post events
      * @param {Number} number number of the task in the list of tasks
      * @param {Task} task task to render
@@ -34,6 +34,7 @@ export class TaskDisplay extends TodoComponent {
         const removeBtnClass = "removeBtn";
         const completeBtnClass = "completeBtn";
         const editBtnClass = "editBtn";
+
         const escapedTaskDescription = $('<div/>').text(this.task.description).html();
         const taskDescriptionDivClass = "taskDescription";
 
