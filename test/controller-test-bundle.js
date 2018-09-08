@@ -160,15 +160,16 @@
         NewTaskAdded: new EventType("NewTaskAdded"),
         TaskListUpdated: new EventType("TaskListUpdated"),
         TaskCompletionRequested: new EventType("TaskCompletionRequested"),
-        TaskRemovalRequest: new EventType("TaskRemovalRequested"),
-        StartTaskEditing: new EventType("TaskEditingStarted"),
+        TaskRemovalRequested: new EventType("TaskRemovalRequested"),
+        TaskEditingStarted: new EventType("TaskEditingStarted"),
         CancelTaskEditing: new EventType("CancelTaskEditing"),
-        TaskUpdateRequest: new EventType("TaskUpdateRequested"),
+        TaskUpdateRequested: new EventType("TaskUpdateRequested"),
         TaskRemovalFailed: new EventType("TaskRemovalFailed"),
         TaskCompletionFailed: new EventType("TaskCompletionFailed"),
         NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
         TaskUpdateFailed: new EventType("TaskUpdateFailed"),
-        TaskRemovalPerformed: new EventType("TaskRemovalPerformed")
+        TaskRemovalPerformed: new EventType("TaskRemovalPerformed"),
+        TaskUpdatePerformed: new EventType("TaskUpdatePerformed")
     };
 
     /**
@@ -827,6 +828,21 @@
     }
 
     /**
+     * Occurs when processing of `TaskUpdateRequested` event was performed successfully.
+     */
+    class TaskUpdatePerformed extends Event{
+        /**
+         * Creates `TaskUpdatePerformed` instance.
+         *
+         * @param {TaskId} taskId description of error
+         */
+        constructor(taskId) {
+            super(EventTypes.TaskUpdatePerformed);
+            this.taskId = taskId;
+        }
+    }
+
+    /**
      * Event based facade for {@link TodoList}.
      */
     class Controller {
@@ -903,7 +919,9 @@
              * Updates task in `TodoList` by ID with new description.
              * Both ID and new description are stored in occurred `TaskCompletionRequested` event.
              *
-             * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
+             * If task with given ID was found in `TodoList`:
+             *      - posts {@link TaskUpdatePerformed} with ID of updated task.
+             *      - posts {@link TaskListUpdated} with new task list.
              * Otherwise: posts {@link TaskUpdateFailed}.
              *
              * @param {TaskUpdateRequested} taskUpdateEvent `TaskUpdateRequested` event
@@ -912,6 +930,7 @@
             const taskUpdateRequestCallback = taskUpdateEvent => {
                 try {
                     this.todoList.update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription);
+                    this.eventBus.post(new TaskUpdatePerformed(taskUpdateEvent.taskId));
                     this.eventBus.post(new TaskListUpdated(this.todoList.all()));
                 } catch (e) {
                     this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId, "New task description cannot be empty."));
@@ -919,9 +938,9 @@
             };
 
             eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
-            eventBus.subscribe(EventTypes.TaskRemovalRequest, taskRemovalRequestCallback);
+            eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
             eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
-            eventBus.subscribe(EventTypes.TaskUpdateRequest, taskUpdateRequestCallback);
+            eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
         }
 
     }
@@ -964,7 +983,7 @@
     }
 
     /**
-     * Occurs when task with specified id need to be removed.
+     * Occurs when task with specified ID need to be removed.
      *
      * @extends Event
      */
@@ -976,7 +995,7 @@
          * @param {TaskId} taskId ID of task to remove.
          */
         constructor(taskId) {
-            super(EventTypes.TaskRemovalRequest);
+            super(EventTypes.TaskRemovalRequested);
             this.taskId = taskId;
         }
     }
@@ -995,7 +1014,7 @@
          * @param {string} newTaskDescription new description of task.
          */
         constructor(taskId, newTaskDescription) {
-            super(EventTypes.TaskUpdateRequest);
+            super(EventTypes.TaskUpdateRequested);
             this.taskId = taskId;
             this.newTaskDescription = newTaskDescription;
         }
