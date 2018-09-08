@@ -7,6 +7,7 @@ import {TaskRemovalFailed} from "./event/taskRemovalFailed";
 import {TaskListUpdated} from "./event/taskListUpdated";
 import {TaskUpdateFailed} from "./event/taskUpdateFailed";
 import {TaskRemovalPerformed} from "./event/taskRemovalPerformed";
+import {TaskUpdatePerformed} from "./event/taskUpdatePerformed";
 
 /**
  * Event based facade for {@link TodoList}.
@@ -85,7 +86,9 @@ export class Controller {
          * Updates task in `TodoList` by ID with new description.
          * Both ID and new description are stored in occurred `TaskCompletionRequested` event.
          *
-         * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
+         * If task with given ID was found in `TodoList`:
+         *      - posts {@link TaskUpdatePerformed} with ID of updated task.
+         *      - posts {@link TaskListUpdated} with new task list.
          * Otherwise: posts {@link TaskUpdateFailed}.
          *
          * @param {TaskUpdateRequested} taskUpdateEvent `TaskUpdateRequested` event
@@ -94,6 +97,7 @@ export class Controller {
         const taskUpdateRequestCallback = taskUpdateEvent => {
             try {
                 this.todoList.update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription);
+                this.eventBus.post(new TaskUpdatePerformed(taskUpdateEvent.taskId));
                 this.eventBus.post(new TaskListUpdated(this.todoList.all()));
             } catch (e) {
                 this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId, "New task description cannot be empty."))
@@ -101,9 +105,9 @@ export class Controller {
         };
 
         eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
-        eventBus.subscribe(EventTypes.TaskRemovalRequest, taskRemovalRequestCallback);
+        eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
         eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
-        eventBus.subscribe(EventTypes.TaskUpdateRequest, taskUpdateRequestCallback);
+        eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
     }
 
 }
