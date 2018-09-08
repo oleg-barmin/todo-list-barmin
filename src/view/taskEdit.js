@@ -13,7 +13,7 @@ export class TaskEdit extends TodoComponent {
     /**
      * Creates `TaskEdit` instance.
      *
-     * @param element Jquery element to render into
+     * @param {jQuery} element jQuery element to render into
      * @param {EventBus} eventBus eventBust to subscribe and post events
      * @param {Number} number number of the task in the list of tasks
      * @param {Task} task task to render
@@ -23,11 +23,10 @@ export class TaskEdit extends TodoComponent {
         this.eventBus = eventBus;
         this.task = task;
         this.number = number;
+        this.currentInut = task.description;
     }
 
     render() {
-        const task = this.task;
-
         const saveBtnClass = "saveBtn";
         const cancelBtnClass = "cancelBtn";
         const editDescriptionTextAreaClass = "editDescriptionTextArea";
@@ -55,9 +54,9 @@ export class TaskEdit extends TodoComponent {
         const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
         const errorLabel = this.element.find(`.${errorLabelClass}`);
 
-        const descriptionRowsNumber = task.description.split(/\r\n|\r|\n/).length;
+        const descriptionRowsNumber = this.currentInut.split(/\r\n|\r|\n/).length;
         editTextArea.attr("rows", descriptionRowsNumber > 10 ? 10 : descriptionRowsNumber);
-        editTextArea.focus().val(task.description);
+        editTextArea.focus().val(this.currentInut);
 
         /**
          * Processes `TaskUpdateFailed` event.
@@ -71,17 +70,22 @@ export class TaskEdit extends TodoComponent {
             errorLabel.empty();
             errorLabel.append(taskUpdateFailedEvent.errorMsg);
         };
-
         this.eventBus.subscribe(EventTypes.TaskUpdateFailed, taskUpdateFailedCallback);
+
+        cancelBtn.click(() => this.eventBus.post(new CancelTaskEditing(this.task.id)));
 
         saveBtn.click(() => {
             const newTaskDescription = editTextArea.val();
-            if (newTaskDescription === task.description) {
-                this.eventBus.post(new CancelTaskEditing(task.id));
+            if (newTaskDescription === this.task.description) {
+                this.eventBus.post(new CancelTaskEditing(this.task.id));
                 return;
             }
             this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription));
         });
-        cancelBtn.click(() => this.eventBus.post(new CancelTaskEditing(task.id)));
+
+
+        editTextArea.keydown(() => {
+            this.currentInut = editTextArea.val()
+        });
     }
 }
