@@ -13,7 +13,7 @@ export class TaskEditingStarted extends Event {
      * @param {TaskId} taskId ID of a task which editing was requested.
      */
     constructor(taskId) {
-        super(EventTypes.StartTaskEditing);
+        super(EventTypes.TaskEditingStarted);
         this.taskId = taskId;
     }
 }

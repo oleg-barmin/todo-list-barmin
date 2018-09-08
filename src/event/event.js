@@ -155,14 +155,15 @@ export const EventTypes = {
     TaskListUpdated: new EventType("TaskListUpdated"),
     TaskCompletionRequested: new EventType("TaskCompletionRequested"),
     TaskRemovalRequest: new EventType("TaskRemovalRequested"),
-    StartTaskEditing: new EventType("TaskEditingStarted"),
+    TaskEditingStarted: new EventType("TaskEditingStarted"),
     CancelTaskEditing: new EventType("CancelTaskEditing"),
     TaskUpdateRequest: new EventType("TaskUpdateRequested"),
     TaskRemovalFailed: new EventType("TaskRemovalFailed"),
     TaskCompletionFailed: new EventType("TaskCompletionFailed"),
     NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
     TaskUpdateFailed: new EventType("TaskUpdateFailed"),
-    TaskRemovalPerformed: new EventType("TaskRemovalPerformed")
+    TaskRemovalPerformed: new EventType("TaskRemovalPerformed"),
+    TaskUpdatePerformed: new EventType("TaskUpdatePerformed")
 };
 
 

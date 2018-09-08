@@ -1,10 +1,13 @@
 import {Event, EventTypes} from "./event";
 
+/**
+ * Occurs when processing of `TaskUpdateRequested` event was performed successfully.
+ */
 export class TaskUpdatePerformed extends Event{
     /**
-     * todo jsdoc
+     * Creates `TaskUpdatePerformed` instance.
      *
-     * @param {string} errorMsg description of error
+     * @param {TaskId} taskId description of error
      */
     constructor(taskId) {
         super(EventTypes.TaskUpdatePerformed);
