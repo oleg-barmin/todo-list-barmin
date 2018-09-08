@@ -13,7 +13,7 @@ export class TaskRemovalRequested extends Event {
      * @param {TaskId} taskId ID of task to remove.
      */
     constructor(taskId) {
-        super(EventTypes.TaskRemovalRequest);
+        super(EventTypes.TaskRemovalRequested);
         this.taskId = taskId;
     }
 }

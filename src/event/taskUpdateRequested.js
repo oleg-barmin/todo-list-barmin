@@ -14,7 +14,7 @@ export class TaskUpdateRequested extends Event{
      * @param {string} newTaskDescription new description of task.
      */
     constructor(taskId, newTaskDescription) {
-        super(EventTypes.TaskUpdateRequest);
+        super(EventTypes.TaskUpdateRequested);
         this.taskId = taskId;
         this.newTaskDescription = newTaskDescription;
     }
