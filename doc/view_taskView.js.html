@@ -38,10 +38,12 @@ import {TaskEdit} from "./taskEdit";
  *  - {@link TaskDisplay}
  *  - {@link TaskEdit}
  *
+ *
  *  In `TaskDisplay` state end user is able to:
  *  - mark task as completed
  *  - remove task
  *  - switch to `TaskEdit` state
+ *
  *
  *  In `TaskEdit` state end user is able to:
  *  - edit task description
@@ -55,26 +57,20 @@ export class TaskView extends TodoComponent {
     /**
      * Creates `TaskView` instance.
      *
-     * @param element Jquery element to render into
+     * @param {jQuery} element Jquery element to render into
      * @param {EventBus} eventBus eventBust to subscribe and post events
      * @param {Number} number number of the task in the list of tasks
      * @param {Task} task task to render
      */
     constructor(element, eventBus, number, task) {
         super(element, eventBus);
+
         this.eventBus = eventBus;
         this.task = task;
         this.number = number;
-        this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
-    }
+        this.currentState = new TaskDisplay(null, this.eventBus, null, null);
 
-    /**
-     * Renders given task in `TaskDisplay` state.
-     */
-    render() {
-        this.currentState.render();
-
-        const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.StartTaskEditing, occurredEvent => {
+        const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingStarted, occurredEvent => {
             if (occurredEvent.taskId === this.task.id) {
                 this.element.empty();
                 this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task);
@@ -90,14 +86,43 @@ export class TaskView extends TodoComponent {
             }
         });
 
+        const taskUpdatePerformedHandler = this.eventBus.subscribe(EventTypes.TaskUpdatePerformed, occurredEvent => {
+            if (occurredEvent.taskId === this.task.id) {
+                this.element.empty();
+                this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                this.currentState.render();
+            }
+        });
+
         const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemovalPerformed, (occurredEvent) => {
             if (occurredEvent.taskId === this.task.id) {
                 this.element.remove();
-                this.eventBus.unsubscribe(EventTypes.StartTaskEditing, startTaskEditingHandler);
+                this.eventBus.unsubscribe(EventTypes.TaskEditingStarted, startTaskEditingHandler);
                 this.eventBus.unsubscribe(EventTypes.CancelTaskEditing, cancelTaskEditingHandler);
                 this.eventBus.unsubscribe(EventTypes.TaskRemovalPerformed, taskRemovalPerformedHandler);
+                this.eventBus.unsubscribe(EventTypes.TaskUpdatePerformed, taskUpdatePerformedHandler);
             }
         });
+    }
+
+    /**
+     * Renders given task in `TaskDisplay` state onto given element.
+     * if method was called
+     *
+     * @param {jQuery} [element] jQuery element to render into
+     * @param {number} [number] number of the task in list
+     * @param {Task} [task] task to render.
+     */
+    render(element = undefined, number = undefined, task = undefined) {
+        this.element = element || this.element;
+        this.number = number || this.number;
+        this.task = task || this.task;
+
+        this.currentState.element = this.element;
+        this.currentState.number = this.number;
+        this.currentState.task = this.task;
+
+        this.currentState.render();
     }
 }</code></pre>
         </article>
@@ -109,13 +134,13 @@ export class TaskView extends TodoComponent {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskForm.html">AddTaskForm</a></li><li><a href="AddTaskRequest.html">AddTaskRequest</a></li><li><a href="CancelTaskEditing.html">CancelTaskEditing</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAdded.html">NewTaskAdded</a></li><li><a href="NewTaskValidationFailed.html">NewTaskValidationFailed</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskDisplay.html">TaskDisplay</a></li><li><a href="TaskEdit.html">TaskEdit</a></li><li><a href="TaskEditingStarted.html">TaskEditingStarted</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskListUpdated.html">TaskListUpdated</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalPerformed.html">TaskRemovalPerformed</a></li><li><a href="TaskRemovalRequested.html">TaskRemovalRequested</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskUpdateFailed.html">TaskUpdateFailed</a></li><li><a href="TaskUpdateRequested.html">TaskUpdateRequested</a></li><li><a href="TaskView.html">TaskView</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidget.html">TodoWidget</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskForm.html">AddTaskForm</a></li><li><a href="AddTaskRequest.html">AddTaskRequest</a></li><li><a href="CancelTaskEditing.html">CancelTaskEditing</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAdded.html">NewTaskAdded</a></li><li><a href="NewTaskValidationFailed.html">NewTaskValidationFailed</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskDisplay.html">TaskDisplay</a></li><li><a href="TaskEdit.html">TaskEdit</a></li><li><a href="TaskEditingStarted.html">TaskEditingStarted</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskListUpdated.html">TaskListUpdated</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalPerformed.html">TaskRemovalPerformed</a></li><li><a href="TaskRemovalRequested.html">TaskRemovalRequested</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskUpdateFailed.html">TaskUpdateFailed</a></li><li><a href="TaskUpdatePerformed.html">TaskUpdatePerformed</a></li><li><a href="TaskUpdateRequested.html">TaskUpdateRequested</a></li><li><a href="TaskView.html">TaskView</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidget.html">TodoWidget</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Sep 07 2018 15:33:52 GMT+0300 (Eastern European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Sep 08 2018 17:53:51 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
