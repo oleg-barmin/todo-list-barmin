@@ -86,7 +86,7 @@ export class EventBus {
     }
 
     /**
-     * Performs all callback bounded on `EventType` of given `Event`.
+     * Performs all callbacks that were subscribed on `EventType` of given `Event`.
      *
      * @param {Event} event event which will be passed as argument to callbacks
      *                which subscribed to the `EventType` of given event.

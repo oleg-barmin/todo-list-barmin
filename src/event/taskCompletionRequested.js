@@ -1,7 +1,7 @@
 import {Event, EventTypes} from "./event";
 
 /**
- * Occurs when task with specified id need to be completed.
+ * Occurs when task with specified ID need to be completed.
  *
  * @extends Event
  */

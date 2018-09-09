@@ -1,8 +1,7 @@
 import {Event, EventTypes} from "./event";
 
 /**
- * Event which occurred when new task was added on view.
- * Transfers description of new task.
+ * Occurred when new task was added on view.
  *
  * @extends Event
  */
