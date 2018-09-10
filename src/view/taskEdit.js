@@ -76,15 +76,26 @@ export class TaskEdit extends TodoComponent {
 
         cancelBtn.click(() => this.eventBus.post(new TaskEditingCanceled(this.task.id)));
 
-        saveBtn.click(() => {
+        /**
+         * Posts `TaskEditingCanceled` if tasks description equals content of textarea,
+         * otherwise posts `TaskUpdateRequested`.
+         */
+        const saveCallback = () => {
             const newTaskDescription = editTextArea.val();
             if (newTaskDescription === this.task.description) {
                 this.eventBus.post(new TaskEditingCanceled(this.task.id));
                 return;
             }
             this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription));
-        });
+        };
+
+        saveBtn.click(saveCallback);
 
         editTextArea.change(() => this.currentInput = editTextArea.val());
+        editTextArea.keydown(keyboardEvent => {
+            if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === "Enter") {
+                saveCallback();
+            }
+        });
     }
 }
