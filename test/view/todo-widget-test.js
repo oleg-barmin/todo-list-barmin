@@ -18,25 +18,24 @@ QUnit.test("merge TaskView array and given Tasks array and save", assert => {
     todoList.add("third task");
     todoList.add("fourth task");
 
-    const expectedTasksOrder = todoList.all();
+    let expectedTasksOrder = todoList.all();
     let mergedTaskViewArray = todoWidget._merge([], todoList.all());
     const mergedTaskArray = mergedTaskViewArray.map(taskView => taskView.task);
 
     assert.deepEqual(mergedTaskArray, expectedTasksOrder, "order of tasks as in Task array.");
 
+
     eventBus.post(new TaskEditingStarted(expectedTasksOrder[0].id));
-
     todoList.add("fifth task");
-
     mergedTaskViewArray = todoWidget._merge(mergedTaskViewArray, todoList.all());
 
     assert.ok(mergedTaskViewArray[1].currentState instanceof TaskEdit, "state of one TaskView when task was added.");
 
+
+    expectedTasksOrder = todoList.all();
+    eventBus.post(new TaskEditingStarted(expectedTasksOrder[4].id));
     eventBus.post(new TaskEditingStarted(expectedTasksOrder[3].id));
-    eventBus.post(new TaskEditingStarted(expectedTasksOrder[2].id));
-
     todoList.add("sixth task");
-
     mergedTaskViewArray = todoWidget._merge(mergedTaskViewArray, todoList.all());
 
     assert.ok(mergedTaskViewArray[2].currentState instanceof TaskEdit &&
@@ -47,8 +46,7 @@ QUnit.test("merge TaskView array and given Tasks array and save", assert => {
 
     const newInputOfTask = "new input";
     mergedTaskViewArray[2].currentInput = newInputOfTask;
-
     mergedTaskViewArray = todoWidget._merge(mergedTaskViewArray, todoList.all());
 
-    assert.equal(mergedTaskViewArray[2].currentInput, newInputOfTask, "current input in TaskEdit state of taskView");
+    assert.equal(mergedTaskViewArray[2].currentInput, newInputOfTask, "current input in TaskEdit state of TaskView.");
 });
