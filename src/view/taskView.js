@@ -60,7 +60,7 @@ export class TaskView extends TodoComponent {
                 }
             });
 
-        const taskUpdatePerformedHandler = this.eventBus.subscribe(EventTypes.TaskUpdatePerformed,
+        const taskUpdatePerformedHandler = this.eventBus.subscribe(EventTypes.TaskUpdated,
             occurredEvent => {
                 if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                     this.element.empty();
@@ -69,14 +69,14 @@ export class TaskView extends TodoComponent {
                 }
             });
 
-        const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemovalPerformed,
+        const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemoved,
             (occurredEvent) => {
                 if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                     this.element.remove();
                     this.eventBus.unsubscribe(EventTypes.TaskEditingStarted, startTaskEditingHandler);
                     this.eventBus.unsubscribe(EventTypes.TaskEditingCanceled, cancelTaskEditingHandler);
-                    this.eventBus.unsubscribe(EventTypes.TaskRemovalPerformed, taskRemovalPerformedHandler);
-                    this.eventBus.unsubscribe(EventTypes.TaskUpdatePerformed, taskUpdatePerformedHandler);
+                    this.eventBus.unsubscribe(EventTypes.TaskRemoved, taskRemovalPerformedHandler);
+                    this.eventBus.unsubscribe(EventTypes.TaskUpdated, taskUpdatePerformedHandler);
                 }
             });
     }

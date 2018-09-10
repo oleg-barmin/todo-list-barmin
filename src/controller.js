@@ -6,8 +6,8 @@ import {TaskCompletionFailed} from "./event/taskCompletionFailed";
 import {TaskRemovalFailed} from "./event/taskRemovalFailed";
 import {TaskListUpdated} from "./event/taskListUpdated";
 import {TaskUpdateFailed} from "./event/taskUpdateFailed";
-import {TaskRemovalPerformed} from "./event/taskRemovalPerformed";
-import {TaskUpdatePerformed} from "./event/taskUpdatePerformed";
+import {TaskRemoved} from "./event/taskRemoved";
+import {TaskUpdated} from "./event/taskUpdated";
 
 /**
  * Event-based facade for {@link TodoList}.
@@ -57,7 +57,7 @@ export class Controller {
         const taskRemovalRequestCallback = taskRemovalEvent => {
             try {
                 this.todoList.remove(taskRemovalEvent.taskId);
-                this.eventBus.post(new TaskRemovalPerformed(taskRemovalEvent.taskId));
+                this.eventBus.post(new TaskRemoved(taskRemovalEvent.taskId));
                 this.eventBus.post(new TaskListUpdated(this.todoList.all()));
             } catch (e) {
                 this.eventBus.post(new TaskRemovalFailed("Task removal fail."))
@@ -87,7 +87,7 @@ export class Controller {
          * Both ID and new description are stored in occurred `TaskCompletionRequested` event.
          *
          * If task with given ID was found in `TodoList`:
-         *      - posts {@link TaskUpdatePerformed} with ID of updated task.
+         *      - posts {@link TaskUpdated} with ID of updated task.
          *      - posts {@link TaskListUpdated} with new task list.
          * Otherwise: posts {@link TaskUpdateFailed}.
          *
@@ -97,7 +97,7 @@ export class Controller {
         const taskUpdateRequestCallback = taskUpdateEvent => {
             try {
                 this.todoList.update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription);
-                this.eventBus.post(new TaskUpdatePerformed(taskUpdateEvent.taskId));
+                this.eventBus.post(new TaskUpdated(taskUpdateEvent.taskId));
                 this.eventBus.post(new TaskListUpdated(this.todoList.all()));
             } catch (e) {
                 this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId, "New task description cannot be empty."))

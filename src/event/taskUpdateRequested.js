@@ -1,7 +1,7 @@
 import {Event, EventTypes} from "./event";
 
 /**
- * Occurs when end user submitted changes of a task description.
+ * Occurs when end-user submitted changes of a task description.
  *
  * @extends Event
  */
