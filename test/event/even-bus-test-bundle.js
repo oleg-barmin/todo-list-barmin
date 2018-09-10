@@ -80,6 +80,9 @@
          * Creates `EventBus` instance.
          *
          * @param transport transport jQuery object to bind `EventBus` on.
+         *
+         * @throws Error if given `transport` is not defined (null or undefined)
+         * @throws TypeError if given object is no a jQuery object
          */
         constructor(transport) {
             if (!transport) {
@@ -96,6 +99,8 @@
          *
          * @param {Event} event event which will be passed as argument to callbacks
          *                which subscribed to the `EventType` of given event.
+         *
+         * @throws TypeError if given `event` is no an instance of `Event`
          */
         post(event) {
             if (!(event instanceof Event)) {
@@ -114,6 +119,9 @@
          *
          * @return {Function} handler handler of `evenType` with given `callback`.
          *          Should be used to unsubscribe if needed.
+         *
+         * @throws TypeError if given `eventType` is not instance of `EventType`
+         * @throws TypeError if given `callback` is not instance of `Function`
          */
         subscribe(eventType, callback) {
             if (!(eventType instanceof EventType)) {
@@ -133,8 +141,17 @@
          *
          * @param {EventType} eventType type of event to which handler was subscribed
          * @param {Function} handler handler to unsubscribe
+         *
+         * @throws TypeError if given `eventType` is not instance of `EventType`
+         * @throws TypeError if given `handler` is not instance of `Function`
          */
         unsubscribe(eventType, handler) {
+            if (!(eventType instanceof EventType)) {
+                throw new TypeError("eventType argument should be instance of eventType.");
+            }
+            if (!(callback instanceof Function)) {
+                throw new TypeError("handler argument should be instance of Function.");
+            }
             this._transport.off(eventType.typeName, handler);
         }
     }

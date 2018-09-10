@@ -80,6 +80,9 @@
          * Creates `EventBus` instance.
          *
          * @param transport transport jQuery object to bind `EventBus` on.
+         *
+         * @throws Error if given `transport` is not defined (null or undefined)
+         * @throws TypeError if given object is no a jQuery object
          */
         constructor(transport) {
             if (!transport) {
@@ -92,10 +95,12 @@
         }
 
         /**
-         * Performs all callback bounded on `EventType` of given `Event`.
+         * Performs all callbacks that were subscribed on `EventType` of given `Event`.
          *
          * @param {Event} event event which will be passed as argument to callbacks
          *                which subscribed to the `EventType` of given event.
+         *
+         * @throws TypeError if given `event` is no an instance of `Event`
          */
         post(event) {
             if (!(event instanceof Event)) {
@@ -114,6 +119,9 @@
          *
          * @return {Function} handler handler of `evenType` with given `callback`.
          *          Should be used to unsubscribe if needed.
+         *
+         * @throws TypeError if given `eventType` is not instance of `EventType`
+         * @throws TypeError if given `callback` is not instance of `Function`
          */
         subscribe(eventType, callback) {
             if (!(eventType instanceof EventType)) {
@@ -133,8 +141,17 @@
          *
          * @param {EventType} eventType type of event to which handler was subscribed
          * @param {Function} handler handler to unsubscribe
+         *
+         * @throws TypeError if given `eventType` is not instance of `EventType`
+         * @throws TypeError if given `handler` is not instance of `Function`
          */
         unsubscribe(eventType, handler) {
+            if (!(eventType instanceof EventType)) {
+                throw new TypeError("eventType argument should be instance of eventType.");
+            }
+            if (!(callback instanceof Function)) {
+                throw new TypeError("handler argument should be instance of Function.");
+            }
             this._transport.off(eventType.typeName, handler);
         }
     }
@@ -162,7 +179,7 @@
         TaskCompletionRequested: new EventType("TaskCompletionRequested"),
         TaskRemovalRequested: new EventType("TaskRemovalRequested"),
         TaskEditingStarted: new EventType("TaskEditingStarted"),
-        CancelTaskEditing: new EventType("CancelTaskEditing"),
+        TaskEditingCanceled: new EventType("TaskEditingCanceled"),
         TaskUpdateRequested: new EventType("TaskUpdateRequested"),
         TaskRemovalFailed: new EventType("TaskRemovalFailed"),
         TaskCompletionFailed: new EventType("TaskCompletionFailed"),
@@ -200,8 +217,7 @@
     }
 
     /**
-     * Event which occurred when new task was added on view.
-     * Transfers description of new task.
+     * Occurred when new task was added on view.
      *
      * @extends Event
      */
@@ -857,7 +873,7 @@
     }
 
     /**
-     * Event which occurred when new task description validation failed.
+     * Occurs when validation of description of new task in `AddTaskRequest` was failed.
      *
      * @extends Event
      */
@@ -875,7 +891,7 @@
     }
 
     /**
-     * Occurs when `TaskCompletionRequest` cannot be processed properly.
+     * Occurs when `TaskCompletionRequest` cannot be processed was failed.
      *
      * @extends Event
      */
@@ -893,7 +909,7 @@
     }
 
     /**
-     * Occurs when `TaskRemovalRequested` cannot be processed properly.
+     * Occurs when `TaskRemovalRequested` cannot be processed was failed.
      *
      * @extends Event
      */
@@ -955,6 +971,7 @@
 
         /**
          * Creates `TaskRemovalPerformed` instance.
+         *
          * @param taskId ID of the task, which removal was performed
          */
         constructor(taskId){
@@ -1100,7 +1117,7 @@
     }
 
     /**
-     * Occurs when task with specified id need to be completed.
+     * Occurs when task with specified ID need to be completed.
      *
      * @extends Event
      */
@@ -1118,7 +1135,7 @@
     }
 
     /**
-     * Occurs when end user tries to edit a task.
+     * Occurs when end-user tries to edit a task.
      *
      * @extends Event
      */
@@ -1207,19 +1224,19 @@
     }
 
     /**
-     * Occurs when end user tries to cancel a task editing.
+     * Occurs when end-user tries to cancel a task editing.
      *
      * @extends Event
      */
-    class CancelTaskEditing extends Event {
+    class TaskEditingCanceled extends Event {
 
         /**
-         * Creates `CancelTaskEditing` instance.
+         * Creates `TaskEditingCanceled` instance.
          *
          * @param {TaskId} taskId ID of a task which editing was canceled
          */
         constructor(taskId) {
-            super(EventTypes.CancelTaskEditing);
+            super(EventTypes.TaskEditingCanceled);
             this.taskId = taskId;
         }
     }
@@ -1265,7 +1282,7 @@
             this.eventBus = eventBus;
             this.task = task;
             this.number = number;
-            this.currentInut = task.description;
+            this.currentInput = task.description;
         }
 
         render() {
@@ -1296,9 +1313,9 @@
             const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
             const errorLabel = this.element.find(`.${errorLabelClass}`);
 
-            const descriptionRowsNumber = this.currentInut.split(/\r\n|\r|\n/).length;
+            const descriptionRowsNumber = this.currentInput.split(/\r\n|\r|\n/).length;
             editTextArea.attr("rows", descriptionRowsNumber > 10 ? 10 : descriptionRowsNumber);
-            editTextArea.focus().val(this.currentInut);
+            editTextArea.focus().val(this.currentInput);
 
             /**
              * Processes `TaskUpdateFailed` event.
@@ -1308,27 +1325,26 @@
              *         with error message to display.
              */
             const taskUpdateFailedCallback = taskUpdateFailedEvent => {
-                errorLabel.removeClass("invisible");
-                errorLabel.empty();
-                errorLabel.append(taskUpdateFailedEvent.errorMsg);
+                if (taskUpdateFailedEvent.taskId.compareTo(this.task.id) === 0) {
+                    errorLabel.removeClass("invisible");
+                    errorLabel.empty();
+                    errorLabel.append(taskUpdateFailedEvent.errorMsg);
+                }
             };
             this.eventBus.subscribe(EventTypes.TaskUpdateFailed, taskUpdateFailedCallback);
 
-            cancelBtn.click(() => this.eventBus.post(new CancelTaskEditing(this.task.id)));
+            cancelBtn.click(() => this.eventBus.post(new TaskEditingCanceled(this.task.id)));
 
             saveBtn.click(() => {
                 const newTaskDescription = editTextArea.val();
                 if (newTaskDescription === this.task.description) {
-                    this.eventBus.post(new CancelTaskEditing(this.task.id));
+                    this.eventBus.post(new TaskEditingCanceled(this.task.id));
                     return;
                 }
                 this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription));
             });
 
-
-            editTextArea.keydown(() => {
-                this.currentInut = editTextArea.val();
-            });
+            editTextArea.change(() => this.currentInput = editTextArea.val());
         }
     }
 
@@ -1372,15 +1388,15 @@
             this.currentState = new TaskDisplay(null, this.eventBus, null, null);
 
             const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingStarted, occurredEvent => {
-                if (occurredEvent.taskId === this.task.id) {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                     this.element.empty();
                     this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task);
                     this.currentState.render();
                 }
             });
 
-            const cancelTaskEditingHandler = this.eventBus.subscribe(EventTypes.CancelTaskEditing, occurredEvent => {
-                if (occurredEvent.taskId === this.task.id) {
+            const cancelTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingCanceled, occurredEvent => {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                     this.element.empty();
                     this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
                     this.currentState.render();
@@ -1388,7 +1404,7 @@
             });
 
             const taskUpdatePerformedHandler = this.eventBus.subscribe(EventTypes.TaskUpdatePerformed, occurredEvent => {
-                if (occurredEvent.taskId === this.task.id) {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                     this.element.empty();
                     this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
                     this.currentState.render();
@@ -1396,10 +1412,10 @@
             });
 
             const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemovalPerformed, (occurredEvent) => {
-                if (occurredEvent.taskId === this.task.id) {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                     this.element.remove();
                     this.eventBus.unsubscribe(EventTypes.TaskEditingStarted, startTaskEditingHandler);
-                    this.eventBus.unsubscribe(EventTypes.CancelTaskEditing, cancelTaskEditingHandler);
+                    this.eventBus.unsubscribe(EventTypes.TaskEditingCanceled, cancelTaskEditingHandler);
                     this.eventBus.unsubscribe(EventTypes.TaskRemovalPerformed, taskRemovalPerformedHandler);
                     this.eventBus.unsubscribe(EventTypes.TaskUpdatePerformed, taskUpdatePerformedHandler);
                 }
@@ -1407,18 +1423,23 @@
         }
 
         /**
-         * Renders given task in `TaskDisplay` state onto given element.
-         * if method was called
+         * Removes previous element, stores given element to render into, task and number of the task in the TodoList.
          *
-         * @param {jQuery} [element] jQuery element to render into
-         * @param {number} [number] number of the task in list
-         * @param {Task} [task] task to render.
+         * @param {jQuery} element jQuery element to render into
+         * @param {number} number number of the task in list
+         * @param {Task} task task to render.
          */
-        render(element = undefined, number = undefined, task = undefined) {
-            this.element = element || this.element;
-            this.number = number || this.number;
-            this.task = task || this.task;
+        update(element, number, task) {
+            this.element.remove();
+            this.element = element;
+            this.number = number;
+            this.task = task;
+        }
 
+        /**
+         * Renders task in current state of TaskView onto given element.
+         */
+        render() {
             this.currentState.element = this.element;
             this.currentState.number = this.number;
             this.currentState.task = this.task;
@@ -1432,7 +1453,6 @@
      *
      * When {@link NewTaskAdded} happens gets new tasks,
      * removes previous task list and renders new tasks from `NewTaskAdded`.
-     * Uses {@link TaskView} for each task to render it.
      *
      * @extends TodoComponent
      */
@@ -1450,14 +1470,36 @@
         }
 
         /**
+         * Merges given `taskViewArray` and `taskArray`.
+         *
+         * If `taskViewArray` doesn't contain a `TaskView` with task from `taskArray` method creates new `TaskView`.
+         *
+         * @param {Array} taskViewArray array of `TaskView` array to merge with tasks
+         * @param {Array} taskArray array of task to merge with
+         * @return {Array} taskViewArray array of `TaskView`s in order of `taskArray`
+         *
+         * @private
+         */
+        _merge(taskViewArray, taskArray){
+            return taskArray.map((task, index) => {
+
+                const taskContainer = this.element.append(`<div class="row no-gutters mt-2"></div>`).children().last();
+                const taskViewWithCurrentTask = taskViewArray.find(element => element.task.id.compareTo(task.id) === 0);
+
+                if(taskViewWithCurrentTask){
+                    taskViewWithCurrentTask.update(taskContainer, ++index, task);
+                    return taskViewWithCurrentTask;
+                }
+
+                return new TaskView(taskContainer, this.eventBus, ++index, task);
+            });
+        }
+
+        /**
          * Empties given container for tasks to populate it with new tasks.
          */
         render() {
             this.element.empty();
-
-            const findTaskViewCallback = taskId =>{
-                return this.taskViewArray.find(element => element.task.id.compareTo(taskId) === 0)
-            };
 
             /**
              * Processes `TaskListUpdated` event.
@@ -1467,22 +1509,8 @@
              */
             const taskListUpdatedCallback = taskListUpdatedEvent => {
                 this.element.empty();
-
-                this.taskViewArray = taskListUpdatedEvent.taskArray.map((task, index) => {
-
-                    const taskContainer = this.element.append(`<div class="row no-gutters mt-2"></div>`).children().last();
-                    const taskViewWithCurrentTask = findTaskViewCallback(task.id);
-
-                    if(taskViewWithCurrentTask){
-                        taskViewWithCurrentTask.element.remove();
-                        taskViewWithCurrentTask.render(taskContainer, ++index, task);
-                        return taskViewWithCurrentTask;
-                    }
-
-                    const newTaskView = new TaskView(taskContainer, this.eventBus, ++index, task);
-                    newTaskView.render();
-                    return newTaskView;
-                });
+                this.taskViewArray = this._merge(this.taskViewArray, taskListUpdatedEvent.taskArray);
+                this.taskViewArray.forEach(taskView => taskView.render());
             };
 
             this.eventBus.subscribe(EventTypes.TaskListUpdated, taskListUpdatedCallback);

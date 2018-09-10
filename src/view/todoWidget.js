@@ -7,7 +7,6 @@ import {TaskView} from "./taskView";
  *
  * When {@link NewTaskAdded} happens gets new tasks,
  * removes previous task list and renders new tasks from `NewTaskAdded`.
- * Uses {@link TaskView} for each task to render it.
  *
  * @extends TodoComponent
  */

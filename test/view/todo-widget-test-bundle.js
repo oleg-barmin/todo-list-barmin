@@ -640,6 +640,9 @@
          * Creates `EventBus` instance.
          *
          * @param transport transport jQuery object to bind `EventBus` on.
+         *
+         * @throws Error if given `transport` is not defined (null or undefined)
+         * @throws TypeError if given object is no a jQuery object
          */
         constructor(transport) {
             if (!transport) {
@@ -656,6 +659,8 @@
          *
          * @param {Event} event event which will be passed as argument to callbacks
          *                which subscribed to the `EventType` of given event.
+         *
+         * @throws TypeError if given `event` is no an instance of `Event`
          */
         post(event) {
             if (!(event instanceof Event)) {
@@ -674,6 +679,9 @@
          *
          * @return {Function} handler handler of `evenType` with given `callback`.
          *          Should be used to unsubscribe if needed.
+         *
+         * @throws TypeError if given `eventType` is not instance of `EventType`
+         * @throws TypeError if given `callback` is not instance of `Function`
          */
         subscribe(eventType, callback) {
             if (!(eventType instanceof EventType)) {
@@ -693,8 +701,17 @@
          *
          * @param {EventType} eventType type of event to which handler was subscribed
          * @param {Function} handler handler to unsubscribe
+         *
+         * @throws TypeError if given `eventType` is not instance of `EventType`
+         * @throws TypeError if given `handler` is not instance of `Function`
          */
         unsubscribe(eventType, handler) {
+            if (!(eventType instanceof EventType)) {
+                throw new TypeError("eventType argument should be instance of eventType.");
+            }
+            if (!(callback instanceof Function)) {
+                throw new TypeError("handler argument should be instance of Function.");
+            }
             this._transport.off(eventType.typeName, handler);
         }
     }
@@ -769,7 +786,7 @@
     }
 
     /**
-     * Occurs when end user tries to edit a task.
+     * Occurs when end-user tries to edit a task.
      *
      * @extends Event
      */
@@ -1087,7 +1104,6 @@
      *
      * When {@link NewTaskAdded} happens gets new tasks,
      * removes previous task list and renders new tasks from `NewTaskAdded`.
-     * Uses {@link TaskView} for each task to render it.
      *
      * @extends TodoComponent
      */
@@ -1175,20 +1191,18 @@
 
         assert.deepEqual(mergedTaskArray, expectedTasksOrder, "order of tasks as in Task array.");
 
+
         eventBus.post(new TaskEditingStarted(expectedTasksOrder[0].id));
-
         todoList.add("fifth task");
-
         mergedTaskViewArray = todoWidget._merge(mergedTaskViewArray, todoList.all());
 
         assert.ok(mergedTaskViewArray[1].currentState instanceof TaskEdit, "state of one TaskView when task was added.");
-        expectedTasksOrder = todoList.all();
 
+
+        expectedTasksOrder = todoList.all();
         eventBus.post(new TaskEditingStarted(expectedTasksOrder[4].id));
         eventBus.post(new TaskEditingStarted(expectedTasksOrder[3].id));
-
         todoList.add("sixth task");
-
         mergedTaskViewArray = todoWidget._merge(mergedTaskViewArray, todoList.all());
 
         assert.ok(mergedTaskViewArray[2].currentState instanceof TaskEdit &&
@@ -1199,10 +1213,9 @@
 
         const newInputOfTask = "new input";
         mergedTaskViewArray[2].currentInput = newInputOfTask;
-
         mergedTaskViewArray = todoWidget._merge(mergedTaskViewArray, todoList.all());
 
-        assert.equal(mergedTaskViewArray[2].currentInput, newInputOfTask, "current input in TaskEdit state of taskView.");
+        assert.equal(mergedTaskViewArray[2].currentInput, newInputOfTask, "current input in TaskEdit state of TaskView.");
     });
 
 })));
