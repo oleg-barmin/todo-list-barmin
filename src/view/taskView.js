@@ -78,18 +78,22 @@ export class TaskView extends TodoComponent {
     }
 
     /**
-     * Renders given task in `TaskDisplay` state onto given element.
-     * if method was called
+     * Updates element to render into, task and number of the task in the TodoList.
      *
-     * @param {jQuery} [element] jQuery element to render into
-     * @param {number} [number] number of the task in list
-     * @param {Task} [task] task to render.
+     * @param {jQuery} element jQuery element to render into
+     * @param {number} number number of the task in list
+     * @param {Task} task task to render.
      */
-    render(element = undefined, number = undefined, task = undefined) {
-        this.element = element || this.element;
-        this.number = number || this.number;
-        this.task = task || this.task;
+    update(element, number, task) {
+        this.element = element;
+        this.number = number;
+        this.task = task;
+    }
 
+    /**
+     * Renders task in current state of TaskView onto given element.
+     */
+    render() {
         this.currentState.element = this.element;
         this.currentState.number = this.number;
         this.currentState.task = this.task;
