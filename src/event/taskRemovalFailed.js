@@ -1,7 +1,7 @@
 import {Event, EventTypes} from "./event";
 
 /**
- * Occurs when `TaskRemovalRequested` cannot be processed properly.
+ * Occurs when `TaskRemovalRequested` cannot be processed was failed.
  *
  * @extends Event
  */

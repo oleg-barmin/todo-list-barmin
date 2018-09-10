@@ -1,7 +1,7 @@
 import {Event, EventTypes} from "./event";
 
 /**
- * Occurs when `TaskCompletionRequest` cannot be processed properly.
+ * Occurs when `TaskCompletionRequest` cannot be processed was failed.
  *
  * @extends Event
  */

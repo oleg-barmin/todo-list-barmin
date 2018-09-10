@@ -7,6 +7,7 @@ export class TaskRemovalPerformed extends Event{
 
     /**
      * Creates `TaskRemovalPerformed` instance.
+     *
      * @param taskId ID of the task, which removal was performed
      */
     constructor(taskId){

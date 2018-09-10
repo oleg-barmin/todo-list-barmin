@@ -2,7 +2,7 @@ import {Event, EventTypes} from "./event";
 
 
 /**
- * Occurs when description of new task in `AddTaskRequest` validation was failed.
+ * Occurs when validation of description of new task in `AddTaskRequest` was failed.
  *
  * @extends Event
  */
