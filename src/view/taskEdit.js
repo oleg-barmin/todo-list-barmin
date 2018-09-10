@@ -57,6 +57,8 @@ export class TaskEdit extends TodoComponent {
         const descriptionRowsNumber = this.currentInput.split(/\r\n|\r|\n/).length;
         editTextArea.attr("rows", descriptionRowsNumber > 10 ? 10 : descriptionRowsNumber);
         editTextArea.focus().val(this.currentInput);
+        editTextArea.scrollTop(editTextArea[0].scrollHeight - editTextArea.height());
+
 
         /**
          * Processes `TaskUpdateFailed` event.
