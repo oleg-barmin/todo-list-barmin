@@ -5,15 +5,15 @@ import {Event, EventTypes} from "./event";
  *
  * @extends Event
  */
-export class CancelTaskEditing extends Event {
+export class TaskEditingCanceled extends Event {
 
     /**
-     * Creates `CancelTaskEditing` instance.
+     * Creates `TaskEditingCanceled` instance.
      *
      * @param {TaskId} taskId ID of a task which editing was canceled
      */
     constructor(taskId) {
-        super(EventTypes.CancelTaskEditing);
+        super(EventTypes.TaskEditingCanceled);
         this.taskId = taskId;
     }
 }

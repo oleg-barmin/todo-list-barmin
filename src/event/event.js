@@ -156,7 +156,7 @@ export const EventTypes = {
     TaskCompletionRequested: new EventType("TaskCompletionRequested"),
     TaskRemovalRequested: new EventType("TaskRemovalRequested"),
     TaskEditingStarted: new EventType("TaskEditingStarted"),
-    CancelTaskEditing: new EventType("CancelTaskEditing"),
+    TaskEditingCanceled: new EventType("TaskEditingCanceled"),
     TaskUpdateRequested: new EventType("TaskUpdateRequested"),
     TaskRemovalFailed: new EventType("TaskRemovalFailed"),
     TaskCompletionFailed: new EventType("TaskCompletionFailed"),

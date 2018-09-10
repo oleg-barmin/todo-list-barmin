@@ -42,7 +42,6 @@ export class TodoWidget extends TodoComponent {
             const taskViewWithCurrentTask = taskViewArray.find(element => element.task.id.compareTo(task.id) === 0);
 
             if(taskViewWithCurrentTask){
-                taskViewWithCurrentTask.element.remove();
                 taskViewWithCurrentTask.update(taskContainer, ++index, task);
                 return taskViewWithCurrentTask;
             }

@@ -50,8 +50,8 @@ export class TaskView extends TodoComponent {
             }
         });
 
-        const cancelTaskEditingHandler = this.eventBus.subscribe(EventTypes.CancelTaskEditing, occurredEvent => {
-            if (occurredEvent.taskId === this.task.id) {
+        const cancelTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingCanceled, occurredEvent => {
+            if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                 this.element.empty();
                 this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
                 this.currentState.render();
@@ -70,7 +70,7 @@ export class TaskView extends TodoComponent {
             if (occurredEvent.taskId === this.task.id) {
                 this.element.remove();
                 this.eventBus.unsubscribe(EventTypes.TaskEditingStarted, startTaskEditingHandler);
-                this.eventBus.unsubscribe(EventTypes.CancelTaskEditing, cancelTaskEditingHandler);
+                this.eventBus.unsubscribe(EventTypes.TaskEditingCanceled, cancelTaskEditingHandler);
                 this.eventBus.unsubscribe(EventTypes.TaskRemovalPerformed, taskRemovalPerformedHandler);
                 this.eventBus.unsubscribe(EventTypes.TaskUpdatePerformed, taskUpdatePerformedHandler);
             }
@@ -78,13 +78,14 @@ export class TaskView extends TodoComponent {
     }
 
     /**
-     * Updates element to render into, task and number of the task in the TodoList.
+     * Removes previous element, stores given element to render into, task and number of the task in the TodoList.
      *
      * @param {jQuery} element jQuery element to render into
      * @param {number} number number of the task in list
      * @param {Task} task task to render.
      */
     update(element, number, task) {
+        this.element.remove();
         this.element = element;
         this.number = number;
         this.task = task;

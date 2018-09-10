@@ -1,5 +1,5 @@
 import {TodoComponent} from "./todoComponent";
-import {CancelTaskEditing} from "../event/cancelTaskEditing";
+import {TaskEditingCanceled} from "../event/taskEditingCanceled";
 import {TaskUpdateRequested} from "../event/taskUpdateRequested";
 import {EventTypes} from "../event/event";
 
@@ -74,12 +74,12 @@ export class TaskEdit extends TodoComponent {
         };
         this.eventBus.subscribe(EventTypes.TaskUpdateFailed, taskUpdateFailedCallback);
 
-        cancelBtn.click(() => this.eventBus.post(new CancelTaskEditing(this.task.id)));
+        cancelBtn.click(() => this.eventBus.post(new TaskEditingCanceled(this.task.id)));
 
         saveBtn.click(() => {
             const newTaskDescription = editTextArea.val();
             if (newTaskDescription === this.task.description) {
-                this.eventBus.post(new CancelTaskEditing(this.task.id));
+                this.eventBus.post(new TaskEditingCanceled(this.task.id));
                 return;
             }
             this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription));
