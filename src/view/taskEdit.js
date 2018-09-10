@@ -83,9 +83,6 @@ export class TaskEdit extends TodoComponent {
             this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription));
         });
 
-
-        editTextArea.keydown(() => {
-            this.currentInut = editTextArea.val()
-        });
+        editTextArea.change(() => this.currentInut = editTextArea.val());
     }
 }
