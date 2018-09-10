@@ -12,7 +12,7 @@ export class AddTaskForm extends TodoComponent {
      * Creates `AddTaskForm` instance.
      *
      * @param {jQuery} element jQuery element to render into
-     * @param {EventBus} eventBus `EventBus` to connect with controller
+     * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
      */
     constructor(element, eventBus) {
         super(element, eventBus);

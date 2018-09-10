@@ -30,7 +30,7 @@ export class TaskView extends TodoComponent {
      * Creates `TaskView` instance.
      *
      * @param {jQuery} element jQuery element to render into
-     * @param {EventBus} eventBus eventBust to subscribe and post events
+     * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
      * @param {Number} number number of the task in the list of tasks
      * @param {Task} task task to render
      */
@@ -42,39 +42,43 @@ export class TaskView extends TodoComponent {
         this.number = number;
         this.currentState = new TaskDisplay(null, this.eventBus, null, null);
 
-        const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingStarted, occurredEvent => {
-            if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
-                this.element.empty();
-                this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task);
-                this.currentState.render();
-            }
-        });
+        const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingStarted,
+            occurredEvent => {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
+                    this.element.empty();
+                    this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task);
+                    this.currentState.render();
+                }
+            });
 
-        const cancelTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingCanceled, occurredEvent => {
-            if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
-                this.element.empty();
-                this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
-                this.currentState.render();
-            }
-        });
+        const cancelTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingCanceled,
+            occurredEvent => {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
+                    this.element.empty();
+                    this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                    this.currentState.render();
+                }
+            });
 
-        const taskUpdatePerformedHandler = this.eventBus.subscribe(EventTypes.TaskUpdatePerformed, occurredEvent => {
-            if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
-                this.element.empty();
-                this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
-                this.currentState.render();
-            }
-        });
+        const taskUpdatePerformedHandler = this.eventBus.subscribe(EventTypes.TaskUpdatePerformed,
+            occurredEvent => {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
+                    this.element.empty();
+                    this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                    this.currentState.render();
+                }
+            });
 
-        const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemovalPerformed, (occurredEvent) => {
-            if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
-                this.element.remove();
-                this.eventBus.unsubscribe(EventTypes.TaskEditingStarted, startTaskEditingHandler);
-                this.eventBus.unsubscribe(EventTypes.TaskEditingCanceled, cancelTaskEditingHandler);
-                this.eventBus.unsubscribe(EventTypes.TaskRemovalPerformed, taskRemovalPerformedHandler);
-                this.eventBus.unsubscribe(EventTypes.TaskUpdatePerformed, taskUpdatePerformedHandler);
-            }
-        });
+        const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemovalPerformed,
+            (occurredEvent) => {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
+                    this.element.remove();
+                    this.eventBus.unsubscribe(EventTypes.TaskEditingStarted, startTaskEditingHandler);
+                    this.eventBus.unsubscribe(EventTypes.TaskEditingCanceled, cancelTaskEditingHandler);
+                    this.eventBus.unsubscribe(EventTypes.TaskRemovalPerformed, taskRemovalPerformedHandler);
+                    this.eventBus.unsubscribe(EventTypes.TaskUpdatePerformed, taskUpdatePerformedHandler);
+                }
+            });
     }
 
     /**

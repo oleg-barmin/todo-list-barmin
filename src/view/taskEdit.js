@@ -14,7 +14,7 @@ export class TaskEdit extends TodoComponent {
      * Creates `TaskEdit` instance.
      *
      * @param {jQuery} element jQuery element to render into
-     * @param {EventBus} eventBus eventBust to subscribe and post events
+     * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
      * @param {Number} number number of the task in the list of tasks
      * @param {Task} task task to render
      */

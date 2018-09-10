@@ -16,7 +16,7 @@ export class TodoWidget extends TodoComponent {
      * Creates `TodoWidget` instance.
      *
      * @param {jQuery} element JQuery element where all task should be appended
-     * @param {EventBus} eventBus `EventBus` to subscribe on necessary events.
+     * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
      */
     constructor(element, eventBus) {
         super(element, eventBus);

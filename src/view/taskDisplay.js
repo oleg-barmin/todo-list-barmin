@@ -14,7 +14,7 @@ export class TaskDisplay extends TodoComponent {
      * Creates `TaskView` instance.
      *
      * @param {jQuery} element jQuery element to render into
-     * @param {EventBus} eventBus eventBust to subscribe and post events
+     * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
      * @param {Number} number number of the task in the list of tasks
      * @param {Task} task task to render
      */
@@ -40,7 +40,7 @@ export class TaskDisplay extends TodoComponent {
 
         this.element.append(
             `<div class="col-md-auto pr-2">${this.number}.</div>
-                <div class="col-9 ${taskDescriptionDivClass}" style="white-space: pre-wrap;">${escapedTaskDescription}</div>
+           <div class="col-9 ${taskDescriptionDivClass}" style="white-space: pre-wrap;">${escapedTaskDescription}</div>
                 <div class="col text-right">
                     <button class="${editBtnClass} btn btn-light octicon octicon-pencil"></button>
                 </div>
@@ -61,7 +61,7 @@ export class TaskDisplay extends TodoComponent {
         completeBtn.click(() => this.eventBus.post(new TaskCompletionRequested(task.id)));
         editBtn.click(() => this.eventBus.post(new TaskEditingStarted(task.id)));
         removeBtn.click(() => {
-            if(confirm("Delete the task?")) {
+            if (confirm("Delete the task?")) {
                 this.eventBus.post(new TaskRemovalRequested(task.id));
             }
         });
@@ -69,7 +69,8 @@ export class TaskDisplay extends TodoComponent {
         if (task.completed) {
             completeBtn.remove();
             editBtn.remove();
-            taskDescriptionDiv.replaceWith(() => $(`<del style="white-space: pre-wrap;"/>`).append(taskDescriptionDiv.contents()));
+            taskDescriptionDiv.replaceWith(() => $(`<del style="white-space: pre-wrap;"/>`)
+                .append(taskDescriptionDiv.contents()));
         }
     }
 }

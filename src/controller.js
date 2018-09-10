@@ -10,7 +10,7 @@ import {TaskRemovalPerformed} from "./event/taskRemovalPerformed";
 import {TaskUpdatePerformed} from "./event/taskUpdatePerformed";
 
 /**
- * Event based facade for {@link TodoList}.
+ * Event-based facade for {@link TodoList}.
  */
 export class Controller {
 
