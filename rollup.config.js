@@ -27,5 +27,13 @@ export default [
             file: 'public/js/bundle.js',
             format: 'umd',
         }
+    },
+    {
+        input: 'test/view/todo-widget-test.js',
+        output: {
+            name: "bundle",
+            file: 'test/view/todo-widget-test-bundle.js',
+            format: 'umd',
+        }
     }
 ];

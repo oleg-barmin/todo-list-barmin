@@ -92,7 +92,7 @@
         }
 
         /**
-         * Performs all callback bounded on `EventType` of given `Event`.
+         * Performs all callbacks that were subscribed on `EventType` of given `Event`.
          *
          * @param {Event} event event which will be passed as argument to callbacks
          *                which subscribed to the `EventType` of given event.
@@ -162,7 +162,7 @@
         TaskCompletionRequested: new EventType("TaskCompletionRequested"),
         TaskRemovalRequested: new EventType("TaskRemovalRequested"),
         TaskEditingStarted: new EventType("TaskEditingStarted"),
-        CancelTaskEditing: new EventType("CancelTaskEditing"),
+        TaskEditingCanceled: new EventType("TaskEditingCanceled"),
         TaskUpdateRequested: new EventType("TaskUpdateRequested"),
         TaskRemovalFailed: new EventType("TaskRemovalFailed"),
         TaskCompletionFailed: new EventType("TaskCompletionFailed"),
@@ -721,7 +721,7 @@
     }
 
     /**
-     * Event which occurred when new task description validation failed.
+     * Occurs when description of new task in `AddTaskRequest` validation was failed.
      *
      * @extends Event
      */
@@ -946,8 +946,7 @@
     }
 
     /**
-     * Event which occurred when new task was added on view.
-     * Transfers description of new task.
+     * Occurred when new task was added on view.
      *
      * @extends Event
      */
@@ -965,7 +964,7 @@
     }
 
     /**
-     * Occurs when task with specified id need to be completed.
+     * Occurs when task with specified ID need to be completed.
      *
      * @extends Event
      */

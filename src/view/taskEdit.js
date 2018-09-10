@@ -23,7 +23,7 @@ export class TaskEdit extends TodoComponent {
         this.eventBus = eventBus;
         this.task = task;
         this.number = number;
-        this.currentInut = task.description;
+        this.currentInput = task.description;
     }
 
     render() {
@@ -54,9 +54,9 @@ export class TaskEdit extends TodoComponent {
         const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
         const errorLabel = this.element.find(`.${errorLabelClass}`);
 
-        const descriptionRowsNumber = this.currentInut.split(/\r\n|\r|\n/).length;
+        const descriptionRowsNumber = this.currentInput.split(/\r\n|\r|\n/).length;
         editTextArea.attr("rows", descriptionRowsNumber > 10 ? 10 : descriptionRowsNumber);
-        editTextArea.focus().val(this.currentInut);
+        editTextArea.focus().val(this.currentInput);
 
         /**
          * Processes `TaskUpdateFailed` event.
@@ -85,6 +85,6 @@ export class TaskEdit extends TodoComponent {
             this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription));
         });
 
-        editTextArea.change(() => this.currentInut = editTextArea.val());
+        editTextArea.change(() => this.currentInput = editTextArea.val());
     }
 }

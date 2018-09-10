@@ -43,7 +43,7 @@ export class TaskView extends TodoComponent {
         this.currentState = new TaskDisplay(null, this.eventBus, null, null);
 
         const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingStarted, occurredEvent => {
-            if (occurredEvent.taskId === this.task.id) {
+            if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                 this.element.empty();
                 this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task);
                 this.currentState.render();
@@ -59,7 +59,7 @@ export class TaskView extends TodoComponent {
         });
 
         const taskUpdatePerformedHandler = this.eventBus.subscribe(EventTypes.TaskUpdatePerformed, occurredEvent => {
-            if (occurredEvent.taskId === this.task.id) {
+            if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                 this.element.empty();
                 this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
                 this.currentState.render();
@@ -67,7 +67,7 @@ export class TaskView extends TodoComponent {
         });
 
         const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemovalPerformed, (occurredEvent) => {
-            if (occurredEvent.taskId === this.task.id) {
+            if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                 this.element.remove();
                 this.eventBus.unsubscribe(EventTypes.TaskEditingStarted, startTaskEditingHandler);
                 this.eventBus.unsubscribe(EventTypes.TaskEditingCanceled, cancelTaskEditingHandler);
