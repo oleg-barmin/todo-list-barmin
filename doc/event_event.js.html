@@ -102,6 +102,9 @@ export class EventBus {
      * Creates `EventBus` instance.
      *
      * @param transport transport jQuery object to bind `EventBus` on.
+     *
+     * @throws Error if given `transport` is not defined (null or undefined)
+     * @throws TypeError if given object is no a jQuery object
      */
     constructor(transport) {
         if (!transport) {
@@ -114,10 +117,12 @@ export class EventBus {
     }
 
     /**
-     * Performs all callback bounded on `EventType` of given `Event`.
+     * Performs all callbacks that were subscribed on `EventType` of given `Event`.
      *
      * @param {Event} event event which will be passed as argument to callbacks
      *                which subscribed to the `EventType` of given event.
+     *
+     * @throws TypeError if given `event` is no an instance of `Event`
      */
     post(event) {
         if (!(event instanceof Event)) {
@@ -136,6 +141,9 @@ export class EventBus {
      *
      * @return {Function} handler handler of `evenType` with given `callback`.
      *          Should be used to unsubscribe if needed.
+     *
+     * @throws TypeError if given `eventType` is not instance of `EventType`
+     * @throws TypeError if given `callback` is not instance of `Function`
      */
     subscribe(eventType, callback) {
         if (!(eventType instanceof EventType)) {
@@ -155,8 +163,17 @@ export class EventBus {
      *
      * @param {EventType} eventType type of event to which handler was subscribed
      * @param {Function} handler handler to unsubscribe
+     *
+     * @throws TypeError if given `eventType` is not instance of `EventType`
+     * @throws TypeError if given `handler` is not instance of `Function`
      */
     unsubscribe(eventType, handler) {
+        if (!(eventType instanceof EventType)) {
+            throw new TypeError("eventType argument should be instance of eventType.");
+        }
+        if (!(callback instanceof Function)) {
+            throw new TypeError("handler argument should be instance of Function.");
+        }
         this._transport.off(eventType.typeName, handler);
     }
 }
@@ -184,7 +201,7 @@ export const EventTypes = {
     TaskCompletionRequested: new EventType("TaskCompletionRequested"),
     TaskRemovalRequested: new EventType("TaskRemovalRequested"),
     TaskEditingStarted: new EventType("TaskEditingStarted"),
-    CancelTaskEditing: new EventType("CancelTaskEditing"),
+    TaskEditingCanceled: new EventType("TaskEditingCanceled"),
     TaskUpdateRequested: new EventType("TaskUpdateRequested"),
     TaskRemovalFailed: new EventType("TaskRemovalFailed"),
     TaskCompletionFailed: new EventType("TaskCompletionFailed"),
@@ -205,13 +222,13 @@ export const EventTypes = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskForm.html">AddTaskForm</a></li><li><a href="AddTaskRequest.html">AddTaskRequest</a></li><li><a href="CancelTaskEditing.html">CancelTaskEditing</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAdded.html">NewTaskAdded</a></li><li><a href="NewTaskValidationFailed.html">NewTaskValidationFailed</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskDisplay.html">TaskDisplay</a></li><li><a href="TaskEdit.html">TaskEdit</a></li><li><a href="TaskEditingStarted.html">TaskEditingStarted</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskListUpdated.html">TaskListUpdated</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalPerformed.html">TaskRemovalPerformed</a></li><li><a href="TaskRemovalRequested.html">TaskRemovalRequested</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskUpdateFailed.html">TaskUpdateFailed</a></li><li><a href="TaskUpdatePerformed.html">TaskUpdatePerformed</a></li><li><a href="TaskUpdateRequested.html">TaskUpdateRequested</a></li><li><a href="TaskView.html">TaskView</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidget.html">TodoWidget</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskForm.html">AddTaskForm</a></li><li><a href="AddTaskRequest.html">AddTaskRequest</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAdded.html">NewTaskAdded</a></li><li><a href="NewTaskValidationFailed.html">NewTaskValidationFailed</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskDisplay.html">TaskDisplay</a></li><li><a href="TaskEdit.html">TaskEdit</a></li><li><a href="TaskEditingCanceled.html">TaskEditingCanceled</a></li><li><a href="TaskEditingStarted.html">TaskEditingStarted</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskListUpdated.html">TaskListUpdated</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalPerformed.html">TaskRemovalPerformed</a></li><li><a href="TaskRemovalRequested.html">TaskRemovalRequested</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskUpdateFailed.html">TaskUpdateFailed</a></li><li><a href="TaskUpdatePerformed.html">TaskUpdatePerformed</a></li><li><a href="TaskUpdateRequested.html">TaskUpdateRequested</a></li><li><a href="TaskView.html">TaskView</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidget.html">TodoWidget</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Sep 08 2018 17:53:51 GMT+0300 (Eastern European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Sep 10 2018 15:55:09 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

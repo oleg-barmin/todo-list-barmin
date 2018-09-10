@@ -27,7 +27,7 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import {TodoComponent} from "./todoComponent";
-import {CancelTaskEditing} from "../event/cancelTaskEditing";
+import {TaskEditingCanceled} from "../event/taskEditingCanceled";
 import {TaskUpdateRequested} from "../event/taskUpdateRequested";
 import {EventTypes} from "../event/event";
 
@@ -41,7 +41,7 @@ export class TaskEdit extends TodoComponent {
     /**
      * Creates `TaskEdit` instance.
      *
-     * @param element Jquery element to render into
+     * @param {jQuery} element jQuery element to render into
      * @param {EventBus} eventBus eventBust to subscribe and post events
      * @param {Number} number number of the task in the list of tasks
      * @param {Task} task task to render
@@ -51,7 +51,7 @@ export class TaskEdit extends TodoComponent {
         this.eventBus = eventBus;
         this.task = task;
         this.number = number;
-        this.currentInut = task.description;
+        this.currentInput = task.description;
     }
 
     render() {
@@ -82,9 +82,9 @@ export class TaskEdit extends TodoComponent {
         const editTextArea = this.element.find(`.${editDescriptionTextAreaClass}`);
         const errorLabel = this.element.find(`.${errorLabelClass}`);
 
-        const descriptionRowsNumber = this.currentInut.split(/\r\n|\r|\n/).length;
+        const descriptionRowsNumber = this.currentInput.split(/\r\n|\r|\n/).length;
         editTextArea.attr("rows", descriptionRowsNumber > 10 ? 10 : descriptionRowsNumber);
-        editTextArea.focus().val(this.currentInut);
+        editTextArea.focus().val(this.currentInput);
 
         /**
          * Processes `TaskUpdateFailed` event.
@@ -94,25 +94,26 @@ export class TaskEdit extends TodoComponent {
          *         with error message to display.
          */
         const taskUpdateFailedCallback = taskUpdateFailedEvent => {
-            errorLabel.removeClass("invisible");
-            errorLabel.empty();
-            errorLabel.append(taskUpdateFailedEvent.errorMsg);
+            if (taskUpdateFailedEvent.taskId.compareTo(this.task.id) === 0) {
+                errorLabel.removeClass("invisible");
+                errorLabel.empty();
+                errorLabel.append(taskUpdateFailedEvent.errorMsg);
+            }
         };
-
         this.eventBus.subscribe(EventTypes.TaskUpdateFailed, taskUpdateFailedCallback);
+
+        cancelBtn.click(() => this.eventBus.post(new TaskEditingCanceled(this.task.id)));
 
         saveBtn.click(() => {
             const newTaskDescription = editTextArea.val();
             if (newTaskDescription === this.task.description) {
-                this.eventBus.post(new CancelTaskEditing(this.task.id));
+                this.eventBus.post(new TaskEditingCanceled(this.task.id));
                 return;
             }
             this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription));
         });
-        cancelBtn.click(() => this.eventBus.post(new CancelTaskEditing(this.task.id)));
-        editTextArea.keyup(() => {
-            this.currentInut = editTextArea.val()
-        });
+
+        editTextArea.change(() => this.currentInput = editTextArea.val());
     }
 }</code></pre>
         </article>
@@ -124,13 +125,13 @@ export class TaskEdit extends TodoComponent {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskForm.html">AddTaskForm</a></li><li><a href="AddTaskRequest.html">AddTaskRequest</a></li><li><a href="CancelTaskEditing.html">CancelTaskEditing</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAdded.html">NewTaskAdded</a></li><li><a href="NewTaskValidationFailed.html">NewTaskValidationFailed</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskDisplay.html">TaskDisplay</a></li><li><a href="TaskEdit.html">TaskEdit</a></li><li><a href="TaskEditingStarted.html">TaskEditingStarted</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskListUpdated.html">TaskListUpdated</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalPerformed.html">TaskRemovalPerformed</a></li><li><a href="TaskRemovalRequested.html">TaskRemovalRequested</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskUpdateFailed.html">TaskUpdateFailed</a></li><li><a href="TaskUpdatePerformed.html">TaskUpdatePerformed</a></li><li><a href="TaskUpdateRequested.html">TaskUpdateRequested</a></li><li><a href="TaskView.html">TaskView</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidget.html">TodoWidget</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddTaskForm.html">AddTaskForm</a></li><li><a href="AddTaskRequest.html">AddTaskRequest</a></li><li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li><li><a href="EmptyStringException.html">EmptyStringException</a></li><li><a href="Event.html">Event</a></li><li><a href="EventBus.html">EventBus</a></li><li><a href="EventType.html">EventType</a></li><li><a href="NewTaskAdded.html">NewTaskAdded</a></li><li><a href="NewTaskValidationFailed.html">NewTaskValidationFailed</a></li><li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li><li><a href="Preconditions.html">Preconditions</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li><li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li><li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li><li><a href="TaskDisplay.html">TaskDisplay</a></li><li><a href="TaskEdit.html">TaskEdit</a></li><li><a href="TaskEditingCanceled.html">TaskEditingCanceled</a></li><li><a href="TaskEditingStarted.html">TaskEditingStarted</a></li><li><a href="TaskId.html">TaskId</a></li><li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li><li><a href="TaskListUpdated.html">TaskListUpdated</a></li><li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li><li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li><li><a href="TaskRemovalPerformed.html">TaskRemovalPerformed</a></li><li><a href="TaskRemovalRequested.html">TaskRemovalRequested</a></li><li><a href="TasksClone.html">TasksClone</a></li><li><a href="TaskSorter.html">TaskSorter</a></li><li><a href="TaskUpdateFailed.html">TaskUpdateFailed</a></li><li><a href="TaskUpdatePerformed.html">TaskUpdatePerformed</a></li><li><a href="TaskUpdateRequested.html">TaskUpdateRequested</a></li><li><a href="TaskView.html">TaskView</a></li><li><a href="TodoComponent.html">TodoComponent</a></li><li><a href="TodoList.html">TodoList</a></li><li><a href="TodoListApp.html">TodoListApp</a></li><li><a href="TodoWidget.html">TodoWidget</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Sep 08 2018 17:53:51 GMT+0300 (Eastern European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Sep 10 2018 15:55:09 GMT+0300 (Eastern European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
