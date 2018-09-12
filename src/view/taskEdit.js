@@ -24,6 +24,7 @@ export class TaskEdit extends TodoComponent {
         this.task = task;
         this.number = number;
         this.currentInput = task.description;
+        this.errorMsg = null;
     }
 
     render() {
@@ -60,6 +61,18 @@ export class TaskEdit extends TodoComponent {
         editTextArea.scrollTop(editTextArea[0].scrollHeight - editTextArea.height());
 
 
+        const renderErrorMsgCallback = errorMsg => {
+            this.errorMsg = errorMsg;
+            errorLabel.removeClass("invisible");
+            errorLabel.empty();
+            errorLabel.append(this.errorMsg);
+        };
+
+        if(this.errorMsg){
+            renderErrorMsgCallback(this.errorMsg)
+        }
+
+
         /**
          * Processes `TaskUpdateFailed` event.
          * Makes `errorLabel` visible and appends into it error message from occurred `TaskUpdateFailed` event.
@@ -69,9 +82,7 @@ export class TaskEdit extends TodoComponent {
          */
         const taskUpdateFailedCallback = taskUpdateFailedEvent => {
             if (taskUpdateFailedEvent.taskId.compareTo(this.task.id) === 0) {
-                errorLabel.removeClass("invisible");
-                errorLabel.empty();
-                errorLabel.append(taskUpdateFailedEvent.errorMsg);
+                renderErrorMsgCallback(taskUpdateFailedEvent.errorMsg)
             }
         };
         this.eventBus.subscribe(EventTypes.TaskUpdateFailed, taskUpdateFailedCallback);
