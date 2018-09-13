@@ -149,7 +149,7 @@
             if (!(eventType instanceof EventType)) {
                 throw new TypeError("eventType argument should be instance of eventType.");
             }
-            if (!(callback instanceof Function)) {
+            if (!(handler instanceof Function)) {
                 throw new TypeError("handler argument should be instance of Function.");
             }
             this._transport.off(eventType.typeName, handler);

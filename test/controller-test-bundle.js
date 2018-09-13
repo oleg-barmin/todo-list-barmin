@@ -149,7 +149,7 @@
             if (!(eventType instanceof EventType)) {
                 throw new TypeError("eventType argument should be instance of eventType.");
             }
-            if (!(callback instanceof Function)) {
+            if (!(handler instanceof Function)) {
                 throw new TypeError("handler argument should be instance of Function.");
             }
             this._transport.off(eventType.typeName, handler);
@@ -185,8 +185,8 @@
         TaskCompletionFailed: new EventType("TaskCompletionFailed"),
         NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
         TaskUpdateFailed: new EventType("TaskUpdateFailed"),
-        TaskRemovalPerformed: new EventType("TaskRemovalPerformed"),
-        TaskUpdatePerformed: new EventType("TaskUpdatePerformed")
+        TaskRemoved: new EventType("TaskRemoved"),
+        TaskUpdated: new EventType("TaskUpdated")
     };
 
     /**
@@ -832,15 +832,15 @@
     /**
      * Occurs when processing of `TaskRemovalRequested` event was performed successfully.
      */
-    class TaskRemovalPerformed extends Event{
+    class TaskRemoved extends Event{
 
         /**
-         * Creates `TaskRemovalPerformed` instance.
+         * Creates `TaskRemoved` instance.
          *
          * @param taskId ID of the task, which removal was performed
          */
         constructor(taskId){
-            super(EventTypes.TaskRemovalPerformed);
+            super(EventTypes.TaskRemoved);
             this.taskId = taskId;
         }
     }
@@ -848,20 +848,21 @@
     /**
      * Occurs when processing of `TaskUpdateRequested` event was performed successfully.
      */
-    class TaskUpdatePerformed extends Event{
+    class TaskUpdated extends Event{
+
         /**
-         * Creates `TaskUpdatePerformed` instance.
+         * Creates `TaskUpdated` instance.
          *
          * @param {TaskId} taskId description of error
          */
         constructor(taskId) {
-            super(EventTypes.TaskUpdatePerformed);
+            super(EventTypes.TaskUpdated);
             this.taskId = taskId;
         }
     }
 
     /**
-     * Event based facade for {@link TodoList}.
+     * Event-based facade for {@link TodoList}.
      */
     class Controller {
 
@@ -908,7 +909,7 @@
             const taskRemovalRequestCallback = taskRemovalEvent => {
                 try {
                     this.todoList.remove(taskRemovalEvent.taskId);
-                    this.eventBus.post(new TaskRemovalPerformed(taskRemovalEvent.taskId));
+                    this.eventBus.post(new TaskRemoved(taskRemovalEvent.taskId));
                     this.eventBus.post(new TaskListUpdated(this.todoList.all()));
                 } catch (e) {
                     this.eventBus.post(new TaskRemovalFailed("Task removal fail."));
@@ -938,7 +939,7 @@
              * Both ID and new description are stored in occurred `TaskCompletionRequested` event.
              *
              * If task with given ID was found in `TodoList`:
-             *      - posts {@link TaskUpdatePerformed} with ID of updated task.
+             *      - posts {@link TaskUpdated} with ID of updated task.
              *      - posts {@link TaskListUpdated} with new task list.
              * Otherwise: posts {@link TaskUpdateFailed}.
              *
@@ -948,7 +949,7 @@
             const taskUpdateRequestCallback = taskUpdateEvent => {
                 try {
                     this.todoList.update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription);
-                    this.eventBus.post(new TaskUpdatePerformed(taskUpdateEvent.taskId));
+                    this.eventBus.post(new TaskUpdated(taskUpdateEvent.taskId));
                     this.eventBus.post(new TaskListUpdated(this.todoList.all()));
                 } catch (e) {
                     this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId, "New task description cannot be empty."));
@@ -1018,7 +1019,7 @@
     }
 
     /**
-     * Occurs when end user submitted changes of a task description.
+     * Occurs when end-user submitted changes of a task description.
      *
      * @extends Event
      */

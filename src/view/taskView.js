@@ -82,6 +82,13 @@ export class TaskView extends TodoComponent {
     }
 
     /**
+     * todo jsDoc
+     */
+    isEditing() {
+        return this.currentState instanceof TaskEdit;
+    }
+
+    /**
      * Removes previous element, stores given element to render into, task and number of the task in the TodoList.
      *
      * @param {jQuery} element jQuery element to render into
