@@ -1,7 +1,7 @@
 package org.javaclasses.todo.model;
 
 /**
- * ID of {@link Task} which unifies tasks.
+ * ID of {@link Task} which unifies `Task`s.
  *
  * Wraps a string which contains uuid ID of `Task`.
  */

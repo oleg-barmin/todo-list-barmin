@@ -4,12 +4,12 @@ import java.util.Date;
 
 /**
  * An entity which represents task to do.
- *
+ * <p>
  * It stores task ID, its description, status (is it completed or not),
  * date of creation and date of last update (if task wasn't updated
  * the date of creation equals to last update date).
  */
-public class Task extends Entity<TaskId>{
+public class Task extends Entity<TaskId> {
     private TodoListId todoListId;
     private String description;
     private boolean completed;
