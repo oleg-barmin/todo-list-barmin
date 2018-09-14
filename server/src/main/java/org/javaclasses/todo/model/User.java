@@ -1,5 +1,7 @@
 package org.javaclasses.todo.model;
 
+import java.util.Objects;
+
 /**
  * An entity which represents user who uses TodoList application.
  * <p>
@@ -27,5 +29,20 @@ public class User extends Entity<UserId> {
 
     public void setPassword(Password password) {
         this.password = password;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(getId(), user.getId()) &&
+                Objects.equals(getUsername(), user.getUsername()) &&
+                Objects.equals(getPassword(), user.getPassword());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUsername(), getPassword());
     }
 }

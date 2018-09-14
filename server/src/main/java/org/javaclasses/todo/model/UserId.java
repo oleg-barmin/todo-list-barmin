@@ -1,5 +1,7 @@
 package org.javaclasses.todo.model;
 
+import java.util.Objects;
+
 /**
  * ID of {@link User} which unifies `User`.
  * <p>
@@ -19,5 +21,18 @@ public class UserId {
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserId)) return false;
+        UserId userId = (UserId) o;
+        return Objects.equals(getId(), userId.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

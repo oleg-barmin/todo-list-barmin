@@ -1,6 +1,7 @@
 package org.javaclasses.todo.model;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * An entity which represents task to do.
@@ -54,5 +55,22 @@ public class Task extends Entity<TaskId> {
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Task)) return false;
+        Task task = (Task) o;
+        return isCompleted() == task.isCompleted() &&
+                Objects.equals(getTodoListId(), task.getTodoListId()) &&
+                Objects.equals(getDescription(), task.getDescription()) &&
+                Objects.equals(getCreationDate(), task.getCreationDate()) &&
+                Objects.equals(getLastUpdateDate(), task.getLastUpdateDate());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTodoListId(), getDescription(), isCompleted(), getCreationDate(), getLastUpdateDate());
     }
 }

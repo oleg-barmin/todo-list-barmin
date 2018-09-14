@@ -1,5 +1,7 @@
 package org.javaclasses.todo.model;
 
+import java.util.Objects;
+
 /**
  * ID of {@link Task} which unifies `Task`s.
  * <p>
@@ -19,5 +21,18 @@ public class TaskId {
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TaskId)) return false;
+        TaskId taskId = (TaskId) o;
+        return Objects.equals(getId(), taskId.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }
