@@ -3,9 +3,7 @@ package org.javaclasses.todo.storage;
 import com.google.common.base.Preconditions;
 import org.javaclasses.todo.model.Entity;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Storage of Entities by their ID in memory.
@@ -13,8 +11,27 @@ import java.util.Optional;
  * @param <I> ID of Entity
  * @param <E> Entity to store
  */
-public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage<I, E>{
+public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage<I, E> {
     private final Map<I, E> storage = new HashMap<>();
+
+    @Override
+    public E write(E entity) {
+        Optional<E> entityById = findById(entity.getId());
+
+        if (entityById.isPresent()) {
+            update(entityById.get());
+            return entity;
+        }
+
+        return create(entity);
+    }
+
+    @Override
+    public Optional<E> read(I id) {
+        Preconditions.checkNotNull(id, "ID of Entity cannot be null");
+
+        return findById(id);
+    }
 
     protected E create(E entity) {
         Preconditions.checkNotNull(entity);
@@ -44,4 +61,9 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
 
         return Optional.ofNullable(storage.remove(id));
     }
+
+    protected List<E> all() {
+        return new LinkedList<>(storage.values());
+    }
+
 }
