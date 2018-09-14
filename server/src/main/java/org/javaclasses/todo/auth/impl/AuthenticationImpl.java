@@ -1,10 +1,7 @@
 package org.javaclasses.todo.auth.impl;
 
-import org.javaclasses.todo.auth.InvalidCredentialsException;
-import org.javaclasses.todo.auth.SessionDoesNotExistsException;
-import org.javaclasses.todo.auth.SessionExpiredException;
-import org.javaclasses.todo.auth.UsernameAlreadyExists;
-import org.javaclasses.todo.model.*;
+import org.javaclasses.todo.auth.*;
+import org.javaclasses.todo.model.impl.*;
 import org.javaclasses.todo.storage.impl.AuthSessionStorage;
 import org.javaclasses.todo.storage.impl.UserStorage;
 
@@ -12,13 +9,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- *
+ * todo doc
  */
-public class AuthenticationImpl {
+public class AuthenticationImpl implements Authentication {
     private UserStorage userStorage = new UserStorage();
     private AuthSessionStorage authSessionStorage = new AuthSessionStorage();
 
-    Token signIn(Username username, Password password) throws InvalidCredentialsException {
+    public Token signIn(Username username, Password password) throws InvalidCredentialsException {
         Optional<User> userByUsername = userStorage.findUserByUsername(username);
 
         if (userByUsername.isPresent()) {
@@ -39,7 +36,7 @@ public class AuthenticationImpl {
         throw new InvalidCredentialsException();
     }
 
-    UserId createUser(Username username, Password password) throws UsernameAlreadyExists {
+    public UserId createUser(Username username, Password password) throws UsernameAlreadyExists {
         Optional<User> userByUsername = userStorage.findUserByUsername(username);
 
         if(userByUsername.isPresent()){
@@ -58,7 +55,7 @@ public class AuthenticationImpl {
         return userId;
     }
 
-    void signOut(Token token) throws SessionExpiredException {
+    public void signOut(Token token) throws SessionExpiredException {
         Optional<AuthSession> remove = authSessionStorage.remove(token);
 
         if(remove.isPresent()){
@@ -68,7 +65,7 @@ public class AuthenticationImpl {
         throw new SessionExpiredException();
     }
 
-    UserId validate(Token token) throws SessionDoesNotExistsException {
+    public UserId validate(Token token) throws SessionDoesNotExistsException {
         Optional<AuthSession> authSessionOptional = authSessionStorage.findById(token);
 
         if(authSessionOptional.isPresent()){
