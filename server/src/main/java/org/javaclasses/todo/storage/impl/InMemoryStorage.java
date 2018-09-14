@@ -1,8 +1,10 @@
-package org.javaclasses.todo.storage;
+package org.javaclasses.todo.storage.impl;
 
 import com.google.common.base.Preconditions;
-import org.javaclasses.todo.model.Entity;
+import org.javaclasses.todo.model.impl.Entity;
+import org.javaclasses.todo.storage.Storage;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -33,7 +35,7 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
         return findById(id);
     }
 
-    protected E create(E entity) {
+    private E create(E entity) {
         Preconditions.checkNotNull(entity);
         Preconditions.checkNotNull(entity.getId(), "To create Entity it must have not null ID.");
 
@@ -42,13 +44,14 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
         return entity;
     }
 
-    protected Optional<E> findById(I id) {
+    @Override
+    public Optional<E> findById(I id) {
         Preconditions.checkNotNull(id, "Cannot find entity with null ID.");
 
         return Optional.ofNullable(storage.get(id));
     }
 
-    protected void update(E entity) {
+    private void update(E entity) {
         Preconditions.checkNotNull(entity);
         Preconditions.checkNotNull(entity.getId());
 
@@ -62,8 +65,31 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
         return Optional.ofNullable(storage.remove(id));
     }
 
-    protected List<E> all() {
-        return new LinkedList<>(storage.values());
+
+    @Override
+    public List<E> findEntitiesWithField(String fieldName, Object fieldValue) {
+        List<E> result = new LinkedList<>();
+
+        try {
+
+            for (E entity : storage.values()) {
+                Class<? extends Entity> aClass = entity.getClass();
+                Field declaredField = aClass.getDeclaredField(fieldName);
+
+                declaredField.setAccessible(true);
+
+                Object value = declaredField.get(entity);
+                if (value.equals(fieldValue)) {
+                    result.add(entity);
+                }
+            }
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return result;
+        }
+
+        return result;
     }
 
 }

@@ -1,7 +1,7 @@
-package org.javaclasses.todo.storage;
+package org.javaclasses.todo.storage.impl;
 
-import org.javaclasses.todo.model.AuthSession;
-import org.javaclasses.todo.model.Token;
+import org.javaclasses.todo.model.impl.AuthSession;
+import org.javaclasses.todo.model.impl.Token;
 
 /**
  * Storage of `AuthSession` entities by their `Token`.

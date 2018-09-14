@@ -1,6 +1,6 @@
 package org.javaclasses.todo.storage;
 
-import org.javaclasses.todo.model.Entity;
+import org.javaclasses.todo.model.impl.Entity;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,4 +39,23 @@ public interface Storage<I, E extends Entity<I>> {
      *         If optional is empty, entity with given ID doesn't exists in storage
      */
     Optional<E> remove(I id);
+
+    /**
+     * Finds `Entity` with given ID.
+     *
+     * @param id ID to find `Entity` with.
+     * @return Optional with found entity.
+     *         If optional is empty, entity with given ID doesn't exists in storage
+     */
+    Optional<E> findById(I id);
+
+    /**
+     * Finds all entities which field with given name, has given value.
+     *
+     * @param fieldName name of `Entity` field
+     * @param fieldValue value of desired field
+     *
+     * @return list of entities with field of desired value
+     */
+    List<E> findEntitiesWithField(String fieldName, Object fieldValue);
 }
