@@ -5,9 +5,10 @@ import org.javaclasses.todo.model.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Stores Entities by their ID in memory.
+ * Storage of Entities by their ID in memory.
  *
  * @param <I> ID of Entity
  * @param <E> Entity to store
@@ -24,10 +25,10 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
         return entity;
     }
 
-    protected E findById(I id) {
+    protected Optional<E> findById(I id) {
         Preconditions.checkNotNull(id, "Cannot find entity with null ID.");
 
-        return storage.get(id);
+        return Optional.ofNullable(storage.get(id));
     }
 
     protected void update(E entity) {
@@ -38,9 +39,9 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
     }
 
     @Override
-    public void remove(I id) {
+    public Optional<E> remove(I id) {
         Preconditions.checkNotNull(id, "Cannot remove entity with null ID.");
 
-        storage.remove(id);
+        return Optional.ofNullable(storage.remove(id));
     }
 }

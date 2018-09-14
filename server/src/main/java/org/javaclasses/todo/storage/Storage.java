@@ -2,8 +2,10 @@ package org.javaclasses.todo.storage;
 
 import org.javaclasses.todo.model.Entity;
 
+import java.util.Optional;
+
 /**
- * Allow to access access entity storage and read, create, update `Entity` in storage.
+ * Allows to access entity storage and read, create, update `Entity` in storage.
  *
  * @param <I> ID of the entity
  * @param <E> Entity to store
@@ -15,7 +17,6 @@ public interface Storage<I, E extends Entity<I>> {
      * updates previous entity.
      *
      * @param entity entity to store
-     *
      * @return entity which was stored
      */
     E write(E entity);
@@ -24,8 +25,17 @@ public interface Storage<I, E extends Entity<I>> {
      * Finds entity in storage.
      *
      * @param id ID of entity to find
-     *
-     * @return Entity with given ID
+     * @return returns Optional with `entity` with given ID.
+     *         If optional is empty, `Entity` with given ID doesn't exists in storage.
      */
-    E read(I id);
+    Optional<E> read(I id);
+
+    /**
+     * Removes Entity with given ID from the storage .
+     *
+     * @param id ID of the entity to remove
+     * @return Optional with removed entity.
+     *         If optional is empty, entity with given ID doesn't exists in storage
+     */
+    Optional<E> remove(I id);
 }
