@@ -1,10 +1,18 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.impl;
 
 import java.util.Objects;
 
+/**
+ * Identifies user session.
+ */
 public class Token {
     private final String value;
 
+    /**
+     * Creates `Token` instance.
+     *
+     * @param value string with uuid to wrap.
+     */
     public Token(String value) {
         this.value = value;
     }

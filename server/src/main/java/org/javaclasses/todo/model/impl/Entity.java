@@ -1,4 +1,4 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.impl;
 
 /**
  * Represents an abstract entity which is used in TodoList application.
@@ -8,12 +8,11 @@ package org.javaclasses.todo.model;
 public abstract class Entity<Id> {
     private Id id;
 
-
     public void setId(Id id) {
         this.id = id;
     }
 
-    public Id getId(){
+    public Id getId() {
         return id;
     }
 

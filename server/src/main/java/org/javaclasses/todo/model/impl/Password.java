@@ -1,11 +1,11 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.impl;
 
 import java.util.Objects;
 
 /**
  * Wraps string with user password to sign in into TodoList application.
  */
-public class Password {
+public final class Password {
     private String password;
 
     /**

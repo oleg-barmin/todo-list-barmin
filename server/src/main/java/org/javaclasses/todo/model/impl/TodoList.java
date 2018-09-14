@@ -1,4 +1,4 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.impl;
 
 import java.util.Objects;
 
@@ -10,7 +10,6 @@ import java.util.Objects;
  * - `UserId` ID of user who owns `TodoList`
  */
 public class TodoList extends Entity<TodoListId> {
-    private TodoListId id;
     private UserId owner;
 
     public UserId getOwner() {

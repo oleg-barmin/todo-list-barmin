@@ -1,4 +1,4 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.impl;
 
 import java.util.Objects;
 

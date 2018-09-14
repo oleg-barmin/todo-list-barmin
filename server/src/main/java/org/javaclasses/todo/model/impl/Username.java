@@ -1,11 +1,11 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.impl;
 
 import java.util.Objects;
 
 /**
  * Wraps string with username for user to sing-in into TodoList application.
  */
-public class Username {
+public final class Username {
     private String username;
 
     /**
