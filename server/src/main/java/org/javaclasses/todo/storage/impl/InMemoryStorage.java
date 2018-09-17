@@ -21,7 +21,7 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
         Optional<E> entityById = findById(entity.getId());
 
         if (entityById.isPresent()) {
-            update(entityById.get());
+            update(entity);
             return entity;
         }
 
@@ -65,9 +65,14 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
         return Optional.ofNullable(storage.remove(id));
     }
 
-
-    @Override
-    public List<E> findEntitiesWithField(String fieldName, Object fieldValue) {
+    /**
+     * Finds all entities which field with given name, has given value.
+     *
+     * @param fieldName  name of `Entity` field
+     * @param fieldValue value of desired field
+     * @return list of entities with field of desired value
+     */
+    List<E> findEntitiesWithField(String fieldName, Object fieldValue) {
         List<E> result = new LinkedList<>();
 
         try {

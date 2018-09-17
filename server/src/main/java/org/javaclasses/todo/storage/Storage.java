@@ -48,14 +48,4 @@ public interface Storage<I, E extends Entity<I>> {
      *         If optional is empty, entity with given ID doesn't exists in storage
      */
     Optional<E> findById(I id);
-
-    /**
-     * Finds all entities which field with given name, has given value.
-     *
-     * @param fieldName name of `Entity` field
-     * @param fieldValue value of desired field
-     *
-     * @return list of entities with field of desired value
-     */
-    List<E> findEntitiesWithField(String fieldName, Object fieldValue);
 }
