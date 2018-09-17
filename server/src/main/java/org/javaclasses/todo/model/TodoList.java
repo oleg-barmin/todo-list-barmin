@@ -1,5 +1,7 @@
 package org.javaclasses.todo.model;
 
+import com.google.common.base.Preconditions;
+
 import java.util.Objects;
 
 /**
@@ -12,12 +14,13 @@ import java.util.Objects;
 public class TodoList extends Entity<TodoListId> {
     private UserId owner;
 
-    public UserId getOwner() {
-        return owner;
+    private TodoList(TodoListId todoListId, UserId owner) {
+        setId(todoListId);
+        this.owner = owner;
     }
 
-    public void setOwner(UserId owner) {
-        this.owner = owner;
+    public UserId getOwner() {
+        return owner;
     }
 
     @Override
@@ -32,5 +35,58 @@ public class TodoList extends Entity<TodoListId> {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getOwner());
+    }
+
+    @Override
+    public String toString() {
+        return "TodoList{" +
+                "ID=" + getId() + ", "
+                + "owner=" + owner +
+                '}';
+    }
+
+    /**
+     * Allows to call chain of methods to create `Task` instance.
+     * <p>
+     * Every task <b>must</b> have:
+     * - ID
+     * - ID of user who created TodoList
+     * <p>
+     * After necessary fields was set, {@link TodoListBuilder#build()} method should be called.
+     * <p>
+     * Implementation of <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.
+     */
+    public static class TodoListBuilder {
+        private TodoListId todoListId;
+        private UserId owner;
+
+        TodoListBuilder setOwner(UserId owner) throws NullPointerException {
+            Preconditions.checkNotNull(owner);
+
+            this.owner = owner;
+
+            return this;
+        }
+
+        TodoListBuilder setTodoListId(TodoListId todoListId) throws NullPointerException {
+            Preconditions.checkNotNull(todoListId);
+
+            this.todoListId = todoListId;
+
+            return this;
+        }
+
+        /**
+         * Creates instance of `TodoList`.
+         *
+         * @return TodoList with fields that were previously set
+         * @throws NullPointerException if ID of owner or ID of TodoList was not provided.
+         */
+        TodoList build() {
+            Preconditions.checkNotNull(this.owner);
+            Preconditions.checkNotNull(this.todoListId);
+            return new TodoList(todoListId, owner);
+        }
+
     }
 }
