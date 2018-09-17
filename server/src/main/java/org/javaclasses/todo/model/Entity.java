@@ -1,4 +1,4 @@
-package org.javaclasses.todo.model.impl;
+package org.javaclasses.todo.model;
 
 /**
  * Represents an abstract entity which is used in TodoList application.

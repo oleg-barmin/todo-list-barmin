@@ -3,7 +3,7 @@ package org.javaclasses.todo.model;
 /**
  * Occurs when attempted when `Task` with desired `TaskId` was not found in the storage.
  */
-public class TaskNotFoundException extends Exception {
+public class TaskNotFoundException extends RuntimeException {
 
     /**
      * Creates `TaskNotFoundException` instance.

@@ -1,4 +1,4 @@
-package org.javaclasses.todo.model.impl;
+package org.javaclasses.todo.model;
 
 import java.util.Objects;
 
@@ -7,7 +7,7 @@ import java.util.Objects;
  * <p>
  * Wraps a string which contains uuid ID of `User`.
  */
-public class UserId {
+public final class UserId {
     private String id;
 
     /**

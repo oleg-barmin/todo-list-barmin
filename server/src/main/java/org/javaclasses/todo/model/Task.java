@@ -3,6 +3,8 @@ package org.javaclasses.todo.model;
 import java.util.Date;
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.*;
+
 /**
  * An entity which represents task to do.
  * <p>
@@ -11,50 +13,39 @@ import java.util.Objects;
  * the date of creation equals to last update date).
  */
 public class Task extends Entity<TaskId> {
-    private TodoListId todoListId;
-    private String description;
-    private boolean completed;
-    private Date creationDate;
-    private Date lastUpdateDate;
+    private final TodoListId todoListId;
+    private final String description;
+    private final boolean completed;
+    private final Date creationDate;
+    private final Date lastUpdateDate;
 
-    public TodoListId getTodoListId() {
+    private Task(TaskId taskId, TodoListId todoListId, String description, boolean completed, Date creationDate, Date lastUpdateDate) {
+        setId(taskId);
+        this.todoListId = todoListId;
+        this.description = description;
+        this.completed = completed;
+        this.creationDate = creationDate;
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
+    private TodoListId getTodoListId() {
         return todoListId;
     }
 
-    public void setTodoListId(TodoListId todoListId) {
-        this.todoListId = todoListId;
-    }
-
-    public String getDescription() {
+    private String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isCompleted() {
+    private boolean isCompleted() {
         return completed;
     }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
-
-    public Date getCreationDate() {
+    private Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Date getLastUpdateDate() {
+    private Date getLastUpdateDate() {
         return lastUpdateDate;
-    }
-
-    public void setLastUpdateDate(Date lastUpdateDate) {
-        this.lastUpdateDate = lastUpdateDate;
     }
 
     @Override
@@ -72,5 +63,66 @@ public class Task extends Entity<TaskId> {
     @Override
     public int hashCode() {
         return Objects.hash(getTodoListId(), getDescription(), isCompleted(), getCreationDate(), getLastUpdateDate());
+    }
+
+    public static class TaskBuilder {
+        private TaskId taskId;
+        private TodoListId todoListId;
+
+        private String description;
+        private boolean completed;
+        private Date creationDate;
+        private Date lastUpdateDate;
+
+        public TaskBuilder setTaskId(TaskId taskId) {
+            checkNotNull(taskId);
+
+            this.taskId = taskId;
+            return this;
+        }
+
+        public TaskBuilder setTodoListId(TodoListId todoListId) {
+            checkNotNull(todoListId);
+
+            this.todoListId = todoListId;
+            return this;
+        }
+
+        public TaskBuilder setDescription(String description) {
+            checkNotNull(description);
+            checkArgument(!description.equals(""));
+
+            this.description = description;
+            return this;
+        }
+
+        public TaskBuilder setCompleted(boolean completed) {
+            this.completed = completed;
+            return this;
+        }
+
+        public TaskBuilder setCreationDate(Date creationDate) {
+            checkNotNull(creationDate);
+
+            this.creationDate = creationDate;
+            return this;
+        }
+
+        public TaskBuilder setLastUpdateDate(Date lastUpdateDate) {
+            checkNotNull(lastUpdateDate);
+
+            this.lastUpdateDate = lastUpdateDate;
+            return this;
+        }
+
+        public Task build() {
+            checkNotNull(taskId);
+            checkNotNull(todoListId);
+            checkNotNull(description);
+            checkNotNull(creationDate);
+            checkNotNull(lastUpdateDate);
+
+            return new Task(taskId, todoListId, description, completed, creationDate, lastUpdateDate);
+        }
     }
 }

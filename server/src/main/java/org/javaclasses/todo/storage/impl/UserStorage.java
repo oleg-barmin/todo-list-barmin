@@ -1,8 +1,8 @@
 package org.javaclasses.todo.storage.impl;
 
-import org.javaclasses.todo.model.impl.User;
-import org.javaclasses.todo.model.impl.UserId;
-import org.javaclasses.todo.model.impl.Username;
+import org.javaclasses.todo.model.User;
+import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.model.Username;
 
 import java.util.List;
 import java.util.Optional;

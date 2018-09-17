@@ -1,6 +1,6 @@
 package org.javaclasses.todo.auth;
 
-import org.javaclasses.todo.model.impl.*;
+import org.javaclasses.todo.model.*;
 import org.javaclasses.todo.storage.impl.AuthSessionStorage;
 import org.javaclasses.todo.storage.impl.UserStorage;
 

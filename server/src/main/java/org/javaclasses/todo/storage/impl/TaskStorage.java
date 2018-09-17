@@ -1,7 +1,7 @@
 package org.javaclasses.todo.storage.impl;
 
-import org.javaclasses.todo.model.impl.Task;
-import org.javaclasses.todo.model.impl.TaskId;
+import org.javaclasses.todo.model.Task;
+import org.javaclasses.todo.model.TaskId;
 
 /**
  * Storage of `Task` entities by their `TaskId`.

@@ -1,7 +1,7 @@
 package org.javaclasses.todo.storage.impl;
 
 import com.google.common.base.Preconditions;
-import org.javaclasses.todo.model.impl.Entity;
+import org.javaclasses.todo.model.Entity;
 import org.javaclasses.todo.storage.Storage;
 
 import java.lang.reflect.Field;

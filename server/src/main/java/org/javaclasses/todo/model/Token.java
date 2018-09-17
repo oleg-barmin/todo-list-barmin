@@ -1,11 +1,11 @@
-package org.javaclasses.todo.model.impl;
+package org.javaclasses.todo.model;
 
 import java.util.Objects;
 
 /**
  * Identifies user session.
  */
-public class Token {
+public final class Token {
     private final String value;
 
     /**

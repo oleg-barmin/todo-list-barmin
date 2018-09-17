@@ -1,4 +1,4 @@
-package org.javaclasses.todo.model.impl;
+package org.javaclasses.todo.model;
 
 import java.util.Objects;
 
@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  * Contains:
  *  - `Token` of session.
- *  - `UserId` of user who creates session
+ *  - `UserId` of user who created session
  */
 public class AuthSession extends Entity<Token>{
     private UserId userId;

@@ -1,6 +1,6 @@
 package org.javaclasses.todo.storage;
 
-import org.javaclasses.todo.model.impl.Entity;
+import org.javaclasses.todo.model.Entity;
 
 import java.util.List;
 import java.util.Optional;
