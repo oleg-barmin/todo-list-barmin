@@ -3,12 +3,12 @@ package org.javaclasses.todo.auth;
 /**
  * Occurs when trying to validate `Token` which does not exists in storage.
  */
-public class SessionDoesNotExistsException extends Exception {
+public class SessionDoesNotExistsException extends RuntimeException {
 
     /**
      * Creates `SessionDoesNotExistsException` instance.
      */
-    public SessionDoesNotExistsException() {
+    SessionDoesNotExistsException() {
         super("Session for given token does not exists.");
     }
 }
