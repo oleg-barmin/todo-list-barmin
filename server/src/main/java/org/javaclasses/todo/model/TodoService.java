@@ -1,12 +1,11 @@
 package org.javaclasses.todo.model;
 
 import org.javaclasses.todo.auth.Authentication;
-import org.javaclasses.todo.auth.SessionDoesNotExistsException;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 import org.javaclasses.todo.storage.impl.TodoListStorage;
 
 import java.util.Date;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * Service which manages operations with to-do list and tasks in the to-do lists.
@@ -18,112 +17,184 @@ import java.util.Optional;
  * - deleted created tasks
  */
 public class TodoService {
-    private Authentication authentication = new Authentication();
-    private TodoListStorage todoListStorage = new TodoListStorage();
-    private TaskStorage taskStorage = new TaskStorage();
+    private Authentication authentication;
+    private TodoListStorage todoListStorage;
+    private TaskStorage taskStorage;
+
+    public TodoService(Authentication authentication, TodoListStorage todoListStorage, TaskStorage taskStorage) {
+        this.authentication = authentication;
+        this.todoListStorage = todoListStorage;
+        this.taskStorage = taskStorage;
+    }
 
     /**
-     * Creates new to-do list.
+     * Provides `CreateList` instance to create new `TodoList`.
      *
-     * @param token      `Token` of users who creates to-do list
      * @param todoListId ID of to-do list to create
-     * @throws SessionDoesNotExistsException if session with given token doesn't exist
+     * @return `CreateList` instance to build `TodoList` to create and upload it
      */
-    public void createList(Token token, TodoListId todoListId) throws SessionDoesNotExistsException {
-        UserId userId = authentication.validate(token);
-
-        TodoList todoList = new TodoList();
-        todoList.setId(todoListId);
-        todoList.setOwner(userId);
-
-        todoListStorage.write(todoList);
+    CreateList createList(TodoListId todoListId) {
+        return new CreateList(todoListId);
     }
 
     /**
-     * Creates new task in to-do list with given ID.
+     * Provides `TodoListTasks` instance to retrieve list of Tasks of specified `TodoList`.
      *
-     * @param token           `Token` of user who adds new task
-     * @param taskId          ID of the task to add
-     * @param todoListId      ID of to-do list to which task should be added
-     * @param taskDescription description of task to add
-     * @param completed       status of task to add
-     * @param creationDate    date of creation of task to add
-     * @param lastUpdateDate  date of last task update of task to add
-     * @throws SessionDoesNotExistsException if session with given token doesn't exist
+     * @param todoListId ID of `TodoList` which tasks required
+     * @return `TodoListTasks` instance to build request to retrieve list of Tasks of specified `TodoList`
      */
-    public void addTask(Token token,
-                        TaskId taskId,
-                        TodoListId todoListId,
-                        String taskDescription,
-                        boolean completed,
-                        Date creationDate,
-                        Date lastUpdateDate) throws SessionDoesNotExistsException {
-
-        authentication.validate(token);
-
-        Task task = new Task.TaskBuilder()
-                .setTaskId(taskId)
-                .setTodoListId(todoListId)
-                .setDescription(taskDescription)
-                .setCompleted(completed)
-                .setCreationDate(creationDate)
-                .setLastUpdateDate(lastUpdateDate)
-                .build();
-
-        taskStorage.write(task);
+    TodoListTasks getTasksOfTodoList(TodoListId todoListId) {
+        return new TodoListTasks(todoListId);
     }
 
     /**
-     * Updates task with given ID.
+     * Provides `AddTask` instance to add new `Task`.
      *
-     * @param token           `Token` of user who updates task
-     * @param taskId          ID of task to update
-     * @param todoListId      ID of to-do list of the task
-     * @param taskDescription description of updated task
-     * @param completed       status of updated task
-     * @param creationDate    date of creation of updated task
-     * @param lastUpdateDate  date of last update of updated task
-     * @throws SessionDoesNotExistsException if session with given token doesn't exist
+     * @param taskId ID of the task to add
+     * @return `AddTask` instance to build request to add new Task
      */
-    public void updateTasks(Token token,
-                            TaskId taskId,
-                            TodoListId todoListId,
-                            String taskDescription,
-                            boolean completed,
-                            Date creationDate,
-                            Date lastUpdateDate) throws SessionDoesNotExistsException {
-
-        authentication.validate(token);
-
-        Task task = new Task.TaskBuilder()
-                .setTaskId(taskId)
-                .setTodoListId(todoListId)
-                .setDescription(taskDescription)
-                .setCompleted(completed)
-                .setCreationDate(creationDate)
-                .setLastUpdateDate(lastUpdateDate)
-                .build();
-
-        taskStorage.write(task);
+    AddTask addTask(TaskId taskId) {
+        return new AddTask(taskId);
     }
 
     /**
-     * Deletes task by its ID.
+     * Provides `UpdateTask` instance to update existing `Task`.
      *
-     * @param token  `Token` of user who deletes task
-     * @param taskId ID of the task to delete.
-     * @throws SessionDoesNotExistsException if session with given token doesn't exist
-     * @throws TaskNotFoundException         if task with given ID was not found
+     * @param taskId ID of the task to update
+     * @return `UpdateTask` instance to build task to update an upload changes
      */
-    public void deleteTask(Token token, TaskId taskId) throws SessionDoesNotExistsException, TaskNotFoundException {
-        authentication.validate(token);
+    UpdateTask updateTask(TaskId taskId) {
+        return new UpdateTask(taskId);
+    }
 
-        Optional<Task> removedTask = taskStorage.remove(taskId);
+    /**
+     * Provides `RemoveTask` instance to remove existing `Task`.
+     *
+     * @param taskId ID of the task to remove
+     * @return `RemoveTask` instance to build task to remove it
+     */
+    RemoveTask removeTask(TaskId taskId) {
+        return new RemoveTask(taskId);
+    }
 
-        if (!removedTask.isPresent()) {
-            throw new TaskNotFoundException();
+    public final class AddTask {
+        private final Task.TaskBuilder taskBuilder;
+
+        private AddTask(TaskId taskId) {
+            taskBuilder = new Task.TaskBuilder();
+            taskBuilder.setTaskId(taskId);
+            taskBuilder.setCreationDate(new Date());
+        }
+
+        public AddTask withTodoListId(TodoListId todoListId) {
+            taskBuilder.setTodoListId(todoListId);
+
+            return this;
+        }
+
+        public AddTask withDescription(String description) {
+            Descriptions.validate(description);
+            taskBuilder.setDescription(description);
+            return this;
+        }
+
+        void execute(Token token) {
+            authentication.validate(token);
+
+            Task build = taskBuilder.build();
+            taskStorage.write(build);
         }
     }
 
+    public final class UpdateTask {
+        private final Task.TaskBuilder taskBuilder;
 
+        private UpdateTask(TaskId taskId) {
+            taskBuilder = new Task.TaskBuilder();
+            taskBuilder.setTaskId(taskId);
+        }
+
+        public UpdateTask withTodoListId(TodoListId todoListId) {
+            taskBuilder.setTodoListId(todoListId);
+            return this;
+        }
+
+        public UpdateTask withDescription(String description) {
+            Descriptions.validate(description);
+            taskBuilder.setDescription(description);
+            return this;
+        }
+
+        public UpdateTask withStatus(boolean completed) {
+            taskBuilder.setStatus(completed);
+            return this;
+        }
+
+        public UpdateTask withCreationDate(Date creationDate) {
+            taskBuilder.setCreationDate(creationDate);
+            return this;
+        }
+
+        public UpdateTask withLastUpdateDate(Date lastUpdateDate) {
+            taskBuilder.setLastUpdateDate(lastUpdateDate);
+            return this;
+        }
+
+        public void execute(Token token) {
+            authentication.validate(token);
+
+            Task build = taskBuilder.build();
+            taskStorage.write(build);
+        }
+    }
+
+    public final class RemoveTask {
+        private final TaskId taskId;
+
+        private RemoveTask(TaskId taskId) {
+            this.taskId = taskId;
+        }
+
+        public void execute(Token token) {
+            authentication.validate(token);
+
+            taskStorage.remove(this.taskId);
+        }
+    }
+
+    public final class CreateList {
+        private final TodoList.TodoListBuilder todoListBuilder;
+
+        private CreateList(TodoListId todoListId) {
+            todoListBuilder = new TodoList.TodoListBuilder();
+            todoListBuilder.setTodoListId(todoListId);
+        }
+
+        public CreateList withOwner(UserId userId) {
+            todoListBuilder.setOwner(userId);
+            return this;
+        }
+
+        public void execute(Token token) {
+            authentication.validate(token);
+
+            TodoList todoList = todoListBuilder.build();
+
+            todoListStorage.write(todoList);
+        }
+    }
+
+    public class TodoListTasks {
+        private TodoListId todoListId;
+
+        private TodoListTasks(TodoListId todoListId) {
+            this.todoListId = todoListId;
+        }
+
+        public List<Task> execute(Token token) {
+            authentication.validate(token);
+
+            return taskStorage.getAllTaskOfTodoList(todoListId);
+        }
+    }
 }
