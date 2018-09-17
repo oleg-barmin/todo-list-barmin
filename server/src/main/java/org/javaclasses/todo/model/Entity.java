@@ -16,4 +16,10 @@ public abstract class Entity<Id> {
         return id;
     }
 
+    @Override
+    public String toString() {
+        return "Entity{" +
+                "id=" + id +
+                '}';
+    }
 }
