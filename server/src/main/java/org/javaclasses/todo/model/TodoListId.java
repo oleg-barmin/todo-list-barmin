@@ -14,7 +14,6 @@ public final class TodoListId {
      * Creates `TodoListId` instance.
      *
      * @param id string which contains uuid to unify `TodoList`s
-     *
      */
     public TodoListId(String id) {
         this.id = id;

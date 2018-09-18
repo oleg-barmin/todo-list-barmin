@@ -3,13 +3,13 @@ package org.javaclasses.todo.model;
 import java.util.Objects;
 
 /**
- * A user session.
- *
+ * An entity which represents a user session.
+ * <p>
  * Contains:
- *  - `Token` of session.
- *  - `UserId` of user who created session
+ * - `Token` of session.
+ * - `UserId` of user who created session
  */
-public class AuthSession extends Entity<Token>{
+public class AuthSession extends Entity<Token> {
     private UserId userId;
 
     public void setUserId(UserId userId) {

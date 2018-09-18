@@ -1,6 +1,5 @@
 package org.javaclasses.todo.model;
 
-import com.google.common.base.Preconditions;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.auth.SessionDoesNotExistsException;
 import org.javaclasses.todo.storage.impl.TaskStorage;
@@ -10,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Service which manages operations with to-do list and tasks in the to-do lists.

@@ -1,7 +1,7 @@
 package org.javaclasses.todo.model;
 
 /**
- * Utility class which performs operation with tasks descriptions.
+ * Provides utility methods to simplify work with task description.
  */
 class Descriptions {
 

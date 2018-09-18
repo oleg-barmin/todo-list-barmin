@@ -117,7 +117,7 @@ class TodoServiceTest {
                 .withDescription("task")
                 .execute(token);
 
-        Optional<Task> taskById = taskStorage.findById(taskId);
+        Optional<Task> taskById = taskStorage.read(taskId);
 
         Assertions.assertTrue(taskById.isPresent(), "Task should be added, but it didn't");
     }
@@ -135,7 +135,7 @@ class TodoServiceTest {
                 .withDescription("task")
                 .execute(token);
 
-        Optional<Task> notUpdatedTaskOptional = taskStorage.findById(taskId);
+        Optional<Task> notUpdatedTaskOptional = taskStorage.read(taskId);
         if (!notUpdatedTaskOptional.isPresent()) {
             Assertions.fail("Task to update should be added but it didn't.");
             return;
@@ -150,7 +150,7 @@ class TodoServiceTest {
                 .execute(token);
 
 
-        Optional<Task> updatedTaskOptional = taskStorage.findById(taskId);
+        Optional<Task> updatedTaskOptional = taskStorage.read(taskId);
         if (!updatedTaskOptional.isPresent()) {
             Assertions.fail("Updated task should be in storage, but it doesn't.");
         }
@@ -171,7 +171,7 @@ class TodoServiceTest {
         todoService.removeTask(task.getId()).execute(token);
 
 
-        Optional<Task> taskByID = taskStorage.findById(task.getId());
+        Optional<Task> taskByID = taskStorage.read(task.getId());
         Assertions.assertFalse(taskByID.isPresent(), "Task should be deleted, but it didn't.");
     }
 
