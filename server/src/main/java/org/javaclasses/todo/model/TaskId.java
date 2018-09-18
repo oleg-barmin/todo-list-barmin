@@ -35,4 +35,11 @@ public final class TaskId {
     public int hashCode() {
         return Objects.hash(getId());
     }
+
+    @Override
+    public String toString() {
+        return "TaskId{" +
+                "id='" + id + '\'' +
+                '}';
+    }
 }

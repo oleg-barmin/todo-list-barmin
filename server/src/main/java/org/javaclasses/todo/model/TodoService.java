@@ -37,8 +37,17 @@ public class TodoService {
      *
      * @param todoListId ID of to-do list to create
      * @return `CreateList` instance to build `TodoList` to create and upload it
+     * @throws NullPointerException           if given `todoListId` is null
+     * @throws TodoListAlreadyExistsException if `TodoList` with given ID already exists
      */
-    CreateList createList(TodoListId todoListId) {
+    CreateList createList(TodoListId todoListId) throws NullPointerException, TodoListAlreadyExistsException {
+        checkNotNull(todoListId);
+
+        Optional<TodoList> todoList = todoListStorage.findById(todoListId);
+        if (todoList.isPresent()) {
+            throw new TodoListAlreadyExistsException(todoListId);
+        }
+
         return new CreateList(todoListId);
     }
 
@@ -57,8 +66,17 @@ public class TodoService {
      *
      * @param taskId ID of the task to add
      * @return `AddTask` instance to build request to add new Task
+     * @throws NullPointerException       if given `taskId` is null
+     * @throws TaskAlreadyExistsException if `Task` with given Id already exists
      */
-    AddTask addTask(TaskId taskId) {
+    AddTask addTask(TaskId taskId) throws NullPointerException, TaskAlreadyExistsException {
+        checkNotNull(taskId);
+
+        Optional<Task> task = taskStorage.findById(taskId);
+        if (task.isPresent()) {
+            throw new TaskAlreadyExistsException(taskId);
+        }
+
         return new AddTask(taskId);
     }
 
@@ -79,6 +97,13 @@ public class TodoService {
      * @return `RemoveTask` instance to build task to remove it
      */
     RemoveTask removeTask(TaskId taskId) {
+        checkNotNull(taskId);
+
+        Optional<Task> task = taskStorage.findById(taskId);
+        if (!task.isPresent()) {
+            throw new TaskNotFoundException(taskId);
+        }
+
         return new RemoveTask(taskId);
     }
 
@@ -165,7 +190,6 @@ public class TodoService {
         private final Task.TaskBuilder taskBuilder;
         private final TaskId taskId;
 
-
         /**
          * Creates `UpdateTask` instance.
          *
@@ -215,7 +239,7 @@ public class TodoService {
 
             Optional<Task> taskToUpdate = taskStorage.findById(taskId);
             if (!taskToUpdate.isPresent()) {
-                throw new TaskNotFoundException();
+                throw new TaskNotFoundException(taskId);
             }
             Task task = taskToUpdate.get();
 

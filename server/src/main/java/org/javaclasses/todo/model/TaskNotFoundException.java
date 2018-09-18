@@ -7,8 +7,10 @@ public class TaskNotFoundException extends RuntimeException {
 
     /**
      * Creates `TaskNotFoundException` instance.
+     *
+     * @param taskId ID of the task which was not found
      */
-    public TaskNotFoundException() {
-        super("Task wasn't Found");
+    public TaskNotFoundException(TaskId taskId) {
+        super("Task wih ID: '" + taskId + "'wasn't Found");
     }
 }
