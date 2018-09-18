@@ -31,7 +31,6 @@ class TodoServiceTest {
     }
 
 
-
     private UserId createUser() {
         Username username = new Username("user");
         Password password = new Password("password");
@@ -60,7 +59,7 @@ class TodoServiceTest {
 
     @Test
     @DisplayName("create new TodoLists.")
-    void testCreateList(){
+    void testCreateList() {
         UserId userId = createUser();
         Token token = authentication.signIn(new Username("user"), new Password("password"));
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
@@ -72,7 +71,7 @@ class TodoServiceTest {
 
     @Test
     @DisplayName("retrieve all Tasks of specified TodoList.")
-    void testGetTasksOfTodoList(){
+    void testGetTasksOfTodoList() {
         UserId userId = createUser();
         Token token = authentication.signIn(new Username("user"), new Password("password"));
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
@@ -137,7 +136,7 @@ class TodoServiceTest {
                 .execute(token);
 
         Optional<Task> notUpdatedTaskOptional = taskStorage.findById(taskId);
-        if(!notUpdatedTaskOptional.isPresent()) {
+        if (!notUpdatedTaskOptional.isPresent()) {
             Assertions.fail("Task to update should be added but it didn't.");
             return;
         }
@@ -146,16 +145,13 @@ class TodoServiceTest {
 
         String updatedDescription = "updated";
         todoService.updateTask(notUpdatedTask.getId())
-                .withTodoListId(notUpdatedTask.getTodoListId())
                 .withDescription(updatedDescription)
                 .withStatus(notUpdatedTask.isCompleted())
-                .withCreationDate(notUpdatedTask.getCreationDate())
-                .withLastUpdateDate(notUpdatedTask.getLastUpdateDate())
                 .execute(token);
 
 
         Optional<Task> updatedTaskOptional = taskStorage.findById(taskId);
-        if(!updatedTaskOptional.isPresent()){
+        if (!updatedTaskOptional.isPresent()) {
             Assertions.fail("Updated task should be in storage, but it doesn't.");
         }
         Task updatedTask = updatedTaskOptional.get();
