@@ -1,15 +1,23 @@
 package org.javaclasses.todo.storage.impl;
 
-import org.javaclasses.todo.model.Task;
-import org.javaclasses.todo.model.TaskId;
-import org.javaclasses.todo.model.TodoListId;
+import com.google.common.annotations.VisibleForTesting;
+import org.javaclasses.todo.model.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Storage of `Task` entities by their `TaskId`.
  */
 public class TaskStorage extends InMemoryStorage<TaskId, Task> {
+    public TaskStorage() {
+    }
+
+    @VisibleForTesting
+    TaskStorage(Map<TaskId, Task> map) {
+        super(map);
+    }
+
 
     /**
      * Provides list of tasks of `TodoList` with given ID.

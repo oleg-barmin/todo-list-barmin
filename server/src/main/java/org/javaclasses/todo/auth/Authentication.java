@@ -99,7 +99,7 @@ public class Authentication {
      * @throws SessionDoesNotExistsException if session with given token doesn't exist
      */
     public UserId validate(Token token) throws SessionDoesNotExistsException{
-        Optional<AuthSession> authSessionOptional = authSessionStorage.findById(token);
+        Optional<AuthSession> authSessionOptional = authSessionStorage.read(token);
 
         if(authSessionOptional.isPresent()){
             return authSessionOptional.get().getUserId();

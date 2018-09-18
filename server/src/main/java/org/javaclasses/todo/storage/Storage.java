@@ -39,13 +39,4 @@ public interface Storage<I, E extends Entity<I>> {
      *         If optional is empty, entity with given ID doesn't exists in storage
      */
     Optional<E> remove(I id);
-
-    /**
-     * Finds `Entity` with given ID.
-     *
-     * @param id ID to find `Entity` with.
-     * @return Optional with found entity.
-     *         If optional is empty, entity with given ID doesn't exists in storage
-     */
-    Optional<E> findById(I id);
 }

@@ -35,4 +35,11 @@ public final class UserId {
     public int hashCode() {
         return Objects.hash(getId());
     }
+
+    @Override
+    public String toString() {
+        return "UserId{" +
+                "id='" + id + '\'' +
+                '}';
+    }
 }

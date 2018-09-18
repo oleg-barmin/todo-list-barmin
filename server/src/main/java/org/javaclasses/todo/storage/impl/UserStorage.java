@@ -1,16 +1,24 @@
 package org.javaclasses.todo.storage.impl;
 
-import org.javaclasses.todo.model.User;
-import org.javaclasses.todo.model.UserId;
-import org.javaclasses.todo.model.Username;
+import com.google.common.annotations.VisibleForTesting;
+import org.javaclasses.todo.model.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Storage of `User` entities by their `UserId`.
  */
 public class UserStorage extends InMemoryStorage<UserId, User> {
+
+    public UserStorage() {
+    }
+
+    @VisibleForTesting
+    UserStorage(Map<UserId, User> map) {
+        super(map);
+    }
 
     /**
      * Finds `User` in storage by given `Username`.

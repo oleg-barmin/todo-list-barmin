@@ -60,7 +60,7 @@ public class TodoList extends Entity<TodoListId> {
         private TodoListId todoListId;
         private UserId owner;
 
-        TodoListBuilder setOwner(UserId owner) throws NullPointerException {
+        public TodoListBuilder setOwner(UserId owner) throws NullPointerException {
             Preconditions.checkNotNull(owner);
 
             this.owner = owner;
@@ -68,7 +68,7 @@ public class TodoList extends Entity<TodoListId> {
             return this;
         }
 
-        TodoListBuilder setTodoListId(TodoListId todoListId) throws NullPointerException {
+        public TodoListBuilder setTodoListId(TodoListId todoListId) throws NullPointerException {
             Preconditions.checkNotNull(todoListId);
 
             this.todoListId = todoListId;
@@ -82,7 +82,7 @@ public class TodoList extends Entity<TodoListId> {
          * @return TodoList with fields that were previously set
          * @throws NullPointerException if ID of owner or ID of TodoList was not provided.
          */
-        TodoList build() {
+        public TodoList build() {
             Preconditions.checkNotNull(this.owner);
             Preconditions.checkNotNull(this.todoListId);
             return new TodoList(todoListId, owner);

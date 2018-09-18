@@ -80,7 +80,7 @@ public class Task extends Entity<TaskId> {
                 ", completed=" + completed +
                 ", creationDate=" + creationDate +
                 ", lastUpdateDate=" + lastUpdateDate +
-                '}';
+                "} " + super.toString();
     }
 
     /**
@@ -109,20 +109,20 @@ public class Task extends Entity<TaskId> {
         private Date creationDate;
         private Date lastUpdateDate;
 
-        TaskBuilder setTaskId(TaskId taskId) {
+        public TaskBuilder setTaskId(TaskId taskId) {
             checkNotNull(taskId);
             this.taskId = taskId;
             return this;
         }
 
-        TaskBuilder setTodoListId(TodoListId todoListId) {
+        public TaskBuilder setTodoListId(TodoListId todoListId) {
             checkNotNull(todoListId);
 
             this.todoListId = todoListId;
             return this;
         }
 
-        TaskBuilder setDescription(String description) {
+        public TaskBuilder setDescription(String description) {
             checkNotNull(description);
             checkArgument(!description.equals(""));
 
@@ -130,26 +130,26 @@ public class Task extends Entity<TaskId> {
             return this;
         }
 
-        TaskBuilder setStatus(boolean completed) {
+        public TaskBuilder setStatus(boolean completed) {
             this.completed = completed;
             return this;
         }
 
-        TaskBuilder setCreationDate(Date creationDate) {
+        public TaskBuilder setCreationDate(Date creationDate) {
             checkNotNull(creationDate);
 
             this.creationDate = creationDate;
             return this;
         }
 
-        TaskBuilder setLastUpdateDate(Date lastUpdateDate) {
+        public TaskBuilder setLastUpdateDate(Date lastUpdateDate) {
             checkNotNull(lastUpdateDate);
 
             this.lastUpdateDate = lastUpdateDate;
             return this;
         }
 
-        Task build() {
+        public Task build() {
             checkNotNull(taskId);
             checkNotNull(todoListId);
             checkNotNull(description);

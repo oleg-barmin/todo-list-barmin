@@ -32,4 +32,11 @@ public class AuthSession extends Entity<Token>{
     public int hashCode() {
         return Objects.hash(getUserId());
     }
+
+    @Override
+    public String toString() {
+        return "AuthSession{" +
+                "userId=" + userId +
+                "} " + super.toString();
+    }
 }

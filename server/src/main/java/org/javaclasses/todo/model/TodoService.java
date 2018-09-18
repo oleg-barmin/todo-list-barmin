@@ -43,7 +43,7 @@ public class TodoService {
     CreateList createList(TodoListId todoListId) throws NullPointerException, TodoListAlreadyExistsException {
         checkNotNull(todoListId);
 
-        Optional<TodoList> todoList = todoListStorage.findById(todoListId);
+        Optional<TodoList> todoList = todoListStorage.read(todoListId);
         if (todoList.isPresent()) {
             throw new TodoListAlreadyExistsException(todoListId);
         }
@@ -72,7 +72,7 @@ public class TodoService {
     AddTask addTask(TaskId taskId) throws NullPointerException, TaskAlreadyExistsException {
         checkNotNull(taskId);
 
-        Optional<Task> task = taskStorage.findById(taskId);
+        Optional<Task> task = taskStorage.read(taskId);
         if (task.isPresent()) {
             throw new TaskAlreadyExistsException(taskId);
         }
@@ -99,7 +99,7 @@ public class TodoService {
     RemoveTask removeTask(TaskId taskId) {
         checkNotNull(taskId);
 
-        Optional<Task> task = taskStorage.findById(taskId);
+        Optional<Task> task = taskStorage.read(taskId);
         if (!task.isPresent()) {
             throw new TaskNotFoundException(taskId);
         }
@@ -237,15 +237,15 @@ public class TodoService {
         public void execute(Token token) throws SessionDoesNotExistsException, NullPointerException {
             authentication.validate(token);
 
-            Optional<Task> taskToUpdate = taskStorage.findById(taskId);
-            if (!taskToUpdate.isPresent()) {
+            Optional<Task> optionalTask = taskStorage.read(taskId);
+            if (!optionalTask.isPresent()) {
                 throw new TaskNotFoundException(taskId);
             }
-            Task task = taskToUpdate.get();
+            Task storedTask = optionalTask.get();
 
             taskBuilder.setTaskId(taskId);
-            taskBuilder.setTodoListId(task.getTodoListId());
-            taskBuilder.setCreationDate(task.getCreationDate());
+            taskBuilder.setTodoListId(storedTask.getTodoListId());
+            taskBuilder.setCreationDate(storedTask.getCreationDate());
             taskBuilder.setLastUpdateDate(new Date());
 
             Task build = taskBuilder.build();

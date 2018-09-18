@@ -1,6 +1,8 @@
 package org.javaclasses.todo.storage.impl;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSetMultimap;
 import org.javaclasses.todo.model.Entity;
 import org.javaclasses.todo.storage.Storage;
 
@@ -14,11 +16,23 @@ import java.util.*;
  * @param <E> Entity to store
  */
 public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage<I, E> {
-    private final Map<I, E> storage = new HashMap<>();
+    private final Map<I, E> storage;
+
+    public InMemoryStorage() {
+        this.storage = new HashMap<>();
+    }
+
+    @VisibleForTesting
+    InMemoryStorage(Map<I, E> map) {
+        this.storage = map;
+    }
 
     @Override
-    public E write(E entity) {
-        Optional<E> entityById = findById(entity.getId());
+    public E write(E entity) throws NullPointerException{
+        Preconditions.checkNotNull(entity);
+        Preconditions.checkNotNull(entity.getId());
+
+        Optional<E> entityById = read(entity.getId());
 
         if (entityById.isPresent()) {
             update(entity);
@@ -32,7 +46,7 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
     public Optional<E> read(I id) {
         Preconditions.checkNotNull(id, "ID of Entity cannot be null");
 
-        return findById(id);
+        return Optional.ofNullable(storage.get(id));
     }
 
     private E create(E entity) {
@@ -42,13 +56,6 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
         storage.put(entity.getId(), entity);
 
         return entity;
-    }
-
-    @Override
-    public Optional<E> findById(I id) {
-        Preconditions.checkNotNull(id, "Cannot find entity with null ID.");
-
-        return Optional.ofNullable(storage.get(id));
     }
 
     private void update(E entity) {
