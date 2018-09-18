@@ -38,7 +38,7 @@ class TodoServiceTest {
         return authentication.createUser(username, password);
     }
 
-    private TodoList createTodoList(UserId owner) {
+    private TodoList createAndSaveTodoList(UserId owner) {
         TodoList todoList = new TodoList.TodoListBuilder()
                 .setTodoListId(new TodoListId(UUID.randomUUID().toString()))
                 .setOwner(owner)
@@ -46,7 +46,7 @@ class TodoServiceTest {
         return todoListStorage.write(todoList);
     }
 
-    private Task createTask(TodoListId todoListId) {
+    private Task createAndSaveTask(TodoListId todoListId) {
         Task task = new Task.TaskBuilder()
                 .setTaskId(new TaskId(UUID.randomUUID().toString()))
                 .setTodoListId(todoListId)
@@ -67,6 +67,24 @@ class TodoServiceTest {
         todoService.createList(todoListId)
                 .withOwner(userId)
                 .execute(token);
+    }
+
+    @Test
+    @DisplayName("throw TodoListAlreadyExistsException if try to create list with ID which already exists in storage.")
+    void testCreateListWithRegisteredId() {
+        UserId userId = createUser();
+        Token token = authentication.signIn(new Username("user"), new Password("password"));
+        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
+
+        todoService.createList(todoListId)
+                .withOwner(userId)
+                .execute(token);
+
+        Assertions.assertThrows(TodoListAlreadyExistsException.class, () ->
+                        todoService.createList(todoListId)
+                                .withOwner(userId)
+                                .execute(token)
+                , "Should throw TodoListAlreadyExistsException, but it didn't.");
     }
 
     @Test
@@ -107,7 +125,7 @@ class TodoServiceTest {
     @DisplayName("add tasks.")
     void testAddTask() {
         UserId userId = createUser();
-        TodoList todoList = createTodoList(userId);
+        TodoList todoList = createAndSaveTodoList(userId);
         Token token = authentication.signIn(new Username("user"), new Password("password"));
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
 
@@ -123,11 +141,33 @@ class TodoServiceTest {
     }
 
     @Test
+    @DisplayName("throw TaskAlreadyExistsException if task with given ID already exists in storage..")
+    void testAddTaskWithSameID() {
+        UserId userId = createUser();
+        TodoList todoList = createAndSaveTodoList(userId);
+        Token token = authentication.signIn(new Username("user"), new Password("password"));
+        TaskId taskId = new TaskId(UUID.randomUUID().toString());
+
+
+        todoService.addTask(taskId)
+                .withTodoListId(todoList.getId())
+                .withDescription("task")
+                .execute(token);
+
+        Assertions.assertThrows(TaskAlreadyExistsException.class, () ->
+                        todoService.addTask(taskId)
+                                .withTodoListId(todoList.getId())
+                                .withDescription("task")
+                                .execute(token),
+                "should throw TaskAlreadyExistsException, but it didn't.");
+    }
+
+    @Test
     @DisplayName("update tasks.")
     void testUpdateTask() {
         UserId userId = createUser();
         Token token = authentication.signIn(new Username("user"), new Password("password"));
-        TodoList todoList = createTodoList(userId);
+        TodoList todoList = createAndSaveTodoList(userId);
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
 
         todoService.addTask(taskId)
@@ -163,8 +203,8 @@ class TodoServiceTest {
     @DisplayName("remove tasks by ID.")
     void testTaskDelete() {
         UserId userId = createUser();
-        TodoList todoList = createTodoList(userId);
-        Task task = createTask(todoList.getId());
+        TodoList todoList = createAndSaveTodoList(userId);
+        Task task = createAndSaveTask(todoList.getId());
         Token token = authentication.signIn(new Username("user"), new Password("password"));
 
 
@@ -173,6 +213,17 @@ class TodoServiceTest {
 
         Optional<Task> taskByID = taskStorage.read(task.getId());
         Assertions.assertFalse(taskByID.isPresent(), "Task should be deleted, but it didn't.");
+    }
+
+    @Test
+    @DisplayName("throw TaskNotFoundException if try to remove task which doesn't exist.")
+    void testDeleteNotExistingTask() {
+        UserId userId = createUser();
+        Token token = authentication.signIn(new Username("user"), new Password("password"));
+        TaskId idOfTaskToDelete = new TaskId("213");
+
+        Assertions.assertThrows(TaskNotFoundException.class, () ->
+                todoService.removeTask(idOfTaskToDelete).execute(token));
     }
 
 }

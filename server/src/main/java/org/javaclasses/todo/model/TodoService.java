@@ -94,8 +94,9 @@ public class TodoService {
      *
      * @param taskId ID of the task to remove
      * @return `RemoveTask` instance to build task to remove it
+     * @throws TaskNotFoundException if task to remove was not found
      */
-    RemoveTask removeTask(TaskId taskId) {
+    RemoveTask removeTask(TaskId taskId) throws TaskNotFoundException {
         checkNotNull(taskId);
 
         Optional<Task> task = taskStorage.read(taskId);
@@ -193,10 +194,9 @@ public class TodoService {
          * Creates `UpdateTask` instance.
          *
          * @param taskId ID of the task to update
-         * @throws TaskNotFoundException if task with given ID doesn't exist in storage
-         * @throws NullPointerException  if given `taskId` is null
+         * @throws NullPointerException if given `taskId` is null
          */
-        private UpdateTask(TaskId taskId) throws NullPointerException, TaskNotFoundException {
+        private UpdateTask(TaskId taskId) throws NullPointerException {
             checkNotNull(taskId);
             this.taskId = taskId;
             taskBuilder = new Task.TaskBuilder();
@@ -232,8 +232,10 @@ public class TodoService {
          * @param token token of user who updates task.
          * @throws SessionDoesNotExistsException if token of user was expired
          * @throws NullPointerException          if task description wasn't set.
+         * @throws TaskNotFoundException         if task to update was not found.
          */
-        public void execute(Token token) throws SessionDoesNotExistsException, NullPointerException {
+        public void execute(Token token)
+                throws SessionDoesNotExistsException, NullPointerException, TaskNotFoundException {
             authentication.validate(token);
 
             Optional<Task> optionalTask = taskStorage.read(taskId);

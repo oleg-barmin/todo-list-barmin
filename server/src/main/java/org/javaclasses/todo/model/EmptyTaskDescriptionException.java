@@ -3,7 +3,7 @@ package org.javaclasses.todo.model;
 /**
  * Occurs when occurred task description is null or empty.
  */
-class EmptyTaskDescriptionException extends RuntimeException {
+public class EmptyTaskDescriptionException extends RuntimeException {
 
     /**
      * Creates `EmptyTaskDescriptionException` instance.

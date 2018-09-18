@@ -3,7 +3,7 @@ package org.javaclasses.todo.model;
 /**
  * Occurs when attempt to add TodoList with ID which already exists in storage
  */
-class TodoListAlreadyExistsException extends RuntimeException {
+public class TodoListAlreadyExistsException extends RuntimeException {
 
     /**
      * Creates `TodoListAlreadyExistsException` instance.
