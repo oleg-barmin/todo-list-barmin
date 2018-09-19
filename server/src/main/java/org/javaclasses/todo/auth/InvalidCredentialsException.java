@@ -6,10 +6,12 @@ package org.javaclasses.todo.auth;
 @SuppressWarnings("WeakerAccess") // part public API should be public
 public class InvalidCredentialsException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
-     * Creates `InvalidCredentialsException` instance.
+     * Creates {@code InvalidCredentialsException} instance.
      */
-    public InvalidCredentialsException() {
+    InvalidCredentialsException() {
         super("Invalid username/password was given.");
     }
 }
