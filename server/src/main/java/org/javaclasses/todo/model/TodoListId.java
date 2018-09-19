@@ -1,45 +1,21 @@
 package org.javaclasses.todo.model;
 
-import java.util.Objects;
-
 /**
- * ID of {@link TodoList} which unifies `TodoList`.
- * <p>
- * Wraps a string which contains uuid ID of `TodoList`.
+ * ID of {@link TodoList} which ensures uniqueness of {@code TodoList}.
  */
-public final class TodoListId {
-    private final String id;
+public final class TodoListId extends EntityId<String> {
 
     /**
-     * Creates `TodoListId` instance.
+     * Creates {@code TodoListId} instance.
      *
-     * @param id string which contains uuid to unify `TodoList`s
+     * @param value string which contains uuid to ensure uniqueness {@code TodoList}s
      */
-    public TodoListId(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TodoListId)) return false;
-        TodoListId that = (TodoListId) o;
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
+    public TodoListId(String value) {
+        super(value);
     }
 
     @Override
     public String toString() {
-        return "TodoListId{" +
-                "id='" + id + '\'' +
-                '}';
+        return "TodoListId{} " + super.toString();
     }
 }

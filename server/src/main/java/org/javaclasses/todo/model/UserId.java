@@ -1,45 +1,21 @@
 package org.javaclasses.todo.model;
 
-import java.util.Objects;
-
 /**
- * ID of {@link User} which unifies `User`.
- * <p>
- * Wraps a string which contains uuid ID of `User`.
+ * ID of {@link User} which ensures uniqueness of {@code User}.
  */
-public final class UserId {
-    private String id;
+public final class UserId extends EntityId<String>{
 
     /**
-     * Creates `UserId` instance.
+     * Creates {@code UserId} instance.
      *
-     * @param id string which contains uuid to unify `User`s
+     * @param value string which contains uuid to ensure uniqueness of {@code User}s
      */
-    public UserId(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserId)) return false;
-        UserId userId = (UserId) o;
-        return Objects.equals(getId(), userId.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
+    public UserId(String value) {
+        super(value);
     }
 
     @Override
     public String toString() {
-        return "UserId{" +
-                "id='" + id + '\'' +
-                '}';
+        return "UserId{} " + super.toString();
     }
 }

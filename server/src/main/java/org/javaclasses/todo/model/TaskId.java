@@ -1,45 +1,21 @@
 package org.javaclasses.todo.model;
 
-import java.util.Objects;
-
 /**
- * ID of {@link Task} which unifies `Task`s.
- * <p>
- * Wraps a string which contains uuid ID of `Task`.
+ * ID of {@link Task} which ensures uniqueness of {@code Task}s.
  */
-public final class TaskId {
-    private String id;
+public final class TaskId extends EntityId<String> {
 
     /**
-     * Creates `TaskId` instance.
+     * Creates {@code TaskId} instance.
      *
-     * @param id string with uuid.
+     * @param value value of ID
      */
-    public TaskId(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TaskId)) return false;
-        TaskId taskId = (TaskId) o;
-        return Objects.equals(getId(), taskId.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
+    public TaskId(String value) {
+        super(value);
     }
 
     @Override
     public String toString() {
-        return "TaskId{" +
-                "id='" + id + '\'' +
-                '}';
+        return "TaskId{} " + super.toString();
     }
 }

@@ -1,36 +1,21 @@
 package org.javaclasses.todo.model;
 
-import java.util.Objects;
-
 /**
- * Identifies user session.
+ * Ensures uniqueness of {@code AuthSession}.
  */
-public final class Token {
-    private final String value;
+public final class Token extends EntityId<String> {
 
     /**
-     * Creates `Token` instance.
+     * Creates {@code Token} instance.
      *
-     * @param value string with uuid to wrap.
+     * @param value string with value of ID.
      */
     public Token(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
+        super(value);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Token)) return false;
-        Token token = (Token) o;
-        return Objects.equals(getValue(), token.getValue());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getValue());
+    public String toString() {
+        return "Token{} " + super.toString();
     }
 }
