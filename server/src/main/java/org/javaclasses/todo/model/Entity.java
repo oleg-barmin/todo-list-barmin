@@ -1,25 +1,33 @@
 package org.javaclasses.todo.model;
 
+import java.util.Objects;
+
 /**
  * Represents an abstract entity which is used in TodoList application.
  *
- * @param <Id> ID of the entity
+ * @param <I> ID of the entity
  */
-public abstract class Entity<Id> {
-    private Id id;
+public abstract class Entity<I> {
+    private final I id;
 
-    public void setId(Id id) {
-        this.id = id;
+    Entity(I i) {
+        this.id = i;
     }
 
-    public Id getId() {
+    public I getId() {
         return id;
     }
 
     @Override
-    public String toString() {
-        return "Entity{" +
-                "id=" + id +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Entity)) return false;
+        Entity<?> entity = (Entity<?>) o;
+        return Objects.equals(getId(), entity.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

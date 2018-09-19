@@ -1,48 +1,20 @@
 package org.javaclasses.todo.model;
 
-import com.google.common.base.Preconditions;
-
-import java.util.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An entity which represents a list of tasks to-do.
- * <p>
- * Contains:
- * - `TodoListId` which unifies `TodoList`
- * - `UserId` ID of user who owns `TodoList`
  */
 public class TodoList extends Entity<TodoListId> {
-    private UserId owner;
+    private final UserId owner;
 
-    private TodoList(TodoListId todoListId, UserId owner) {
-        setId(todoListId);
-        this.owner = owner;
+    private TodoList(TodoListBuilder todoListBuilder) {
+        super(todoListBuilder.todoListId);
+        this.owner = todoListBuilder.owner;
     }
 
     public UserId getOwner() {
         return owner;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TodoList)) return false;
-        TodoList todoList = (TodoList) o;
-        return Objects.equals(getId(), todoList.getId()) &&
-                Objects.equals(getOwner(), todoList.getOwner());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getOwner());
-    }
-
-    @Override
-    public String toString() {
-        return "TodoList{" +
-                "ID=" + getId() + ", "
-                + "owner=" + owner +
-                '}';
     }
 
     /**
@@ -60,16 +32,16 @@ public class TodoList extends Entity<TodoListId> {
         private TodoListId todoListId;
         private UserId owner;
 
-        public TodoListBuilder setOwner(UserId owner) throws NullPointerException {
-            Preconditions.checkNotNull(owner);
+        public TodoListBuilder setOwner(UserId owner) {
+            checkNotNull(owner);
 
             this.owner = owner;
 
             return this;
         }
 
-        public TodoListBuilder setTodoListId(TodoListId todoListId) throws NullPointerException {
-            Preconditions.checkNotNull(todoListId);
+        public TodoListBuilder setTodoListId(TodoListId todoListId) {
+            checkNotNull(todoListId);
 
             this.todoListId = todoListId;
 
@@ -83,9 +55,10 @@ public class TodoList extends Entity<TodoListId> {
          * @throws NullPointerException if ID of owner or ID of TodoList was not provided.
          */
         public TodoList build() {
-            Preconditions.checkNotNull(this.owner);
-            Preconditions.checkNotNull(this.todoListId);
-            return new TodoList(todoListId, owner);
+            checkNotNull(this.owner);
+            checkNotNull(this.todoListId);
+
+            return new TodoList(this);
         }
 
     }

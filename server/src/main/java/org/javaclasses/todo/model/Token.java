@@ -13,9 +13,4 @@ public final class Token extends EntityId<String> {
     public Token(String value) {
         super(value);
     }
-
-    @Override
-    public String toString() {
-        return "Token{} " + super.toString();
-    }
 }

@@ -1,16 +1,18 @@
 package org.javaclasses.todo.model;
 
-import java.util.Objects;
-
 /**
  * An entity which represents a user session.
- * <p>
- * Contains:
- * - `Token` of session.
- * - `UserId` of user who created session
+ *
+ * <p>When user sign in into the system he receives a {@code Token},
+ * this token will be stored with ID of the user who signed in {@code AuthSession} instance.
+ * Newly created {@code AuthSession} will be stored in the system to validate user actions.
  */
 public class AuthSession extends Entity<Token> {
     private UserId userId;
+
+    public AuthSession(Token token) {
+        super(token);
+    }
 
     public void setUserId(UserId userId) {
         this.userId = userId;
@@ -18,25 +20,5 @@ public class AuthSession extends Entity<Token> {
 
     public UserId getUserId() {
         return userId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AuthSession)) return false;
-        AuthSession that = (AuthSession) o;
-        return Objects.equals(getUserId(), that.getUserId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getUserId());
-    }
-
-    @Override
-    public String toString() {
-        return "AuthSession{" +
-                "userId=" + userId +
-                "} " + super.toString();
     }
 }

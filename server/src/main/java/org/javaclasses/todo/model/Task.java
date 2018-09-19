@@ -1,38 +1,29 @@
 package org.javaclasses.todo.model;
 
 import java.util.Date;
-import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An entity which represents task to do.
- * <p>
- * It stores task ID, its description, status (is it completed or not),
- * date of creation and date of last update (if task wasn't updated
- * the date of creation equals to last update date).
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Task extends Entity<TaskId> {
     private final TodoListId todoListId;
+
     private final String description;
     private final boolean completed;
     private final Date creationDate;
     private final Date lastUpdateDate;
 
-    private Task(TaskId taskId,
-                 TodoListId todoListId,
-                 String description,
-                 boolean completed,
-                 Date creationDate,
-                 Date lastUpdateDate) {
-
-        setId(taskId);
-        this.todoListId = todoListId;
-        this.description = description;
-        this.completed = completed;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = lastUpdateDate;
+    private Task(TaskBuilder taskBuilder) {
+        super(taskBuilder.taskId);
+        this.todoListId = taskBuilder.todoListId;
+        this.description = taskBuilder.description;
+        this.completed = taskBuilder.completed;
+        this.creationDate = taskBuilder.creationDate;
+        this.lastUpdateDate = taskBuilder.lastUpdateDate;
     }
 
     public TodoListId getTodoListId() {
@@ -48,57 +39,29 @@ public class Task extends Entity<TaskId> {
     }
 
     public Date getCreationDate() {
-        return creationDate;
+        return (Date) creationDate.clone();
     }
 
     public Date getLastUpdateDate() {
-        return lastUpdateDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Task)) return false;
-        Task task = (Task) o;
-        return isCompleted() == task.isCompleted() &&
-                Objects.equals(getTodoListId(), task.getTodoListId()) &&
-                Objects.equals(getDescription(), task.getDescription()) &&
-                Objects.equals(getCreationDate(), task.getCreationDate()) &&
-                Objects.equals(getLastUpdateDate(), task.getLastUpdateDate());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getTodoListId(), getDescription(), isCompleted(), getCreationDate(), getLastUpdateDate());
-    }
-
-    @Override
-    public String toString() {
-        return "Task{" +
-                "todoListId=" + todoListId +
-                ", description='" + description + '\'' +
-                ", completed=" + completed +
-                ", creationDate=" + creationDate +
-                ", lastUpdateDate=" + lastUpdateDate +
-                "} " + super.toString();
+        return (Date) lastUpdateDate.clone();
     }
 
     /**
-     * Allows to call chain of methods to create `Task` instance.
-     * <p>
-     * Every task <b>must</b> have:
+     * Allows to call chain of methods to create {@code Task} instance.
+     *
+     * <p>Every task <b>must</b> have:
      * - ID
      * - ID of TodoList to which it relate
      * - description of task
      * - creation date
-     * <p>
-     * Optional fields:
+     *
+     * <p>Optional fields:
      * - status (uncompleted by default)
      * - last update date (equals to creation date by default)
-     * <p>
-     * After necessary fields was set, {@link TaskBuilder#build()} method should be called.
-     * <p>
-     * Implementation of <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.
+     *
+     * <p>After necessary fields was set, {@link TaskBuilder#build()} method should be called.
+     *
+     * <p>Implementation of <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.
      */
     public static class TaskBuilder {
         private TaskId taskId;
@@ -124,28 +87,28 @@ public class Task extends Entity<TaskId> {
 
         public TaskBuilder setDescription(String description) {
             checkNotNull(description);
-            checkArgument(!description.equals(""));
+            checkArgument(!description.isEmpty());
 
             this.description = description;
             return this;
         }
 
-        public TaskBuilder setStatus(boolean completed) {
-            this.completed = completed;
+        public TaskBuilder completed() {
+            this.completed = true;
             return this;
         }
 
         public TaskBuilder setCreationDate(Date creationDate) {
             checkNotNull(creationDate);
 
-            this.creationDate = creationDate;
+            this.creationDate = (Date) creationDate.clone();
             return this;
         }
 
         public TaskBuilder setLastUpdateDate(Date lastUpdateDate) {
             checkNotNull(lastUpdateDate);
 
-            this.lastUpdateDate = lastUpdateDate;
+            this.lastUpdateDate = (Date) lastUpdateDate.clone();
             return this;
         }
 
@@ -159,7 +122,7 @@ public class Task extends Entity<TaskId> {
                 lastUpdateDate = creationDate;
             }
 
-            return new Task(taskId, todoListId, description, completed, creationDate, lastUpdateDate);
+            return new Task(this);
         }
     }
 }
