@@ -2,7 +2,6 @@ package org.javaclasses.todo.storage.impl;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSetMultimap;
 import org.javaclasses.todo.model.Entity;
 import org.javaclasses.todo.storage.Storage;
 
@@ -18,17 +17,18 @@ import java.util.*;
 public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage<I, E> {
     private final Map<I, E> storage;
 
-    public InMemoryStorage() {
+    protected InMemoryStorage() {
         this.storage = new HashMap<>();
     }
 
     @VisibleForTesting
+    @SuppressWarnings("AssignmentOrReturnOfFieldWithMutableType")
     InMemoryStorage(Map<I, E> map) {
         this.storage = map;
     }
 
     @Override
-    public E write(E entity) throws NullPointerException{
+    public E write(E entity) {
         Preconditions.checkNotNull(entity);
         Preconditions.checkNotNull(entity.getId());
 
@@ -75,30 +75,37 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
     /**
      * Finds all entities which field with given name, has given value.
      *
-     * @param fieldName  name of `Entity` field
+     * @param fieldName  name of {@code Entity} field
      * @param fieldValue value of desired field
      * @return list of entities with field of desired value
+     * @throws SearchByFieldException if field with given name doesn't exists in entity.
      */
-    List<E> findEntitiesWithField(String fieldName, Object fieldValue) {
+    @SuppressWarnings("ThrowInsideCatchBlockWhichIgnoresCaughtException")
+    List<E> findByField(String fieldName, Object fieldValue) throws SearchByFieldException {
         List<E> result = new LinkedList<>();
 
-        try {
+        for (E entity : storage.values()) {
+            Class<? extends Entity> aClass = entity.getClass();
 
-            for (E entity : storage.values()) {
-                Class<? extends Entity> aClass = entity.getClass();
-                Field declaredField = aClass.getDeclaredField(fieldName);
+            Field declaredField;
 
+            try {
+                declaredField = aClass.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                throw new SearchByFieldException(fieldName);
+            }
+
+            try {
                 declaredField.setAccessible(true);
-
                 Object value = declaredField.get(entity);
                 if (value.equals(fieldValue)) {
                     result.add(entity);
                 }
+            } catch (IllegalAccessException e) {
+                throw new SearchByFieldException(fieldName);
+            } finally {
+                declaredField.setAccessible(false);
             }
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-            return result;
         }
 
         return result;
