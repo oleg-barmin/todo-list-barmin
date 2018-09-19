@@ -32,11 +32,4 @@ public abstract class EntityId<V> {
     public int hashCode() {
         return Objects.hash(value);
     }
-
-    @Override
-    public String toString() {
-        return "EntityId{" +
-                "value=" + value +
-                '}';
-    }
 }

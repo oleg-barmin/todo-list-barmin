@@ -13,9 +13,4 @@ public final class UserId extends EntityId<String>{
     public UserId(String value) {
         super(value);
     }
-
-    @Override
-    public String toString() {
-        return "UserId{} " + super.toString();
-    }
 }

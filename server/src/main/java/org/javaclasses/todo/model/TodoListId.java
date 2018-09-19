@@ -13,9 +13,4 @@ public final class TodoListId extends EntityId<String> {
     public TodoListId(String value) {
         super(value);
     }
-
-    @Override
-    public String toString() {
-        return "TodoListId{} " + super.toString();
-    }
 }

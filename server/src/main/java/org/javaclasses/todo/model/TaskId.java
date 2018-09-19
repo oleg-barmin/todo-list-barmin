@@ -13,9 +13,4 @@ public final class TaskId extends EntityId<String> {
     public TaskId(String value) {
         super(value);
     }
-
-    @Override
-    public String toString() {
-        return "TaskId{} " + super.toString();
-    }
 }
