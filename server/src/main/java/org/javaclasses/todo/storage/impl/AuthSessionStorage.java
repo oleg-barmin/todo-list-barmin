@@ -7,7 +7,7 @@ import org.javaclasses.todo.model.Token;
 import java.util.Map;
 
 /**
- * Storage of `AuthSession` entities by their `Token`.
+ * Storage of {@code AuthSession} entities by their {@code Token}.
  */
 public class AuthSessionStorage extends InMemoryStorage<Token, AuthSession> {
     public AuthSessionStorage() {

@@ -13,13 +13,24 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
     private InMemoryStorage<ID, E> storage;
     private Map<ID, E> map;
 
+    E createEntity() {
+        return createEntityWithId(createID());
+    }
+
+    E createEntityWithNullId() {
+        return createEntityWithId(null);
+    }
+
     abstract ID createID();
-    abstract E createEntity();
-    abstract InMemoryStorage<ID,E> getStorage();
-    abstract Map<ID,E> getMap();
+
+    abstract Map<ID, E> getMap();
+
+    abstract InMemoryStorage<ID, E> getStorage();
+
+    abstract E createEntityWithId(ID entityId);
 
     @BeforeEach
-    void init(){
+    void init() {
         map = getMap();
         storage = getStorage();
     }
@@ -28,7 +39,6 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
     @DisplayName("write new entities.")
     void testWrite() {
         E entity = createEntity();
-        entity.setId(createID());
 
         ID entityId = entity.getId();
         storage.write(entity);
@@ -49,8 +59,7 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
     @Test
     @DisplayName("throw NullPointerException if try to write entity with null ID.")
     void testWriteEntityWithNullId() {
-        E entity = createEntity();
-        entity.setId(null);
+        E entity = createEntityWithNullId();
 
         Assertions.assertThrows(NullPointerException.class, () -> storage.write(entity),
                 "should throw NullPointerException if try to write entity with null ID, but it don't.");
@@ -60,13 +69,11 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
     @DisplayName("override existing entity if try to write entity with same ID.")
     void testOverride() {
         E entity = createEntity();
-        entity.setId(createID());
         ID entityId = entity.getId();
 
         storage.write(entity);
 
-        E entityToOverride = createEntity();
-        entityToOverride.setId(entityId);
+        E entityToOverride = createEntityWithId(entityId);
 
         storage.write(entityToOverride);
 
@@ -74,13 +81,13 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
                 "entity in storage should be overridden, but it don't.");
     }
 
+
     @Test
     @DisplayName("read entities by ID.")
     void testRead() {
         E entity = createEntity();
-        entity.setId(createID());
-
         ID entityId = entity.getId();
+
         storage.write(entity);
 
         Optional<E> optionalEntity = storage.read(entityId);
@@ -102,7 +109,7 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
         Optional<E> optional = storage.read(entityId);
 
         Assertions.assertFalse(optional.isPresent(),
-                "should return empty optional if ID doesn't exist in storage, but it don't.");
+                "should return empty optional on read if ID doesn't exist in storage, but it don't.");
     }
 
     @Test
@@ -116,9 +123,8 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
     @DisplayName("remove entities by ID")
     void removeTest() {
         E entity = createEntity();
-        entity.setId(createID());
-
         ID entityId = entity.getId();
+
         storage.write(entity);
 
         Optional<E> optionalEntity = storage.remove(entityId);
@@ -140,6 +146,15 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
         Optional<E> optional = storage.remove(entityId);
 
         Assertions.assertFalse(optional.isPresent(),
-                "should return empty optional if ID doesn't exist in storage, but it don't.");
+                "should return empty optional on remove if ID doesn't exist in storage, but it don't.");
+    }
+
+    @Test
+    void testFindByField() {
+        E entity = createEntity();
+        storage.write(entity);
+
+        Assertions.assertThrows(SearchByFieldException.class,
+                () -> storage.findByField("1impossibleField", new Object()));
     }
 }

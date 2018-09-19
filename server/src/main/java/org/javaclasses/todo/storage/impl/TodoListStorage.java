@@ -7,7 +7,7 @@ import org.javaclasses.todo.model.TodoListId;
 import java.util.Map;
 
 /**
- * Storage of `TodoList` entities by `TodoListId`.
+ * Storage of {@code TodoList} entities by {@code TodoListId}.
  */
 public class TodoListStorage extends InMemoryStorage<TodoListId, TodoList> {
     public TodoListStorage() {

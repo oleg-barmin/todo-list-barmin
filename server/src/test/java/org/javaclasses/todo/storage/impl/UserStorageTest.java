@@ -1,6 +1,9 @@
 package org.javaclasses.todo.storage.impl;
 
-import org.javaclasses.todo.model.*;
+import org.javaclasses.todo.model.Password;
+import org.javaclasses.todo.model.User;
+import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.model.Username;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,12 +13,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @DisplayName("UserStorage should")
-class UserStorageTest extends InMemoryStorageTest<UserId, User>{
-    private Map<UserId, User> map = new HashMap<>();
-    private UserStorage storage = new UserStorage(map);
+class UserStorageTest extends InMemoryStorageTest<UserId, User> {
+    private final Map<UserId, User> map = new HashMap<>();
+    private final UserStorage storage = new UserStorage(map);
+
+
+    private final Username username = new Username("exmapleUsername@gmail.ru");
+    private final Password password = new Password("qwerty123");
 
     @Override
     UserId createID() {
@@ -24,12 +29,7 @@ class UserStorageTest extends InMemoryStorageTest<UserId, User>{
 
     @Override
     User createEntity() {
-        User user = new User();
-        user.setId(createID());
-        user.setUsername(new Username("username"));
-        user.setPassword(new Password("password"));
-
-        return user;
+        return createEntityWithId(createID());
     }
 
     @Override
@@ -38,20 +38,35 @@ class UserStorageTest extends InMemoryStorageTest<UserId, User>{
     }
 
     @Override
+    // getMap should return same object for test needs
+    @SuppressWarnings("AssignmentOrReturnOfFieldWithMutableType")
     Map<UserId, User> getMap() {
         return map;
     }
 
+    @Override
+    User createEntityWithNullId() {
+        return createEntityWithId(null);
+    }
+
+    @Override
+    User createEntityWithId(UserId entityId) {
+        User user = new User(entityId);
+        user.setUsername(username);
+        user.setPassword(password);
+        return user;
+    }
+
     @Test
     @DisplayName("find user by username.")
-    void testFindUserByUsername(){
+    void testFindUserByUsername() {
         User entity = createEntity();
 
         storage.write(entity);
 
-        Optional<User> optionalUser = storage.findUserByUsername(new Username(entity.getUsername().getUsername()));
+        Optional<User> optionalUser = storage.findUserByUsername(entity.getUsername());
 
-        if(!optionalUser.isPresent()){
+        if (!optionalUser.isPresent()) {
             Assertions.fail("Should return Optional with user, but don't.");
             return;
         }

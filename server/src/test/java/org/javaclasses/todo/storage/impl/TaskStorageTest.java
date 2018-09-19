@@ -11,22 +11,12 @@ import java.util.*;
 
 @DisplayName("TaskStorage should")
 class TaskStorageTest extends InMemoryStorageTest<TaskId, Task> {
-    private Map<TaskId, Task> map = new HashMap<>();
-    private TaskStorage storage = new TaskStorage(map);
+    private final Map<TaskId, Task> map = new HashMap<>();
+    private final TaskStorage storage = new TaskStorage(map);
 
     @Override
     TaskId createID() {
         return new TaskId(UUID.randomUUID().toString());
-    }
-
-    @Override
-    Task createEntity() {
-        return new Task.TaskBuilder()
-                .setTaskId(createID())
-                .setTodoListId(new TodoListId(UUID.randomUUID().toString()))
-                .setDescription("task")
-                .setCreationDate(new Date())
-                .build();
     }
 
     @Override
@@ -35,11 +25,23 @@ class TaskStorageTest extends InMemoryStorageTest<TaskId, Task> {
     }
 
     @Override
+    // getMap should return same object for test needs
+    @SuppressWarnings("AssignmentOrReturnOfFieldWithMutableType")
     Map<TaskId, Task> getMap() {
         return map;
     }
 
-    Task createTask(TodoListId todoListId) {
+    @Override
+    Task createEntityWithId(TaskId entityId) {
+        return new Task.TaskBuilder()
+                .setTaskId(entityId)
+                .setTodoListId(new TodoListId(UUID.randomUUID().toString()))
+                .setDescription("task")
+                .setCreationDate(new Date())
+                .build();
+    }
+
+    private Task createTaskWith(TodoListId todoListId) {
         return new Task.TaskBuilder()
                 .setTaskId(createID())
                 .setTodoListId(todoListId)
@@ -55,22 +57,31 @@ class TaskStorageTest extends InMemoryStorageTest<TaskId, Task> {
         TodoListId firstId = new TodoListId(UUID.randomUUID().toString());
         TodoListId secondId = new TodoListId(UUID.randomUUID().toString());
 
-        List<Task> writtenTaskToFirstTodoList = new LinkedList<>();
+        Collection<Task> writtenTaskFirstTodoList = new LinkedList<>();
         for (int i = 0; i < 5; i++) {
-            Task task = createTask(firstId);
+            Task task = createTaskWith(firstId);
             storage.write(task);
-            writtenTaskToFirstTodoList.add(task);
+            writtenTaskFirstTodoList.add(task);
         }
 
-        storage.write(createTask(secondId));
-        storage.write(createTask(secondId));
+        storage.write(createTaskWith(secondId));
+        storage.write(createTaskWith(secondId));
 
         List<Task> allTaskOfTodoList = storage.getAllTaskOfTodoList(firstId);
 
-        Assertions.assertEquals(writtenTaskToFirstTodoList.size(), allTaskOfTodoList.size(),
+        Assertions.assertEquals(writtenTaskFirstTodoList.size(), allTaskOfTodoList.size(),
                 "Size of received tasks list should be equals " +
                         "to number of written tasks with same todolistId, but it don't.");
-        Assertions.assertTrue(allTaskOfTodoList.containsAll(writtenTaskToFirstTodoList));
+        Assertions.assertTrue(allTaskOfTodoList.containsAll(writtenTaskFirstTodoList));
+    }
+
+    @Override
+    void testWriteEntityWithNullId() {
+        Assertions.assertThrows(NullPointerException.class, () -> {
+                    Task entity = createEntityWithNullId();
+                    storage.write(entity);
+                },
+                "should throw NullPointerException if try to write task with null ID, but it don't.");
     }
 
     @Test
@@ -79,8 +90,8 @@ class TaskStorageTest extends InMemoryStorageTest<TaskId, Task> {
         TodoListId firstId = new TodoListId(UUID.randomUUID().toString());
         TodoListId secondId = new TodoListId(UUID.randomUUID().toString());
 
-        storage.write(createTask(secondId));
-        storage.write(createTask(secondId));
+        storage.write(createTaskWith(secondId));
+        storage.write(createTaskWith(secondId));
 
         List<Task> allTaskOfTodoList = storage.getAllTaskOfTodoList(firstId);
 

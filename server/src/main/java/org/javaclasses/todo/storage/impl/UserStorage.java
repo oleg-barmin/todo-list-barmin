@@ -1,14 +1,16 @@
 package org.javaclasses.todo.storage.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.javaclasses.todo.model.*;
+import org.javaclasses.todo.model.User;
+import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.model.Username;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage of `User` entities by their `UserId`.
+ * Storage of {@code User} entities by their {@code UserId}.
  */
 public class UserStorage extends InMemoryStorage<UserId, User> {
 
@@ -21,13 +23,13 @@ public class UserStorage extends InMemoryStorage<UserId, User> {
     }
 
     /**
-     * Finds `User` in storage by given `Username`.
+     * Finds {@code User} in storage by given {@code Username}.
      *
-     * @return Optional with `User` with given ID.
-     * If optional is empty means that user with given `Username` doesn't exists in storage.
+     * @return Optional with {@code User} with given ID.
+     * If optional is empty means that user with given {@code Username} doesn't exists in storage.
      */
     public Optional<User> findUserByUsername(Username username) {
-        List<User> users = findEntitiesWithField("username", username);
+        List<User> users = findByField("username", username);
 
         if (users.isEmpty()) {
             return Optional.empty();

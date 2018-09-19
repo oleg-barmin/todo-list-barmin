@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.UUID;
 
 @DisplayName("AuthSessionStorage should")
-class AuthSessionStorageTest extends InMemoryStorageTest<Token, AuthSession>{
-    private Map<Token, AuthSession> map = new HashMap<>();
-    private AuthSessionStorage storage = new AuthSessionStorage(map);
+class AuthSessionStorageTest extends InMemoryStorageTest<Token, AuthSession> {
+    private final Map<Token, AuthSession> map = new HashMap<>();
+    private final AuthSessionStorage storage = new AuthSessionStorage(map);
 
     @Override
     InMemoryStorage<Token, AuthSession> getStorage() {
@@ -20,20 +20,21 @@ class AuthSessionStorageTest extends InMemoryStorageTest<Token, AuthSession>{
     }
 
     @Override
+    // getMap should return same object for test needs
+    @SuppressWarnings("AssignmentOrReturnOfFieldWithMutableType")
     Map<Token, AuthSession> getMap() {
         return map;
     }
 
     @Override
-    Token createID() {
-        return new Token(UUID.randomUUID().toString());
+    AuthSession createEntityWithId(Token entityId) {
+        AuthSession authSession = new AuthSession(entityId);
+        authSession.setUserId(new UserId(UUID.randomUUID().toString()));
+        return authSession;
     }
 
     @Override
-    AuthSession createEntity() {
-        AuthSession authSession = new AuthSession();
-        authSession.setId(createID());
-        authSession.setUserId(new UserId(UUID.randomUUID().toString()));
-        return authSession;
+    Token createID() {
+        return new Token(UUID.randomUUID().toString());
     }
 }
