@@ -1,6 +1,8 @@
 package org.javaclasses.todo.auth;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.javaclasses.todo.model.*;
+import org.javaclasses.todo.storage.Storage;
 import org.javaclasses.todo.storage.impl.AuthSessionStorage;
 import org.javaclasses.todo.storage.impl.UserStorage;
 
@@ -16,9 +18,21 @@ import java.util.UUID;
  * <p>
  * Unsigned user can create an account in application.
  */
+@SuppressWarnings("WeakerAccess") // All methods of public API should be public
 public class Authentication {
-    private UserStorage userStorage = new UserStorage();
-    private AuthSessionStorage authSessionStorage = new AuthSessionStorage();
+    private final UserStorage userStorage;
+    private final Storage<Token, AuthSession> authSessionStorage;
+
+    @VisibleForTesting
+    Authentication(UserStorage userStorage, Storage<Token, AuthSession> authSessionStorage) {
+        this.userStorage = userStorage;
+        this.authSessionStorage = authSessionStorage;
+    }
+
+    public Authentication() {
+        this.userStorage = new UserStorage();
+        this.authSessionStorage = new AuthSessionStorage();
+    }
 
     /**
      * Sign in user into application by given {@link Username} and {@link Password} and
@@ -57,13 +71,13 @@ public class Authentication {
      * @param username username of new user
      * @param password password of new user
      * @return {@link UserId} ID of newly created user
-     * @throws UsernameAlreadyExists if user with given username already exists.
+     * @throws UserAlreadyExistsException if user with given username already exists.
      */
-    public UserId createUser(Username username, Password password) throws UsernameAlreadyExists{
+    public UserId createUser(Username username, Password password) throws UserAlreadyExistsException {
         Optional<User> userByUsername = userStorage.findUserByUsername(username);
 
-        if(userByUsername.isPresent()){
-            throw new UsernameAlreadyExists(username);
+        if (userByUsername.isPresent()) {
+            throw new UserAlreadyExistsException(username);
         }
 
         User user = new User();
@@ -83,12 +97,8 @@ public class Authentication {
      *
      * @param token token of user session to close
      */
-    public void signOut(Token token){
-        Optional<AuthSession> remove = authSessionStorage.remove(token);
-
-        if(remove.isPresent()){
-            return;
-        }
+    public void signOut(Token token) {
+        authSessionStorage.remove(token);
     }
 
     /**
@@ -96,15 +106,15 @@ public class Authentication {
      *
      * @param token token of the session to validate
      * @return `UserId` of user who created session
-     * @throws SessionDoesNotExistsException if session with given token doesn't exist
+     * @throws AuthorizationFailedException if session with given token doesn't exist
      */
-    public UserId validate(Token token) throws SessionDoesNotExistsException{
+    public UserId validate(Token token) throws AuthorizationFailedException {
         Optional<AuthSession> authSessionOptional = authSessionStorage.read(token);
 
-        if(authSessionOptional.isPresent()){
+        if (authSessionOptional.isPresent()) {
             return authSessionOptional.get().getUserId();
         }
 
-        throw new SessionDoesNotExistsException();
+        throw new AuthorizationFailedException();
     }
 }
