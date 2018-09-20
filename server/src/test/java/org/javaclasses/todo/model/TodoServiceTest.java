@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * @author Oleg Barmin
+ */
 @SuppressWarnings("OverlyCoupledClass")
 @DisplayName("TodoService should")
 class TodoServiceTest {

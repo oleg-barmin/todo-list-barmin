@@ -7,9 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * @author Oleg Barmin
+ */
 abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
     private InMemoryStorage<I, E> storage;
     private Map<I, E> map;
@@ -28,7 +32,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
 
     abstract InMemoryStorage<I, E> getStorage();
 
-    abstract E createEntityWithId(I entityId);
+    abstract E createEntityWithId(@Nullable I entityId);
 
     @BeforeEach
     void init() {

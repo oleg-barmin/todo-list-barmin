@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("Authentication should")
 class AuthenticationTest {
     private final AuthSessionStorage authSessionStorage = new AuthSessionStorage();

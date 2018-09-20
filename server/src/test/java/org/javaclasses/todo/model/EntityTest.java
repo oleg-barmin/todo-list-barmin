@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("Entity should")
 class EntityTest {
 

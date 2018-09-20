@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("AuthSessionStorage should")
 class AuthSessionStorageTest extends InMemoryStorageTest<Token, AuthSession> {
     private final Map<Token, AuthSession> map = new HashMap<>();

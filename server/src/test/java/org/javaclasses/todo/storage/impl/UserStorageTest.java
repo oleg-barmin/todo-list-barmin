@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("UserStorage should")
 class UserStorageTest extends InMemoryStorageTest<UserId, User> {
     private final Map<UserId, User> map = new HashMap<>();

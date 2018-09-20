@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("TaskStorage should")
 class TaskStorageTest extends InMemoryStorageTest<TaskId, Task> {
     private final Map<TaskId, Task> map = new HashMap<>();

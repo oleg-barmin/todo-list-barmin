@@ -1,6 +1,5 @@
 package org.javaclasses.todo.storage.impl;
 
-import org.javaclasses.todo.model.Task;
 import org.javaclasses.todo.model.TodoList;
 import org.javaclasses.todo.model.TodoListId;
 import org.javaclasses.todo.model.UserId;
@@ -11,10 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("TodoListStorage should")
 class TodoListStorageTest extends InMemoryStorageTest<TodoListId, TodoList> {
-    private Map<TodoListId, TodoList> map = new HashMap<>();
-    private TodoListStorage storage = new TodoListStorage(map);
+    private final Map<TodoListId, TodoList> map = new HashMap<>();
+    private final TodoListStorage storage = new TodoListStorage(map);
 
     @Override
     InMemoryStorage<TodoListId, TodoList> getStorage() {
@@ -28,6 +30,7 @@ class TodoListStorageTest extends InMemoryStorageTest<TodoListId, TodoList> {
                 .setOwner(new UserId(UUID.randomUUID().toString()))
                 .build();
     }
+
     @Override
     void testWriteEntityWithNullId() {
         Assertions.assertThrows(NullPointerException.class, () -> {
@@ -36,6 +39,7 @@ class TodoListStorageTest extends InMemoryStorageTest<TodoListId, TodoList> {
                 },
                 "should throw NullPointerException if try to write todo list with null ID, but it don't.");
     }
+
     @Override
     // getMap should return same object for test needs
     @SuppressWarnings("AssignmentOrReturnOfFieldWithMutableType")
