@@ -2,7 +2,6 @@ package org.javaclasses.todo.storage;
 
 import org.javaclasses.todo.model.Entity;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,9 +17,8 @@ public interface Storage<I, E extends Entity<I>> {
      * updates previous entity.
      *
      * @param entity entity to store
-     * @return entity which was stored
      */
-    E write(E entity);
+    void write(E entity);
 
     /**
      * Finds entity in storage.

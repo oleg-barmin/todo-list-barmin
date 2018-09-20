@@ -28,7 +28,7 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
     }
 
     @Override
-    public E write(E entity) {
+    public void write(E entity) {
         Preconditions.checkNotNull(entity);
         Preconditions.checkNotNull(entity.getId());
 
@@ -36,10 +36,10 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
 
         if (entityById.isPresent()) {
             update(entity);
-            return entity;
+            return;
         }
 
-        return create(entity);
+        create(entity);
     }
 
     @Override
@@ -49,13 +49,11 @@ public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage
         return Optional.ofNullable(storage.get(id));
     }
 
-    private E create(E entity) {
+    private void create(E entity) {
         Preconditions.checkNotNull(entity);
         Preconditions.checkNotNull(entity.getId(), "To create Entity it must have not null ID.");
 
         storage.put(entity.getId(), entity);
-
-        return entity;
     }
 
     private void update(E entity) {

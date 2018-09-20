@@ -2,10 +2,12 @@ package org.javaclasses.todo.storage.impl;
 
 /**
  * Occurs on programming error, when sub-classes of {@code InMemoryStorage}
- * try to find field which does not exists in stored entity or access to it was denied.
+ * try to find field which does not exists in stored entity or access to this field was denied.
  */
 @SuppressWarnings("WeakerAccess") // part of public API should be public
 public class SearchByFieldException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates {@code SearchByFieldException} instance.

@@ -26,7 +26,6 @@ public class TaskStorage extends InMemoryStorage<TaskId, Task> {
      * @param todoListId ID of {@code TodoList} which {@code Task}s required
      * @return list of {@code Task}s of {@code TodoList}
      */
-    @SuppressWarnings("ThrowInsideCatchBlockWhichIgnoresCaughtException")
     public List<Task> getAllTaskOfTodoList(TodoListId todoListId) {
         return findByField("todoListId", todoListId);
     }
