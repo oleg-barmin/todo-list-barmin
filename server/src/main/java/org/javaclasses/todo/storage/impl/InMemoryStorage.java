@@ -3,6 +3,7 @@ package org.javaclasses.todo.storage.impl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import org.javaclasses.todo.model.Entity;
+import org.javaclasses.todo.model.EntityId;
 import org.javaclasses.todo.storage.Storage;
 
 import java.lang.reflect.Field;
@@ -14,10 +15,10 @@ import java.util.*;
  * @param <I> ID of Entity
  * @param <E> Entity to store
  */
-public abstract class InMemoryStorage<I, E extends Entity<I>> implements Storage<I, E> {
+abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implements Storage<I, E> {
     private final Map<I, E> storage;
 
-    protected InMemoryStorage() {
+    InMemoryStorage() {
         this.storage = new HashMap<>();
     }
 

@@ -1,6 +1,7 @@
 package org.javaclasses.todo.storage;
 
 import org.javaclasses.todo.model.Entity;
+import org.javaclasses.todo.model.EntityId;
 
 import java.util.Optional;
 
@@ -10,7 +11,7 @@ import java.util.Optional;
  * @param <I> ID of the entity
  * @param <E> Entity to store
  */
-public interface Storage<I, E extends Entity<I>> {
+public interface Storage<I extends EntityId, E extends Entity<I>> {
 
     /**
      * Creates new entity if entity with same ID din't existed or

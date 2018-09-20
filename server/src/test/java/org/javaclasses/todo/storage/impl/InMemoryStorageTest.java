@@ -1,6 +1,7 @@
 package org.javaclasses.todo.storage.impl;
 
 import org.javaclasses.todo.model.Entity;
+import org.javaclasses.todo.model.EntityId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 import java.util.Optional;
 
-abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
-    private InMemoryStorage<ID, E> storage;
-    private Map<ID, E> map;
+abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
+    private InMemoryStorage<I, E> storage;
+    private Map<I, E> map;
 
     E createEntity() {
         return createEntityWithId(createID());
@@ -21,13 +22,13 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
         return createEntityWithId(null);
     }
 
-    abstract ID createID();
+    abstract I createID();
 
-    abstract Map<ID, E> getMap();
+    abstract Map<I, E> getMap();
 
-    abstract InMemoryStorage<ID, E> getStorage();
+    abstract InMemoryStorage<I, E> getStorage();
 
-    abstract E createEntityWithId(ID entityId);
+    abstract E createEntityWithId(I entityId);
 
     @BeforeEach
     void init() {
@@ -40,11 +41,11 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
     void testWrite() {
         E entity = createEntity();
 
-        ID entityId = entity.getId();
+        I entityId = entity.getId();
         storage.write(entity);
 
         Assertions.assertTrue(map.containsKey(entityId),
-                "ID of entity as key should be written to map, but it don't.");
+                "I of entity as key should be written to map, but it don't.");
         Assertions.assertEquals(entity, map.get(entityId),
                 "Entity in storage should be equals to entity which was saved, but it don't.");
     }
@@ -57,19 +58,19 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
     }
 
     @Test
-    @DisplayName("throw NullPointerException if try to write entity with null ID.")
+    @DisplayName("throw NullPointerException if try to write entity with null I.")
     void testWriteEntityWithNullId() {
         E entity = createEntityWithNullId();
 
         Assertions.assertThrows(NullPointerException.class, () -> storage.write(entity),
-                "should throw NullPointerException if try to write entity with null ID, but it don't.");
+                "should throw NullPointerException if try to write entity with null I, but it don't.");
     }
 
     @Test
-    @DisplayName("override existing entity if try to write entity with same ID.")
+    @DisplayName("override existing entity if try to write entity with same I.")
     void testOverride() {
         E entity = createEntity();
-        ID entityId = entity.getId();
+        I entityId = entity.getId();
 
         storage.write(entity);
 
@@ -83,33 +84,33 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
 
 
     @Test
-    @DisplayName("read entities by ID.")
+    @DisplayName("read entities by I.")
     void testRead() {
         E entity = createEntity();
-        ID entityId = entity.getId();
+        I entityId = entity.getId();
 
         storage.write(entity);
 
         Optional<E> optionalEntity = storage.read(entityId);
         if (!optionalEntity.isPresent()) {
-            Assertions.fail("Storage has to read written entities by ID, but it don't.");
+            Assertions.fail("Storage has to read written entities by I, but it don't.");
             return;
         }
         E storedEntity = optionalEntity.get();
 
         Assertions.assertEquals(storedEntity, map.get(entityId),
-                "Storage has to read entity by ID, but it don't");
+                "Storage has to read entity by I, but it don't");
     }
 
     @Test
-    @DisplayName("return empty Optional if try to read entity with ID, which doesn't exist in storage")
+    @DisplayName("return empty Optional if try to read entity with I, which doesn't exist in storage")
     void testReadNonExistingEntity() {
-        ID entityId = createID();
+        I entityId = createID();
 
         Optional<E> optional = storage.read(entityId);
 
         Assertions.assertFalse(optional.isPresent(),
-                "should return empty optional on read if ID doesn't exist in storage, but it don't.");
+                "should return empty optional on read if I doesn't exist in storage, but it don't.");
     }
 
     @Test
@@ -120,33 +121,33 @@ abstract class InMemoryStorageTest<ID, E extends Entity<ID>> {
     }
 
     @Test
-    @DisplayName("remove entities by ID")
+    @DisplayName("remove entities by I")
     void removeTest() {
         E entity = createEntity();
-        ID entityId = entity.getId();
+        I entityId = entity.getId();
 
         storage.write(entity);
 
         Optional<E> optionalEntity = storage.remove(entityId);
         if (!optionalEntity.isPresent()) {
-            Assertions.fail("Storage has to remove written entities by ID, but it don't.");
+            Assertions.fail("Storage has to remove written entities by I, but it don't.");
             return;
         }
         E storedEntity = optionalEntity.get();
 
         Assertions.assertEquals(entity, storedEntity,
-                "Storage has to remove written entity by ID, but it don't.");
+                "Storage has to remove written entity by I, but it don't.");
     }
 
     @Test
-    @DisplayName("return empty Optional if try to remove entity with ID, which doesn't exist in storage")
+    @DisplayName("return empty Optional if try to remove entity with I, which doesn't exist in storage")
     void testWriteNonExistingEntity() {
-        ID entityId = createID();
+        I entityId = createID();
 
         Optional<E> optional = storage.remove(entityId);
 
         Assertions.assertFalse(optional.isPresent(),
-                "should return empty optional on remove if ID doesn't exist in storage, but it don't.");
+                "should return empty optional on remove if I doesn't exist in storage, but it don't.");
     }
 
     @Test
