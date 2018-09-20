@@ -11,12 +11,12 @@ import java.util.UUID;
 
 /**
  * Authenticate users and provides {@link Token} for each session, which will expire in with time.
- * <p>
- * Each user must sign in in application to get `Token` which should be presented on each operation.
- * <p>
- * User can sign out from application, so `Token` of the session will expire.
- * <p>
- * Unsigned user can create an account in application.
+ *
+ * <p>Each user must sign in in application to get {@code Token} which should be presented on each operation.
+ *
+ * <p>User can sign out from application, so {@code Token} of the session will expire.
+ *
+ * <p>Unsigned user can create an account in application.
  */
 @SuppressWarnings("WeakerAccess") // All methods of public API should be public
 public class Authentication {
@@ -35,12 +35,12 @@ public class Authentication {
     }
 
     /**
-     * Sign in user into application by given {@link Username} and {@link Password} and
-     * provides `Token` of the session.
+     * Sign in user into the system by given {@link Username} and {@link Password} and
+     * provides {@code Token} of the session.
      *
      * @param username username of the user to sign in
      * @param password password of the user to sign in
-     * @return `Token` of the session
+     * @return {@code Token} of the session
      * @throws InvalidCredentialsException if user with given username doesn't exist or given password is invalid.
      */
     public Token signIn(Username username, Password password) throws InvalidCredentialsException {
@@ -52,9 +52,8 @@ public class Authentication {
             if (user.getPassword().equals(password)) {
                 Token token = new Token(UUID.randomUUID().toString());
 
-                AuthSession authSession = new AuthSession();
+                AuthSession authSession = new AuthSession(token);
                 authSession.setUserId(user.getId());
-                authSession.setId(token);
 
                 authSessionStorage.write(authSession);
 
@@ -66,7 +65,7 @@ public class Authentication {
     }
 
     /**
-     * Creates user in the application, for him to be able to login.
+     * Creates user in the system.
      *
      * @param username username of new user
      * @param password password of new user
@@ -80,10 +79,9 @@ public class Authentication {
             throw new UserAlreadyExistsException(username);
         }
 
-        User user = new User();
         UserId userId = new UserId(UUID.randomUUID().toString());
+        User user = new User(userId);
 
-        user.setId(userId);
         user.setUsername(username);
         user.setPassword(password);
 
@@ -93,7 +91,7 @@ public class Authentication {
     }
 
     /**
-     * Closes users session in application and makes given `Token` expired.
+     * Closes users session in the system.
      *
      * @param token token of user session to close
      */
@@ -105,7 +103,7 @@ public class Authentication {
      * Validates if session with given token exists.
      *
      * @param token token of the session to validate
-     * @return `UserId` of user who created session
+     * @return {@code UserId} of user who created session
      * @throws AuthorizationFailedException if session with given token doesn't exist
      */
     public UserId validate(Token token) throws AuthorizationFailedException {

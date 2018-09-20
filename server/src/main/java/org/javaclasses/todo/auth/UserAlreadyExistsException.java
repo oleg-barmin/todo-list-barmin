@@ -16,6 +16,6 @@ public class UserAlreadyExistsException extends RuntimeException {
      * @param username username of user which was attempted to create
      */
     UserAlreadyExistsException(Username username) {
-        super("User with username '" + username.getUsername() + "' was already exists.");
+        super("User with username '" + username.getValue() + "' was exists.");
     }
 }
