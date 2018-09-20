@@ -1,5 +1,7 @@
 /**
  * Package contains Authentication public API which used to create, sign in, sign out and validate users.
+ *
+ * @author Oleg Barmin
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

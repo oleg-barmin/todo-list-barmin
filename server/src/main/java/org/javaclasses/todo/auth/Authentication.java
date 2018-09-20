@@ -17,6 +17,8 @@ import java.util.UUID;
  * <p>User can sign out from application, so {@code Token} of the session will expire.
  *
  * <p>Unsigned user can create an account in application.
+ *
+ * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // All methods of public API should be public
 public class Authentication {
