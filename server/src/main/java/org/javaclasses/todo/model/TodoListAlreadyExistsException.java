@@ -2,6 +2,8 @@ package org.javaclasses.todo.model;
 
 /**
  * Occurs when attempt to add TodoList with ID which already exists in the storage.
+ *
+ * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // part of Public API should be public
 public class TodoListAlreadyExistsException extends RuntimeException {
@@ -14,6 +16,6 @@ public class TodoListAlreadyExistsException extends RuntimeException {
      * @param todoListId ID of {@code TodoList} which already exists
      */
     TodoListAlreadyExistsException(TodoListId todoListId) {
-        super("TodoList with ID: '" + todoListId + "' already exists.");
+        super(String.format("TodoList with ID: '%s' already exists.", todoListId));
     }
 }

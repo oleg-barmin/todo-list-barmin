@@ -3,7 +3,9 @@ package org.javaclasses.todo.model;
 import java.util.Objects;
 
 /**
- * Wraps string with value for user to sing-in into TodoList application.
+ * Username of user in the system.
+ *
+ * @author Oleg Barmin
  */
 public final class Username {
     private final String value;

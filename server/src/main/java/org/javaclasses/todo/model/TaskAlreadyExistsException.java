@@ -2,6 +2,8 @@ package org.javaclasses.todo.model;
 
 /**
  * Occurs when attempt to add task with ID which already exists in the system.
+ *
+ * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // part of Public API should be public
 public class TaskAlreadyExistsException extends RuntimeException {
@@ -14,6 +16,6 @@ public class TaskAlreadyExistsException extends RuntimeException {
      * @param taskId ID of the task which is already exists
      */
     TaskAlreadyExistsException(TaskId taskId) {
-        super("Task with ID: '" + taskId + "'already exists.");
+        super(String.format("Task with ID: '%s' already exists.", taskId));
     }
 }

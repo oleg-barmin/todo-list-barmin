@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An entity which represents a list of tasks to-do.
+ *
+ * @author Oleg Barmin
  */
 public final class TodoList extends Entity<TodoListId> {
     private final UserId owner;

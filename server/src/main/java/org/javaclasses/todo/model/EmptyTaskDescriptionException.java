@@ -3,7 +3,9 @@ package org.javaclasses.todo.model;
 import javax.annotation.Nullable;
 
 /**
- * Occurs when occurred task description is null or empty.
+ * Occurs when occurred task description is empty.
+ *
+ * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // part of Public API should be public
 public class EmptyTaskDescriptionException extends RuntimeException {
@@ -16,6 +18,6 @@ public class EmptyTaskDescriptionException extends RuntimeException {
      * @param description task description which is null or empty.
      */
     EmptyTaskDescriptionException(@Nullable String description) {
-        super("Task description cannot be null or empty. Actual Value: '" + description + "'.");
+        super(String.format("Task description cannot be null or empty. Actual Value: '%s'.", description));
     }
 }

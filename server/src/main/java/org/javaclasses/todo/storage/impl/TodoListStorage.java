@@ -8,6 +8,8 @@ import java.util.Map;
 
 /**
  * Storage of {@code TodoList} entities by {@code TodoListId}.
+ *
+ * @author Oleg Barmin
  */
 public class TodoListStorage extends InMemoryStorage<TodoListId, TodoList> {
     public TodoListStorage() {

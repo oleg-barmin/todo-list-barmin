@@ -2,6 +2,8 @@ package org.javaclasses.todo.model;
 
 /**
  * Occurs when attempted when {@code Task} with desired {@code TaskId} was not found in the system.
+ *
+ * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // part of Public API should be public
 public class TaskNotFoundException extends RuntimeException {
@@ -14,6 +16,6 @@ public class TaskNotFoundException extends RuntimeException {
      * @param taskId ID of the task which was not found
      */
     TaskNotFoundException(TaskId taskId) {
-        super("Task wih ID: '" + taskId + "'wasn't Found");
+        super(String.format("Task wih ID: '%s' wasn't Found", taskId));
     }
 }

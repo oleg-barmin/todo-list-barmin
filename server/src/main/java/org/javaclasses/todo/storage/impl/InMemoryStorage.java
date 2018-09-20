@@ -14,6 +14,7 @@ import java.util.*;
  *
  * @param <I> ID of Entity
  * @param <E> Entity to store
+ * @author Oleg Barmin
  */
 abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implements Storage<I, E> {
     private final Map<I, E> storage;

@@ -3,7 +3,9 @@ package org.javaclasses.todo.model;
 import java.util.Objects;
 
 /**
- * Wraps string with user password to sign in into TodoList application.
+ * Password of user in the system.
+ *
+ * @author Oleg Barmin
  */
 public final class Password {
     private final String password;

@@ -3,6 +3,8 @@ package org.javaclasses.todo.storage.impl;
 /**
  * Occurs on programming error, when sub-classes of {@code InMemoryStorage}
  * try to find field which does not exists in stored entity or access to this field was denied.
+ *
+ * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // part of public API should be public
 public class SearchByFieldException extends RuntimeException {

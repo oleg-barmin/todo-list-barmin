@@ -1,5 +1,7 @@
 /**
  * Package contains Storage Interface and its implementation used in TodoList application.
+ *
+ * @author Oleg Barmin
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

@@ -10,6 +10,7 @@ import java.util.Optional;
  *
  * @param <I> ID of the entity
  * @param <E> Entity to store
+ * @author Oleg Barmin
  */
 public interface Storage<I extends EntityId, E extends Entity<I>> {
 
@@ -26,7 +27,7 @@ public interface Storage<I extends EntityId, E extends Entity<I>> {
      *
      * @param id ID of entity to find
      * @return returns Optional with `entity` with given ID.
-     *         If optional is empty, `Entity` with given ID doesn't exists in storage.
+     * If optional is empty, `Entity` with given ID doesn't exists in storage.
      */
     Optional<E> read(I id);
 
@@ -35,7 +36,7 @@ public interface Storage<I extends EntityId, E extends Entity<I>> {
      *
      * @param id ID of the entity to remove
      * @return Optional with removed entity.
-     *         If optional is empty, entity with given ID doesn't exists in storage
+     * If optional is empty, entity with given ID doesn't exists in storage
      */
     Optional<E> remove(I id);
 }

@@ -7,6 +7,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An entity which represents task to do.
+ *
+ * @author Oleg Barmin
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Task extends Entity<TaskId> {

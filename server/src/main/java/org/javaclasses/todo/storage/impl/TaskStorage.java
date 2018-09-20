@@ -10,6 +10,8 @@ import java.util.Map;
 
 /**
  * Storage of {@code Task} entities by their {@code TaskId}.
+ *
+ * @author Oleg Barmin
  */
 public class TaskStorage extends InMemoryStorage<TaskId, Task> {
     public TaskStorage() {

@@ -1,6 +1,8 @@
 /**
  * Contains implementations of {@code Storage} interface based on {@code InMemoryStorage},
  * which contains entities which are used in TodoList application.
+ *
+ * @author Oleg Barmin
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

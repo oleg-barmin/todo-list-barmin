@@ -2,6 +2,8 @@ package org.javaclasses.todo.model;
 
 /**
  * ID of {@link TodoList} which ensures uniqueness of {@code TodoList}.
+ *
+ * @author Oleg Barmin
  */
 public final class TodoListId extends EntityId<String> {
 

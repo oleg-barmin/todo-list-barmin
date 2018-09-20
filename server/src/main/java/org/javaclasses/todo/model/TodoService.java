@@ -17,15 +17,19 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * - Add tasks to created to-do list;
  * - Update already created tasks;
  * - Delete created tasks.
+ *
+ * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // methods of public API should be public
 public class TodoService {
     private final Authentication authentication;
-    private final TodoListOperations todoListOperations;
+    private final TodoListStorage todoListStorage;
+    private final TaskStorage taskStorage;
 
     TodoService(Authentication authentication, TodoListStorage todoListStorage, TaskStorage taskStorage) {
         this.authentication = authentication;
-        this.todoListOperations = new TodoListOperations(todoListStorage, taskStorage);
+        this.todoListStorage = todoListStorage;
+        this.taskStorage = taskStorage;
     }
 
     /**
@@ -36,18 +40,22 @@ public class TodoService {
      * @throws AuthorizationFailedException if given token expired.
      */
     TodoListOperations authorizeBy(Token token) {
-        authentication.validate(token);
-        return todoListOperations;
+        UserId userId = authentication.validate(token);
+        return new TodoListOperations(todoListStorage, taskStorage, userId);
     }
 
 
     public static class TodoListOperations {
         private final TodoListStorage todoListStorage;
         private final TaskStorage taskStorage;
+        private final UserId userId;
+        private final AccessAuth accessAuth;
 
-        private TodoListOperations(TodoListStorage todoListStorage, TaskStorage taskStorage) {
-            this.todoListStorage = todoListStorage;
-            this.taskStorage = taskStorage;
+        private TodoListOperations(TodoListStorage todoListStorage, TaskStorage taskStorage, UserId userId) {
+            this.todoListStorage = checkNotNull(todoListStorage);
+            this.taskStorage = checkNotNull(taskStorage);
+            this.userId = checkNotNull(userId);
+            this.accessAuth = new AccessAuth(taskStorage, todoListStorage);
         }
 
         /**
@@ -72,10 +80,10 @@ public class TodoService {
          * Reads all task of specified to-do list.
          *
          * @param todoListId ID of {@code TodoList} which tasks required
-         * @return {@code TodoListTasks} instance to build request to retrieve list of Tasks of specified {@code TodoList}
+         * @return {@code ReadTasks} instance to build request to retrieve list of Tasks of specified {@code TodoList}
          */
-        public TodoListTasks readTasksFrom(TodoListId todoListId) {
-            return new TodoListTasks(todoListId, taskStorage);
+        public ReadTasks readTasksFrom(TodoListId todoListId) {
+            return new ReadTasks(todoListId, taskStorage, accessAuth, userId);
         }
 
         /**
@@ -89,11 +97,12 @@ public class TodoService {
             checkNotNull(taskId);
 
             Optional<Task> task = taskStorage.read(taskId);
+
             if (task.isPresent()) {
                 throw new TaskAlreadyExistsException(taskId);
             }
 
-            return new AddTask(taskId, taskStorage);
+            return new AddTask(taskId, taskStorage, accessAuth, userId);
         }
 
         /**
@@ -103,7 +112,7 @@ public class TodoService {
          * @return {@code UpdateTask} instance to build task to update an upload changes
          */
         public UpdateTask updateTask(TaskId taskId) {
-            return new UpdateTask(taskId, taskStorage);
+            return new UpdateTask(taskId, taskStorage, accessAuth, userId);
         }
 
         /**
@@ -121,7 +130,7 @@ public class TodoService {
                 throw new TaskNotFoundException(taskId);
             }
 
-            return new RemoveTask(taskId, taskStorage);
+            return new RemoveTask(taskId, taskStorage, accessAuth, userId);
         }
 
     }

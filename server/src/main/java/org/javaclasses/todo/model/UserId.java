@@ -2,8 +2,10 @@ package org.javaclasses.todo.model;
 
 /**
  * ID of {@link User} which ensures uniqueness of {@code User}.
+ *
+ * @author Oleg Barmin
  */
-public final class UserId extends EntityId<String>{
+public final class UserId extends EntityId<String> {
 
     /**
      * Creates {@code UserId} instance.

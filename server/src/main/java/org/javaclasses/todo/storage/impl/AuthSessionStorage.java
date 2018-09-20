@@ -8,6 +8,8 @@ import java.util.Map;
 
 /**
  * Storage of {@code AuthSession} entities by their {@code Token}.
+ *
+ * @author Oleg Barmin
  */
 public class AuthSessionStorage extends InMemoryStorage<Token, AuthSession> {
     public AuthSessionStorage() {

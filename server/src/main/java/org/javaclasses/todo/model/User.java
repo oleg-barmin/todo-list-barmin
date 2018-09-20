@@ -2,6 +2,8 @@ package org.javaclasses.todo.model;
 
 /**
  * An entity which represents user who uses TodoList application.
+ *
+ * @author Oleg Barmin
  */
 public final class User extends Entity<UserId> {
     private Username username;

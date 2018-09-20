@@ -115,7 +115,7 @@ class AuthenticationTest {
 
     @Test
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    @DisplayName("throw AuthorizationFailedException if token to validate expired.")
+    @DisplayName("throw AccessDeniedException if token to validate expired.")
     void testValidate() {
         authentication.createUser(username, password);
         Token token = authentication.signIn(username, password);

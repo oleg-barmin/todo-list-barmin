@@ -11,6 +11,8 @@ import java.util.Optional;
 
 /**
  * Storage of {@code User} entities by their {@code UserId}.
+ *
+ * @author Oleg Barmin
  */
 public class UserStorage extends InMemoryStorage<UserId, User> {
 

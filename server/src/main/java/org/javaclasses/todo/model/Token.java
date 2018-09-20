@@ -2,6 +2,8 @@ package org.javaclasses.todo.model;
 
 /**
  * Ensures uniqueness of {@code AuthSession}.
+ *
+ * @author Oleg Barmin
  */
 public final class Token extends EntityId<String> {
 

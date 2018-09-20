@@ -5,6 +5,7 @@ package org.javaclasses.todo.model;
  *
  * @author Oleg Barmin
  */
+@SuppressWarnings("WeakerAccess") // part of public API should be public
 public class AccessDeniedException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

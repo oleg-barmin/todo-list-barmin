@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Provides utility methods to simplify work with task description.
+ *
+ * @author Oleg Barmin
  */
 class Descriptions {
 

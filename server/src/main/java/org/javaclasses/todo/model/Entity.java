@@ -6,6 +6,7 @@ import java.util.Objects;
  * Represents an abstract entity which is used in TodoList application.
  *
  * @param <I> ID of the entity
+ * @author Oleg Barmin
  */
 public abstract class Entity<I> {
     private final I id;
