@@ -6,7 +6,7 @@ import java.util.Objects;
  * Wraps string with user password to sign in into TodoList application.
  */
 public final class Password {
-    private String password;
+    private final String password;
 
     /**
      * Creates `Password` instance.
@@ -17,20 +17,16 @@ public final class Password {
         this.password = password;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Password)) return false;
         Password password1 = (Password) o;
-        return Objects.equals(getPassword(), password1.getPassword());
+        return Objects.equals(password, password1.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getPassword());
+        return Objects.hash(password);
     }
 }

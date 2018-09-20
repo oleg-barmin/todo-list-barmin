@@ -3,34 +3,34 @@ package org.javaclasses.todo.model;
 import java.util.Objects;
 
 /**
- * Wraps string with username for user to sing-in into TodoList application.
+ * Wraps string with value for user to sing-in into TodoList application.
  */
 public final class Username {
-    private String username;
+    private final String value;
 
     /**
      * Creates `Username` instance.
      *
-     * @param username string with username to wrap
+     * @param value string with value to wrap
      */
-    public Username(String username) {
-        this.username = username;
+    public Username(String value) {
+        this.value = value;
     }
 
-    public String getUsername() {
-        return username;
+    public String getValue() {
+        return value;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Username)) return false;
-        Username username1 = (Username) o;
-        return Objects.equals(getUsername(), username1.getUsername());
+        Username username = (Username) o;
+        return Objects.equals(value, username.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUsername());
+        return Objects.hash(value);
     }
 }

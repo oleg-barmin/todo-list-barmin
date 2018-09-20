@@ -5,7 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * An entity which represents a list of tasks to-do.
  */
-public class TodoList extends Entity<TodoListId> {
+public final class TodoList extends Entity<TodoListId> {
     private final UserId owner;
 
     private TodoList(TodoListBuilder todoListBuilder) {
@@ -19,14 +19,14 @@ public class TodoList extends Entity<TodoListId> {
 
     /**
      * Allows to call chain of methods to create `Task` instance.
-     * <p>
-     * Every task <b>must</b> have:
+     *
+     * <p>Every task <b>must</b> have:
      * - ID
      * - ID of user who created TodoList
-     * <p>
-     * After necessary fields was set, {@link TodoListBuilder#build()} method should be called.
-     * <p>
-     * Implementation of <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.
+     *
+     * <p>After necessary fields was set, {@link TodoListBuilder#build()} method should be called.
+     *
+     * <p>Implementation of <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.
      */
     public static class TodoListBuilder {
         private TodoListId todoListId;

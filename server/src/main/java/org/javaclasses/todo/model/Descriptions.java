@@ -1,7 +1,5 @@
 package org.javaclasses.todo.model;
 
-import javax.annotation.Nullable;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -20,7 +18,7 @@ class Descriptions {
      * @param description task description to validate
      * @throws EmptyTaskDescriptionException if given description is empty.
      */
-    static void validate(@Nullable String description) throws EmptyTaskDescriptionException {
+    static void validate(String description) throws EmptyTaskDescriptionException {
         checkNotNull(description);
 
         if (description.trim().isEmpty()) {

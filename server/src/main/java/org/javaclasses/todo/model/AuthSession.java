@@ -7,7 +7,7 @@ package org.javaclasses.todo.model;
  * this token will be stored with ID of the user who signed in {@code AuthSession} instance.
  * Newly created {@code AuthSession} will be stored in the system to validate user actions.
  */
-public class AuthSession extends Entity<Token> {
+public final class AuthSession extends Entity<Token> {
     private UserId userId;
 
     public AuthSession(Token token) {
