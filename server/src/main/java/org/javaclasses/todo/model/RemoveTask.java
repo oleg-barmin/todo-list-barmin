@@ -1,6 +1,5 @@
 package org.javaclasses.todo.model;
 
-import org.javaclasses.todo.auth.AuthorizationFailedException;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -9,29 +8,41 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Provides API which simplifies task removing.
  *
  * <p>To remove task ID of the task to remove should be given.
+ *
+ * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // part of public API and its methods should be public.
 public final class RemoveTask {
     private final TaskId taskId;
     private final TaskStorage taskStorage;
+    private final AccessAuth accessAuth;
+    private final UserId userId;
 
     /**
      * Creates {@code RemoveTask} instance.
      *
      * @param taskId      ID of the task to remove
      * @param taskStorage storage to remove task from
+     * @param accessAuth  to validate task removal
+     * @param userId      ID of user who initialized remove operation
      */
-    RemoveTask(TaskId taskId, TaskStorage taskStorage) {
-        this.taskStorage = taskStorage;
-        checkNotNull(taskId);
-
-        this.taskId = taskId;
+    RemoveTask(TaskId taskId, TaskStorage taskStorage, AccessAuth accessAuth, UserId userId) {
+        this.taskId = checkNotNull(taskId);
+        this.taskStorage = checkNotNull(taskStorage);
+        this.accessAuth = checkNotNull(accessAuth);
+        this.userId = checkNotNull(userId);
     }
+
 
     /**
      * Removes tas with given ID from storage.
+     *
+     * @throws TaskNotFoundException     if task with given ID was not found
+     * @throws TodoListNotFoundException if try to remove task from list which doesn't exist
+     * @throws AccessDeniedException     if user try to modify list which he doesn't own
      */
-    public void execute() throws AuthorizationFailedException {
-        taskStorage.remove(this.taskId);
+    public void execute() throws TaskNotFoundException {
+        accessAuth.validateAssess(userId, taskId);
+        taskStorage.remove(taskId);
     }
 }

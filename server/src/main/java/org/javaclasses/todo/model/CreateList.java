@@ -11,6 +11,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>To create new {@code TodoList} these values should be provided:
  * - ID of the {@code TodoList} to create
  * - ID of user who owns this {@code TodoList}
+ *
+ * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // part of public API and its methods should be public.
 public final class CreateList {

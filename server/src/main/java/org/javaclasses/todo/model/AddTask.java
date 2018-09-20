@@ -14,13 +14,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * - ID of the task
  * - ID of {@code TodoList} to which it belongs
  * - description of the task to add
+ *
+ * @author Oleg Barmin
  */
-/*
- * WeakerAccess - part of public API and its methods should be public.
- */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("WeakerAccess") // part of public API and its methods should be public.
 public final class AddTask {
     private final TaskStorage taskStorage;
+    private final AccessAuth operationAuth;
+    private final UserId userId;
     private Task.TaskBuilder taskBuilder;
 
     /**
@@ -28,10 +29,13 @@ public final class AddTask {
      *
      * @param taskId      ID of the task to add
      * @param taskStorage storage to store new task
+     * @param accessAuth  to validate task add
+     * @param userId      user who requested operation
      */
-    AddTask(TaskId taskId, TaskStorage taskStorage) {
-        this.taskStorage = taskStorage;
-        checkNotNull(taskId);
+    AddTask(TaskId taskId, TaskStorage taskStorage, AccessAuth accessAuth, UserId userId) {
+        this.taskStorage = checkNotNull(taskStorage);
+        this.operationAuth = checkNotNull(accessAuth);
+        this.userId = checkNotNull(userId);
 
         taskBuilder = new Task.TaskBuilder()
                 .setTaskId(taskId)
@@ -46,7 +50,6 @@ public final class AddTask {
      */
     public AddTask withTodoListId(TodoListId todoListId) {
         taskBuilder = taskBuilder.setTodoListId(todoListId);
-
         return this;
     }
 
@@ -67,7 +70,8 @@ public final class AddTask {
      * Uploads task with previously set values.
      */
     public void execute() throws AuthorizationFailedException {
-        Task build = taskBuilder.build();
-        taskStorage.write(build);
+        Task task = taskBuilder.build();
+        operationAuth.validateAssess(userId, task.getTodoListId());
+        taskStorage.write(task);
     }
 }

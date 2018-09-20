@@ -19,14 +19,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>Last update date sets automatically to current date.
  *
  * <p>Other task values remains the same as in stored task.
+ *
+ * @author Oleg Barmin
  */
-/*
- * ResultOfMethodCallIgnored - builder instance should not be modified
- * WeakerAccess - part of public API and its methods should be public.
- */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("WeakerAccess") // part of public API and its methods should be public.
 public final class UpdateTask {
     private final TaskId taskId;
+    private final AccessAuth operationAuth;
+    private final UserId userId;
     private final TaskStorage taskStorage;
     private Task.TaskBuilder taskBuilder;
 
@@ -35,11 +35,14 @@ public final class UpdateTask {
      *
      * @param taskId      ID of the task to update
      * @param taskStorage storage to store task changes
+     * @param accessAuth  to validate task update
+     * @param userId      ID of user who performs operation
      */
-    UpdateTask(TaskId taskId, TaskStorage taskStorage) {
-        this.taskStorage = taskStorage;
-        checkNotNull(taskId);
-        this.taskId = taskId;
+    UpdateTask(TaskId taskId, TaskStorage taskStorage, AccessAuth accessAuth, UserId userId) {
+        this.taskStorage = checkNotNull(taskStorage);
+        this.taskId = checkNotNull(taskId);
+        this.operationAuth = checkNotNull(accessAuth);
+        this.userId = checkNotNull(userId);
         taskBuilder = new Task.TaskBuilder();
     }
 
@@ -74,15 +77,19 @@ public final class UpdateTask {
     public void execute()
             throws AuthorizationFailedException, TaskNotFoundException {
 
+        operationAuth.validateAssess(userId, taskId);
+
         Optional<Task> optionalTask = taskStorage.read(taskId);
+
         if (!optionalTask.isPresent()) {
             throw new TaskNotFoundException(taskId);
         }
-        Task storedTask = optionalTask.get();
+
+        Task taskToUpdate = optionalTask.get();
 
         Task build = taskBuilder.setTaskId(taskId)
-                .setTodoListId(storedTask.getTodoListId())
-                .setCreationDate(storedTask.getCreationDate())
+                .setTodoListId(taskToUpdate.getTodoListId())
+                .setCreationDate(taskToUpdate.getCreationDate())
                 .setLastUpdateDate(new Date())
                 .build();
 
