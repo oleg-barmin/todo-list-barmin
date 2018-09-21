@@ -1,8 +1,10 @@
 package org.javaclasses.todo.model;
 
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.storage.impl.AuthSessionStorage;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 import org.javaclasses.todo.storage.impl.TodoListStorage;
+import org.javaclasses.todo.storage.impl.UserStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +31,7 @@ class TodoServiceTest {
 
     @BeforeEach
     void init() {
-        authentication = new Authentication();
+        authentication = new Authentication(new UserStorage(), new AuthSessionStorage());
         todoListStorage = new TodoListStorage();
         taskStorage = new TaskStorage();
 

@@ -62,17 +62,17 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
     }
 
     @Test
-    @DisplayName("throw NullPointerException if try to write entity with null I.")
+    @DisplayName("throw NullPointerException if try to write entity with null ID.")
     void testWriteEntityWithNullId() {
         E entity = createEntityWithNullId();
 
         Assertions.assertThrows(NullPointerException.class, () -> storage.write(entity),
-                "should throw NullPointerException if try to write entity with null I, but it don't.");
+                "should throw NullPointerException if try to write entity with null ID, but it don't.");
     }
 
     @Test
-    @DisplayName("override existing entity if try to write entity with same I.")
-    void testOverride() {
+    @DisplayName("overwrite existing entity if try to write entity with same ID.")
+    void testOverwrite() {
         E entity = createEntity();
         I entityId = entity.getId();
 
@@ -88,7 +88,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
 
 
     @Test
-    @DisplayName("read entities by I.")
+    @DisplayName("read entities by ID.")
     void testRead() {
         E entity = createEntity();
         I entityId = entity.getId();
@@ -97,24 +97,24 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
 
         Optional<E> optionalEntity = storage.read(entityId);
         if (!optionalEntity.isPresent()) {
-            Assertions.fail("Storage has to read written entities by I, but it don't.");
+            Assertions.fail("Storage has to read written entities by ID, but it don't.");
             return;
         }
         E storedEntity = optionalEntity.get();
 
         Assertions.assertEquals(storedEntity, map.get(entityId),
-                "Storage has to read entity by I, but it don't");
+                "Storage has to read entity by ID, but it don't");
     }
 
     @Test
-    @DisplayName("return empty Optional if try to read entity with I, which doesn't exist in storage")
+    @DisplayName("return empty Optional if try to read entity with ID, which doesn't exist in storage")
     void testReadNonExistingEntity() {
         I entityId = createID();
 
         Optional<E> optional = storage.read(entityId);
 
         Assertions.assertFalse(optional.isPresent(),
-                "should return empty optional on read if I doesn't exist in storage, but it don't.");
+                "should return empty optional on read if ID doesn't exist in storage, but it don't.");
     }
 
     @Test
@@ -125,7 +125,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
     }
 
     @Test
-    @DisplayName("remove entities by I")
+    @DisplayName("remove entities by ID")
     void removeTest() {
         E entity = createEntity();
         I entityId = entity.getId();
@@ -134,18 +134,18 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
 
         Optional<E> optionalEntity = storage.remove(entityId);
         if (!optionalEntity.isPresent()) {
-            Assertions.fail("Storage has to remove written entities by I, but it don't.");
+            Assertions.fail("Storage has to remove written entities by ID, but it don't.");
             return;
         }
         E storedEntity = optionalEntity.get();
 
         Assertions.assertEquals(entity, storedEntity,
-                "Storage has to remove written entity by I, but it don't.");
+                "Storage has to remove written entity by ID, but it don't.");
     }
 
     @Test
-    @DisplayName("return empty Optional if try to remove entity with I, which doesn't exist in storage")
-    void testWriteNonExistingEntity() {
+    @DisplayName("return empty Optional if try to remove entity with ID, which doesn't exist in storage")
+    void testRemoveNonExistingEntity() {
         I entityId = createID();
 
         Optional<E> optional = storage.remove(entityId);
