@@ -1,16 +1,14 @@
 package org.javaclasses.todo.auth;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.javaclasses.todo.model.*;
 import org.javaclasses.todo.storage.Storage;
-import org.javaclasses.todo.storage.impl.AuthSessionStorage;
 import org.javaclasses.todo.storage.impl.UserStorage;
 
 import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Authenticate users and provides {@link Token} for each session, which will expire in with time.
+ * Authenticates users and provides {@link Token} for each user session, which will expire with time.
  *
  * <p>Each user must sign in in application to get {@code Token} which should be presented on each operation.
  *
@@ -25,15 +23,9 @@ public class Authentication {
     private final UserStorage userStorage;
     private final Storage<Token, AuthSession> authSessionStorage;
 
-    @VisibleForTesting
-    Authentication(UserStorage userStorage, Storage<Token, AuthSession> authSessionStorage) {
+    public Authentication(UserStorage userStorage, Storage<Token, AuthSession> authSessionStorage) {
         this.userStorage = userStorage;
         this.authSessionStorage = authSessionStorage;
-    }
-
-    public Authentication() {
-        this.userStorage = new UserStorage();
-        this.authSessionStorage = new AuthSessionStorage();
     }
 
     /**
@@ -67,7 +59,7 @@ public class Authentication {
     }
 
     /**
-     * Creates user in the system.
+     * Creates user in the system if user with given username hasn't exists yet.
      *
      * @param username username of new user
      * @param password password of new user

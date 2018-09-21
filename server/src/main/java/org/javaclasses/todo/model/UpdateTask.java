@@ -9,7 +9,7 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Provides API which simplifies task updating.
+ * API which simplifies task updating.
  *
  * <p>To update task these values should be provided:
  * - ID of the task to update

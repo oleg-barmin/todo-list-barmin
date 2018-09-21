@@ -1,6 +1,10 @@
 /**
  * Package contains TodoService which is used by authenticated user
- * as entry point to TodoList application capabilities.
+ * as entry point to TodoList application capabilities:
+ * - Create of new to-do lists.
+ * - Add new tasks to to-do lists.
+ * - Update existing tasks.
+ * - Remove existing tasks.
  *
  * @author Oleg Barmin
  */

@@ -15,8 +15,8 @@ import java.util.Optional;
 public interface Storage<I extends EntityId, E extends Entity<I>> {
 
     /**
-     * Creates new entity if entity with same ID din't existed or
-     * updates previous entity.
+     * Creates new entity if entity with same ID hasn't existed or
+     * overwrites previous entity.
      *
      * @param entity entity to store
      */

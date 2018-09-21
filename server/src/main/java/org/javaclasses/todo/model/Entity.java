@@ -5,10 +5,12 @@ import java.util.Objects;
 /**
  * Represents an abstract entity which is used in TodoList application.
  *
+ * <p>Each entity has ID {@link EntityId} to ensure its uniques.
+ *
  * @param <I> ID of the entity
  * @author Oleg Barmin
  */
-public abstract class Entity<I> {
+public abstract class Entity<I extends EntityId> {
     private final I id;
 
     Entity(I i) {

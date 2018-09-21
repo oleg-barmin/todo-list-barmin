@@ -1,7 +1,7 @@
 package org.javaclasses.todo.model;
 
 /**
- * An entity which represents user who uses TodoList application.
+ * An entity which represents user of TodoList application.
  *
  * @author Oleg Barmin
  */

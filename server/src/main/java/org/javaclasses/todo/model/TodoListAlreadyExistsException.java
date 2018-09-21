@@ -1,7 +1,7 @@
 package org.javaclasses.todo.model;
 
 /**
- * Occurs when attempt to add TodoList with ID which already exists in the storage.
+ * Occurs when try to add TodoList with ID which already exists in the storage.
  *
  * @author Oleg Barmin
  */

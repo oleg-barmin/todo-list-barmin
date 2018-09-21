@@ -1,7 +1,7 @@
 package org.javaclasses.todo.model;
 
 /**
- * Occurs when attempted when {@code TodoList} with desired {@code TodoListId} was not found in the system.
+ * Occurs when try when {@code TodoList} with desired {@code TodoListId} was not found in the system.
  *
  * @author Oleg Barmin
  */

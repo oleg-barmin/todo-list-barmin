@@ -3,9 +3,10 @@ package org.javaclasses.todo.model;
 /**
  * An entity which represents a user session.
  *
- * <p>When user sign in into the system he receives a {@code Token},
+ * <p>When user signs in into the system he receives a {@code Token},
  * this token will be stored with ID of the user who signed in {@code AuthSession} instance.
- * Newly created {@code AuthSession} will be stored in the system to validate user actions.
+ *
+ * <p>Newly created {@code AuthSession} will be stored in the system to validate user actions.
  *
  * @author Oleg Barmin
  */

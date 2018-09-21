@@ -59,7 +59,7 @@ public class TodoService {
         }
 
         /**
-         * Creates new to-do list.
+         * Creates instance of {@link CreateList} to create new list.
          *
          * @param todoListId ID of to-do list to create
          * @return {@code CreateList} instance to build {@code TodoList} to create and upload it
@@ -77,7 +77,7 @@ public class TodoService {
         }
 
         /**
-         * Reads all task of specified to-do list.
+         * Creates instance of {@link ReadTasks} to read all task of specified to-do list.
          *
          * @param todoListId ID of {@code TodoList} which tasks required
          * @return {@code ReadTasks} instance to build request to retrieve list of Tasks of specified {@code TodoList}
@@ -87,7 +87,7 @@ public class TodoService {
         }
 
         /**
-         * Adds new task.
+         * Creates instance of {@link AddTask} to add new task.
          *
          * @param taskId ID of the task to add
          * @return {@code AddTask} instance to build request to add new Task
@@ -106,7 +106,7 @@ public class TodoService {
         }
 
         /**
-         * Updates existing task.
+         * Creates instance of {@link UpdateTask} to update task.
          *
          * @param taskId ID of the task to update
          * @return {@code UpdateTask} instance to build task to update an upload changes
@@ -116,7 +116,7 @@ public class TodoService {
         }
 
         /**
-         * Removes tasks.
+         * Creates instance of {@link RemoveTask} to remove task.
          *
          * @param taskId ID of the task to remove
          * @return {@code RemoveTask} instance to build task to remove it

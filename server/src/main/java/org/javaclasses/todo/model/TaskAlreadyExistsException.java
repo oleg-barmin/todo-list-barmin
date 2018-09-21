@@ -1,7 +1,7 @@
 package org.javaclasses.todo.model;
 
 /**
- * Occurs when attempt to add task with ID which already exists in the system.
+ * Occurs when try to add task with ID which already exists in the system.
  *
  * @author Oleg Barmin
  */

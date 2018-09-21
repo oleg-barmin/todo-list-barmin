@@ -1,7 +1,7 @@
 package org.javaclasses.todo.model;
 
 /**
- * ID of {@link User} which ensures uniqueness of {@code User}.
+ * Unique identifier of {@code User}.
  *
  * @author Oleg Barmin
  */

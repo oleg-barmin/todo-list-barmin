@@ -1,7 +1,7 @@
 package org.javaclasses.todo.model;
 
 /**
- * ID of {@link TodoList} which ensures uniqueness of {@code TodoList}.
+ * Unique ID of {@link TodoList}.
  *
  * @author Oleg Barmin
  */

@@ -5,9 +5,9 @@ import org.javaclasses.todo.storage.impl.TaskStorage;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Provides API which simplifies task removing.
+ * API which simplifies task removing.
  *
- * <p>To remove task ID of the task to remove should be given.
+ * <p>To remove task, ID of the task to remove should be given.
  *
  * @author Oleg Barmin
  */
@@ -35,7 +35,7 @@ public final class RemoveTask {
 
 
     /**
-     * Removes tas with given ID from storage.
+     * Removes task with given ID from storage.
      *
      * @throws TaskNotFoundException     if task with given ID was not found
      * @throws TodoListNotFoundException if try to remove task from list which doesn't exist

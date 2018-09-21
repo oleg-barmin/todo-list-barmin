@@ -10,10 +10,14 @@ import org.javaclasses.todo.storage.impl.UserStorage;
  * Provides services of TodoList application.
  *
  * <p>Implementation of <a href="https://en.wikipedia.org/wiki/Singleton_pattern">singleton</a> pattern.
+ *
+ * @author Oleg Barmin
+ * @implNote all services are lazy initialized
  */
-// part of public API should remain public.
-// service classes cannot be serialized
-@SuppressWarnings({"NonSerializableFieldInSerializableClass", "WeakerAccess"})
+@SuppressWarnings({
+        "NonSerializableFieldInSerializableClass", // service classes cannot be serialized
+        "WeakerAccess" // part of public API should remain public.
+})
 public class ServiceFactory {
 
     private ServiceFactory() {

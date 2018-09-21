@@ -1,7 +1,7 @@
 package org.javaclasses.todo.model;
 
 /**
- * Ensures uniqueness of {@code AuthSession}.
+ * Unique identifier {@code AuthSession}.
  *
  * @author Oleg Barmin
  */

@@ -3,7 +3,7 @@ package org.javaclasses.todo.model;
 import javax.annotation.Nullable;
 
 /**
- * Occurs when occurred task description is empty.
+ * Occurs when a task description is empty.
  *
  * @author Oleg Barmin
  */

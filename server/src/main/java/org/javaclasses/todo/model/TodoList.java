@@ -3,7 +3,7 @@ package org.javaclasses.todo.model;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * An entity which represents a list of tasks to-do.
+ * An entity which represents a list of tasks to do.
  *
  * @author Oleg Barmin
  */
@@ -22,7 +22,7 @@ public final class TodoList extends Entity<TodoListId> {
     /**
      * Allows to call chain of methods to create `Task` instance.
      *
-     * <p>Every task <b>must</b> have:
+     * <p>Every task must have:
      * - ID
      * - ID of user who created TodoList
      *

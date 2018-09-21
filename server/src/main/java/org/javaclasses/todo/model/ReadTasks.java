@@ -8,7 +8,7 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Provides API which simplifies retrieving of all task which belongs to specified {@code TodoList} by its ID.
+ * API which simplifies retrieving of all task which belongs to specified {@code TodoList} by its ID.
  *
  * @author Oleg Barmin
  */
