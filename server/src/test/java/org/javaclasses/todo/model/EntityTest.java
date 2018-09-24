@@ -13,31 +13,6 @@ import java.util.UUID;
 class EntityTest {
 
     @Nested
-    @DisplayName("TodoList should")
-    class TodoListTest {
-
-        @Test
-        @DisplayName("perform equals and hashcode methods properly.")
-        void testEqualsAndHashCode() {
-            String todoListId = UUID.randomUUID().toString();
-            String userId = UUID.randomUUID().toString();
-
-
-            new EqualsTester()
-                    .addEqualityGroup(
-                            new TodoList.TodoListBuilder()
-                                    .setTodoListId(new TodoListId(todoListId))
-                                    .setOwner(new UserId(userId))
-                                    .build(),
-                            new TodoList.TodoListBuilder()
-                                    .setTodoListId(new TodoListId(todoListId))
-                                    .setOwner(new UserId(userId))
-                                    .build())
-                    .testEquals();
-        }
-    }
-
-    @Nested
     @DisplayName("Token should")
     class TokenTest {
 

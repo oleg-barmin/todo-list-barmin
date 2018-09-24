@@ -34,14 +34,26 @@ public final class TodoList extends Entity<TodoListId> {
         private TodoListId todoListId;
         private UserId owner;
 
-        public TodoListBuilder setOwner(UserId owner) {
-            checkNotNull(owner);
+        /**
+         * Sets ID of owner of {@code TodoList} to build.
+         *
+         * @param ownerId ID of user who owns {@code TodoList}
+         * @return this builder
+         */
+        public TodoListBuilder setOwner(UserId ownerId) {
+            checkNotNull(ownerId);
 
-            this.owner = owner;
+            this.owner = ownerId;
 
             return this;
         }
 
+        /**
+         * Sets ID of {@code TodoList} to build.
+         *
+         * @param todoListId ID of {@code TodoList} to build
+         * @return this builder
+         */
         public TodoListBuilder setTodoListId(TodoListId todoListId) {
             checkNotNull(todoListId);
 
