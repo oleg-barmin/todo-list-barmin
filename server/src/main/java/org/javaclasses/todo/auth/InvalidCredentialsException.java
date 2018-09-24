@@ -13,7 +13,7 @@ public class InvalidCredentialsException extends RuntimeException {
     /**
      * Creates {@code InvalidCredentialsException} instance.
      */
-    InvalidCredentialsException() {
+    public InvalidCredentialsException() {
         super("Invalid username/password was given.");
     }
 }
