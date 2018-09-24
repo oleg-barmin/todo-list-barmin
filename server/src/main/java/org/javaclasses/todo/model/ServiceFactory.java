@@ -1,10 +1,8 @@
 package org.javaclasses.todo.model;
 
 import org.javaclasses.todo.auth.Authentication;
-import org.javaclasses.todo.storage.impl.AuthSessionStorage;
-import org.javaclasses.todo.storage.impl.TaskStorage;
-import org.javaclasses.todo.storage.impl.TodoListStorage;
-import org.javaclasses.todo.storage.impl.UserStorage;
+
+import static org.javaclasses.todo.model.StorageFactory.*;
 
 /**
  * Provides services of TodoList application.
@@ -47,10 +45,7 @@ public class ServiceFactory {
         private final Authentication value;
 
         AuthenticationSingleton() {
-            UserStorage userStorage = new UserStorage();
-            AuthSessionStorage authSessionStorage = new AuthSessionStorage();
-
-            this.value = new Authentication(userStorage, authSessionStorage);
+            this.value = new Authentication(getUserStorage(), getAuthSessionStorage());
         }
     }
 
@@ -60,10 +55,7 @@ public class ServiceFactory {
         private final TodoService value;
 
         TodoServiceSingleton() {
-            TaskStorage taskStorage = new TaskStorage();
-            TodoListStorage todoListStorage = new TodoListStorage();
-
-            this.value = new TodoService(AuthenticationSingleton.INSTANCE.value, todoListStorage, taskStorage);
+            this.value = new TodoService(AuthenticationSingleton.INSTANCE.value, getTodoListStorage(), getTaskStorage());
         }
     }
 
