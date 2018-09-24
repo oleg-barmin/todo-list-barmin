@@ -81,11 +81,8 @@ public final class UpdateTask {
 
         Optional<Task> optionalTask = taskStorage.read(taskId);
 
-        if (!optionalTask.isPresent()) {
-            throw new TaskNotFoundException(taskId);
-        }
-
-        Task taskToUpdate = optionalTask.get();
+        //task existing is already checked by AccessAuth.
+        @SuppressWarnings("OptionalGetWithoutIsPresent") Task taskToUpdate = optionalTask.get();
 
         Task build = taskBuilder.setTaskId(taskId)
                 .setTodoListId(taskToUpdate.getTodoListId())

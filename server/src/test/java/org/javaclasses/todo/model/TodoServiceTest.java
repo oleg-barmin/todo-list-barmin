@@ -190,7 +190,7 @@ class TodoServiceTest {
         todoService.authorizeBy(token)
                 .addTask(taskId)
                 .withTodoListId(todoList.getId())
-                .withDescription("task")
+                .withDescription("wash my car")
                 .execute();
 
         Optional<Task> notUpdatedTaskOptional = taskStorage.read(taskId);
@@ -216,6 +216,21 @@ class TodoServiceTest {
         Task updatedTask = updatedTaskOptional.get();
         Assertions.assertEquals(updatedDescription, updatedTask.getDescription(),
                 "Task description should be updated, but it didn't.");
+    }
+
+    @Test
+    @DisplayName("throw TaskNotFoundException if try to updated absent task.")
+    void testUpdateThrowTask() {
+        createUser();
+        Token token = authentication.signIn(username, password);
+        TaskId taskId = new TaskId(UUID.randomUUID().toString());
+
+        Assertions.assertThrows(TaskNotFoundException.class, () ->
+                todoService.authorizeBy(token)
+                        .updateTask(taskId)
+                        .withDescription("win olympic games")
+                        .completed()
+                        .execute());
     }
 
     @Test
