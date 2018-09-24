@@ -74,12 +74,24 @@ public final class Task extends Entity<TaskId> {
         private Date creationDate;
         private Date lastUpdateDate;
 
+        /**
+         * Sets ID of task to build.
+         *
+         * @param taskId ID of task to build
+         * @return this builder
+         */
         public TaskBuilder setTaskId(TaskId taskId) {
             checkNotNull(taskId);
             this.taskId = taskId;
             return this;
         }
 
+        /**
+         * Sets ID of to-do list to which belongs task to build.
+         *
+         * @param todoListId ID of to-do list
+         * @return this builder
+         */
         public TaskBuilder setTodoListId(TodoListId todoListId) {
             checkNotNull(todoListId);
 
@@ -87,6 +99,12 @@ public final class Task extends Entity<TaskId> {
             return this;
         }
 
+        /**
+         * Sets description of task to build.
+         *
+         * @param description description of task to build
+         * @return this builder
+         */
         public TaskBuilder setDescription(String description) {
             checkNotNull(description);
             checkArgument(!description.isEmpty());
@@ -95,11 +113,22 @@ public final class Task extends Entity<TaskId> {
             return this;
         }
 
+        /**
+         * Sets status of task as completed.
+         *
+         * @return this builder
+         */
         public TaskBuilder completed() {
             this.completed = true;
             return this;
         }
 
+        /**
+         * Sets creationDate of task to build.
+         *
+         * @param creationDate creation date of task to build
+         * @return this build
+         */
         public TaskBuilder setCreationDate(Date creationDate) {
             checkNotNull(creationDate);
 
@@ -107,6 +136,12 @@ public final class Task extends Entity<TaskId> {
             return this;
         }
 
+        /**
+         * Sets lastUpdateDate of task to build.
+         *
+         * @param lastUpdateDate last update date of task to build
+         * @return this builder
+         */
         public TaskBuilder setLastUpdateDate(Date lastUpdateDate) {
             checkNotNull(lastUpdateDate);
 
@@ -114,6 +149,11 @@ public final class Task extends Entity<TaskId> {
             return this;
         }
 
+        /**
+         * Creates {@code Task} instance with previously set values.
+         *
+         * @return task
+         */
         public Task build() {
             checkNotNull(taskId);
             checkNotNull(todoListId);
