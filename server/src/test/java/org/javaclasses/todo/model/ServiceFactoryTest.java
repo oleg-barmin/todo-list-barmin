@@ -11,7 +11,8 @@ class ServiceFactoryTest {
     @Test
     @DisplayName("provide instance of Authentication.")
     void testGetAuthentication() {
-        Authentication authentication = ServiceFactory.getAuthentication();
+        ServiceFactory serviceFactory = new ServiceFactory();
+        Authentication authentication = serviceFactory.getAuthentication();
 
         Assertions.assertNotNull(authentication,
                 "provide not null Authentication, but it don't.");
@@ -20,10 +21,10 @@ class ServiceFactoryTest {
     @Test
     @DisplayName("provide instance of TodoService.")
     void testGetTodoService() {
-        TodoService todoService = ServiceFactory.getTodoService();
+        ServiceFactory serviceFactory = new ServiceFactory();
+        TodoService todoService = serviceFactory.getTodoService();
 
         Assertions.assertNotNull(todoService,
                 "provide not null TodoService, but it don't.");
     }
-
 }
