@@ -152,6 +152,22 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
                 "return empty optional on remove if I doesn't exist in storage, but it don't.");
     }
 
+    @Test
+    @DisplayName("erase all stored entities.")
+    void testClear() {
+        E firstEntity = createEntity();
+        E secondEntity = createEntity();
+        E thirdEntity = createEntity();
+
+        storage.write(firstEntity);
+        storage.write(secondEntity);
+        storage.write(thirdEntity);
+
+        storage.clear();
+
+        Assertions.assertEquals(0, map.size(), "erase all entities from storage, but it don't.");
+    }
+
     /*
      * Write return value not needed, because exception should be thrown.
      */

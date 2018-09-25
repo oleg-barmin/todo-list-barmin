@@ -39,4 +39,9 @@ public interface Storage<I extends EntityId, E extends Entity<I>> {
      * If optional is empty, entity with given ID doesn't exists in storage
      */
     Optional<E> remove(I id);
+
+    /**
+     * Erases all data stored in storage.
+     */
+    void clear();
 }

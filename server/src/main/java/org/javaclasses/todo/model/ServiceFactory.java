@@ -1,5 +1,6 @@
 package org.javaclasses.todo.model;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.javaclasses.todo.auth.Authentication;
 
 import static org.javaclasses.todo.model.StorageFactory.*;
@@ -19,6 +20,14 @@ import static org.javaclasses.todo.model.StorageFactory.*;
 public class ServiceFactory {
 
     private ServiceFactory() {
+    }
+
+    @VisibleForTesting
+    public static void clearStorages() {
+        getAuthSessionStorage().clear();
+        getTaskStorage().clear();
+        getTodoListStorage().clear();
+        getUserStorage().clear();
     }
 
     /**

@@ -121,4 +121,8 @@ abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implemen
         return result;
     }
 
+    @Override
+    public void clear() {
+        this.storage.clear();
+    }
 }
