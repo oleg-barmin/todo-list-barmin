@@ -8,7 +8,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 /**
  * Answer to request.
  */
-public class Answer {
+class Answer {
 
     private final int code;
     private final String body;
@@ -57,7 +57,7 @@ public class Answer {
         return body;
     }
 
-    public int getCode() {
+    int getCode() {
         return code;
     }
 

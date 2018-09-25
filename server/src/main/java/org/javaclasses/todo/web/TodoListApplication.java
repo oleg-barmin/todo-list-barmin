@@ -1,32 +1,23 @@
 package org.javaclasses.todo.web;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.model.Password;
 import org.javaclasses.todo.model.ServiceFactory;
 import org.javaclasses.todo.model.Username;
 
-import static spark.Service.ignite;
+import static spark.Spark.post;
 
 /**
  * TodoList application.
  */
 public class TodoListApplication {
     static final String AUTHENTICATION_PATH = "/auth";
-    private static final int PORT = 8080;
     private final Authentication authentication;
-    private boolean running = false;
-
-
-    @VisibleForTesting
-    TodoListApplication(Authentication authentication) {
-        this.authentication = authentication;
-    }
 
     /**
      * Creates {@code TodoListApplication} instance.
      */
-    private TodoListApplication() {
+    TodoListApplication() {
         this.authentication = ServiceFactory.getAuthentication();
     }
 
@@ -38,13 +29,30 @@ public class TodoListApplication {
      * Starts server with to-do list application.
      */
     void start() {
-        if (running) {
-            return;
-        }
-        ignite().port(PORT)
-                .post(AUTHENTICATION_PATH, new AuthenticationHandler(authentication));
-
         authentication.createUser(new Username("user"), new Password("password"));
-        running = true;
+
+        post(AUTHENTICATION_PATH, new AuthenticationHandler(authentication));
+    }
+
+
+    @SuppressWarnings("NonSerializableFieldInSerializableClass")
+    public enum PreRegisteredUsers {
+        USER_1;
+
+        private final Username username;
+        private final Password password;
+
+        PreRegisteredUsers() {
+            username = new Username("first_user");
+            password = new Password("first_User_password_123");
+        }
+
+        public Username getUsername() {
+            return username;
+        }
+
+        public Password getPassword() {
+            return password;
+        }
     }
 }
