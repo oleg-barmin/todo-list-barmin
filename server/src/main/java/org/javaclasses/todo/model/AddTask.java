@@ -71,7 +71,7 @@ public final class AddTask {
      */
     public void execute() throws AuthorizationFailedException {
         Task task = taskBuilder.build();
-        operationAuth.validateAssess(userId, task.getTodoListId());
+        operationAuth.validateAccess(userId, task.getTodoListId());
         taskStorage.write(task);
     }
 }

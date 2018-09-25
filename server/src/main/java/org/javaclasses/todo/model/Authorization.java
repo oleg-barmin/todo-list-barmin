@@ -36,7 +36,7 @@ class Authorization {
      * @throws TodoListNotFoundException if {@code TodoList} with given ID was not found
      * @throws AuthorizationFailedException     if user with given ID has no access to {@code TodoList} with given ID
      */
-    void validateAssess(UserId userId, TodoListId todoListId) {
+    void validateAccess(UserId userId, TodoListId todoListId) {
         checkNotNull(userId);
         checkNotNull(todoListId);
 
@@ -61,7 +61,7 @@ class Authorization {
      * @throws TaskNotFoundException if {@code Task} with given ID was not found
      * @throws AuthorizationFailedException if user with given ID has no access to {@code Task} with given ID
      */
-    void validateAssess(UserId userId, TaskId taskId) {
+    void validateAccess(UserId userId, TaskId taskId) {
         checkNotNull(userId);
         checkNotNull(taskId);
 
@@ -73,6 +73,6 @@ class Authorization {
 
         TodoListId todoListId = optionalTask.get().getTodoListId();
 
-        validateAssess(userId, todoListId);
+        validateAccess(userId, todoListId);
     }
 }

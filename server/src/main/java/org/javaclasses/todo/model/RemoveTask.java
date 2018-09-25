@@ -43,7 +43,7 @@ public final class RemoveTask {
      * @throws AccessDeniedException     if user try to modify list which he doesn't own
      */
     public void execute() throws TaskNotFoundException {
-        authorization.validateAssess(userId, taskId);
+        authorization.validateAccess(userId, taskId);
         taskStorage.remove(taskId);
     }
 }

@@ -44,7 +44,7 @@ class AuthorizationTest {
         todoListStorage.write(todoList);
 
 
-        authorization.validateAssess(userId, todoListId);
+        authorization.validateAccess(userId, todoListId);
     }
 
     @Test
@@ -53,7 +53,7 @@ class AuthorizationTest {
         UserId userId = new UserId(UUID.randomUUID().toString());
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
 
-        Assertions.assertThrows(TodoListNotFoundException.class, () -> authorization.validateAssess(userId, todoListId));
+        Assertions.assertThrows(TodoListNotFoundException.class, () -> authorization.validateAccess(userId, todoListId));
     }
 
     @Test
@@ -65,7 +65,7 @@ class AuthorizationTest {
         todoListStorage.write(todoList);
         UserId userId = new UserId(UUID.randomUUID().toString());
 
-        Assertions.assertThrows(AuthorizationFailedException.class, () -> authorization.validateAssess(userId, todoListId));
+        Assertions.assertThrows(AuthorizationFailedException.class, () -> authorization.validateAccess(userId, todoListId));
     }
 
     @Test
@@ -82,7 +82,7 @@ class AuthorizationTest {
 
         taskStorage.write(task);
 
-        authorization.validateAssess(userId, taskId);
+        authorization.validateAccess(userId, taskId);
     }
 
     @Test
@@ -96,7 +96,7 @@ class AuthorizationTest {
 
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
 
-        Assertions.assertThrows(TaskNotFoundException.class, () -> authorization.validateAssess(userId, taskId));
+        Assertions.assertThrows(TaskNotFoundException.class, () -> authorization.validateAccess(userId, taskId));
     }
 
     @Test
@@ -114,6 +114,6 @@ class AuthorizationTest {
 
         taskStorage.write(task);
 
-        Assertions.assertThrows(AuthorizationFailedException.class, () -> authorization.validateAssess(userId, todoListId));
+        Assertions.assertThrows(AuthorizationFailedException.class, () -> authorization.validateAccess(userId, todoListId));
     }
 }

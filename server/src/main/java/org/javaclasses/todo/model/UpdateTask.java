@@ -76,7 +76,7 @@ public final class UpdateTask {
      */
     public void execute()
             throws AuthorizationFailedException, TaskNotFoundException {
-        operationAuth.validateAssess(userId, taskId);
+        operationAuth.validateAccess(userId, taskId);
 
         Optional<Task> optionalTask = taskStorage.read(taskId);
 

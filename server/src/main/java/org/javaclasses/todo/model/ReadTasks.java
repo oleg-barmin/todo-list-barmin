@@ -40,7 +40,7 @@ public final class ReadTasks {
      * @return list of task which belongs to specified {@code TodoList}
      */
     public List<Task> execute() throws AuthorizationFailedException {
-        authorization.validateAssess(userId, todoListId);
+        authorization.validateAccess(userId, todoListId);
         return taskStorage.getAllTaskOfTodoList(todoListId);
     }
 }
