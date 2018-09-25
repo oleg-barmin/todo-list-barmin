@@ -2,12 +2,16 @@ package org.javaclasses.todo.web;
 
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.auth.InvalidCredentialsException;
-import org.javaclasses.todo.model.AuthorizationFailedException;
-import org.javaclasses.todo.model.ServiceFactory;
-import org.javaclasses.todo.model.TodoService;
+import org.javaclasses.todo.model.*;
 import spark.Service;
 
-import static org.javaclasses.todo.web.AuthenticationController.*;
+import java.util.Date;
+import java.util.UUID;
+
+import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.*;
+import static org.javaclasses.todo.web.ListController.ListCreationHandler;
+import static org.javaclasses.todo.web.ListController.ReadTasksHandler;
 import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
 import static spark.Service.ignite;
 
@@ -16,7 +20,8 @@ import static spark.Service.ignite;
  */
 public class TodoListApplication {
 
-    static final String LISTS_PATH = "/lists";
+    static final String CREATE_LIST_PATH = "/lists";
+    static final String READ_TASKS_PATH = CREATE_LIST_PATH + "/:todolistid";
     private final Service service = ignite();
 
     static final String AUTHENTICATION_PATH = "/auth";
@@ -25,7 +30,7 @@ public class TodoListApplication {
     /**
      * Creates {@code TodoListApplication} instance.
      *
-     * @param port port to start application on
+     * @param port           port to start application on
      * @param serviceFactory factory of services
      */
     TodoListApplication(int port, ServiceFactory serviceFactory) {
@@ -34,9 +39,37 @@ public class TodoListApplication {
     }
 
     public static void main(String[] args) {
-        ServiceFactory serviceFactory = new ServiceFactory();
+        StorageFactory storageFactory = new StorageFactory();
+        ServiceFactory serviceFactory = new ServiceFactory(storageFactory);
+
         Authentication authentication = serviceFactory.getAuthentication();
-        authentication.createUser(USER_1.getUsername(), USER_1.getPassword());
+        UserId userId = authentication.createUser(USER_1.getUsername(), USER_1.getPassword());
+
+        TodoListId todoListId = new TodoListId("1234");
+
+        TodoList build = new TodoList.TodoListBuilder()
+                .setTodoListId(todoListId)
+                .setOwner(userId)
+                .build();
+        storageFactory.getTodoListStorage().write(build);
+
+        storageFactory.getTaskStorage().write(
+                new Task.TaskBuilder()
+                        .setTaskId(new TaskId(UUID.randomUUID().toString()))
+                        .setTodoListId(todoListId)
+                        .setDescription("implement read tasks by todo list ID")
+                        .setCreationDate(new Date())
+                        .build()
+        );
+        storageFactory.getTaskStorage().write(
+                new Task.TaskBuilder()
+                        .setTaskId(new TaskId(UUID.randomUUID().toString()))
+                        .setTodoListId(todoListId)
+                        .setDescription("second task")
+                        .setCreationDate(new Date())
+                        .build()
+        );
+
 
         new TodoListApplication(4567, serviceFactory).start();
     }
@@ -50,9 +83,11 @@ public class TodoListApplication {
 
         service.exception(AuthorizationFailedException.class, new AuthorizationFailedHandler());
         service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
+        service.exception(TodoListNotFoundException.class, new TodoListNotFoundHandler());
 
         service.post(AUTHENTICATION_PATH, new AuthenticationHandler(authentication));
-        service.post(LISTS_PATH, new ListController.ListCreationHandler(todoService));
+        service.post(CREATE_LIST_PATH, new ListCreationHandler(todoService));
+        service.get(READ_TASKS_PATH, new ReadTasksHandler(todoService));
     }
 
     /**

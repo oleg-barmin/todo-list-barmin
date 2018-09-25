@@ -1,19 +1,13 @@
 package org.javaclasses.todo.web;
 
 import org.javaclasses.todo.auth.Authentication;
-import org.javaclasses.todo.auth.InvalidCredentialsException;
-import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.Password;
 import org.javaclasses.todo.model.Token;
 import org.javaclasses.todo.model.Username;
-import spark.ExceptionHandler;
-import spark.Request;
-import spark.Response;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 class AuthenticationController {
@@ -86,27 +80,4 @@ class AuthenticationController {
         }
     }
 
-    /**
-     * Handles thrown AuthorizationFailedException.
-     */
-    public static class AuthorizationFailedHandler implements ExceptionHandler<AuthorizationFailedException> {
-
-        @Override
-        public void handle(AuthorizationFailedException exception, Request request, Response response) {
-            response.status(HTTP_FORBIDDEN);
-            response.body(exception.getMessage());
-        }
-    }
-
-    /**
-     * Handles thrown InvalidCredentialsException.
-     */
-    public static class InvalidCredentialsHandler implements ExceptionHandler<InvalidCredentialsException> {
-
-        @Override
-        public void handle(InvalidCredentialsException exception, Request request, Response response) {
-            response.status(HTTP_FORBIDDEN);
-            response.body(exception.getMessage());
-        }
-    }
 }

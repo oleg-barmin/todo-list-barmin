@@ -2,10 +2,7 @@ package org.javaclasses.todo.web;
 
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.auth.Authentication;
-import org.javaclasses.todo.model.Password;
-import org.javaclasses.todo.model.ServiceFactory;
-import org.javaclasses.todo.model.Token;
-import org.javaclasses.todo.model.Username;
+import org.javaclasses.todo.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -13,7 +10,8 @@ import static io.restassured.RestAssured.given;
 import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
 
 class AbstractControllerTest {
-    private final ServiceFactory serviceFactory = new ServiceFactory();
+    private final StorageFactory storageFactory = new StorageFactory();
+    private final ServiceFactory serviceFactory = new ServiceFactory(storageFactory);
     private final Authentication authentication = serviceFactory.getAuthentication();
     private final int port = PortProvider.getPort();
 
@@ -22,6 +20,10 @@ class AbstractControllerTest {
 
     RequestSpecification getRequestSpecification() {
         return requestSpecification;
+    }
+
+    public StorageFactory getStorageFactory() {
+        return storageFactory;
     }
 
     Token signIn(Username username, Password password) {
