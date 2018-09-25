@@ -16,7 +16,7 @@ public final class RemoveTask {
 
     private final TaskId taskId;
     private final TaskStorage taskStorage;
-    private final AccessAuth accessAuth;
+    private final Authorization authorization;
     private final UserId userId;
 
     /**
@@ -24,13 +24,13 @@ public final class RemoveTask {
      *
      * @param taskId      ID of the task to remove
      * @param taskStorage storage to remove task from
-     * @param accessAuth  to validate task removal
+     * @param authorization  to validate task removal
      * @param userId      ID of user who initialized remove operation
      */
-    RemoveTask(TaskId taskId, TaskStorage taskStorage, AccessAuth accessAuth, UserId userId) {
+    RemoveTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization, UserId userId) {
         this.taskId = checkNotNull(taskId);
         this.taskStorage = checkNotNull(taskStorage);
-        this.accessAuth = checkNotNull(accessAuth);
+        this.authorization = checkNotNull(authorization);
         this.userId = checkNotNull(userId);
     }
 
@@ -43,7 +43,7 @@ public final class RemoveTask {
      * @throws AccessDeniedException     if user try to modify list which he doesn't own
      */
     public void execute() throws TaskNotFoundException {
-        accessAuth.validateAssess(userId, taskId);
+        authorization.validateAssess(userId, taskId);
         taskStorage.remove(taskId);
     }
 }

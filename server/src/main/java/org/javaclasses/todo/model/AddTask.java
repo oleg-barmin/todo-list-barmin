@@ -21,7 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class AddTask {
 
     private final TaskStorage taskStorage;
-    private final AccessAuth operationAuth;
+    private final Authorization operationAuth;
     private final UserId userId;
     private Task.TaskBuilder taskBuilder;
 
@@ -30,12 +30,12 @@ public final class AddTask {
      *
      * @param taskId      ID of the task to add
      * @param taskStorage storage to store new task
-     * @param accessAuth  to validate task add
+     * @param authorization  to validate task add
      * @param userId      user who requested operation
      */
-    AddTask(TaskId taskId, TaskStorage taskStorage, AccessAuth accessAuth, UserId userId) {
+    AddTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization, UserId userId) {
         this.taskStorage = checkNotNull(taskStorage);
-        this.operationAuth = checkNotNull(accessAuth);
+        this.operationAuth = checkNotNull(authorization);
         this.userId = checkNotNull(userId);
 
         taskBuilder = new Task.TaskBuilder()

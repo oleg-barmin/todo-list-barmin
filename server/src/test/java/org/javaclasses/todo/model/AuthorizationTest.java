@@ -12,11 +12,11 @@ import java.util.UUID;
 /**
  * @author Oleg Barmin
  */
-@DisplayName("AccessAuth should")
-class AccessAuthTest {
+@DisplayName("Authorization should")
+class AuthorizationTest {
     private final TaskStorage taskStorage = new TaskStorage();
     private final TodoListStorage todoListStorage = new TodoListStorage();
-    private final AccessAuth accessAuth = new AccessAuth(taskStorage, todoListStorage);
+    private final Authorization authorization = new Authorization(taskStorage, todoListStorage);
 
     private static TodoList getBuild(UserId owner, TodoListId todoListId) {
         return new TodoList.TodoListBuilder()
@@ -44,7 +44,7 @@ class AccessAuthTest {
         todoListStorage.write(todoList);
 
 
-        accessAuth.validateAssess(userId, todoListId);
+        authorization.validateAssess(userId, todoListId);
     }
 
     @Test
@@ -53,7 +53,7 @@ class AccessAuthTest {
         UserId userId = new UserId(UUID.randomUUID().toString());
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
 
-        Assertions.assertThrows(TodoListNotFoundException.class, () -> accessAuth.validateAssess(userId, todoListId));
+        Assertions.assertThrows(TodoListNotFoundException.class, () -> authorization.validateAssess(userId, todoListId));
     }
 
     @Test
@@ -65,7 +65,7 @@ class AccessAuthTest {
         todoListStorage.write(todoList);
         UserId userId = new UserId(UUID.randomUUID().toString());
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> accessAuth.validateAssess(userId, todoListId));
+        Assertions.assertThrows(AccessDeniedException.class, () -> authorization.validateAssess(userId, todoListId));
     }
 
     @Test
@@ -82,7 +82,7 @@ class AccessAuthTest {
 
         taskStorage.write(task);
 
-        accessAuth.validateAssess(userId, taskId);
+        authorization.validateAssess(userId, taskId);
     }
 
     @Test
@@ -96,7 +96,7 @@ class AccessAuthTest {
 
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
 
-        Assertions.assertThrows(TaskNotFoundException.class, () -> accessAuth.validateAssess(userId, taskId));
+        Assertions.assertThrows(TaskNotFoundException.class, () -> authorization.validateAssess(userId, taskId));
     }
 
     @Test
@@ -114,6 +114,6 @@ class AccessAuthTest {
 
         taskStorage.write(task);
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> accessAuth.validateAssess(userId, todoListId));
+        Assertions.assertThrows(AccessDeniedException.class, () -> authorization.validateAssess(userId, todoListId));
     }
 }

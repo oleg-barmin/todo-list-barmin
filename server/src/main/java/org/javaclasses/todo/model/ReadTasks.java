@@ -17,7 +17,7 @@ public final class ReadTasks {
 
     private final TodoListId todoListId;
     private final TaskStorage taskStorage;
-    private final AccessAuth accessAuth;
+    private final Authorization authorization;
     private final UserId userId;
 
     /**
@@ -25,13 +25,13 @@ public final class ReadTasks {
      *
      * @param todoListId  ID of the {@code TodoList} which task should be found
      * @param taskStorage storage to get desired tasks from
-     * @param accessAuth  to validate access
+     * @param authorization  to validate access
      * @param userId      ID of user who started operation
      */
-    ReadTasks(TodoListId todoListId, TaskStorage taskStorage, AccessAuth accessAuth, UserId userId) {
+    ReadTasks(TodoListId todoListId, TaskStorage taskStorage, Authorization authorization, UserId userId) {
         this.taskStorage = checkNotNull(taskStorage);
         this.todoListId = checkNotNull(todoListId);
-        this.accessAuth = checkNotNull(accessAuth);
+        this.authorization = checkNotNull(authorization);
         this.userId = checkNotNull(userId);
     }
 
@@ -41,7 +41,7 @@ public final class ReadTasks {
      * @return list of task which belongs to specified {@code TodoList}
      */
     public List<Task> execute() throws AuthorizationFailedException {
-        accessAuth.validateAssess(userId, todoListId);
+        authorization.validateAssess(userId, todoListId);
         return taskStorage.getAllTaskOfTodoList(todoListId);
     }
 }

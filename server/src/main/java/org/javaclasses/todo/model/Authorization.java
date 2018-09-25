@@ -12,18 +12,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Oleg Barmin
  */
-class AccessAuth {
+class Authorization {
 
     private final TodoListStorage todoListStorage;
     private final TaskStorage taskStorage;
 
     /**
-     * Creates {@code AccessAuth} instance.
+     * Creates {@code Authorization} instance.
      *
      * @param taskStorage     storage of tasks
      * @param todoListStorage storage of to-do lists
      */
-    AccessAuth(TaskStorage taskStorage, TodoListStorage todoListStorage) {
+    Authorization(TaskStorage taskStorage, TodoListStorage todoListStorage) {
         this.taskStorage = checkNotNull(taskStorage);
         this.todoListStorage = checkNotNull(todoListStorage);
     }

@@ -51,13 +51,13 @@ public class TodoService {
         private final TodoListStorage todoListStorage;
         private final TaskStorage taskStorage;
         private final UserId userId;
-        private final AccessAuth accessAuth;
+        private final Authorization authorization;
 
         private TodoListOperations(TodoListStorage todoListStorage, TaskStorage taskStorage, UserId userId) {
             this.todoListStorage = checkNotNull(todoListStorage);
             this.taskStorage = checkNotNull(taskStorage);
             this.userId = checkNotNull(userId);
-            this.accessAuth = new AccessAuth(taskStorage, todoListStorage);
+            this.authorization = new Authorization(taskStorage, todoListStorage);
         }
 
         /**
@@ -85,7 +85,7 @@ public class TodoService {
          * @return {@code ReadTasks} instance to build request to retrieve list of Tasks of specified {@code TodoList}
          */
         public ReadTasks readTasksFrom(TodoListId todoListId) {
-            return new ReadTasks(todoListId, taskStorage, accessAuth, userId);
+            return new ReadTasks(todoListId, taskStorage, authorization, userId);
         }
 
         /**
@@ -104,7 +104,7 @@ public class TodoService {
                 throw new TaskAlreadyExistsException(taskId);
             }
 
-            return new AddTask(taskId, taskStorage, accessAuth, userId);
+            return new AddTask(taskId, taskStorage, authorization, userId);
         }
 
         /**
@@ -114,7 +114,7 @@ public class TodoService {
          * @return {@code UpdateTask} instance to build task to update an upload changes
          */
         public UpdateTask updateTask(TaskId taskId) {
-            return new UpdateTask(taskId, taskStorage, accessAuth, userId);
+            return new UpdateTask(taskId, taskStorage, authorization, userId);
         }
 
         /**
@@ -132,7 +132,7 @@ public class TodoService {
                 throw new TaskNotFoundException(taskId);
             }
 
-            return new RemoveTask(taskId, taskStorage, accessAuth, userId);
+            return new RemoveTask(taskId, taskStorage, authorization, userId);
         }
 
     }

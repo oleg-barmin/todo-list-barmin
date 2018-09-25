@@ -21,7 +21,7 @@ public final class TodoList extends Entity<TodoListId> {
     }
 
     /**
-     * Allows to call chain of methods to create {@code Task} instance.
+     * Allows to build {@code Task} instance.
      *
      * <p>Every task must have:
      * - ID
