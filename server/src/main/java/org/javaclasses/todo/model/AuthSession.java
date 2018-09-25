@@ -3,14 +3,16 @@ package org.javaclasses.todo.model;
 /**
  * An entity which represents a user session.
  *
- * <p>When user signs in into the system he receives a {@code Token},
- * this token will be stored with ID of the user who signed in {@code AuthSession} instance.
+ * <p>When user signs in into the system he receives a {@code Token}, which marks his session.
+ *
+ * <p>When user sign out or {@code Token} expires users session ends.
  *
  * <p>Newly created {@code AuthSession} will be stored in the system to validate user actions.
  *
  * @author Oleg Barmin
  */
 public final class AuthSession extends Entity<Token> {
+
     private UserId userId;
 
     public AuthSession(Token token) {

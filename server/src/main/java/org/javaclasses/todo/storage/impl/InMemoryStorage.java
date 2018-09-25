@@ -16,7 +16,13 @@ import java.util.*;
  * @param <E> Entity to store
  * @author Oleg Barmin
  */
+/*
+ * Sub-classes of InMemoryStorage must work only with entities of TodoList application,
+ * so InMemoryStorage with generics should be abstract.
+ */
+@SuppressWarnings("AbstractClassWithoutAbstractMethods")
 abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implements Storage<I, E> {
+
     private final Map<I, E> storage;
 
     InMemoryStorage() {

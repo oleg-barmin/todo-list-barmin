@@ -14,6 +14,7 @@ import java.util.Map;
  * @author Oleg Barmin
  */
 public class TaskStorage extends InMemoryStorage<TaskId, Task> {
+
     public TaskStorage() {
     }
 

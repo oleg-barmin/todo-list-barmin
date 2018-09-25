@@ -12,6 +12,7 @@ import java.util.Map;
  * @author Oleg Barmin
  */
 public class AuthSessionStorage extends InMemoryStorage<Token, AuthSession> {
+
     public AuthSessionStorage() {
     }
 

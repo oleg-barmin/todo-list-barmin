@@ -6,7 +6,7 @@ import org.javaclasses.todo.model.EntityId;
 import java.util.Optional;
 
 /**
- * Allows to access entity storage and read, create, update `Entity` in storage.
+ * Allows to access entity storage and read, create, update {@code Entity} in storage.
  *
  * @param <I> ID of the entity
  * @param <E> Entity to store

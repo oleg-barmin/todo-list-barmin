@@ -1,8 +1,6 @@
 /package-lock.json
 /node_modules/
 .idea/
-/server/gradlew.bat
-/server/gradle/
 /server/build/
 /server/.gradle/
-/server/gradlew
+/server/out/

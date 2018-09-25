@@ -8,7 +8,10 @@ import java.util.Objects;
  * @param <V> value of ID
  * @author Oleg Barmin
  */
+/* Abstract EntityId has no meaning in business logic of TodoList application, so has to be abstract.*/
+@SuppressWarnings("AbstractClassWithoutAbstractMethods")
 public abstract class EntityId<V> {
+
     private final V value;
 
     /**

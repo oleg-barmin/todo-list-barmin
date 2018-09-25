@@ -1,5 +1,5 @@
 /**
- * Package contains Storage Interface and its implementation used in TodoList application.
+ * Storage API and its implementation used in TodoList application.
  *
  * @author Oleg Barmin
  */

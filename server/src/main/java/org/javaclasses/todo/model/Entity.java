@@ -10,7 +10,10 @@ import java.util.Objects;
  * @param <I> ID of the entity
  * @author Oleg Barmin
  */
+/* Abstract Entity has no meaning in business logic of TodoList application, so has to be abstract.*/
+@SuppressWarnings("AbstractClassWithoutAbstractMethods")
 public abstract class Entity<I extends EntityId> {
+
     private final I id;
 
     Entity(I i) {

@@ -1,6 +1,5 @@
 /**
- * Contains implementations of {@code Storage} interface based on {@code InMemoryStorage},
- * which contains entities which are used in TodoList application.
+ * Implementations of {@code Storage} based on {@code InMemoryStorage}.
  *
  * @author Oleg Barmin
  */

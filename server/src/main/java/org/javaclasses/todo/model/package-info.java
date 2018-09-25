@@ -1,5 +1,5 @@
 /**
- * Package contains TodoService which is used by authenticated user
+ * Public TodoService API which is used by authenticated user
  * as entry point to TodoList application capabilities:
  * - Create of new to-do lists.
  * - Add new tasks to to-do lists.

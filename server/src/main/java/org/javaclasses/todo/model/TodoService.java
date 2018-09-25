@@ -22,6 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @SuppressWarnings("WeakerAccess") // methods of public API should be public
 public class TodoService {
+
     private final Authentication authentication;
     private final TodoListStorage todoListStorage;
     private final TaskStorage taskStorage;
@@ -46,6 +47,7 @@ public class TodoService {
 
 
     public static class TodoListOperations {
+
         private final TodoListStorage todoListStorage;
         private final TaskStorage taskStorage;
         private final UserId userId;

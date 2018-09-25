@@ -19,6 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @SuppressWarnings("WeakerAccess") // part of public API and its methods should be public.
 public final class AddTask {
+
     private final TaskStorage taskStorage;
     private final AccessAuth operationAuth;
     private final UserId userId;

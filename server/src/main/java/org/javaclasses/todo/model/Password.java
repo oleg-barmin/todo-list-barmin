@@ -8,10 +8,11 @@ import java.util.Objects;
  * @author Oleg Barmin
  */
 public final class Password {
+
     private final String password;
 
     /**
-     * Creates `Password` instance.
+     * Creates {@code Password] instance.
      *
      * @param password string password to wrap.
      */

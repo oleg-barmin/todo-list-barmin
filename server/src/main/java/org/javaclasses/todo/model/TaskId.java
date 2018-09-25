@@ -1,9 +1,10 @@
 package org.javaclasses.todo.model;
 
 /**
- * ID of {@link Task} which ensures uniqueness of {@code Task}s.
+ * Unique ID of {@link Task}.
  *
  * @author Oleg Barmin
+ * @implNote value of identifier should be a string with UUID.
  */
 public final class TaskId extends EntityId<String> {
 

@@ -6,6 +6,7 @@ package org.javaclasses.todo.model;
  * @author Oleg Barmin
  */
 public final class User extends Entity<UserId> {
+
     private Username username;
     private Password password;
 

@@ -12,6 +12,7 @@ import java.util.Map;
  * @author Oleg Barmin
  */
 public class TodoListStorage extends InMemoryStorage<TodoListId, TodoList> {
+
     public TodoListStorage() {
     }
 

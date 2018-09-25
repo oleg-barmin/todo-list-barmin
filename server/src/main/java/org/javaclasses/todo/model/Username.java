@@ -8,10 +8,11 @@ import java.util.Objects;
  * @author Oleg Barmin
  */
 public final class Username {
+
     private final String value;
 
     /**
-     * Creates `Username` instance.
+     * Creates {@code Username} instance.
      *
      * @param value string with value to wrap
      */

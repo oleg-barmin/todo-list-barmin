@@ -12,6 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Task extends Entity<TaskId> {
+
     private final TodoListId todoListId;
 
     private final String description;
@@ -57,7 +58,7 @@ public final class Task extends Entity<TaskId> {
      * - description of task
      * - creation date
      *
-     * <p>Optional fields:
+     * <p>Optional values:
      * - status (uncompleted by default)
      * - last update date (equals to creation date by default)
      *
@@ -66,6 +67,7 @@ public final class Task extends Entity<TaskId> {
      * <p>Implementation of <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.
      */
     public static class TaskBuilder {
+
         private TaskId taskId;
         private TodoListId todoListId;
 

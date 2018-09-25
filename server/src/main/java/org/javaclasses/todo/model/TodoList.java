@@ -8,6 +8,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Oleg Barmin
  */
 public final class TodoList extends Entity<TodoListId> {
+
     private final UserId owner;
 
     private TodoList(TodoListBuilder todoListBuilder) {
@@ -15,22 +16,23 @@ public final class TodoList extends Entity<TodoListId> {
         this.owner = todoListBuilder.owner;
     }
 
-    public UserId getOwner() {
+    UserId getOwner() {
         return owner;
     }
 
     /**
-     * Allows to call chain of methods to create `Task` instance.
+     * Allows to call chain of methods to create {@code Task} instance.
      *
      * <p>Every task must have:
      * - ID
      * - ID of user who created TodoList
      *
-     * <p>After necessary fields was set, {@link TodoListBuilder#build()} method should be called.
+     * <p>After necessary values was set, {@link TodoListBuilder#build()} method should be called.
      *
      * <p>Implementation of <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.
      */
     public static class TodoListBuilder {
+
         private TodoListId todoListId;
         private UserId owner;
 
@@ -63,7 +65,7 @@ public final class TodoList extends Entity<TodoListId> {
         }
 
         /**
-         * Creates instance of `TodoList`.
+         * Creates instance of {@code TodoList}.
          *
          * @return TodoList with fields that were previously set
          * @throws NullPointerException if ID of owner or ID of TodoList was not provided.

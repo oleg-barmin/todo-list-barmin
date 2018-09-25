@@ -1,9 +1,10 @@
 package org.javaclasses.todo.model;
 
 /**
- * Unique identifier {@code AuthSession}.
+ * Unique identifier of {@code AuthSession}.
  *
  * @author Oleg Barmin
+ * @implNote value of identifier should be a string with UUID.
  */
 public final class Token extends EntityId<String> {
 

@@ -4,13 +4,14 @@ package org.javaclasses.todo.model;
  * Unique ID of {@link TodoList}.
  *
  * @author Oleg Barmin
+ * @implNote value of identifier should be a string with UUID.
  */
 public final class TodoListId extends EntityId<String> {
 
     /**
      * Creates {@code TodoListId} instance.
      *
-     * @param value string which contains uuid to ensure uniqueness {@code TodoList}s
+     * @param value value of ID
      */
     public TodoListId(String value) {
         super(value);
