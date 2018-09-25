@@ -30,6 +30,7 @@ abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implemen
     }
 
     @VisibleForTesting
+    /* For test needs given map should be same object. */
     @SuppressWarnings("AssignmentOrReturnOfFieldWithMutableType")
     InMemoryStorage(Map<I, E> map) {
         this.storage = map;
@@ -86,6 +87,7 @@ abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implemen
      * @return list of entities with field of desired value
      * @throws SearchByFieldException if field with given name doesn't exists in entity.
      */
+    /* reflect API converted to SearchByFieldException, because in this case it marks about programming error. */
     @SuppressWarnings("ThrowInsideCatchBlockWhichIgnoresCaughtException")
     List<E> findByField(String fieldName, Object fieldValue) throws SearchByFieldException {
         List<E> result = new LinkedList<>();
@@ -102,11 +104,13 @@ abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implemen
             }
 
             try {
+
                 declaredField.setAccessible(true);
                 Object value = declaredField.get(entity);
                 if (value.equals(fieldValue)) {
                     result.add(entity);
                 }
+
             } catch (IllegalAccessException e) {
                 throw new SearchByFieldException(fieldName);
             } finally {

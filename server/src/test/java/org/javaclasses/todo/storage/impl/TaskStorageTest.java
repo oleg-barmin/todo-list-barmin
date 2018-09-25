@@ -39,7 +39,7 @@ class TaskStorageTest extends InMemoryStorageTest<TaskId, Task> {
         return new Task.TaskBuilder()
                 .setTaskId(entityId)
                 .setTodoListId(new TodoListId(UUID.randomUUID().toString()))
-                .setDescription("task")
+                .setDescription("comment all warning suppressions")
                 .setCreationDate(new Date())
                 .build();
     }
@@ -48,7 +48,7 @@ class TaskStorageTest extends InMemoryStorageTest<TaskId, Task> {
         return new Task.TaskBuilder()
                 .setTaskId(createID())
                 .setTodoListId(todoListId)
-                .setDescription("task")
+                .setDescription("cover builders with unit tests.")
                 .setCreationDate(new Date())
                 .build();
     }
@@ -74,7 +74,7 @@ class TaskStorageTest extends InMemoryStorageTest<TaskId, Task> {
 
         Assertions.assertEquals(writtenTaskFirstTodoList.size(), allTaskOfTodoList.size(),
                 "Size of received tasks list should be equals " +
-                        "to number of written tasks with same todolistId, but it don't.");
+                        "to number of written tasks with same to-do list ID, but it don't.");
         Assertions.assertTrue(allTaskOfTodoList.containsAll(writtenTaskFirstTodoList));
     }
 

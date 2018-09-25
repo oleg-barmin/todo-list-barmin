@@ -18,6 +18,9 @@ import java.util.UUID;
 /**
  * @author Oleg Barmin
  */
+/*
+ * TodoService is public API so it is needed many dependencies.
+ */
 @SuppressWarnings("OverlyCoupledClass")
 @DisplayName("TodoService should")
 class TodoServiceTest {
@@ -152,7 +155,7 @@ class TodoServiceTest {
 
         Optional<Task> taskById = taskStorage.read(taskId);
 
-        Assertions.assertTrue(taskById.isPresent(), "Task should be added, but it didn't");
+        Assertions.assertTrue(taskById.isPresent(), "add task, but it didn't");
     }
 
     @Test
@@ -176,7 +179,7 @@ class TodoServiceTest {
                                 .withTodoListId(todoList.getId())
                                 .withDescription("task")
                                 .execute(),
-                "should throw TaskAlreadyExistsException, but it didn't.");
+                "throw TaskAlreadyExistsException, but it didn't.");
     }
 
     @Test
@@ -211,13 +214,18 @@ class TodoServiceTest {
 
         Optional<Task> updatedTaskOptional = taskStorage.read(taskId);
         if (!updatedTaskOptional.isPresent()) {
-            Assertions.fail("Updated task should be in storage, but it doesn't.");
+            Assertions.fail("store updated task in storage, but it doesn't.");
         }
         Task updatedTask = updatedTaskOptional.get();
         Assertions.assertEquals(updatedDescription, updatedTask.getDescription(),
-                "Task description should be updated, but it didn't.");
+                "update task description, but it didn't.");
     }
 
+
+    /*
+     * To test non-existing task updating user ID is not needed, because exception should occur.
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     @DisplayName("throw TaskNotFoundException if try to updated absent task.")
     void testUpdateThrowTask() {
@@ -246,11 +254,14 @@ class TodoServiceTest {
 
 
         Optional<Task> taskByID = taskStorage.read(task.getId());
-        Assertions.assertFalse(taskByID.isPresent(), "Task should be deleted, but it didn't.");
+        Assertions.assertFalse(taskByID.isPresent(), "delete task, but it didn't.");
     }
 
     @Test
     @DisplayName("throw TaskNotFoundException if try to remove task which doesn't exist.")
+    /*
+     * To test deleting of non-existing task user ID is not needed, because exception should occur.
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void testDeleteNotExistingTask() {
         createUser();

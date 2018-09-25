@@ -25,8 +25,8 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("AuthenticationHandler should")
 class AuthenticationHandlerTest {
-    private static final String emptyResponseBodyMsg = "response body should be empty, but it don't.";
-    private static final String forbiddenAssertMsg = "response status should be 403, but it don't.";
+    private static final String emptyResponseBodyMsg = "responds with status code empty, but it don't.";
+    private static final String forbiddenAssertMsg = "responds with status code 403, but it don't.";
     private final Authentication authenticationMock = MockServiceFactory.getAuthenticationMock();
     private final Username username = new Username("exmaple@temp.se");
     private final Password password = new Password("PasWord123");
@@ -67,7 +67,7 @@ class AuthenticationHandlerTest {
                 .post(AUTHENTICATION_PATH);
 
         Assertions.assertEquals(200, response.getStatusCode(),
-                "status code should be 200, but it don't.");
+                "responds with status code 200, but it don't.");
         Assertions.assertEquals(expectedToken, tokenFromJson(response.asString()),
                 "provide token, but it don't.");
     }
@@ -97,7 +97,7 @@ class AuthenticationHandlerTest {
 
         Assertions.assertTrue(response.asString().isEmpty(), emptyResponseBodyMsg);
         Assertions.assertEquals(401, response.getStatusCode(),
-                "response status should be 401, but it don't.");
+                "responds with status code 401, but it don't.");
     }
 
     @Test

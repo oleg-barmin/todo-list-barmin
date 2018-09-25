@@ -10,6 +10,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/* Duplicate literals of hashcode and equals test were left for better readability.*/
+@SuppressWarnings("DuplicateStringLiteralInspection")
 @Nested
 @DisplayName("Task should")
 class TaskTest {
@@ -133,3 +135,4 @@ class TaskTest {
         }
     }
 }
+

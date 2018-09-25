@@ -30,19 +30,23 @@ class AuthenticationTest {
         Optional<User> optionalUser = userStorage.read(userId);
 
         if (!optionalUser.isPresent()) {
-            Assertions.fail("New user should be created in user storage, but he didn't.");
+            Assertions.fail("create new user in user storage, but he didn't.");
         }
 
         User user = optionalUser.get();
 
         Assertions.assertEquals(username, user.getUsername(),
-                "created user in storage should have equal username.");
+                "save user with equal username, but it don't.");
         Assertions.assertEquals(password, user.getPassword(),
-                "created user in storage should have equal password.");
+                "save user with equal password, but it don't.");
     }
 
 
     @Test
+    /*
+     * In negative case test we don't need user ID, because
+     * if test performs properly exception will occur.
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("throw UserAlreadyExistsException.")
     void testCreateUserWithExistingUsername() {
@@ -63,7 +67,7 @@ class AuthenticationTest {
         Optional<AuthSession> optional = authSessionStorage.read(token);
 
         if (!optional.isPresent()) {
-            Assertions.fail("AuthSession should be saved in storage, but it don't.");
+            Assertions.fail("be save AuthSession in storage, but it don't.");
         }
 
         AuthSession authSession = optional.get();
@@ -74,6 +78,10 @@ class AuthenticationTest {
     }
 
     @Test
+    /*
+     * In negative case test we don't need user ID, because
+     * if test performs properly exception will occur.
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("throw InvalidCredentialsException if try to sign in with invalid credentials.")
     void testSignInInvalidCredentials() {
@@ -88,6 +96,9 @@ class AuthenticationTest {
 
     @Test
     @DisplayName("sign out users.")
+    /*
+     * To test sign out user ID is not needed.
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void testSignOut() {
         authentication.createUser(username, password);
@@ -103,6 +114,9 @@ class AuthenticationTest {
     }
 
     @Test
+    /*
+     * To test sign out user ID is not needed.
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("throw no exception if sign out with expired token.")
     void testSignOutWithExpiredToken() {
@@ -114,6 +128,9 @@ class AuthenticationTest {
     }
 
     @Test
+    /*
+     * To test validation of expired token user ID is not needed.
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("throw AccessDeniedException if token to validate expired.")
     void testValidate() {

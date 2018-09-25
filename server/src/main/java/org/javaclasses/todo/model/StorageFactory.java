@@ -13,7 +13,7 @@ import org.javaclasses.todo.storage.impl.UserStorage;
  * @author Oleg Barmin
  * @implNote all services are lazy initialized
  */
-/* Services must not be serialized */
+/* Storage cannot not be serialized */
 @SuppressWarnings("NonSerializableFieldInSerializableClass")
 class StorageFactory {
 

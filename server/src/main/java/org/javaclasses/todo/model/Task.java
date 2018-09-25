@@ -10,7 +10,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Oleg Barmin
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+/* Task is part of public API so all methods should be public.*/
+@SuppressWarnings("WeakerAccess")
 public final class Task extends Entity<TaskId> {
 
     private final TodoListId todoListId;
@@ -66,6 +67,8 @@ public final class Task extends Entity<TaskId> {
      *
      * <p>Implementation of <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.
      */
+    /* Builder methods should be public */
+    @SuppressWarnings("WeakerAccess")
     public static class TaskBuilder {
 
         private TaskId taskId;

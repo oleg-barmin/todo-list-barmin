@@ -65,7 +65,7 @@ class AuthorizationTest {
         todoListStorage.write(todoList);
         UserId userId = new UserId(UUID.randomUUID().toString());
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> authorization.validateAssess(userId, todoListId));
+        Assertions.assertThrows(AuthorizationFailedException.class, () -> authorization.validateAssess(userId, todoListId));
     }
 
     @Test
@@ -114,6 +114,6 @@ class AuthorizationTest {
 
         taskStorage.write(task);
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> authorization.validateAssess(userId, todoListId));
+        Assertions.assertThrows(AuthorizationFailedException.class, () -> authorization.validateAssess(userId, todoListId));
     }
 }

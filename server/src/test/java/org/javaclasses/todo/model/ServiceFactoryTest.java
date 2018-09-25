@@ -14,7 +14,7 @@ class ServiceFactoryTest {
         Authentication authentication = ServiceFactory.getAuthentication();
 
         Assertions.assertNotNull(authentication,
-                "ServiceFactory should provide not null Authentication, but it don't.");
+                "provide not null Authentication, but it don't.");
     }
 
     @Test
@@ -23,7 +23,7 @@ class ServiceFactoryTest {
         TodoService todoService = ServiceFactory.getTodoService();
 
         Assertions.assertNotNull(todoService,
-                "ServiceFactory should provide not null TodoService, but it don't.");
+                "provide not null TodoService, but it don't.");
     }
 
 }

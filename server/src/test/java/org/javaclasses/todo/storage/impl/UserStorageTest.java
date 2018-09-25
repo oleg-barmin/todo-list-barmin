@@ -70,13 +70,13 @@ class UserStorageTest extends InMemoryStorageTest<UserId, User> {
         Optional<User> optionalUser = storage.findUserByUsername(entity.getUsername());
 
         if (!optionalUser.isPresent()) {
-            Assertions.fail("Should return Optional with user, but don't.");
+            Assertions.fail("return Optional with user, but don't.");
             return;
         }
 
         User user = optionalUser.get();
 
-        Assertions.assertEquals(entity, user, "returned user should be equals to written, but it don't.");
+        Assertions.assertEquals(entity, user, "find user by username, but it don't.");
 
     }
 }

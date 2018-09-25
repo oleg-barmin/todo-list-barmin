@@ -37,7 +37,7 @@ class TodoListStorageTest extends InMemoryStorageTest<TodoListId, TodoList> {
                     TodoList entity = createEntityWithNullId();
                     storage.write(entity);
                 },
-                "should throw NullPointerException if try to write todo list with null ID, but it don't.");
+                "throw NullPointerException if try to write todo list with null ID, but it don't.");
     }
 
     @Override

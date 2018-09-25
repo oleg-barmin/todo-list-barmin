@@ -10,6 +10,8 @@ import java.util.UUID;
 /**
  * @author Oleg Barmin
  */
+/* display name of equals and hashcode test left for better readability.*/
+@SuppressWarnings("DuplicateStringLiteralInspection")
 class EntityTest {
 
     @Nested
