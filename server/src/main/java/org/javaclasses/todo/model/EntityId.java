@@ -23,6 +23,10 @@ public abstract class EntityId<V> {
         this.value = value;
     }
 
+    public V getValue() {
+        return value;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

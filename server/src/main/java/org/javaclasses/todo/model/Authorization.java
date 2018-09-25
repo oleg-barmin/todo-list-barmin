@@ -34,7 +34,7 @@ class Authorization {
      * @param userId     user which tries to access {@code TodoList}
      * @param todoListId ID of {@code TodoList}
      * @throws TodoListNotFoundException if {@code TodoList} with given ID was not found
-     * @throws AccessDeniedException     if user with given ID has no access to {@code TodoList} with given ID
+     * @throws AuthorizationFailedException     if user with given ID has no access to {@code TodoList} with given ID
      */
     void validateAssess(UserId userId, TodoListId todoListId) {
         checkNotNull(userId);
@@ -49,7 +49,7 @@ class Authorization {
         UserId owner = optionalTodoList.get().getOwner();
 
         if (!owner.equals(userId)) {
-            throw new AccessDeniedException(userId, todoListId);
+            throw new AuthorizationFailedException(userId, todoListId);
         }
     }
 
@@ -59,7 +59,7 @@ class Authorization {
      * @param userId user which tries to access {@code Task}
      * @param taskId ID of {@code Task}
      * @throws TaskNotFoundException if {@code Task} with given ID was not found
-     * @throws AccessDeniedException if user with given ID has no access to {@code Task} with given ID
+     * @throws AuthorizationFailedException if user with given ID has no access to {@code Task} with given ID
      */
     void validateAssess(UserId userId, TaskId taskId) {
         checkNotNull(userId);

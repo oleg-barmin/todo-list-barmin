@@ -108,6 +108,6 @@ public class Authentication {
             return authSessionOptional.get().getUserId();
         }
 
-        throw new AuthorizationFailedException();
+        throw new AuthorizationFailedException(token);
     }
 }

@@ -1,6 +1,5 @@
 package org.javaclasses.todo.model;
 
-import org.javaclasses.todo.auth.AuthorizationFailedException;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 
 import java.util.List;
