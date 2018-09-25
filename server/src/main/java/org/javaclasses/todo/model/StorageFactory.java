@@ -15,7 +15,7 @@ import org.javaclasses.todo.storage.impl.UserStorage;
  */
 /* Storage cannot not be serialized */
 @SuppressWarnings("NonSerializableFieldInSerializableClass")
-class StorageFactory {
+public class StorageFactory {
     private AuthSessionStorage authSessionStorage = null;
     private TaskStorage taskStorage = null;
     private TodoListStorage todoListStorage = null;
@@ -26,7 +26,7 @@ class StorageFactory {
      *
      * @return instance of {@code AuthSessionStorage}
      */
-    synchronized AuthSessionStorage getAuthSessionStorage() {
+    public synchronized AuthSessionStorage getAuthSessionStorage() {
         if (authSessionStorage == null) {
             authSessionStorage = new AuthSessionStorage();
         }
@@ -38,7 +38,7 @@ class StorageFactory {
      *
      * @return instance of {@code TaskStorage}
      */
-    synchronized TaskStorage getTaskStorage() {
+    public synchronized TaskStorage getTaskStorage() {
         if (taskStorage == null) {
             taskStorage = new TaskStorage();
         }
@@ -50,7 +50,7 @@ class StorageFactory {
      *
      * @return instance of {@code TodoListStorage}
      */
-    synchronized TodoListStorage getTodoListStorage() {
+    public synchronized TodoListStorage getTodoListStorage() {
         if (todoListStorage == null) {
             todoListStorage = new TodoListStorage();
         }
@@ -62,7 +62,7 @@ class StorageFactory {
      *
      * @return instance of {@code UserStorage}
      */
-    synchronized UserStorage getUserStorage() {
+    public synchronized UserStorage getUserStorage() {
         if (userStorage == null) {
             userStorage = new UserStorage();
         }
