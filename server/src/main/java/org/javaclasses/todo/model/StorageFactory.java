@@ -16,17 +16,21 @@ import org.javaclasses.todo.storage.impl.UserStorage;
 /* Storage cannot not be serialized */
 @SuppressWarnings("NonSerializableFieldInSerializableClass")
 class StorageFactory {
-
-    private StorageFactory() {
-    }
+    private AuthSessionStorage authSessionStorage = null;
+    private TaskStorage taskStorage = null;
+    private TodoListStorage todoListStorage = null;
+    private UserStorage userStorage = null;
 
     /**
      * Provides instance of {@link AuthSessionStorage}.
      *
      * @return instance of {@code AuthSessionStorage}
      */
-    static AuthSessionStorage getAuthSessionStorage() {
-        return AuthSessionStorageEnum.INSTANCE.authSessionStorage;
+    synchronized AuthSessionStorage getAuthSessionStorage() {
+        if (authSessionStorage == null) {
+            authSessionStorage = new AuthSessionStorage();
+        }
+        return authSessionStorage;
     }
 
     /**
@@ -34,8 +38,11 @@ class StorageFactory {
      *
      * @return instance of {@code TaskStorage}
      */
-    static TaskStorage getTaskStorage() {
-        return TaskStorageEnum.INSTANCE.taskStorage;
+    synchronized TaskStorage getTaskStorage() {
+        if (taskStorage == null) {
+            taskStorage = new TaskStorage();
+        }
+        return taskStorage;
     }
 
     /**
@@ -43,8 +50,11 @@ class StorageFactory {
      *
      * @return instance of {@code TodoListStorage}
      */
-    static TodoListStorage getTodoListStorage() {
-        return TodoListStorageEnum.INSTANCE.todoListStorage;
+    synchronized TodoListStorage getTodoListStorage() {
+        if (todoListStorage == null) {
+            todoListStorage = new TodoListStorage();
+        }
+        return todoListStorage;
     }
 
     /**
@@ -52,49 +62,10 @@ class StorageFactory {
      *
      * @return instance of {@code UserStorage}
      */
-    static UserStorage getUserStorage() {
-        return UserStorageEnum.INSTANCE.userStorage;
-    }
-
-    private enum AuthSessionStorageEnum {
-        INSTANCE;
-
-        private final AuthSessionStorage authSessionStorage;
-
-        AuthSessionStorageEnum() {
-            this.authSessionStorage = new AuthSessionStorage();
+    synchronized UserStorage getUserStorage() {
+        if (userStorage == null) {
+            userStorage = new UserStorage();
         }
+        return userStorage;
     }
-
-    private enum TaskStorageEnum {
-        INSTANCE;
-
-        private final TaskStorage taskStorage;
-
-        TaskStorageEnum() {
-            this.taskStorage = new TaskStorage();
-        }
-    }
-
-    private enum TodoListStorageEnum {
-        INSTANCE;
-
-        private final TodoListStorage todoListStorage;
-
-        TodoListStorageEnum() {
-            this.todoListStorage = new TodoListStorage();
-        }
-    }
-
-    private enum UserStorageEnum {
-        INSTANCE;
-
-        private final UserStorage userStorage;
-
-        UserStorageEnum() {
-            this.userStorage = new UserStorage();
-        }
-    }
-
-
 }

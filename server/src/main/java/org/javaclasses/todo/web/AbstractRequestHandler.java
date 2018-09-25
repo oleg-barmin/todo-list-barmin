@@ -5,7 +5,6 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +48,8 @@ abstract class AbstractRequestHandler<P> implements Route {
     @Override
     public Object handle(Request request, Response response) {
         P value = null;
-        if (valueClass != EmptyPayload.class) {
+
+        if (valueClass != Void.class) {
             value = objectFromJson(request.body());
         }
 
@@ -59,22 +59,21 @@ abstract class AbstractRequestHandler<P> implements Route {
         RequestHeaders requestHeaders = new RequestHeaders(headersMap);
         RequestParams requestParams = new RequestParams(request.params());
 
-        Answer answer = process(value, requestParams, requestHeaders);
+        RequestData<P> requestData = new RequestData<>(value, requestParams, requestHeaders);
+
+        Answer answer = process(requestData);
 
         response.status(answer.getCode());
-        response.type("application/json");
         response.body(answer.getBody());
 
         return answer.getBody();
     }
 
     /**
-     * Processes current request.
+     * Processes current requestData.
      *
-     * @param payload payload of request
-     * @param params  parameters of request
-     * @param headers headers of request
-     * @return answer to request
+     * @param requestData data of request
+     * @return answer to requestData
      */
-    abstract Answer process(@Nullable P payload, RequestParams params, RequestHeaders headers);
+    abstract Answer process(RequestData<P> requestData);
 }

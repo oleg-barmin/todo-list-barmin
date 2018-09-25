@@ -1,9 +1,6 @@
 package org.javaclasses.todo.model;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.javaclasses.todo.auth.Authentication;
-
-import static org.javaclasses.todo.model.StorageFactory.*;
 
 /**
  * Provides services of TodoList application.
@@ -19,15 +16,16 @@ import static org.javaclasses.todo.model.StorageFactory.*;
 })
 public class ServiceFactory {
 
-    private ServiceFactory() {
+    private final StorageFactory storageFactory;
+    private Authentication authentication;
+    private TodoService todoService;
+
+    public ServiceFactory(StorageFactory storageFactory) {
+        this.storageFactory = storageFactory;
     }
 
-    @VisibleForTesting
-    public static void clearStorages() {
-        getAuthSessionStorage().clear();
-        getTaskStorage().clear();
-        getTodoListStorage().clear();
-        getUserStorage().clear();
+    public ServiceFactory() {
+        storageFactory = new StorageFactory();
     }
 
     /**
@@ -35,8 +33,14 @@ public class ServiceFactory {
      *
      * @return instance of {@code TodoService}
      */
-    public static TodoService getTodoService() {
-        return TodoServiceSingleton.INSTANCE.value;
+    public TodoService getTodoService() {
+        if (todoService == null) {
+            todoService = new TodoService(
+                    getAuthentication(),
+                    storageFactory.getTodoListStorage(),
+                    storageFactory.getTaskStorage());
+        }
+        return todoService;
     }
 
     /**
@@ -44,28 +48,11 @@ public class ServiceFactory {
      *
      * @return instance of {@code Authentication}
      */
-    public static Authentication getAuthentication() {
-        return AuthenticationSingleton.INSTANCE.value;
-    }
-
-    private enum AuthenticationSingleton {
-        INSTANCE;
-
-        private final Authentication value;
-
-        AuthenticationSingleton() {
-            this.value = new Authentication(getUserStorage(), getAuthSessionStorage());
+    public synchronized Authentication getAuthentication() {
+        if (authentication == null) {
+            authentication =
+                    new Authentication(storageFactory.getUserStorage(), storageFactory.getAuthSessionStorage());
         }
+        return authentication;
     }
-
-    private enum TodoServiceSingleton {
-        INSTANCE;
-
-        private final TodoService value;
-
-        TodoServiceSingleton() {
-            this.value = new TodoService(AuthenticationSingleton.INSTANCE.value, getTodoListStorage(), getTaskStorage());
-        }
-    }
-
 }

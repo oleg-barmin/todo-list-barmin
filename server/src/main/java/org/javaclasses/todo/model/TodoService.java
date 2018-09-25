@@ -39,7 +39,7 @@ public class TodoService {
      * @return {@code TodoListOperations} to perform operations
      * @throws AuthorizationFailedException if given token expired.
      */
-    TodoListOperations authorizeBy(Token token) {
+    public TodoListOperations authorizeBy(Token token) {
         UserId userId = authentication.validate(token);
         return new TodoListOperations(todoListStorage, taskStorage, userId);
     }

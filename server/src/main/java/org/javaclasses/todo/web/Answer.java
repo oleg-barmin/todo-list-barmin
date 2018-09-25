@@ -35,6 +35,19 @@ class Answer {
     }
 
     /**
+     * Creates instance of {@code Answer} with empty body and 200 status code.
+     *
+     * @return answer with 200 status code and empty body
+     */
+    static Answer ok() {
+        return new Answer(HTTP_OK, "");
+    }
+
+    String getBody() {
+        return body;
+    }
+
+    /**
      * Creates instance of {@code Answer} with given body and 200 status code.
      *
      * @param body body of answer
@@ -44,6 +57,10 @@ class Answer {
         return new Answer(HTTP_OK, body);
     }
 
+    int getCode() {
+        return code;
+    }
+
     /**
      * Creates instance of {@code Answer} with empty and 403 status code.
      *
@@ -51,14 +68,6 @@ class Answer {
      */
     static Answer forbidden() {
         return new Answer(HTTP_FORBIDDEN);
-    }
-
-    String getBody() {
-        return body;
-    }
-
-    int getCode() {
-        return code;
     }
 
     @Override
