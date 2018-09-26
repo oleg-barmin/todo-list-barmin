@@ -13,9 +13,8 @@ import org.javaclasses.todo.storage.impl.UserStorage;
  * @author Oleg Barmin
  * @implNote all services are lazy initialized
  */
-/* Storage cannot not be serialized */
-@SuppressWarnings("NonSerializableFieldInSerializableClass")
 public class StorageFactory {
+
     private AuthSessionStorage authSessionStorage = null;
     private TaskStorage taskStorage = null;
     private TodoListStorage todoListStorage = null;

@@ -6,8 +6,9 @@ import org.javaclasses.todo.model.Username;
 /**
  * Default Users to test application with.
  */
+//Fields should not be serialized
 @SuppressWarnings("NonSerializableFieldInSerializableClass")
-public enum PreRegisteredUsers {
+enum PreRegisteredUsers {
     USER_1;
 
     private final Username username;

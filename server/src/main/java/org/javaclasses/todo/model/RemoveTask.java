@@ -40,8 +40,9 @@ public final class RemoveTask {
      *
      * @throws TaskNotFoundException     if task with given ID was not found
      * @throws TodoListNotFoundException if try to remove task from list which doesn't exist
-     * @throws AccessDeniedException     if user try to modify list which he doesn't own
      */
+    //return values is not needed to remove task
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void execute() throws TaskNotFoundException {
         authorization.validateAccess(userId, taskId);
         taskStorage.remove(taskId);

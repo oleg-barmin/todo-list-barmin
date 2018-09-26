@@ -10,10 +10,8 @@ import org.javaclasses.todo.auth.Authentication;
  * @author Oleg Barmin
  * @implNote all services are lazy initialized
  */
-@SuppressWarnings({
-        "NonSerializableFieldInSerializableClass", // service classes cannot be serialized
-        "WeakerAccess" // part of public API should remain public.
-})
+// part of public API should remain public.
+@SuppressWarnings("WeakerAccess")
 public class ServiceFactory {
 
     private final StorageFactory storageFactory;

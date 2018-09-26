@@ -65,7 +65,7 @@ public final class UpdateTask {
      * @return this {@code UpdateTask} instance to continue request building
      */
     public UpdateTask setStatus(boolean taskStatus) {
-        taskBuilder = taskBuilder.completed();
+        taskBuilder = taskBuilder.setStatus(taskStatus);
         return this;
     }
 

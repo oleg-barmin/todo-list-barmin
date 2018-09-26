@@ -123,8 +123,8 @@ public final class Task extends Entity<TaskId> {
          *
          * @return this builder
          */
-        public TaskBuilder completed() {
-            this.completed = true;
+        public TaskBuilder setStatus(boolean status) {
+            this.completed = status;
             return this;
         }
 

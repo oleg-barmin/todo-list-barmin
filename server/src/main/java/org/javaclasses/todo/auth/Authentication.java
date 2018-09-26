@@ -90,6 +90,8 @@ public class Authentication {
      *
      * @param token token of user session to close
      */
+    //return values is not needed to sign out user
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void signOut(Token token) {
         authSessionStorage.remove(token);
     }

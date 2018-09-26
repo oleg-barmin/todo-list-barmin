@@ -13,6 +13,8 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 /**
  * Exception handlers of exceptions which may occur in TodoList application.
  */
+//Contains inner classes to handle exceptions
+@SuppressWarnings("unused")
 class ExceptionHandlers {
 
     /**
