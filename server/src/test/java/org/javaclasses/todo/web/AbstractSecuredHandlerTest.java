@@ -2,6 +2,7 @@ package org.javaclasses.todo.web;
 
 import io.restassured.response.Response;
 import org.javaclasses.todo.model.Token;
+import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,8 @@ import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
 
 abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
-    abstract Response performOperation(Token token);
+
+    abstract Response performOperation(Token token, UserId userId);
 
     @Test
     @DisplayName("forbid operation to unauthorized users.")
@@ -20,7 +22,7 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
         String invalidToken = "invalid token";
         getRequestSpecification().header(X_TODO_TOKEN, invalidToken);
 
-        Response response = performOperation(new Token(invalidToken));
+        Response response = performOperation(new Token(invalidToken), getUserId());
 
         Assertions.assertEquals(HTTP_FORBIDDEN, response.getStatusCode(),
                 "response status must be 403, when not signed in user creates list, but it don't.");
@@ -32,7 +34,7 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
         Token token = signIn(USER_1.getUsername(), USER_1.getPassword());
 
         getRequestSpecification().header("INVALID_HEADER", token.getValue());
-        Response response = performOperation(token);
+        Response response = performOperation(token, getUserId());
 
         Assertions.assertEquals(HTTP_UNAUTHORIZED, response.getStatusCode(),
                 "response status must be 401, " +
