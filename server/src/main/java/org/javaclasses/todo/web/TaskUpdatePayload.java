@@ -1,16 +1,26 @@
 package org.javaclasses.todo.web;
 
+/**
+ * Payload of task update request.
+ */
 class TaskUpdatePayload {
-    private final boolean completed;
+
+    private final boolean taskStatus;
     private final String taskDescription;
 
-    TaskUpdatePayload(boolean completed, String taskDescription) {
-        this.completed = completed;
+    /**
+     * Creates {@code TaskUpdatePayload} instance.
+     *
+     * @param taskStatus      new status of task to update
+     * @param taskDescription new description of task to update
+     */
+    TaskUpdatePayload(boolean taskStatus, String taskDescription) {
+        this.taskStatus = taskStatus;
         this.taskDescription = taskDescription;
     }
 
-    boolean isCompleted() {
-        return completed;
+    boolean isTaskStatus() {
+        return taskStatus;
     }
 
     String getTaskDescription() {

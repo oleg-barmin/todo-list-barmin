@@ -1,5 +1,5 @@
 /**
- * Contains REST services, which provide access to TodoList application functions, bounded to endpoints.
+ * Contains REST services, which provide access to TodoList application functions.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

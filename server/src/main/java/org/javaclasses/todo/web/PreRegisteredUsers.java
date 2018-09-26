@@ -3,6 +3,9 @@ package org.javaclasses.todo.web;
 import org.javaclasses.todo.model.Password;
 import org.javaclasses.todo.model.Username;
 
+/**
+ * Default Users to test application with.
+ */
 @SuppressWarnings("NonSerializableFieldInSerializableClass")
 public enum PreRegisteredUsers {
     USER_1;

@@ -133,7 +133,7 @@ class TaskController {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             String taskDescription = payload.getTaskDescription();
-            boolean taskStatus = payload.isCompleted();
+            boolean taskStatus = payload.isTaskStatus();
 
             todoService.authorizeBy(token)
                     .updateTask(taskId)
