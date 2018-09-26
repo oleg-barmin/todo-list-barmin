@@ -5,7 +5,6 @@ import org.javaclasses.todo.storage.impl.AuthSessionStorage;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 import org.javaclasses.todo.storage.impl.TodoListStorage;
 import org.javaclasses.todo.storage.impl.UserStorage;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +13,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Oleg Barmin
@@ -92,7 +93,7 @@ class TodoServiceTest {
                 .withOwner(userId)
                 .execute();
 
-        Assertions.assertThrows(TodoListAlreadyExistsException.class, () ->
+        assertThrows(TodoListAlreadyExistsException.class, () ->
                         todoService.authorizeBy(token)
                                 .createList(todoListId)
                                 .withOwner(userId)
@@ -135,7 +136,37 @@ class TodoServiceTest {
 
         List<Task> tasks = todoService.authorizeBy(token).readTasksFrom(todoListId).execute();
 
-        Assertions.assertEquals(3, tasks.size(), "TodoList had to contain 3 Tasks, but it didn't.");
+        assertEquals(3, tasks.size(), "TodoList had to contain 3 Tasks, but it didn't.");
+    }
+
+    @Test
+    @DisplayName("find tasks by ID.")
+    void testFindTask() {
+        UserId userId = createUser();
+        Token token = authentication.signIn(username, password);
+        TodoList todoList = createAndSaveTodoList(userId);
+        Task task = createAndSaveTask(todoList.getId());
+
+        Task storedTask = todoService.authorizeBy(token)
+                .findTask(task.getId())
+                .execute();
+
+        assertEquals(task, storedTask);
+    }
+
+    /* If test perform properly exception will occur, so return value will be received. */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test
+    @DisplayName("throw TaskNotFoundException when try to get task with non-existing ID.")
+    void testFindNonExistingTask() {
+        createUser();
+        Token token = authentication.signIn(username, password);
+        TaskId taskId = new TaskId(UUID.randomUUID().toString());
+
+        assertThrows(TaskNotFoundException.class,
+                () -> todoService.authorizeBy(token)
+                        .findTask(taskId)
+                        .execute());
     }
 
     @Test
@@ -155,7 +186,7 @@ class TodoServiceTest {
 
         Optional<Task> taskById = taskStorage.read(taskId);
 
-        Assertions.assertTrue(taskById.isPresent(), "add task, but it didn't");
+        assertTrue(taskById.isPresent(), "add task, but it didn't");
     }
 
     @Test
@@ -173,7 +204,7 @@ class TodoServiceTest {
                 .withDescription("task")
                 .execute();
 
-        Assertions.assertThrows(TaskAlreadyExistsException.class, () ->
+        assertThrows(TaskAlreadyExistsException.class, () ->
                         todoService.authorizeBy(token)
                                 .addTask(taskId)
                                 .withTodoListId(todoList.getId())
@@ -198,7 +229,7 @@ class TodoServiceTest {
 
         Optional<Task> notUpdatedTaskOptional = taskStorage.read(taskId);
         if (!notUpdatedTaskOptional.isPresent()) {
-            Assertions.fail("Task to update should be added but it didn't.");
+            fail("Task to update should be added but it didn't.");
             return;
         }
         Task notUpdatedTask = notUpdatedTaskOptional.get();
@@ -214,10 +245,10 @@ class TodoServiceTest {
 
         Optional<Task> updatedTaskOptional = taskStorage.read(taskId);
         if (!updatedTaskOptional.isPresent()) {
-            Assertions.fail("store updated task in storage, but it doesn't.");
+            fail("store updated task in storage, but it doesn't.");
         }
         Task updatedTask = updatedTaskOptional.get();
-        Assertions.assertEquals(updatedDescription, updatedTask.getDescription(),
+        assertEquals(updatedDescription, updatedTask.getDescription(),
                 "update task description, but it didn't.");
     }
 
@@ -233,7 +264,7 @@ class TodoServiceTest {
         Token token = authentication.signIn(username, password);
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
 
-        Assertions.assertThrows(TaskNotFoundException.class, () ->
+        assertThrows(TaskNotFoundException.class, () ->
                 todoService.authorizeBy(token)
                         .updateTask(taskId)
                         .withDescription("win olympic games")
@@ -254,7 +285,7 @@ class TodoServiceTest {
 
 
         Optional<Task> taskByID = taskStorage.read(task.getId());
-        Assertions.assertFalse(taskByID.isPresent(), "delete task, but it didn't.");
+        assertFalse(taskByID.isPresent(), "delete task, but it didn't.");
     }
 
     @Test
@@ -268,7 +299,7 @@ class TodoServiceTest {
         Token token = authentication.signIn(username, password);
         TaskId idOfTaskToDelete = new TaskId("213");
 
-        Assertions.assertThrows(TaskNotFoundException.class, () ->
+        assertThrows(TaskNotFoundException.class, () ->
                 todoService.authorizeBy(token).removeTask(idOfTaskToDelete).execute());
     }
 

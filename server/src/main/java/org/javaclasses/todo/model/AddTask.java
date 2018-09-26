@@ -7,7 +7,7 @@ import java.util.Date;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Provides API which simplifies task adding.
+ * API which simplifies task adding.
  *
  * <p>To add task these values should be provided:
  * - ID of the task

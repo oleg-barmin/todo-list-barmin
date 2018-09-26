@@ -88,6 +88,16 @@ public class TodoService {
         }
 
         /**
+         * Creates instance of {@link FindTask} to find task by ID.
+         *
+         * @param taskId ID of the task to find
+         * @return {@code FindTask} instance
+         */
+        public FindTask findTask(TaskId taskId) {
+            return new FindTask(taskId, taskStorage, authorization, userId);
+        }
+
+        /**
          * Creates instance of {@link AddTask} to add new task.
          *
          * @param taskId ID of the task to add
