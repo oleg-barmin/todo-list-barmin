@@ -13,8 +13,7 @@ import static org.javaclasses.todo.web.ExceptionHandlers.*;
 import static org.javaclasses.todo.web.ListController.ListCreationHandler;
 import static org.javaclasses.todo.web.ListController.ReadTasksHandler;
 import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
-import static org.javaclasses.todo.web.TaskController.CreateTaskHandler;
-import static org.javaclasses.todo.web.TaskController.GetTaskHandler;
+import static org.javaclasses.todo.web.TaskController.*;
 import static spark.Service.ignite;
 
 /**
@@ -93,6 +92,7 @@ public class TodoListApplication {
         service.get(READ_TASKS_PATH, new ReadTasksHandler(todoService));
         service.get("/lists/:todolistid/:taskid", new GetTaskHandler(todoService));
         service.post("/lists/:todolistid/:taskid", new CreateTaskHandler(todoService));
+        service.put("/lists/:todolistid/:taskid", new TaskUpdateHandler(todoService));
     }
 
     /**

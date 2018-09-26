@@ -295,7 +295,88 @@ class ListControllerTest {
     }
 
 
+    @Nested
+    class UpdateTaskHandlerTest extends AbstractSecuredHandlerTest {
 
+        @Test
+        void testUpdateTask() {
+            Token token = signIn(username, password);
+            getRequestSpecification().header(X_TODO_TOKEN, token.getValue());
+
+            UserId userId = getStorageFactory().getAuthSessionStorage().read(token).get().getUserId();
+
+            String todoListUuid = UUID.randomUUID().toString();
+            TodoListId todoListId = new TodoListId(todoListUuid);
+
+            String taskUuid = UUID.randomUUID().toString();
+            TaskId taskId = new TaskId(taskUuid);
+
+            TodoList build = new TodoList.TodoListBuilder()
+                    .setTodoListId(todoListId)
+                    .setOwner(userId)
+                    .build();
+            getStorageFactory().getTodoListStorage().write(build);
+
+            Task firstTask = new Task.TaskBuilder()
+                    .setTaskId(taskId)
+                    .setTodoListId(todoListId)
+                    .setDescription("write tests on find task by ID.")
+                    .setCreationDate(new Date())
+                    .build();
+
+            getStorageFactory().getTaskStorage().write(firstTask);
+
+
+            TaskUpdatePayload payload = new TaskUpdatePayload(false, "new task description");
+
+            String body = new Gson().toJson(payload);
+
+            getRequestSpecification().body(body);
+
+            Response response = getRequestSpecification().put(String.format("/lists/%s/%s", todoListUuid, taskUuid));
+
+
+            Assertions.assertEquals(HTTP_OK, response.getStatusCode());
+        }
+
+
+        @Override
+        Response performOperation(Token token) {
+            UserId userId = new UserId(UUID.randomUUID().toString());
+
+            String todoListUuid = UUID.randomUUID().toString();
+            TodoListId todoListId = new TodoListId(todoListUuid);
+
+            String taskUuid = UUID.randomUUID().toString();
+            TaskId taskId = new TaskId(taskUuid);
+
+            TodoList build = new TodoList.TodoListBuilder()
+                    .setTodoListId(todoListId)
+                    .setOwner(userId)
+                    .build();
+            getStorageFactory().getTodoListStorage().write(build);
+
+            Task firstTask = new Task.TaskBuilder()
+                    .setTaskId(taskId)
+                    .setTodoListId(todoListId)
+                    .setDescription("write tests on find task by ID.")
+                    .setCreationDate(new Date())
+                    .build();
+
+            getStorageFactory().getTaskStorage().write(firstTask);
+
+
+            TaskUpdatePayload payload = new TaskUpdatePayload(false, "new task description");
+
+            String body = new Gson().toJson(payload);
+
+            getRequestSpecification().body(body);
+
+            Response response = getRequestSpecification().put(String.format("/lists/%s/%s", todoListUuid, taskUuid));
+
+            return response;
+        }
+    }
 
 
 }
