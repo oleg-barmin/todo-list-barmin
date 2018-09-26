@@ -15,24 +15,24 @@ class ListController {
     /**
      * Handles create {@code TodoList} request.
      */
-    static class ListCreationHandler extends SecuredAbstractHandler<CreateListPayload> {
+    static class ListCreationRequestHandler extends SecuredAbstractRequestHandler<CreateListPayload> {
 
         private final TodoService todoService;
 
 
         /**
-         * Creates {@code ListCreationHandler} instance.
+         * Creates {@code ListCreationRequestHandler} instance.
          *
          * @param todoService service to work with
          */
-        ListCreationHandler(TodoService todoService) {
+        ListCreationRequestHandler(TodoService todoService) {
             super(CreateListPayload.class);
             this.todoService = checkNotNull(todoService);
         }
 
 
         @Override
-        Answer securedProcess(RequestData<CreateListPayload> requestData, Token token) {
+        Answer processVerifiedRequest(RequestData<CreateListPayload> requestData, Token token) {
             CreateListPayload payload = requestData.getPayload();
 
             UserId userId = payload.getUserId();
@@ -50,22 +50,22 @@ class ListController {
     /**
      * Handles read all {@code Task}s from {@code TodoList} request.
      */
-    static class ReadTasksHandler extends SecuredAbstractHandler<Void> {
+    static class ReadTasksRequestHandler extends SecuredAbstractRequestHandler<Void> {
         private final TodoService todoService;
 
         /**
-         * Creates {@code ReadTasksHandler} instance.
+         * Creates {@code ReadTasksRequestHandler} instance.
          *
          * @param todoService service to work with.
          */
-        ReadTasksHandler(TodoService todoService) {
+        ReadTasksRequestHandler(TodoService todoService) {
             super(Void.class);
             this.todoService = checkNotNull(todoService);
         }
 
 
         @Override
-        Answer securedProcess(RequestData<Void> requestData, Token token) {
+        Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
             String todoListIdParam = requestData.getRequestParams().getParamValue(TODO_LIST_ID_PARAM);
 
             TodoListId todoListId = new TodoListId(todoListIdParam);

@@ -43,22 +43,22 @@ class TaskController {
      *
      * @author Oleg Barmin
      */
-    static class GetTaskHandler extends SecuredAbstractHandler<Void> {
+    static class GetTaskRequestHandler extends SecuredAbstractRequestHandler<Void> {
 
         private final TodoService todoService;
 
         /**
-         * Creates {@code GetTaskHandler} instance.
+         * Creates {@code GetTaskRequestHandler} instance.
          *
          * @param todoService service to work with
          */
-        GetTaskHandler(TodoService todoService) {
+        GetTaskRequestHandler(TodoService todoService) {
             super(Void.class);
             this.todoService = checkNotNull(todoService);
         }
 
         @Override
-        Answer securedProcess(RequestData<Void> requestData, Token token) {
+        Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             Task task = todoService.authorizeBy(token)
@@ -76,22 +76,22 @@ class TaskController {
      *
      * @author Oleg Barmin
      */
-    static class CreateTaskHandler extends SecuredAbstractHandler<CreateTaskPayload> {
+    static class CreateTaskRequestHandler extends SecuredAbstractRequestHandler<CreateTaskPayload> {
 
         private final TodoService todoService;
 
         /**
-         * Creates {@code CreateTaskHandler} instance.
+         * Creates {@code CreateTaskRequestHandler} instance.
          *
          * @param todoService service to work with
          */
-        CreateTaskHandler(TodoService todoService) {
+        CreateTaskRequestHandler(TodoService todoService) {
             super(CreateTaskPayload.class);
             this.todoService = checkNotNull(todoService);
         }
 
         @Override
-        Answer securedProcess(RequestData<CreateTaskPayload> requestData, Token token) {
+        Answer processVerifiedRequest(RequestData<CreateTaskPayload> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
             TodoListId todoListId = extractTodoListId(requestData.getRequestParams());
 
@@ -113,22 +113,22 @@ class TaskController {
      *
      * @author Oleg Barmin
      */
-    static class TaskUpdateHandler extends SecuredAbstractHandler<TaskUpdatePayload> {
+    static class TaskUpdateRequestHandler extends SecuredAbstractRequestHandler<TaskUpdatePayload> {
 
         private final TodoService todoService;
 
         /**
-         * Creates {@code TaskUpdateHandler} instance.
+         * Creates {@code TaskUpdateRequestHandler} instance.
          *
          * @param todoService service to work with
          */
-        TaskUpdateHandler(TodoService todoService) {
+        TaskUpdateRequestHandler(TodoService todoService) {
             super(TaskUpdatePayload.class);
             this.todoService = checkNotNull(todoService);
         }
 
         @Override
-        Answer securedProcess(RequestData<TaskUpdatePayload> requestData, Token token) {
+        Answer processVerifiedRequest(RequestData<TaskUpdatePayload> requestData, Token token) {
             TaskUpdatePayload payload = requestData.getPayload();
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
@@ -148,22 +148,22 @@ class TaskController {
     /**
      * Handles remove {@code Task} request.
      */
-    static class TaskRemoveHandler extends SecuredAbstractHandler<Void> {
+    static class TaskRemoveRequestHandler extends SecuredAbstractRequestHandler<Void> {
 
         private final TodoService todoService;
 
         /**
-         * Creates {@code TaskRemoveHandler} instance.
+         * Creates {@code TaskRemoveRequestHandler} instance.
          *
          * @param todoService service to work with
          */
-        TaskRemoveHandler(TodoService todoService) {
+        TaskRemoveRequestHandler(TodoService todoService) {
             super(Void.class);
             this.todoService = checkNotNull(todoService);
         }
 
         @Override
-        Answer securedProcess(RequestData<Void> requestData, Token token) {
+        Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             todoService.authorizeBy(token)

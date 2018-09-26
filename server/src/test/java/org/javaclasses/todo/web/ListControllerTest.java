@@ -18,7 +18,7 @@ import java.util.UUID;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
-import static org.javaclasses.todo.web.SecuredAbstractHandler.X_TODO_TOKEN;
+import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
 import static org.javaclasses.todo.web.TodoListApplication.CREATE_LIST_PATH;
 
 @DisplayName("ListController should")

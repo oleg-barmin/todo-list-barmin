@@ -10,6 +10,9 @@ import java.util.Base64;
 
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
+/**
+ * Manages user authentication requests.
+ */
 class AuthenticationController {
 
     /**

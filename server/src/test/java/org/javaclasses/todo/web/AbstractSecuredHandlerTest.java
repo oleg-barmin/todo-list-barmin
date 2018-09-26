@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
-import static org.javaclasses.todo.web.SecuredAbstractHandler.X_TODO_TOKEN;
+import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
 
 abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
     abstract Response performOperation(Token token);

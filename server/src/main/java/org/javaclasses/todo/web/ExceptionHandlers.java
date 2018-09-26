@@ -11,7 +11,7 @@ import spark.Response;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 
 /**
- * Exception handlers which may occur in TodoList application.
+ * Exception handlers of exceptions which may occur in TodoList application.
  */
 class ExceptionHandlers {
 

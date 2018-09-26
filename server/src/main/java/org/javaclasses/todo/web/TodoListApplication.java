@@ -7,8 +7,7 @@ import spark.Service;
 
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.*;
-import static org.javaclasses.todo.web.ListController.ListCreationHandler;
-import static org.javaclasses.todo.web.ListController.ReadTasksHandler;
+import static org.javaclasses.todo.web.ListController.ReadTasksRequestHandler;
 import static org.javaclasses.todo.web.TaskController.*;
 import static spark.Service.ignite;
 
@@ -79,14 +78,14 @@ public class TodoListApplication {
 
         service.post(AUTHENTICATION_PATH, new AuthenticationHandler(authentication));
 
-        service.post(CREATE_LIST_PATH, new ListCreationHandler(todoService));
+        service.post(CREATE_LIST_PATH, new ListController.ListCreationRequestHandler(todoService));
 
-        service.get(READ_TASKS_PATH, new ReadTasksHandler(todoService));
+        service.get(READ_TASKS_PATH, new ReadTasksRequestHandler(todoService));
 
-        service.get(TASKS_PATH, new GetTaskHandler(todoService));
-        service.post(TASKS_PATH, new CreateTaskHandler(todoService));
-        service.put(TASKS_PATH, new TaskUpdateHandler(todoService));
-        service.delete(TASKS_PATH, new TaskRemoveHandler(todoService));
+        service.get(TASKS_PATH, new GetTaskRequestHandler(todoService));
+        service.post(TASKS_PATH, new CreateTaskRequestHandler(todoService));
+        service.put(TASKS_PATH, new TaskUpdateRequestHandler(todoService));
+        service.delete(TASKS_PATH, new TaskRemoveRequestHandler(todoService));
     }
 
     /**
