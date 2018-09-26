@@ -19,7 +19,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Oleg Barmin
  */
-@SuppressWarnings("WeakerAccess") // methods of public API should be public
 public class TodoService {
 
     private final Authentication authentication;
