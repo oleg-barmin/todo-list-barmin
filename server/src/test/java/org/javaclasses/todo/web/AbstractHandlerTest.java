@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import static io.restassured.RestAssured.given;
 import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
 
-class AbstractControllerTest {
+abstract class AbstractHandlerTest {
     private final StorageFactory storageFactory = new StorageFactory();
     private final ServiceFactory serviceFactory = new ServiceFactory(storageFactory);
     private final Authentication authentication = serviceFactory.getAuthentication();
@@ -22,7 +22,7 @@ class AbstractControllerTest {
         return requestSpecification;
     }
 
-    public StorageFactory getStorageFactory() {
+    StorageFactory getStorageFactory() {
         return storageFactory;
     }
 

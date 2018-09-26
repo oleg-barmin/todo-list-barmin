@@ -19,7 +19,7 @@ import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
 import static org.javaclasses.todo.web.TodoListApplication.AUTHENTICATION_PATH;
 
 @DisplayName("AuthenticationController should")
-class AuthenticationControllerTest extends AbstractControllerTest {
+class AuthenticationHandlerTest extends AbstractHandlerTest {
 
     private final RequestSpecification specification = getRequestSpecification();
     private final Username username = USER_1.getUsername();
