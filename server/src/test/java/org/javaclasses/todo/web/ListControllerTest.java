@@ -242,6 +242,60 @@ class ListControllerTest {
     }
 
 
+    @Nested
+    class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
+        @Test
+        void testTaskCreation() {
+            Token token = signIn(username, password);
+            getRequestSpecification().header(X_TODO_TOKEN, token.getValue());
+
+            UserId userId = getStorageFactory().getAuthSessionStorage().read(token).get().getUserId();
+
+            String todoListUuid = UUID.randomUUID().toString();
+            TodoListId todoListId = new TodoListId(todoListUuid);
+
+            TodoList build = new TodoList.TodoListBuilder()
+                    .setTodoListId(todoListId)
+                    .setOwner(userId)
+                    .build();
+            getStorageFactory().getTodoListStorage().write(build);
+
+            String taskUuid = UUID.randomUUID().toString();
+
+            String payload = new Gson().toJson(new CreateTaskPayload("implement task adding"));
+
+            getRequestSpecification().body(payload);
+            Response response = getRequestSpecification().post(String.format("/lists/%s/%s", todoListUuid, taskUuid));
+
+            Assertions.assertEquals(HTTP_OK, response.getStatusCode());
+        }
+
+
+        @Override
+        Response performOperation(Token token) {
+            UserId userId = new UserId(UUID.randomUUID().toString());
+
+            String todoListUuid = UUID.randomUUID().toString();
+            TodoListId todoListId = new TodoListId(todoListUuid);
+
+            TodoList build = new TodoList.TodoListBuilder()
+                    .setTodoListId(todoListId)
+                    .setOwner(userId)
+                    .build();
+            getStorageFactory().getTodoListStorage().write(build);
+
+            String taskUuid = UUID.randomUUID().toString();
+
+            String payload = new Gson().toJson(new CreateTaskPayload("implement task adding"));
+
+            getRequestSpecification().body(payload);
+            Response response = getRequestSpecification().post(String.format("/lists/%s/%s", todoListUuid, taskUuid));
+            return response;
+        }
+    }
+
+
+
 
 
 }

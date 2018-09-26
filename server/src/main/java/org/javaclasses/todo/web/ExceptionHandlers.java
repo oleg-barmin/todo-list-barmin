@@ -14,6 +14,7 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
  * Exception handlers which may occur in TodoList application.
  */
 class ExceptionHandlers {
+
     /**
      * Handles thrown AuthorizationFailedException.
      */

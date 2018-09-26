@@ -38,4 +38,36 @@ class TaskController {
             return Answer.ok(answerBody);
         }
     }
+
+    static class CreateTaskHandler extends SecuredAbstractHandler<CreateTaskPayload> {
+        private final TodoService todoService;
+
+        /**
+         * Creates {@code AbstractRequestHandler} instance.
+         */
+        CreateTaskHandler(TodoService todoService) {
+            super(CreateTaskPayload.class);
+            this.todoService = todoService;
+        }
+
+        @Override
+        Answer securedProcess(RequestData<CreateTaskPayload> requestData, Token token) {
+            CreateTaskPayload payload = requestData.getPayload();
+
+            String taskIdParam = requestData.getRequestParams().getParamValue(":taskid");
+            String todoListIdParam = requestData.getRequestParams().getParamValue(":todolistid");
+
+            TodoListId todoListId = new TodoListId(todoListIdParam);
+            TaskId taskId = new TaskId(taskIdParam);
+            String taskDescription = payload.getTaskDescription();
+
+            todoService.authorizeBy(token)
+                    .addTask(taskId)
+                    .withTodoListId(todoListId)
+                    .withDescription(taskDescription)
+                    .execute();
+
+            return Answer.ok();
+        }
+    }
 }
