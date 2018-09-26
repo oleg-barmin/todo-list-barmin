@@ -93,6 +93,7 @@ public class TodoListApplication {
         service.get("/lists/:todolistid/:taskid", new GetTaskHandler(todoService));
         service.post("/lists/:todolistid/:taskid", new CreateTaskHandler(todoService));
         service.put("/lists/:todolistid/:taskid", new TaskUpdateHandler(todoService));
+        service.delete("/lists/:todolistid/:taskid", new TaskRemoveHandler(todoService));
     }
 
     /**

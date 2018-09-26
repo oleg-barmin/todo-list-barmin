@@ -27,12 +27,6 @@ class TaskController {
                     .findTask(taskId)
                     .execute();
 
-            TodoListId todoListId = task.getTodoListId();
-
-            if (!todoListId.equals(new TodoListId(todoListIdParam))) {
-                return Answer.forbidden();
-            }
-
             String answerBody = objectToJson(task);
 
             return Answer.ok(answerBody);
@@ -59,6 +53,7 @@ class TaskController {
 
             TodoListId todoListId = new TodoListId(todoListIdParam);
             TaskId taskId = new TaskId(taskIdParam);
+
             String taskDescription = payload.getTaskDescription();
 
             todoService.authorizeBy(token)
@@ -94,7 +89,6 @@ class TaskController {
             String taskIdParam = requestData.getRequestParams().getParamValue(":taskid");
             String todoListIdParam = requestData.getRequestParams().getParamValue(":todolistid");
 
-            TodoListId todoListId = new TodoListId(todoListIdParam);
             TaskId taskId = new TaskId(taskIdParam);
 
             UpdateTask updateTask = todoService.authorizeBy(token)
@@ -102,9 +96,35 @@ class TaskController {
                     .withDescription(taskDescription);
 
             if (taskStatus) {
-                updateTask.completed();
+                updateTask = updateTask.completed();
             }
             updateTask.execute();
+
+            return Answer.ok();
+        }
+    }
+
+    static class TaskRemoveHandler extends SecuredAbstractHandler<Void> {
+
+        private final TodoService todoService;
+
+        /**
+         * Creates {@code AbstractRequestHandler} instance.
+         */
+        TaskRemoveHandler(TodoService todoService) {
+            super(Void.class);
+            this.todoService = todoService;
+        }
+
+        @Override
+        Answer securedProcess(RequestData<Void> requestData, Token token) {
+            String taskIdParam = requestData.getRequestParams().getParamValue(":taskid");
+
+            TaskId taskId = new TaskId(taskIdParam);
+
+            todoService.authorizeBy(token)
+                    .removeTask(taskId)
+                    .execute();
 
             return Answer.ok();
         }
