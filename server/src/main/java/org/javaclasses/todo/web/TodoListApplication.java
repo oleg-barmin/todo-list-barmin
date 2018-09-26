@@ -5,28 +5,45 @@ import org.javaclasses.todo.auth.InvalidCredentialsException;
 import org.javaclasses.todo.model.*;
 import spark.Service;
 
-import java.util.Date;
-import java.util.UUID;
-
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.*;
 import static org.javaclasses.todo.web.ListController.ListCreationHandler;
 import static org.javaclasses.todo.web.ListController.ReadTasksHandler;
-import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
 import static org.javaclasses.todo.web.TaskController.*;
 import static spark.Service.ignite;
 
 /**
- * TodoList application.
+ * Runs server with TodoList application which provides access to application functionality.
+ *
+ * <p>Application is based on REST a architectural style.
+ *
+ * Services allows to:
+ * - Authenticate users;
+ * - Create new to-do lists;
+ * - Read tasks from to-do lists;
+ * - Find tasks by ID;
+ * - Add new tasks to to-do lists;
+ * - Update existing tasks;
+ * - Remove existing tasks.
+ *
+ * @author Oleg Barmin
  */
+
+@SuppressWarnings({"OverlyCoupledClass", // TodoListApplication is REST API, it needs to use many dependencies to work.
+        "WeakerAccess"}) // TodoListApplication is public API, so its methods and static field must be public.
 public class TodoListApplication {
 
-    static final String CREATE_LIST_PATH = "/lists";
-    static final String READ_TASKS_PATH = CREATE_LIST_PATH + "/:todolistid";
-    private final Service service = ignite();
+    // TodoListApplication REST API endpoints
+    public static final String AUTHENTICATION_PATH = "/auth";
+    public static final String CREATE_LIST_PATH = "/lists";
+    public static final String READ_TASKS_PATH = "lists/:todolistid";
+    public static final String TASKS_PATH = "/lists/:todolistid/:taskid";
 
-    static final String AUTHENTICATION_PATH = "/auth";
+    private static final int DEFAULT_PORT = 4567;
+
+    private final Service service = ignite();
     private final ServiceFactory serviceFactory;
+
 
     /**
      * Creates {@code TodoListApplication} instance.
@@ -34,51 +51,20 @@ public class TodoListApplication {
      * @param port           port to start application on
      * @param serviceFactory factory of services
      */
-    TodoListApplication(int port, ServiceFactory serviceFactory) {
+    public TodoListApplication(int port, ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
         service.port(port);
     }
 
     public static void main(String[] args) {
-        StorageFactory storageFactory = new StorageFactory();
-        ServiceFactory serviceFactory = new ServiceFactory(storageFactory);
-
-        Authentication authentication = serviceFactory.getAuthentication();
-        UserId userId = authentication.createUser(USER_1.getUsername(), USER_1.getPassword());
-
-        TodoListId todoListId = new TodoListId("1234");
-
-        TodoList build = new TodoList.TodoListBuilder()
-                .setTodoListId(todoListId)
-                .setOwner(userId)
-                .build();
-        storageFactory.getTodoListStorage().write(build);
-
-        storageFactory.getTaskStorage().write(
-                new Task.TaskBuilder()
-                        .setTaskId(new TaskId("123"))
-                        .setTodoListId(todoListId)
-                        .setDescription("implement read tasks by todo list ID")
-                        .setCreationDate(new Date())
-                        .build()
-        );
-        storageFactory.getTaskStorage().write(
-                new Task.TaskBuilder()
-                        .setTaskId(new TaskId(UUID.randomUUID().toString()))
-                        .setTodoListId(todoListId)
-                        .setDescription("second task")
-                        .setCreationDate(new Date())
-                        .build()
-        );
-
-
-        new TodoListApplication(4567, serviceFactory).start();
+        new TodoListApplication(DEFAULT_PORT, new ServiceFactory()).start();
     }
 
     /**
-     * Starts to-do list application on given port.
+     * Starts {@code TodoListApplication} server on given port.
      */
-    void start() {
+    @SuppressWarnings("OverlyCoupledMethod") // start server method needs many dependencies to init all handlers.
+    public void start() {
         Authentication authentication = serviceFactory.getAuthentication();
         TodoService todoService = serviceFactory.getTodoService();
 
@@ -88,19 +74,21 @@ public class TodoListApplication {
         service.exception(TaskNotFoundException.class, new TaskNotFoundHandler());
 
         service.post(AUTHENTICATION_PATH, new AuthenticationHandler(authentication));
+
         service.post(CREATE_LIST_PATH, new ListCreationHandler(todoService));
+
         service.get(READ_TASKS_PATH, new ReadTasksHandler(todoService));
-        service.get("/lists/:todolistid/:taskid", new GetTaskHandler(todoService));
-        service.post("/lists/:todolistid/:taskid", new CreateTaskHandler(todoService));
-        service.put("/lists/:todolistid/:taskid", new TaskUpdateHandler(todoService));
-        service.delete("/lists/:todolistid/:taskid", new TaskRemoveHandler(todoService));
+
+        service.get(TASKS_PATH, new GetTaskHandler(todoService));
+        service.post(TASKS_PATH, new CreateTaskHandler(todoService));
+        service.put(TASKS_PATH, new TaskUpdateHandler(todoService));
+        service.delete(TASKS_PATH, new TaskRemoveHandler(todoService));
     }
 
     /**
      * Stops to-do list application.
      */
-    void stop() {
+    public void stop() {
         service.stop();
     }
-
 }
