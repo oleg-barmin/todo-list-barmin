@@ -35,7 +35,7 @@ public class FindTask {
      *
      * @return task with given ID
      */
-    Task execute() {
+    public Task execute() {
         authorization.validateAccess(userId, taskId);
 
         Optional<Task> optionalTask = taskStorage.read(taskId);

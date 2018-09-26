@@ -13,6 +13,7 @@ import static org.javaclasses.todo.web.ExceptionHandlers.*;
 import static org.javaclasses.todo.web.ListController.ListCreationHandler;
 import static org.javaclasses.todo.web.ListController.ReadTasksHandler;
 import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
+import static org.javaclasses.todo.web.TaskController.GetTaskHandler;
 import static spark.Service.ignite;
 
 /**
@@ -55,7 +56,7 @@ public class TodoListApplication {
 
         storageFactory.getTaskStorage().write(
                 new Task.TaskBuilder()
-                        .setTaskId(new TaskId(UUID.randomUUID().toString()))
+                        .setTaskId(new TaskId("123"))
                         .setTodoListId(todoListId)
                         .setDescription("implement read tasks by todo list ID")
                         .setCreationDate(new Date())
@@ -84,10 +85,12 @@ public class TodoListApplication {
         service.exception(AuthorizationFailedException.class, new AuthorizationFailedHandler());
         service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
         service.exception(TodoListNotFoundException.class, new TodoListNotFoundHandler());
+        service.exception(TaskNotFoundException.class, new TaskNotFoundHandler());
 
         service.post(AUTHENTICATION_PATH, new AuthenticationHandler(authentication));
         service.post(CREATE_LIST_PATH, new ListCreationHandler(todoService));
         service.get(READ_TASKS_PATH, new ReadTasksHandler(todoService));
+        service.get("/lists/:todolistid/:taskid", new GetTaskHandler(todoService));
     }
 
     /**
@@ -96,4 +99,5 @@ public class TodoListApplication {
     void stop() {
         service.stop();
     }
+
 }

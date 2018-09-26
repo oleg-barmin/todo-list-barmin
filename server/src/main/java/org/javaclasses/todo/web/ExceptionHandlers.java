@@ -2,6 +2,7 @@ package org.javaclasses.todo.web;
 
 import org.javaclasses.todo.auth.InvalidCredentialsException;
 import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.TaskNotFoundException;
 import org.javaclasses.todo.model.TodoListNotFoundException;
 import spark.ExceptionHandler;
 import spark.Request;
@@ -46,6 +47,18 @@ class ExceptionHandlers {
         public void handle(TodoListNotFoundException exception, Request request, Response response) {
             response.status(HTTP_FORBIDDEN);
             response.body("");
+        }
+    }
+
+    /**
+     * Handles TaskNotFoundException.
+     */
+    public static class TaskNotFoundHandler implements ExceptionHandler<TaskNotFoundException> {
+
+        @Override
+        public void handle(TaskNotFoundException exception, Request request, Response response) {
+            response.status(HTTP_FORBIDDEN);
+            response.body(exception.getMessage());
         }
     }
 }

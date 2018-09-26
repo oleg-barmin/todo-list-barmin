@@ -1,8 +1,6 @@
 package org.javaclasses.todo.web;
 
 import org.javaclasses.todo.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -42,8 +40,6 @@ class ListController {
      * Reads all tasks from to-do list with given ID.
      */
     static class ReadTasksHandler extends SecuredAbstractHandler<Void> {
-
-        private static final Logger logger = LoggerFactory.getLogger(ReadTasksHandler.class);
         private final TodoService todoService;
 
         ReadTasksHandler(TodoService todoService) {
@@ -55,10 +51,6 @@ class ListController {
         @Override
         Answer securedProcess(RequestData<Void> requestData, Token token) {
             String todoListIdParam = requestData.getRequestParams().getParamValue(":todolistid");
-
-            if (logger.isInfoEnabled()) {
-                logger.info(todoListIdParam);
-            }
 
             TodoListId todoListId = new TodoListId(todoListIdParam);
 
