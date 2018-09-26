@@ -16,7 +16,7 @@ public final class TodoList extends Entity<TodoListId> {
         this.owner = todoListBuilder.owner;
     }
 
-    UserId getOwner() {
+    public UserId getOwner() {
         return owner;
     }
 
