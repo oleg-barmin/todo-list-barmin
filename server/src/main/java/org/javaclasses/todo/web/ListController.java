@@ -4,21 +4,30 @@ import org.javaclasses.todo.model.*;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.javaclasses.todo.web.TodoListApplication.TODO_LIST_ID_PARAM;
 
 /**
- * Manages requests which modifies to-do lists.
+ * Manages requests which modifies {@link TodoList}.
  */
 class ListController {
 
+    /**
+     * Handles create {@code TodoList} request.
+     */
     static class ListCreationHandler extends SecuredAbstractHandler<CreateListPayload> {
 
         private final TodoService todoService;
 
 
+        /**
+         * Creates {@code ListCreationHandler} instance.
+         *
+         * @param todoService service to work with
+         */
         ListCreationHandler(TodoService todoService) {
             super(CreateListPayload.class);
-            this.todoService = todoService;
+            this.todoService = checkNotNull(todoService);
         }
 
 
@@ -39,14 +48,19 @@ class ListController {
     }
 
     /**
-     * Reads all tasks from to-do list with given ID.
+     * Handles read all {@code Task}s from {@code TodoList} request.
      */
     static class ReadTasksHandler extends SecuredAbstractHandler<Void> {
         private final TodoService todoService;
 
+        /**
+         * Creates {@code ReadTasksHandler} instance.
+         *
+         * @param todoService service to work with.
+         */
         ReadTasksHandler(TodoService todoService) {
             super(Void.class);
-            this.todoService = todoService;
+            this.todoService = checkNotNull(todoService);
         }
 
 

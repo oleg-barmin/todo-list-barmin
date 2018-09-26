@@ -2,6 +2,7 @@ package org.javaclasses.todo.web;
 
 import org.javaclasses.todo.model.*;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.javaclasses.todo.web.TodoListApplication.TASK_ID_PARAM;
 import static org.javaclasses.todo.web.TodoListApplication.TODO_LIST_ID_PARAM;
 
@@ -38,7 +39,7 @@ class TaskController {
 
 
     /**
-     * Handles get task requests.
+     * Handles get {@code Task} requests.
      *
      * @author Oleg Barmin
      */
@@ -53,7 +54,7 @@ class TaskController {
          */
         GetTaskHandler(TodoService todoService) {
             super(Void.class);
-            this.todoService = todoService;
+            this.todoService = checkNotNull(todoService);
         }
 
         @Override
@@ -71,7 +72,7 @@ class TaskController {
     }
 
     /**
-     * Handles create task request.
+     * Handles create {@code Task} request.
      *
      * @author Oleg Barmin
      */
@@ -86,7 +87,7 @@ class TaskController {
          */
         CreateTaskHandler(TodoService todoService) {
             super(CreateTaskPayload.class);
-            this.todoService = todoService;
+            this.todoService = checkNotNull(todoService);
         }
 
         @Override
@@ -108,7 +109,7 @@ class TaskController {
     }
 
     /**
-     * Handles update task request.
+     * Handles update {@code Task} request.
      *
      * @author Oleg Barmin
      */
@@ -123,7 +124,7 @@ class TaskController {
          */
         TaskUpdateHandler(TodoService todoService) {
             super(TaskUpdatePayload.class);
-            this.todoService = todoService;
+            this.todoService = checkNotNull(todoService);
         }
 
         @Override
@@ -145,7 +146,7 @@ class TaskController {
     }
 
     /**
-     * Handles remove task request.
+     * Handles remove {@code Task} request.
      */
     static class TaskRemoveHandler extends SecuredAbstractHandler<Void> {
 
@@ -158,7 +159,7 @@ class TaskController {
          */
         TaskRemoveHandler(TodoService todoService) {
             super(Void.class);
-            this.todoService = todoService;
+            this.todoService = checkNotNull(todoService);
         }
 
         @Override
