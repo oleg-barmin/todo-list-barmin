@@ -36,8 +36,12 @@ public class TodoListApplication {
     // TodoListApplication REST API endpoints
     public static final String AUTHENTICATION_PATH = "/auth";
     public static final String CREATE_LIST_PATH = "/lists";
-    public static final String READ_TASKS_PATH = "lists/:todolistid";
+    public static final String READ_TASKS_PATH = "/lists/:todolistid";
     public static final String TASKS_PATH = "/lists/:todolistid/:taskid";
+
+    //TodoListApplication REST API url parameters names.
+    static final String TODO_LIST_ID_PARAM = ":todolistid";
+    static final String TASK_ID_PARAM = ":taskid";
 
     private static final int DEFAULT_PORT = 4567;
 

@@ -239,7 +239,7 @@ class TodoServiceTest {
         todoService.authorizeBy(token)
                 .updateTask(notUpdatedTask.getId())
                 .withDescription(updatedDescription)
-                .completed()
+                .setStatus(true)
                 .execute();
 
 
@@ -268,7 +268,7 @@ class TodoServiceTest {
                 todoService.authorizeBy(token)
                         .updateTask(taskId)
                         .withDescription("win olympic games")
-                        .completed()
+                        .setStatus(true)
                         .execute());
     }
 

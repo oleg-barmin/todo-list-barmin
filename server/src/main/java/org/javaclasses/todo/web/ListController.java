@@ -4,6 +4,8 @@ import org.javaclasses.todo.model.*;
 
 import java.util.List;
 
+import static org.javaclasses.todo.web.TodoListApplication.TODO_LIST_ID_PARAM;
+
 /**
  * Manages requests which modifies to-do lists.
  */
@@ -50,7 +52,7 @@ class ListController {
 
         @Override
         Answer securedProcess(RequestData<Void> requestData, Token token) {
-            String todoListIdParam = requestData.getRequestParams().getParamValue(":todolistid");
+            String todoListIdParam = requestData.getRequestParams().getParamValue(TODO_LIST_ID_PARAM);
 
             TodoListId todoListId = new TodoListId(todoListIdParam);
 

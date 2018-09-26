@@ -2,14 +2,54 @@ package org.javaclasses.todo.web;
 
 import org.javaclasses.todo.model.*;
 
+import static org.javaclasses.todo.web.TodoListApplication.TASK_ID_PARAM;
+import static org.javaclasses.todo.web.TodoListApplication.TODO_LIST_ID_PARAM;
+
+/**
+ * Handles {@link Task} related requests.
+ *
+ * @author Oleg Barmin
+ */
 class TaskController {
 
+    /**
+     * Extracts {@link TaskId} from parameters of Request.
+     *
+     * @param requestParams request parameters
+     * @return {@code TaskId} from parameters
+     */
+    private static TaskId extractTaskId(RequestParams requestParams) {
+        String taskIdParam = requestParams.getParamValue(TASK_ID_PARAM);
+        return new TaskId(taskIdParam);
+    }
+
+    /**
+     * Extracts {@link TodoListId} from parameters of Request.
+     *
+     * @param requestParams request parameters
+     * @return {@code TodoListId} from parameters
+     */
+    //method used once, but added for consistency.
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
+    private static TodoListId extractTodoListId(RequestParams requestParams) {
+        String taskIdParam = requestParams.getParamValue(TODO_LIST_ID_PARAM);
+        return new TodoListId(taskIdParam);
+    }
+
+
+    /**
+     * Handles get task requests.
+     *
+     * @author Oleg Barmin
+     */
     static class GetTaskHandler extends SecuredAbstractHandler<Void> {
 
         private final TodoService todoService;
 
         /**
-         * Creates {@code AbstractRequestHandler} instance.
+         * Creates {@code GetTaskHandler} instance.
+         *
+         * @param todoService service to work with
          */
         GetTaskHandler(TodoService todoService) {
             super(Void.class);
@@ -18,10 +58,7 @@ class TaskController {
 
         @Override
         Answer securedProcess(RequestData<Void> requestData, Token token) {
-            String todoListIdParam = requestData.getRequestParams().getParamValue(":todolistid");
-            String taskIdParam = requestData.getRequestParams().getParamValue(":taskid");
-
-            TaskId taskId = new TaskId(taskIdParam);
+            TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             Task task = todoService.authorizeBy(token)
                     .findTask(taskId)
@@ -33,11 +70,19 @@ class TaskController {
         }
     }
 
+    /**
+     * Handles create task request.
+     *
+     * @author Oleg Barmin
+     */
     static class CreateTaskHandler extends SecuredAbstractHandler<CreateTaskPayload> {
+
         private final TodoService todoService;
 
         /**
-         * Creates {@code AbstractRequestHandler} instance.
+         * Creates {@code CreateTaskHandler} instance.
+         *
+         * @param todoService service to work with
          */
         CreateTaskHandler(TodoService todoService) {
             super(CreateTaskPayload.class);
@@ -46,14 +91,10 @@ class TaskController {
 
         @Override
         Answer securedProcess(RequestData<CreateTaskPayload> requestData, Token token) {
+            TaskId taskId = extractTaskId(requestData.getRequestParams());
+            TodoListId todoListId = extractTodoListId(requestData.getRequestParams());
+
             CreateTaskPayload payload = requestData.getPayload();
-
-            String taskIdParam = requestData.getRequestParams().getParamValue(":taskid");
-            String todoListIdParam = requestData.getRequestParams().getParamValue(":todolistid");
-
-            TodoListId todoListId = new TodoListId(todoListIdParam);
-            TaskId taskId = new TaskId(taskIdParam);
-
             String taskDescription = payload.getTaskDescription();
 
             todoService.authorizeBy(token)
@@ -66,13 +107,19 @@ class TaskController {
         }
     }
 
-
+    /**
+     * Handles update task request.
+     *
+     * @author Oleg Barmin
+     */
     static class TaskUpdateHandler extends SecuredAbstractHandler<TaskUpdatePayload> {
 
         private final TodoService todoService;
 
         /**
-         * Creates {@code AbstractRequestHandler} instance.
+         * Creates {@code TaskUpdateHandler} instance.
+         *
+         * @param todoService service to work with
          */
         TaskUpdateHandler(TodoService todoService) {
             super(TaskUpdatePayload.class);
@@ -82,34 +129,32 @@ class TaskController {
         @Override
         Answer securedProcess(RequestData<TaskUpdatePayload> requestData, Token token) {
             TaskUpdatePayload payload = requestData.getPayload();
+            TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             String taskDescription = payload.getTaskDescription();
             boolean taskStatus = payload.isCompleted();
 
-            String taskIdParam = requestData.getRequestParams().getParamValue(":taskid");
-            String todoListIdParam = requestData.getRequestParams().getParamValue(":todolistid");
-
-            TaskId taskId = new TaskId(taskIdParam);
-
-            UpdateTask updateTask = todoService.authorizeBy(token)
+            todoService.authorizeBy(token)
                     .updateTask(taskId)
-                    .withDescription(taskDescription);
-
-            if (taskStatus) {
-                updateTask = updateTask.completed();
-            }
-            updateTask.execute();
+                    .setStatus(taskStatus)
+                    .withDescription(taskDescription)
+                    .execute();
 
             return Answer.ok();
         }
     }
 
+    /**
+     * Handles remove task request.
+     */
     static class TaskRemoveHandler extends SecuredAbstractHandler<Void> {
 
         private final TodoService todoService;
 
         /**
-         * Creates {@code AbstractRequestHandler} instance.
+         * Creates {@code TaskRemoveHandler} instance.
+         *
+         * @param todoService service to work with
          */
         TaskRemoveHandler(TodoService todoService) {
             super(Void.class);
@@ -118,9 +163,7 @@ class TaskController {
 
         @Override
         Answer securedProcess(RequestData<Void> requestData, Token token) {
-            String taskIdParam = requestData.getRequestParams().getParamValue(":taskid");
-
-            TaskId taskId = new TaskId(taskIdParam);
+            TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             todoService.authorizeBy(token)
                     .removeTask(taskId)
