@@ -33,7 +33,7 @@ class TaskTest {
                                 .setTodoListId(new TodoListId(todoListId))
                                 .setDescription(description)
                                 .setCreationDate(creationDate)
-                                .completed()
+                                .setStatus(true)
                                 .setLastUpdateDate(lastUpdateDate)
                                 .build(),
                         new Task.TaskBuilder()
@@ -41,7 +41,7 @@ class TaskTest {
                                 .setTodoListId(new TodoListId(todoListId))
                                 .setDescription(description)
                                 .setCreationDate(creationDate)
-                                .completed()
+                                .setStatus(true)
                                 .setLastUpdateDate(lastUpdateDate)
                                 .build()
                 )
@@ -64,7 +64,7 @@ class TaskTest {
                     .setTaskId(taskId)
                     .setTodoListId(todoListId)
                     .setDescription(description)
-                    .completed()
+                    .setStatus(true)
                     .setCreationDate(creationDate)
                     .setLastUpdateDate(lastUpdateDate)
                     .build();
@@ -87,7 +87,7 @@ class TaskTest {
             assertThrows(NullPointerException.class, () -> new Task.TaskBuilder()
                     .setTodoListId(todoListId)
                     .setDescription(description)
-                    .completed()
+                    .setStatus(true)
                     .setCreationDate(creationDate)
                     .setLastUpdateDate(lastUpdateDate)
                     .build());
@@ -97,7 +97,7 @@ class TaskTest {
                     .setTaskId(taskId)
                     .setDescription(description)
                     .setCreationDate(creationDate)
-                    .completed()
+                    .setStatus(true)
                     .setLastUpdateDate(lastUpdateDate)
                     .build());
 
@@ -106,7 +106,7 @@ class TaskTest {
                     .setTaskId(taskId)
                     .setTodoListId(todoListId)
                     .setCreationDate(creationDate)
-                    .completed()
+                    .setStatus(true)
                     .setLastUpdateDate(lastUpdateDate)
                     .build());
 
@@ -115,7 +115,7 @@ class TaskTest {
                     .setTaskId(taskId)
                     .setTodoListId(todoListId)
                     .setDescription(description)
-                    .completed()
+                    .setStatus(true)
                     .setLastUpdateDate(lastUpdateDate)
                     .build());
         }

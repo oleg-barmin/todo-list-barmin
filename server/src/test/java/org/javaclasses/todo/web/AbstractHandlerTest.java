@@ -1,6 +1,7 @@
 package org.javaclasses.todo.web;
 
 import com.google.gson.Gson;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.model.*;
@@ -37,9 +38,8 @@ abstract class AbstractHandlerTest {
         todoListApplication.start();
     }
 
-    /*
-     * User ID is not needed in REST test.
-     */
+
+    //User ID is not needed in REST test.
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @BeforeEach
     void registerUser() {
@@ -55,21 +55,26 @@ abstract class AbstractHandlerTest {
         return userId;
     }
 
-    void addTodoList(TodoList todoList) {
-        CreateListPayload payload = new CreateListPayload(
-                todoList.getOwner(),
-                todoList.getId()
-        );
-
+    void addTodoList(TodoListId todoListId, UserId userId) {
+        CreateListPayload payload = new CreateListPayload(userId, todoListId);
         String requestBody = new Gson().toJson(payload);
+
         specification.body(requestBody);
         specification.post(CREATE_LIST_PATH);
     }
 
-    void addTask(Task task) {
-        String payload = new Gson().toJson(new CreateTaskPayload("implement task adding"));
+    void addTask(TaskId taskId, TodoListId todoListId, String description) {
+        String payload = new Gson().toJson(new CreateTaskPayload(description));
         specification.body(payload);
         specification.post(String.format("/lists/%s/%s",
-                task.getTodoListId().getValue(), task.getId().getValue()));
+                todoListId.getValue(), taskId.getValue()));
+    }
+
+    Task readTask(TodoListId todoListId, TaskId taskId) {
+        Response response = getRequestSpecification().get(String.format("/lists/%s/%s", todoListId.getValue(), taskId.getValue()));
+
+        String taskJson = response.body().asString();
+
+        return new Gson().fromJson(taskJson, Task.class);
     }
 }
