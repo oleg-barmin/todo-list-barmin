@@ -29,7 +29,7 @@ class GetTaskHandlerTest extends AbstractSecuredHandlerTest {
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, USER_1.getUserId());
+        addTodoList(todoListId);
         addTask(taskId, todoListId, "write tests on find task by ID.");
 
 
@@ -47,7 +47,7 @@ class GetTaskHandlerTest extends AbstractSecuredHandlerTest {
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, userId);
+        addTodoList(todoListId);
         addTask(taskId, todoListId, "write negative cases tests on find task by ID.");
 
         return specification.get(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));

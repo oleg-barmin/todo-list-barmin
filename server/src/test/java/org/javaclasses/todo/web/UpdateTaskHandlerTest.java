@@ -32,7 +32,7 @@ class UpdateTaskHandlerTest extends AbstractSecuredHandlerTest {
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, USER_1.getUserId());
+        addTodoList(todoListId);
         addTask(taskId, todoListId, "write tests on update task.");
 
         TaskUpdatePayload payload = new TaskUpdatePayload(false, "complete this test");
@@ -49,7 +49,7 @@ class UpdateTaskHandlerTest extends AbstractSecuredHandlerTest {
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, userId);
+        addTodoList(todoListId);
         addTask(taskId, todoListId, "write negative cases tests on task update.");
 
         TaskUpdatePayload payload = new TaskUpdatePayload(false, "new task description");

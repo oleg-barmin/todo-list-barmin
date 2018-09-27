@@ -6,7 +6,6 @@ import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.Task;
 import org.javaclasses.todo.model.TaskId;
 import org.javaclasses.todo.model.TodoListId;
-import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -38,8 +37,8 @@ abstract class AbstractHandlerTest {
         todoListApplication.stop();
     }
 
-    void addTodoList(TodoListId todoListId, UserId userId) {
-        CreateListPayload payload = new CreateListPayload(userId, todoListId);
+    void addTodoList(TodoListId todoListId) {
+        CreateListPayload payload = new CreateListPayload(todoListId);
         String requestBody = new Gson().toJson(payload);
 
         specification.body(requestBody);

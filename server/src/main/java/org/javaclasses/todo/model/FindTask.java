@@ -32,6 +32,7 @@ public class FindTask extends Operation<FindTask> {
      *
      * @return task with given ID
      * @throws TaskNotFoundException        if task to find doesn't exist
+     * @throws TodoListNotFoundException    if {@code TodoList} with ID specified in task doesn't exist.
      * @throws AuthorizationFailedException if user has no authority to read {@code Task} with given ID
      */
     public Task execute() {

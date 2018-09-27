@@ -57,6 +57,17 @@ class TaskController {
             this.todoService = checkNotNull(todoService);
         }
 
+        /**
+         * Retrieves task with ID specified in URL parameters in to-do list with ID specified in URL parameters.
+         *
+         * @param requestData data of get task request
+         * @param token       token of user who sent request
+         * @return answer with status code 200 and requested task in body if request was handled successfully.
+         * @throws TaskNotFoundException        if task with given ID was not found
+         * @throws TodoListNotFoundException    if TodoList with specified ID was not found
+         * @throws AuthorizationFailedException if user token expired or
+         *                                      user has no permission to modify to-do list with given ID
+         */
         @Override
         Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
@@ -90,6 +101,17 @@ class TaskController {
             this.todoService = checkNotNull(todoService);
         }
 
+        /**
+         * Creates task with ID specified in URL parameters in to-do list with ID specified in URL parameters.
+         *
+         * @param requestData data of task create request
+         * @param token       token of user who sent request
+         * @return answer with status code 200 if task creating was performed successfully
+         * @throws TaskNotFoundException        if task with given ID was not found
+         * @throws TodoListNotFoundException    if TodoList with specified ID was not found
+         * @throws AuthorizationFailedException if user token expired or
+         *                                      user has no permission to modify to-do list with given ID
+         */
         @Override
         Answer processVerifiedRequest(RequestData<CreateTaskPayload> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
@@ -127,6 +149,17 @@ class TaskController {
             this.todoService = checkNotNull(todoService);
         }
 
+        /**
+         * Updates task with ID specified in URL parameters from to-do list wih ID specified in URL parameters.
+         *
+         * @param requestData data of task update request
+         * @param token       token of user who sent request
+         * @return answer with status code 200 if task updating was performed successfully
+         * @throws TaskNotFoundException        if task with given ID was not found
+         * @throws TodoListNotFoundException    if TodoList with specified ID was not found
+         * @throws AuthorizationFailedException if user token expired or
+         *                                      user has no permission to modify to-do list with given ID
+         */
         @Override
         Answer processVerifiedRequest(RequestData<TaskUpdatePayload> requestData, Token token) {
             TaskUpdatePayload payload = requestData.getPayload();
@@ -162,6 +195,17 @@ class TaskController {
             this.todoService = checkNotNull(todoService);
         }
 
+        /**
+         * Remove task with ID specified in URL parameters from to-do list with ID specified in URl parameters.
+         *
+         * @param requestData data of remove task request
+         * @param token       token of user who sent request
+         * @return answer with status code 200 if task removal was performed successfully
+         * @throws TaskNotFoundException        if task with given ID was not found
+         * @throws TodoListNotFoundException    if TodoList with specified ID was not found
+         * @throws AuthorizationFailedException if user token expired or
+         *                                      user has no permission to modify to-do list with given ID
+         */
         @Override
         Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());

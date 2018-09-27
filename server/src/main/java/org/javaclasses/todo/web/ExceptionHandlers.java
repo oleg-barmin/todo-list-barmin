@@ -23,6 +23,13 @@ class ExceptionHandlers {
      */
     public static class AuthorizationFailedHandler implements ExceptionHandler<AuthorizationFailedException> {
 
+        /**
+         * Response with status code 403 and exception message in body.
+         *
+         * @param exception occurred exception instance
+         * @param request   request which caused exception
+         * @param response  response to configure
+         */
         @Override
         public void handle(AuthorizationFailedException exception, Request request, Response response) {
             response.status(HTTP_FORBIDDEN);
@@ -35,6 +42,13 @@ class ExceptionHandlers {
      */
     public static class InvalidCredentialsHandler implements ExceptionHandler<InvalidCredentialsException> {
 
+        /**
+         * Response with status code 403 and exception message in body.
+         *
+         * @param exception occurred exception instance
+         * @param request   request which caused exception
+         * @param response  response to configure
+         */
         @Override
         public void handle(InvalidCredentialsException exception, Request request, Response response) {
             response.status(HTTP_FORBIDDEN);
@@ -47,6 +61,13 @@ class ExceptionHandlers {
      */
     public static class TodoListNotFoundHandler implements ExceptionHandler<TodoListNotFoundException> {
 
+        /**
+         * Response with status code 403 and exception message in body.
+         *
+         * @param exception occurred exception instance
+         * @param request request which caused exception
+         * @param response response to configure
+         */
         @Override
         public void handle(TodoListNotFoundException exception, Request request, Response response) {
             response.status(HTTP_FORBIDDEN);
@@ -58,10 +79,16 @@ class ExceptionHandlers {
      */
     public static class TaskNotFoundHandler implements ExceptionHandler<TaskNotFoundException> {
 
+        /**
+         * Response with status code 403 and exception message in body.
+         *
+         * @param exception occurred exception instance
+         * @param request request which caused exception
+         * @param response response to configure
+         */
         @Override
         public void handle(TaskNotFoundException exception, Request request, Response response) {
             response.status(HTTP_FORBIDDEN);
-            response.body(exception.getMessage());
         }
     }
 
@@ -70,6 +97,13 @@ class ExceptionHandlers {
      */
     public static class UpdateCompletedTaskHandler implements ExceptionHandler<UpdateCompletedTaskException> {
 
+        /**
+         * Response with status code 403 and exception message in body.
+         *
+         * @param exception occurred exception instance
+         * @param request request which caused exception
+         * @param response response to configure
+         */
         @Override
         public void handle(UpdateCompletedTaskException exception, Request request, Response response) {
             response.status(HTTP_FORBIDDEN);

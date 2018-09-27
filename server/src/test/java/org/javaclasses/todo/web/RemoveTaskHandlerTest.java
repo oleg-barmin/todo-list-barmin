@@ -31,7 +31,7 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, USER_1.getUserId());
+        addTodoList(todoListId);
         addTask(taskId, todoListId, "write tests on remove task by ID.");
 
         Response response = specification.delete(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
@@ -45,7 +45,7 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, userId);
+        addTodoList(todoListId);
         addTask(taskId, todoListId, "write negative cases tests on remove task by ID.");
 
         return specification.delete(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));

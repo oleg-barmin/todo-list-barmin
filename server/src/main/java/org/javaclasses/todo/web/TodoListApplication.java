@@ -12,11 +12,11 @@ import static org.javaclasses.todo.web.TaskController.*;
 import static spark.Service.ignite;
 
 /**
- * Runs server with TodoList application which provides access to application functionality.
+ * Runs server with TodoList application which provides access to {@link TodoService} functionality.
  *
  * <p>Application is based on REST a architectural style.
  *
- * Services allows to:
+ * <p>Services allows to:
  * - Authenticate users;
  * - Create new to-do lists;
  * - Read tasks from to-do lists;
@@ -27,7 +27,6 @@ import static spark.Service.ignite;
  *
  * @author Oleg Barmin
  */
-
 @SuppressWarnings({"OverlyCoupledClass", // TodoListApplication is REST API, it needs to use many dependencies to work.
         "WeakerAccess"}) // TodoListApplication is public API, so its methods and static field must be public.
 public class TodoListApplication {
@@ -45,22 +44,24 @@ public class TodoListApplication {
     private static final int DEFAULT_PORT = 4567;
 
     private final Service service = ignite();
-    private final ServiceFactory serviceFactory;
+    private final Authentication authentication;
+    private final TodoService todoService;
 
 
     /**
      * Creates {@code TodoListApplication} instance.
      *
-     * @param port           port to start application on
-     * @param serviceFactory factory of services
+     * @param port port to start application on
      */
-    public TodoListApplication(int port, ServiceFactory serviceFactory) {
-        this.serviceFactory = serviceFactory;
+    public TodoListApplication(int port) {
+        ServiceFactory serviceFactory = new ServiceFactory();
+        this.authentication = serviceFactory.getAuthentication();
+        this.todoService = serviceFactory.getTodoService();
         service.port(port);
     }
 
     public static void main(String[] args) {
-        new TodoListApplication(DEFAULT_PORT, new ServiceFactory()).start();
+        new TodoListApplication(DEFAULT_PORT).start();
     }
 
     /**
@@ -68,9 +69,6 @@ public class TodoListApplication {
      */
     @SuppressWarnings("OverlyCoupledMethod") // start server method needs many dependencies to init all handlers.
     public void start() {
-        Authentication authentication = serviceFactory.getAuthentication();
-        TodoService todoService = serviceFactory.getTodoService();
-
         service.exception(AuthorizationFailedException.class, new AuthorizationFailedHandler());
         service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
         service.exception(TodoListNotFoundException.class, new TodoListNotFoundHandler());
@@ -94,5 +92,9 @@ public class TodoListApplication {
      */
     public void stop() {
         service.stop();
+    }
+
+    public Authentication getAuthentication() {
+        return authentication;
     }
 }

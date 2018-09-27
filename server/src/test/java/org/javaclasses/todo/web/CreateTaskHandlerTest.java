@@ -29,7 +29,7 @@ class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, USER_1.getUserId());
+        addTodoList(todoListId);
         String payload = new Gson().toJson(new CreateTaskPayload("implement task creation"));
 
 
@@ -50,7 +50,7 @@ class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
         TaskId taskId = new TaskId(UUID.randomUUID().toString());
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, userId);
+        addTodoList(todoListId);
 
         String payload = new Gson().toJson(new CreateTaskPayload("implement task creation tests"));
 

@@ -13,7 +13,7 @@ import org.javaclasses.todo.storage.impl.UserStorage;
  * @author Oleg Barmin
  * @implNote all services are lazy initialized
  */
-public class StorageFactory {
+class StorageFactory {
 
     private AuthSessionStorage authSessionStorage = null;
     private TaskStorage taskStorage = null;
@@ -25,7 +25,7 @@ public class StorageFactory {
      *
      * @return instance of {@code AuthSessionStorage}
      */
-    public synchronized AuthSessionStorage getAuthSessionStorage() {
+    synchronized AuthSessionStorage getAuthSessionStorage() {
         if (authSessionStorage == null) {
             authSessionStorage = new AuthSessionStorage();
         }
@@ -37,7 +37,7 @@ public class StorageFactory {
      *
      * @return instance of {@code TaskStorage}
      */
-    public synchronized TaskStorage getTaskStorage() {
+    synchronized TaskStorage getTaskStorage() {
         if (taskStorage == null) {
             taskStorage = new TaskStorage();
         }
@@ -49,7 +49,7 @@ public class StorageFactory {
      *
      * @return instance of {@code TodoListStorage}
      */
-    public synchronized TodoListStorage getTodoListStorage() {
+    synchronized TodoListStorage getTodoListStorage() {
         if (todoListStorage == null) {
             todoListStorage = new TodoListStorage();
         }
@@ -61,7 +61,7 @@ public class StorageFactory {
      *
      * @return instance of {@code UserStorage}
      */
-    public synchronized UserStorage getUserStorage() {
+    synchronized UserStorage getUserStorage() {
         if (userStorage == null) {
             userStorage = new UserStorage();
         }

@@ -61,6 +61,7 @@ class Authorization {
      * @param userId user which tries to access {@code Task}
      * @param taskId ID of {@code Task}
      * @throws TaskNotFoundException        if {@code Task} with given ID was not found
+     * @throws TodoListNotFoundException    if to-do list with ID specified in given task doesn't exists
      * @throws AuthorizationFailedException if user with given ID has no access to {@code Task} with given ID
      */
     @CanIgnoreReturnValue

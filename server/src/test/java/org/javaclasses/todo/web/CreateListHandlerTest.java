@@ -26,7 +26,6 @@ class CreateListHandlerTest extends AbstractSecuredHandlerTest {
     @DisplayName("create new lists by signed in user.")
     void testCreateList() {
         CreateListPayload payload = new CreateListPayload(
-                new UserId(UUID.randomUUID().toString()),
                 new TodoListId(UUID.randomUUID().toString())
         );
 
@@ -42,7 +41,6 @@ class CreateListHandlerTest extends AbstractSecuredHandlerTest {
     @Override
     Response sendRequest(Token token, UserId userId) {
         CreateListPayload payload = new CreateListPayload(
-                new UserId(UUID.randomUUID().toString()),
                 new TodoListId(UUID.randomUUID().toString())
         );
 

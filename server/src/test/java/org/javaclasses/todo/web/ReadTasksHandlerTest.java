@@ -35,7 +35,7 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
         TaskId firstTaskId = new TaskId(UUID.randomUUID().toString());
         TaskId secondTaskId = new TaskId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, USER_1.getUserId());
+        addTodoList(todoListId);
 
         addTask(firstTaskId, todoListId, "write tests on read tasks.");
         addTask(secondTaskId, todoListId, "second task to do");
@@ -73,7 +73,7 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
         TaskId firstTaskId = new TaskId(UUID.randomUUID().toString());
         TaskId secondTaskId = new TaskId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, userId);
+        addTodoList(todoListId);
         addTask(firstTaskId, todoListId, "write negative cases tests on read tasks.");
         addTask(secondTaskId, todoListId, "write more negative tests");
 

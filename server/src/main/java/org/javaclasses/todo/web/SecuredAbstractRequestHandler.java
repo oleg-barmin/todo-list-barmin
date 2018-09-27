@@ -8,8 +8,10 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
  * Secured request handler, which verifies {@link Token} in header of Request.
  *
  * @param <P> payload of request
+ * @author Oleg Barmin
  */
 abstract class SecuredAbstractRequestHandler<P> extends AbstractRequestHandler<P> {
+
     static final String X_TODO_TOKEN = "X-Todo-Token";
 
     /**
@@ -38,7 +40,7 @@ abstract class SecuredAbstractRequestHandler<P> extends AbstractRequestHandler<P
      * Handles verified request.
      *
      * @param requestData data of received request
-     * @param token       token of user who
+     * @param token       token of user who sent request
      * @return answer to received request
      */
     abstract Answer processVerifiedRequest(RequestData<P> requestData, Token token);

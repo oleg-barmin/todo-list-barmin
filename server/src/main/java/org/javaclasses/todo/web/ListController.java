@@ -19,7 +19,6 @@ class ListController {
 
         private final TodoService todoService;
 
-
         /**
          * Creates {@code ListCreationRequestHandler} instance.
          *
@@ -31,6 +30,14 @@ class ListController {
         }
 
 
+        /**
+         * Creates to-do list with ID specified in URL parameters.
+         *
+         * @param requestData data of create list request
+         * @param token       token of user who sent request
+         * @return answer with 200 status code if list was created successfully
+         * @throws AuthorizationFailedException if user token expired.
+         */
         @Override
         Answer processVerifiedRequest(RequestData<CreateListPayload> requestData, Token token) {
             CreateListPayload payload = requestData.getPayload();
@@ -62,6 +69,17 @@ class ListController {
         }
 
 
+        /**
+         * Reads all tasks from to-do list with ID specified in URL params.
+         *
+         * @param requestData data of read all tasks
+         * @param token       token of user who sent request
+         * @return answer with status code 200 and requested to-do list tasks
+         * if reading of tasks was performed successfully
+         * @throws TodoListNotFoundException    if to-do list with given ID was not found
+         * @throws AuthorizationFailedException if user toke expired or
+         *                                      user has no permission to read task from this list.
+         */
         @Override
         Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
             String todoListIdParam = requestData.getRequestParams().getParamValue(TODO_LIST_ID_PARAM);
