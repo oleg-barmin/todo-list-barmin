@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
+import static org.javaclasses.todo.web.TestUsers.UN_SINGED_IN_USER;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
 abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
@@ -25,7 +26,7 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
         String invalidToken = "invalid token";
         specification.header(X_TODO_TOKEN, invalidToken);
 
-        Response response = sendRequest(new Token(invalidToken), USER_1.getUserId());
+        Response response = sendRequest(new Token(invalidToken), UN_SINGED_IN_USER.getUserId());
 
         Assertions.assertEquals(HTTP_FORBIDDEN, response.getStatusCode(),
                 "response status must be 403, when not signed in user creates list, but it don't.");

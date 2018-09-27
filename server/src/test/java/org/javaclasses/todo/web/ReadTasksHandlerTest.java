@@ -61,7 +61,7 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
     void testReadTasksNonExistingTodoList() {
         specification.header(X_TODO_TOKEN, USER_1.getToken().getValue());
 
-        Response response = specification.get("/lists/2notExists213/" + UUID.randomUUID().toString());
+        Response response = specification.get("/lists/123414/" + UUID.randomUUID().toString());
 
         Assertions.assertEquals(HTTP_FORBIDDEN, response.getStatusCode(),
                 "return status code 403, when signed in user read tasks from non-existing to-do list.");

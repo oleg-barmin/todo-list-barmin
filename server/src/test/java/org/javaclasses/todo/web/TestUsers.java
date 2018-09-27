@@ -11,17 +11,20 @@ import org.javaclasses.todo.model.Username;
 //Fields should not be serialized
 @SuppressWarnings("NonSerializableFieldInSerializableClass")
 enum TestUsers {
-    USER_1;
+    USER_1, UN_SINGED_IN_USER;
 
     private UserId userId;
-    private final Username username;
-    private final Password password;
+    private Username username;
+    private Password password;
 
     private Token token;
 
-    TestUsers() {
-        username = new Username("first_user");
-        password = new Password("first_User_password_123");
+    public void setUsername(Username username) {
+        this.username = username;
+    }
+
+    public void setPassword(Password password) {
+        this.password = password;
     }
 
     public UserId getUserId() {

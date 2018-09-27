@@ -89,6 +89,7 @@ class ExceptionHandlers {
         @Override
         public void handle(TaskNotFoundException exception, Request request, Response response) {
             response.status(HTTP_FORBIDDEN);
+            response.body("");
         }
     }
 
