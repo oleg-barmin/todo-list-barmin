@@ -41,11 +41,11 @@ abstract class Operation<O extends Operation<O>> {
     /**
      * Validates stored user {@code token}.
      *
-     * @return ID of user to which {@code token} relate
+     * @return ID of user to which {@code token} relate\
+     * @throws AuthorizationFailedException if given token is not valid
      */
     UserId validateToken() {
         checkNotNull(token);
-
         return authentication.validate(token);
     }
 }

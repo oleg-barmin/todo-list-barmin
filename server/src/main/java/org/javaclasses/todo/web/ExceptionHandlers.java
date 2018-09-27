@@ -4,6 +4,7 @@ import org.javaclasses.todo.auth.InvalidCredentialsException;
 import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.TaskNotFoundException;
 import org.javaclasses.todo.model.TodoListNotFoundException;
+import org.javaclasses.todo.model.UpdateCompletedTaskException;
 import spark.ExceptionHandler;
 import spark.Request;
 import spark.Response;
@@ -49,7 +50,6 @@ class ExceptionHandlers {
         @Override
         public void handle(TodoListNotFoundException exception, Request request, Response response) {
             response.status(HTTP_FORBIDDEN);
-            response.body("");
         }
     }
 
@@ -60,6 +60,18 @@ class ExceptionHandlers {
 
         @Override
         public void handle(TaskNotFoundException exception, Request request, Response response) {
+            response.status(HTTP_FORBIDDEN);
+            response.body(exception.getMessage());
+        }
+    }
+
+    /**
+     * Handles UpdateCompletedTaskException.
+     */
+    public static class UpdateCompletedTaskHandler implements ExceptionHandler<UpdateCompletedTaskException> {
+
+        @Override
+        public void handle(UpdateCompletedTaskException exception, Request request, Response response) {
             response.status(HTTP_FORBIDDEN);
             response.body(exception.getMessage());
         }

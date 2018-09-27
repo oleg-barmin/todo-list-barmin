@@ -61,8 +61,8 @@ class TaskController {
         Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
-            Task task = todoService.authorizeBy(token)
-                    .findTask(taskId)
+            Task task = todoService.findTask(taskId).
+                    authorizedWith(token)
                     .execute();
 
             String answerBody = objectToJson(task);
@@ -98,8 +98,8 @@ class TaskController {
             CreateTaskPayload payload = requestData.getPayload();
             String taskDescription = payload.getTaskDescription();
 
-            todoService.authorizeBy(token)
-                    .addTask(taskId)
+            todoService.addTask(taskId)
+                    .authorizedWith(token)
                     .withTodoListId(todoListId)
                     .withDescription(taskDescription)
                     .execute();
@@ -135,8 +135,8 @@ class TaskController {
             String taskDescription = payload.getTaskDescription();
             boolean taskStatus = payload.isTaskStatus();
 
-            todoService.authorizeBy(token)
-                    .updateTask(taskId)
+            todoService.updateTask(taskId)
+                    .authorizedWith(token)
                     .setStatus(taskStatus)
                     .withDescription(taskDescription)
                     .execute();
@@ -166,8 +166,8 @@ class TaskController {
         Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
-            todoService.authorizeBy(token)
-                    .removeTask(taskId)
+            todoService.removeTask(taskId)
+                    .authorizedWith(token)
                     .execute();
 
             return Answer.ok();

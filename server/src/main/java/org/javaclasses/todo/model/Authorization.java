@@ -1,5 +1,6 @@
 package org.javaclasses.todo.model;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 import org.javaclasses.todo.storage.impl.TodoListStorage;
 
@@ -33,8 +34,8 @@ class Authorization {
      *
      * @param userId     user which tries to access {@code TodoList}
      * @param todoListId ID of {@code TodoList}
-     * @throws TodoListNotFoundException if {@code TodoList} with given ID was not found
-     * @throws AuthorizationFailedException     if user with given ID has no access to {@code TodoList} with given ID
+     * @throws TodoListNotFoundException    if {@code TodoList} with given ID was not found
+     * @throws AuthorizationFailedException if user with given ID has no access to {@code TodoList} with given ID
      */
     void validateAccess(UserId userId, TodoListId todoListId) {
         checkNotNull(userId);
@@ -51,6 +52,7 @@ class Authorization {
         if (!owner.equals(userId)) {
             throw new AuthorizationFailedException(userId, todoListId);
         }
+
     }
 
     /**
@@ -58,10 +60,11 @@ class Authorization {
      *
      * @param userId user which tries to access {@code Task}
      * @param taskId ID of {@code Task}
-     * @throws TaskNotFoundException if {@code Task} with given ID was not found
+     * @throws TaskNotFoundException        if {@code Task} with given ID was not found
      * @throws AuthorizationFailedException if user with given ID has no access to {@code Task} with given ID
      */
-    void validateAccess(UserId userId, TaskId taskId) {
+    @CanIgnoreReturnValue
+    Task validateAccess(UserId userId, TaskId taskId) {
         checkNotNull(userId);
         checkNotNull(taskId);
 
@@ -74,5 +77,7 @@ class Authorization {
         TodoListId todoListId = optionalTask.get().getTodoListId();
 
         validateAccess(userId, todoListId);
+
+        return optionalTask.get();
     }
 }

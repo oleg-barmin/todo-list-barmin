@@ -1,5 +1,6 @@
 package org.javaclasses.todo.model;
 
+import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.storage.impl.TodoListStorage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -14,10 +15,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // part of public API and its methods should be public.
-public final class CreateList {
+public final class CreateList extends Operation<CreateList> {
 
     private final TodoListStorage todoListStorage;
-    private TodoList.TodoListBuilder todoListBuilder;
+    private final TodoList.TodoListBuilder todoListBuilder;
 
     /**
      * Creates {@code CreateList} instance.
@@ -25,7 +26,8 @@ public final class CreateList {
      * @param todoListId      ID of {@code TodoList} to create
      * @param todoListStorage to store newly created list
      */
-    CreateList(TodoListId todoListId, TodoListStorage todoListStorage) {
+    CreateList(TodoListId todoListId, TodoListStorage todoListStorage, Authentication authentication) {
+        super(authentication);
         this.todoListStorage = todoListStorage;
         checkNotNull(todoListId);
 
@@ -34,21 +36,13 @@ public final class CreateList {
     }
 
     /**
-     * Sets owner of the {@code TodoList} to create.
-     *
-     * @param userId ID of user who owns {@code TodoList}
-     * @return this {@code CreateList} instance to continue request building
-     */
-    public CreateList withOwner(UserId userId) {
-        todoListBuilder = todoListBuilder.setOwner(userId);
-        return this;
-    }
-
-    /**
      * Creates new {@code TodoList} with given values in storage.
      */
     public void execute() throws AuthorizationFailedException {
-        TodoList todoList = todoListBuilder.build();
+        TodoList todoList = todoListBuilder
+                .setOwner(validateToken())
+                .build();
+
         todoListStorage.write(todoList);
     }
 }

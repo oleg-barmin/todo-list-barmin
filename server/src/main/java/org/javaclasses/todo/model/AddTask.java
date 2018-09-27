@@ -1,5 +1,6 @@
 package org.javaclasses.todo.model;
 
+import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 
 import java.util.Date;
@@ -17,25 +18,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Oleg Barmin
  */
 @SuppressWarnings("WeakerAccess") // part of public API and its methods should be public.
-public final class AddTask {
+public final class AddTask extends Operation<AddTask> {
 
     private final TaskStorage taskStorage;
-    private final Authorization operationAuth;
-    private final UserId userId;
     private Task.TaskBuilder taskBuilder;
 
     /**
      * Creates {@code AddTask} instance.
      *
-     * @param taskId      ID of the task to add
-     * @param taskStorage storage to store new task
-     * @param authorization  to validate task add
-     * @param userId      user who requested operation
+     * @param taskId         ID of the {@code Task} to add
+     * @param taskStorage    storage to store new {@code Task}
+     * @param authentication to authenticate user token
      */
-    AddTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization, UserId userId) {
+    AddTask(TaskId taskId, TaskStorage taskStorage, Authentication authentication) {
+        super(authentication);
+
         this.taskStorage = checkNotNull(taskStorage);
-        this.operationAuth = checkNotNull(authorization);
-        this.userId = checkNotNull(userId);
 
         taskBuilder = new Task.TaskBuilder()
                 .setTaskId(taskId)
@@ -43,7 +41,7 @@ public final class AddTask {
     }
 
     /**
-     * Sets {@code TodoList} to which belongs task to add.
+     * Sets {@code TodoList} to which belongs {@code Task} to add.
      *
      * @param todoListId ID of {@code TodoList} to which belongs this task
      * @return this {@code AddTask} instance to continue request building
@@ -56,7 +54,7 @@ public final class AddTask {
     /**
      * Sets description of task to add.
      *
-     * @param description description of task to add
+     * @param description description of {@code Task} to add
      * @return this {@code AddTask} instance to continue request building
      * @throws EmptyTaskDescriptionException if given task description is null or empty
      */
@@ -69,9 +67,10 @@ public final class AddTask {
     /**
      * Uploads task with previously set values.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")  // to create task user ID is not needed.
     public void execute() throws AuthorizationFailedException {
+        validateToken();
         Task task = taskBuilder.build();
-        operationAuth.validateAccess(userId, task.getTodoListId());
         taskStorage.write(task);
     }
 }

@@ -38,9 +38,9 @@ public final class UpdateTask extends Operation<UpdateTask> {
     /**
      * Creates {@code UpdateTask} instance.
      *
-     * @param taskId         ID of the task to update
-     * @param taskStorage    storage to store task changes
-     * @param authorization  to validate task update
+     * @param taskId         ID of the {@code Task} to update
+     * @param taskStorage    storage to store {@code Task} changes
+     * @param authorization  to validate access to {@code Task}
      * @param authentication to authenticate token
      */
     UpdateTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization, Authentication authentication) {
@@ -78,9 +78,9 @@ public final class UpdateTask extends Operation<UpdateTask> {
     /**
      * Uploads previously modified task to storage.
      *
-     * @throws TaskNotFoundException if task to update was not found.
+     * @throws TaskNotFoundException        if task to update was not found.
      * @throws UpdateCompletedTaskException if task to update is completed
-     * @throws AuthorizationFailedException if user try to update foreign task
+     * @throws AuthorizationFailedException if user has no authority to update task with given ID.
      */
     public void execute() throws AuthorizationFailedException, TaskNotFoundException {
         Task taskToUpdate = operationAuth.validateAccess(validateToken(), taskId);

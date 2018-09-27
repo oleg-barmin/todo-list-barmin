@@ -1,49 +1,40 @@
 package org.javaclasses.todo.model;
 
-import org.javaclasses.todo.storage.impl.TaskStorage;
-
-import java.util.Optional;
+import org.javaclasses.todo.auth.Authentication;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Finds task by ID.
+ *
+ * @author Oleg Barmin
  */
-public class FindTask {
+public class FindTask extends Operation<FindTask> {
+
     private final TaskId taskId;
-    private final TaskStorage taskStorage;
     private final Authorization authorization;
-    private final UserId userId;
 
     /**
      * Creates {@code FindTask} instance.
      *
-     * @param taskId        ID of the task to find
-     * @param taskStorage   storage to find task in
-     * @param authorization to validate find task request
-     * @param userId        user who requested task
+     * @param taskId         ID of the {@code Task} to find
+     * @param authorization  to validate if user has access to {@code Task} with given ID
+     * @param authentication to validate user token
      */
-    FindTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization, UserId userId) {
+    FindTask(TaskId taskId, Authorization authorization, Authentication authentication) {
+        super(authentication);
         this.taskId = checkNotNull(taskId);
-        this.taskStorage = checkNotNull(taskStorage);
         this.authorization = checkNotNull(authorization);
-        this.userId = checkNotNull(userId);
     }
 
     /**
      * Finds task with given ID.
      *
      * @return task with given ID
+     * @throws TaskNotFoundException        if task to find doesn't exist
+     * @throws AuthorizationFailedException if user has no authority to read {@code Task} with given ID
      */
     public Task execute() {
-        authorization.validateAccess(userId, taskId);
-
-        Optional<Task> optionalTask = taskStorage.read(taskId);
-
-        if (!optionalTask.isPresent()) {
-            throw new TaskNotFoundException(taskId);
-        }
-
-        return optionalTask.get();
+        return authorization.validateAccess(validateToken(), taskId);
     }
 }

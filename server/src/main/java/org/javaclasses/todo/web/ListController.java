@@ -35,12 +35,10 @@ class ListController {
         Answer processVerifiedRequest(RequestData<CreateListPayload> requestData, Token token) {
             CreateListPayload payload = requestData.getPayload();
 
-            UserId userId = payload.getUserId();
             TodoListId todoListId = payload.getTodoListId();
 
-            todoService.authorizeBy(token)
-                    .createList(todoListId)
-                    .withOwner(userId)
+            todoService.createList(todoListId)
+                    .authorizedWith(token)
                     .execute();
 
             return Answer.ok();
@@ -70,8 +68,8 @@ class ListController {
 
             TodoListId todoListId = new TodoListId(todoListIdParam);
 
-            List<Task> tasks = todoService.authorizeBy(token)
-                    .readTasksFrom(todoListId)
+            List<Task> tasks = todoService.readTasksFrom(todoListId)
+                    .authorizedWith(token)
                     .execute();
 
             String answerBody = objectToJson(tasks);

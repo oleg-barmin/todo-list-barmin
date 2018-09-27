@@ -33,10 +33,10 @@ import static spark.Service.ignite;
 public class TodoListApplication {
 
     // TodoListApplication REST API endpoints
-    public static final String AUTHENTICATION_PATH = "/auth";
-    public static final String CREATE_LIST_PATH = "/lists";
-    public static final String READ_TASKS_PATH = "/lists/:todolistid";
-    public static final String TASKS_PATH = "/lists/:todolistid/:taskid";
+    public static final String AUTHENTICATION_ROUTE = "/auth";
+    public static final String CREATE_LIST_ROUTE = "/lists";
+    public static final String READ_TASKS_ROUTE = "/lists/:todolistid";
+    public static final String TASKS_ROUTE = "/lists/:todolistid/:taskid";
 
     //TodoListApplication REST API url parameters names.
     static final String TODO_LIST_ID_PARAM = ":todolistid";
@@ -75,17 +75,18 @@ public class TodoListApplication {
         service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
         service.exception(TodoListNotFoundException.class, new TodoListNotFoundHandler());
         service.exception(TaskNotFoundException.class, new TaskNotFoundHandler());
+        service.exception(UpdateCompletedTaskException.class, new UpdateCompletedTaskHandler());
 
-        service.post(AUTHENTICATION_PATH, new AuthenticationHandler(authentication));
+        service.post(AUTHENTICATION_ROUTE, new AuthenticationHandler(authentication));
 
-        service.post(CREATE_LIST_PATH, new ListController.ListCreationRequestHandler(todoService));
+        service.post(CREATE_LIST_ROUTE, new ListController.ListCreationRequestHandler(todoService));
 
-        service.get(READ_TASKS_PATH, new ReadTasksRequestHandler(todoService));
+        service.get(READ_TASKS_ROUTE, new ReadTasksRequestHandler(todoService));
 
-        service.get(TASKS_PATH, new GetTaskRequestHandler(todoService));
-        service.post(TASKS_PATH, new CreateTaskRequestHandler(todoService));
-        service.put(TASKS_PATH, new TaskUpdateRequestHandler(todoService));
-        service.delete(TASKS_PATH, new TaskRemoveRequestHandler(todoService));
+        service.get(TASKS_ROUTE, new GetTaskRequestHandler(todoService));
+        service.post(TASKS_ROUTE, new CreateTaskRequestHandler(todoService));
+        service.put(TASKS_ROUTE, new TaskUpdateRequestHandler(todoService));
+        service.delete(TASKS_ROUTE, new TaskRemoveRequestHandler(todoService));
     }
 
     /**
