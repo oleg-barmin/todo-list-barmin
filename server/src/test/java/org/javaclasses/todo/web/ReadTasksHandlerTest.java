@@ -15,9 +15,9 @@ import java.util.UUID;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
-import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
 import static org.javaclasses.todo.web.TestRoutesFormat.TODO_LIST_ROUTE_FORMAT;
+import static org.javaclasses.todo.web.TestUsers.USER_1;
 
 @DisplayName("ReadTaskHandler should")
 class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
@@ -29,14 +29,13 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
     @Test
     @DisplayName("read tasks from to-do list.")
     void testReadTasks() {
-        Token token = signIn(username, password);
-        specification.header(X_TODO_TOKEN, token.getValue());
+        specification.header(X_TODO_TOKEN, USER_1.getToken().getValue());
 
         TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
         TaskId firstTaskId = new TaskId(UUID.randomUUID().toString());
         TaskId secondTaskId = new TaskId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, getUserId());
+        addTodoList(todoListId, USER_1.getUserId());
 
         addTask(firstTaskId, todoListId, "write tests on read tasks.");
         addTask(secondTaskId, todoListId, "second task to do");
@@ -60,8 +59,7 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
     @Test
     @DisplayName("forbid to read tasks from non-existing to-do lists.")
     void testReadTasksNonExistingTodoList() {
-        Token token = signIn(username, password);
-        specification.header(X_TODO_TOKEN, token.getValue());
+        specification.header(X_TODO_TOKEN, USER_1.getToken().getValue());
 
         Response response = specification.get("/lists/2notExists213/" + UUID.randomUUID().toString());
 

@@ -15,7 +15,7 @@ import java.util.Base64;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler.AUTHENTICATION_HEADER;
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler.AUTHENTICATION_SCHEME;
-import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
+import static org.javaclasses.todo.web.TestUsers.USER_1;
 import static org.javaclasses.todo.web.TodoListApplication.AUTHENTICATION_ROUTE;
 
 @DisplayName("AuthenticationController should")

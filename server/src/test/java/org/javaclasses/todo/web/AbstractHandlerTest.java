@@ -3,35 +3,29 @@ package org.javaclasses.todo.web;
 import com.google.gson.Gson;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.javaclasses.todo.model.*;
+import org.javaclasses.todo.model.Task;
+import org.javaclasses.todo.model.TaskId;
+import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
 import static org.javaclasses.todo.web.PortProvider.getPort;
-import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
 import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
 import static org.javaclasses.todo.web.TodoListApplication.CREATE_LIST_ROUTE;
 
 //abstract test has nothing to test.
 @SuppressWarnings("AbstractClassWithoutAbstractMethods")
 abstract class AbstractHandlerTest {
-
-    private final ServiceFactory serviceFactory = new ServiceFactory();
     private final int port = getPort();
 
-    private final TodoListApplication todoListApplication = new TodoListApplication(port, serviceFactory);
+    private final TodoListApplication todoListApplication = new TestTodoListApplication(port);
     private final RequestSpecification specification = given().port(port);
-
-    private UserId userId;
 
     RequestSpecification getRequestSpecification() {
         return specification;
-    }
-
-    Token signIn(Username username, Password password) {
-        return serviceFactory.getAuthentication().signIn(username, password);
     }
 
     @BeforeEach
@@ -39,20 +33,9 @@ abstract class AbstractHandlerTest {
         todoListApplication.start();
     }
 
-    //User ID is not needed in REST test.
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @BeforeEach
-    void registerUser() {
-        userId = serviceFactory.getAuthentication().createUser(USER_1.getUsername(), USER_1.getPassword());
-    }
-
     @AfterEach
     void stopServer() {
         todoListApplication.stop();
-    }
-
-    UserId getUserId() {
-        return userId;
     }
 
     void addTodoList(TodoListId todoListId, UserId userId) {
