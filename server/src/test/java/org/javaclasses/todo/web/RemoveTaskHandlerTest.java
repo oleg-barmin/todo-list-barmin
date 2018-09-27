@@ -13,11 +13,9 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
 import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
-import static org.javaclasses.todo.web.TestUsers.UN_SINGED_IN_USER;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
 @DisplayName("RemoveTaskHandler should")
@@ -51,18 +49,5 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
         addTask(taskId, todoListId, "write negative cases tests on remove task by ID.");
 
         return specification.delete(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
-    }
-
-    @Test
-    @DisplayName("forbid removal to unauthorized users.")
-    @Override
-    void testForbidOperation() {
-        String invalidToken = "invalid token";
-        specification.header(X_TODO_TOKEN, invalidToken);
-
-        Response response = sendRequest(new Token(invalidToken), UN_SINGED_IN_USER.getUserId());
-
-        Assertions.assertEquals(HTTP_FORBIDDEN, response.getStatusCode(),
-                "response status must be 403, when not signed in user creates list, but it don't.");
     }
 }
