@@ -3,7 +3,7 @@ package org.javaclasses.todo.web;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Provides new
+ * Provides ports for TodoList application testing.
  */
 class PortProvider {
 

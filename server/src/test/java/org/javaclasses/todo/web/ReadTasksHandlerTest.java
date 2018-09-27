@@ -7,7 +7,6 @@ import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -18,8 +17,9 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
+import static org.javaclasses.todo.web.TestRoutesFormat.TODO_LIST_ROUTE_FORMAT;
 
-@Nested
+@DisplayName("ReadTaskHandler should")
 class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
     private final RequestSpecification specification = getRequestSpecification();
 
@@ -32,15 +32,12 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
         Token token = signIn(username, password);
         specification.header(X_TODO_TOKEN, token.getValue());
 
-        UserId userId = getUserId();
-
-        String todoListUuid = UUID.randomUUID().toString();
-        TodoListId todoListId = new TodoListId(todoListUuid);
-
+        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
         TaskId firstTaskId = new TaskId(UUID.randomUUID().toString());
         TaskId secondTaskId = new TaskId(UUID.randomUUID().toString());
 
-        addTodoList(todoListId, userId);
+        addTodoList(todoListId, getUserId());
+
         addTask(firstTaskId, todoListId, "write tests on read tasks.");
         addTask(secondTaskId, todoListId, "second task to do");
 
@@ -51,7 +48,7 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
         addedTasks.add(firstTask);
         addedTasks.add(secondTask);
 
-        Response response = specification.get("/lists/" + todoListUuid);
+        Response response = specification.get(String.format(TODO_LIST_ROUTE_FORMAT, todoListId.getValue()));
         Task[] receivedTasks = new Gson().fromJson(response.body().asString(), Task[].class);
 
         Assertions.assertEquals(HTTP_OK, response.getStatusCode(),
@@ -73,16 +70,15 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
     }
 
     @Override
-    Response performOperation(Token invalidToken, UserId userId) {
-        String todoListUuid = UUID.randomUUID().toString();
-        TodoListId todoListId = new TodoListId(todoListUuid);
+    Response sendRequest(Token invalidToken, UserId userId) {
+        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
+        TaskId firstTaskId = new TaskId(UUID.randomUUID().toString());
+        TaskId secondTaskId = new TaskId(UUID.randomUUID().toString());
 
         addTodoList(todoListId, userId);
-        addTask(new TaskId(UUID.randomUUID().toString()), todoListId,
-                "write negative cases tests on read tasks.");
-        addTask(new TaskId(UUID.randomUUID().toString()), todoListId,
-                "write more negative tests");
+        addTask(firstTaskId, todoListId, "write negative cases tests on read tasks.");
+        addTask(secondTaskId, todoListId, "write more negative tests");
 
-        return specification.get("/lists/" + todoListUuid);
+        return specification.get(String.format(TODO_LIST_ROUTE_FORMAT, todoListId.getValue()));
     }
 }

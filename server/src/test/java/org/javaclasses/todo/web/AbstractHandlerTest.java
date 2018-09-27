@@ -3,22 +3,23 @@ package org.javaclasses.todo.web;
 import com.google.gson.Gson;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import static io.restassured.RestAssured.given;
+import static java.lang.String.format;
+import static org.javaclasses.todo.web.PortProvider.getPort;
 import static org.javaclasses.todo.web.PreRegisteredUsers.USER_1;
-import static org.javaclasses.todo.web.TodoListApplication.CREATE_LIST_PATH;
+import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
+import static org.javaclasses.todo.web.TodoListApplication.CREATE_LIST_ROUTE;
 
 //abstract test has nothing to test.
 @SuppressWarnings("AbstractClassWithoutAbstractMethods")
 abstract class AbstractHandlerTest {
-    private final StorageFactory storageFactory = new StorageFactory();
-    private final ServiceFactory serviceFactory = new ServiceFactory(storageFactory);
-    private final Authentication authentication = serviceFactory.getAuthentication();
-    private final int port = PortProvider.getPort();
+
+    private final ServiceFactory serviceFactory = new ServiceFactory();
+    private final int port = getPort();
 
     private final TodoListApplication todoListApplication = new TodoListApplication(port, serviceFactory);
     private final RequestSpecification specification = given().port(port);
@@ -30,7 +31,7 @@ abstract class AbstractHandlerTest {
     }
 
     Token signIn(Username username, Password password) {
-        return authentication.signIn(username, password);
+        return serviceFactory.getAuthentication().signIn(username, password);
     }
 
     @BeforeEach
@@ -38,12 +39,11 @@ abstract class AbstractHandlerTest {
         todoListApplication.start();
     }
 
-
     //User ID is not needed in REST test.
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @BeforeEach
     void registerUser() {
-        userId = authentication.createUser(USER_1.getUsername(), USER_1.getPassword());
+        userId = serviceFactory.getAuthentication().createUser(USER_1.getUsername(), USER_1.getPassword());
     }
 
     @AfterEach
@@ -60,18 +60,20 @@ abstract class AbstractHandlerTest {
         String requestBody = new Gson().toJson(payload);
 
         specification.body(requestBody);
-        specification.post(CREATE_LIST_PATH);
+        specification.post(CREATE_LIST_ROUTE);
     }
 
     void addTask(TaskId taskId, TodoListId todoListId, String description) {
         String payload = new Gson().toJson(new CreateTaskPayload(description));
         specification.body(payload);
-        specification.post(String.format("/lists/%s/%s",
-                todoListId.getValue(), taskId.getValue()));
+        specification.post(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
     }
 
     Task readTask(TodoListId todoListId, TaskId taskId) {
-        Response response = getRequestSpecification().get(String.format("/lists/%s/%s", todoListId.getValue(), taskId.getValue()));
+        Response response = specification.get(format(
+                TASK_ROUTE_FORMAT,
+                todoListId.getValue(),
+                taskId.getValue()));
 
         String taskJson = response.body().asString();
 
