@@ -6,7 +6,6 @@ import org.javaclasses.todo.model.TaskId;
 import org.javaclasses.todo.model.TodoListId;
 import org.javaclasses.todo.model.Token;
 import org.javaclasses.todo.model.UserId;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +13,8 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.DescribedAs.describedAs;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
 import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
@@ -36,8 +37,9 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
 
         Response response = specification.delete(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
 
-        Assertions.assertEquals(HTTP_OK, response.getStatusCode(),
-                "return status code 200, when signed in user removes task by ID from his to-do list.");
+        response.then()
+                .statusCode(describedAs("return status code 200, when " +
+                                                "signed in user removes task by ID from his to-do list.", is(HTTP_OK)));
     }
 
     @Override

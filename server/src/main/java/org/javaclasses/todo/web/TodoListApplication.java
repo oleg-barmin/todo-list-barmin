@@ -12,6 +12,7 @@ import org.javaclasses.todo.model.UpdateCompletedTaskException;
 import spark.Service;
 
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
+import static org.javaclasses.todo.web.Configurations.getDefaultPort;
 import static org.javaclasses.todo.web.ExceptionHandlers.AuthorizationFailedHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.InvalidCredentialsHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.TaskNotFoundHandler;
@@ -52,7 +53,7 @@ public class TodoListApplication {
     static final String TODO_LIST_ID_PARAM = ":todolistid";
     static final String TASK_ID_PARAM = ":taskid";
 
-    private static final int DEFAULT_PORT = 4567;
+
 
     private final Service service = ignite();
     private final Authentication authentication;
@@ -71,7 +72,7 @@ public class TodoListApplication {
     }
 
     public static void main(String[] args) {
-        new TodoListApplication(DEFAULT_PORT).start();
+        new TodoListApplication(getDefaultPort()).start();
     }
 
     /**

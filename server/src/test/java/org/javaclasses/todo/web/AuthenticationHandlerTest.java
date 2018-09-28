@@ -1,17 +1,22 @@
 package org.javaclasses.todo.web;
 
-import com.google.gson.Gson;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.Password;
 import org.javaclasses.todo.model.Token;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.DescribedAs.describedAs;
 import static org.javaclasses.todo.web.AuthenticationController.authenticationMethodName;
 import static org.javaclasses.todo.web.AuthenticationController.headerName;
 import static org.javaclasses.todo.web.Routes.getAuthenticationRoute;
@@ -56,17 +61,9 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .when()
                 .post(getAuthenticationRoute());
 
-        Token token = null;
-        if (!response.body()
-                     .asString()
-                     .isEmpty()) {
-            token = new Gson().fromJson(response.body()
-                                                .asString(), Token.class);
-        }
-
-        Assertions.assertEquals(200, response.getStatusCode(),
-                                "responds with status code 200, but it don't.");
-        Assertions.assertNotNull(token, "provide token, but it don't.");
+        response.then()
+                .statusCode(describedAs("responds with status code 200, but it don't.", is(HTTP_OK)))
+                .body(describedAs("provide token, but it don't.", notNullValue(Token.class)));
     }
 
     @Test
@@ -79,8 +76,10 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .when()
                 .post(getAuthenticationRoute());
 
-        Assertions.assertEquals(403, response.getStatusCode(),
-                                "responds with status code 403 when got invalid credentials, but it don't.");
+        response.then()
+                .statusCode(describedAs("responds with status code 403 " +
+                                                "when got invalid credentials, but it don't.",
+                                        is(HTTP_FORBIDDEN)));
     }
 
     @Test
@@ -91,8 +90,9 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .when()
                 .post(getAuthenticationRoute());
 
-        Assertions.assertEquals(401, response.getStatusCode(),
-                                "responds with status code 401, but it don't.");
+        response.then()
+                .statusCode(describedAs("responds with status code 401, " +
+                                                "but it don't.", is(HTTP_UNAUTHORIZED)));
     }
 
     @Test
@@ -104,9 +104,10 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .when()
                 .post(getAuthenticationRoute());
 
-        Assertions.assertEquals(401, response.getStatusCode(),
-                                "responds with status code 401 when " +
-                                        "invalid occurs scheme in Authentication header, but it don't.");
+        response.then()
+                .statusCode(describedAs("responds with status code 401 when " +
+                                                "invalid occurs scheme in Authentication header, but it don't.",
+                                        is(HTTP_UNAUTHORIZED)));
     }
 
     @Test
@@ -119,8 +120,10 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .when()
                 .post(getAuthenticationRoute());
 
-        Assertions.assertEquals(400, response.getStatusCode(),
-                                "responds with status code 400 when space is absent after scheme name.");
+        response.then()
+                .statusCode(describedAs("responds with status code 400 " +
+                                                "when space is absent after scheme name.",
+                                        is(HTTP_BAD_REQUEST)));
     }
 
     @Test
@@ -132,7 +135,9 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .when()
                 .post(getAuthenticationRoute());
 
-        Assertions.assertEquals(400, response.getStatusCode(),
-                                "responds with status code 400 when encoded credentials in invalid format.");
+        response.then()
+                .statusCode(describedAs("responds with status code 400" +
+                                                "when encoded credentials " +
+                                                "in invalid format.", is(HTTP_BAD_REQUEST)));
     }
 }

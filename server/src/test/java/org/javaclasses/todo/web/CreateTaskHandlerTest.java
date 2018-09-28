@@ -1,10 +1,12 @@
 package org.javaclasses.todo.web;
 
-import com.google.gson.Gson;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.javaclasses.todo.model.*;
-import org.junit.jupiter.api.Assertions;
+import org.javaclasses.todo.model.Task;
+import org.javaclasses.todo.model.TaskId;
+import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.model.Token;
+import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,9 +14,12 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.DescribedAs.describedAs;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
 import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("CreateTaskHandlerTest should")
 class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
@@ -24,36 +29,42 @@ class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
     @Test
     @DisplayName("create tasks.")
     void testTaskCreation() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken().getValue());
+        specification.header(X_TODO_TOKEN, USER_1.getToken()
+                                                 .getValue());
 
-        TaskId taskId = new TaskId(UUID.randomUUID().toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+        String taskDescription = "implement task creation";
+
+        CreateTaskPayload payload = new CreateTaskPayload(taskDescription);
 
         addTodoList(todoListId);
-        String payload = new Gson().toJson(new CreateTaskPayload("implement task creation"));
-
 
         Response response = specification.body(payload)
-                .post(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
-
+                                         .post(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
+        response.then()
+                .statusCode(describedAs("response with status code 200, but it don't.", is(HTTP_OK)));
 
         Task task = readTask(todoListId, taskId);
-        Assertions.assertEquals(HTTP_OK, response.getStatusCode(),
-                "response with status code 200, but it don't.");
-        Assertions.assertEquals(taskId, task.getId(),
-                "return task with requested ID, but it don't.");
+        assertEquals(taskId, task.getId(), "add task with uploaded ID, but it don't.");
+        assertEquals(todoListId, task.getTodoListId(), "add task with uploaded to-do list ID, but it don't.");
+        assertEquals(taskDescription, taskDescription, "add task with uploaded description, but it don't.");
     }
-
 
     @Override
     Response sendRequest(Token token, UserId userId) {
-        TaskId taskId = new TaskId(UUID.randomUUID().toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
 
         addTodoList(todoListId);
 
-        String payload = new Gson().toJson(new CreateTaskPayload("implement task creation tests"));
+        CreateTaskPayload payload = new CreateTaskPayload("implement task creation tests");
 
-        return specification.body(payload).post(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
+        return specification.body(payload)
+                            .post(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
     }
 }

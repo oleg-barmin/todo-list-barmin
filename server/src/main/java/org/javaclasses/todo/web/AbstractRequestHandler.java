@@ -8,6 +8,8 @@ import spark.Route;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.javaclasses.todo.web.Configurations.getContentType;
+
 /**
  * Abstract handler of requests by endpoint.
  *
@@ -68,6 +70,7 @@ abstract class AbstractRequestHandler<P> implements Route {
 
         response.status(answer.getCode());
         response.body(answer.getBody());
+        response.type(getContentType());
 
         return answer.getBody();
     }
