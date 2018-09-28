@@ -103,6 +103,11 @@ class HttpResponse {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(getCode(), getBody());
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -113,10 +118,5 @@ class HttpResponse {
         HttpResponse httpResponse = (HttpResponse) o;
         return getCode() == httpResponse.getCode() &&
                 Objects.equals(getBody(), httpResponse.getBody());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getCode(), getBody());
     }
 }

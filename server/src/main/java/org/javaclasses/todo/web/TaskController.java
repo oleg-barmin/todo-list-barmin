@@ -44,7 +44,6 @@ class TaskController {
         return new TodoListId(taskIdParam);
     }
 
-
     /**
      * Handles get {@code Task} requests.
      *
@@ -79,9 +78,10 @@ class TaskController {
         HttpResponse processVerifiedRequest(RequestData<Void> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
-            Task task = todoService.findTask(taskId).
-                    authorizedWith(token)
-                    .execute();
+            Task task = todoService.findTask(taskId)
+                                   .
+                                           authorizedWith(token)
+                                   .execute();
 
             String answerBody = objectToJson(task);
 
@@ -128,10 +128,10 @@ class TaskController {
             String taskDescription = payload.getTaskDescription();
 
             todoService.addTask(taskId)
-                    .authorizedWith(token)
-                    .withTodoListId(todoListId)
-                    .withDescription(taskDescription)
-                    .execute();
+                       .authorizedWith(token)
+                       .withTodoListId(todoListId)
+                       .withDescription(taskDescription)
+                       .execute();
 
             return HttpResponse.ok();
         }
@@ -142,16 +142,16 @@ class TaskController {
      *
      * @author Oleg Barmin
      */
-    static class TaskUpdateRequestHandler extends SecuredAbstractRequestHandler<TaskUpdatePayload> {
+    static class UpdateTaskRequestHandler extends SecuredAbstractRequestHandler<TaskUpdatePayload> {
 
         private final TodoService todoService;
 
         /**
-         * Creates {@code TaskUpdateRequestHandler} instance.
+         * Creates {@code UpdateTaskRequestHandler} instance.
          *
          * @param todoService service to work with
          */
-        TaskUpdateRequestHandler(TodoService todoService) {
+        UpdateTaskRequestHandler(TodoService todoService) {
             super(TaskUpdatePayload.class);
             this.todoService = checkNotNull(todoService);
         }
@@ -176,10 +176,10 @@ class TaskController {
             boolean taskStatus = payload.isTaskStatus();
 
             todoService.updateTask(taskId)
-                    .authorizedWith(token)
-                    .setStatus(taskStatus)
-                    .withDescription(taskDescription)
-                    .execute();
+                       .authorizedWith(token)
+                       .setStatus(taskStatus)
+                       .withDescription(taskDescription)
+                       .execute();
 
             return HttpResponse.ok();
         }
@@ -188,16 +188,16 @@ class TaskController {
     /**
      * Handles remove {@code Task} request.
      */
-    static class TaskRemoveRequestHandler extends SecuredAbstractRequestHandler<Void> {
+    static class RemoveTaskRequestHandler extends SecuredAbstractRequestHandler<Void> {
 
         private final TodoService todoService;
 
         /**
-         * Creates {@code TaskRemoveRequestHandler} instance.
+         * Creates {@code RemoveTaskRequestHandler} instance.
          *
          * @param todoService service to work with
          */
-        TaskRemoveRequestHandler(TodoService todoService) {
+        RemoveTaskRequestHandler(TodoService todoService) {
             super(Void.class);
             this.todoService = checkNotNull(todoService);
         }
@@ -218,8 +218,8 @@ class TaskController {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             todoService.removeTask(taskId)
-                    .authorizedWith(token)
-                    .execute();
+                       .authorizedWith(token)
+                       .execute();
 
             return HttpResponse.ok();
         }

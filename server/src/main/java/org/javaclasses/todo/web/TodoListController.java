@@ -14,23 +14,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.javaclasses.todo.web.TodoListApplication.TODO_LIST_ID_PARAM;
 
 /**
- * Manages requests which modifies {@link TodoList}.
+ * Processes requests which modifies {@link TodoList}.
  */
-class ListController {
+class TodoListController {
 
     /**
      * Handles create {@code TodoList} request.
      */
-    static class ListCreationRequestHandler extends SecuredAbstractRequestHandler<CreateListPayload> {
+    static class CreateTodoListRequestHandler extends SecuredAbstractRequestHandler<CreateListPayload> {
 
         private final TodoService todoService;
 
         /**
-         * Creates {@code ListCreationRequestHandler} instance.
+         * Creates {@code CreateTodoListRequestHandler} instance.
          *
          * @param todoService service to work with
          */
-        ListCreationRequestHandler(TodoService todoService) {
+        CreateTodoListRequestHandler(TodoService todoService) {
             super(CreateListPayload.class);
             this.todoService = checkNotNull(todoService);
         }

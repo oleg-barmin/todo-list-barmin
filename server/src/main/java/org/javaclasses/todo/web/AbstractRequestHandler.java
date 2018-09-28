@@ -70,7 +70,7 @@ abstract class AbstractRequestHandler<P> implements Route {
     }
 
     /**
-     * Processes current requestData.
+     * Processes current {@code requestData}.
      *
      * @param requestData data of request
      * @return answer to requestData

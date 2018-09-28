@@ -2,13 +2,25 @@ package org.javaclasses.todo.web;
 
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.auth.InvalidCredentialsException;
-import org.javaclasses.todo.model.*;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.ServiceFactory;
+import org.javaclasses.todo.model.TaskNotFoundException;
+import org.javaclasses.todo.model.TodoListNotFoundException;
+import org.javaclasses.todo.model.TodoService;
+import org.javaclasses.todo.model.UpdateCompletedTaskException;
 import spark.Service;
 
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
-import static org.javaclasses.todo.web.ExceptionHandlers.*;
-import static org.javaclasses.todo.web.ListController.ReadTasksRequestHandler;
-import static org.javaclasses.todo.web.TaskController.*;
+import static org.javaclasses.todo.web.ExceptionHandlers.AuthorizationFailedHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.InvalidCredentialsHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.TaskNotFoundHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.TodoListNotFoundHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.UpdateCompletedTaskHandler;
+import static org.javaclasses.todo.web.TaskController.CreateTaskRequestHandler;
+import static org.javaclasses.todo.web.TaskController.GetTaskRequestHandler;
+import static org.javaclasses.todo.web.TaskController.RemoveTaskRequestHandler;
+import static org.javaclasses.todo.web.TaskController.UpdateTaskRequestHandler;
+import static org.javaclasses.todo.web.TodoListController.ReadTasksRequestHandler;
 import static spark.Service.ignite;
 
 /**
@@ -37,7 +49,7 @@ public class TodoListApplication {
     public static final String READ_TASKS_ROUTE = "/lists/:todolistid";
     public static final String TASKS_ROUTE = "/lists/:todolistid/:taskid";
 
-    //TodoListApplication REST API url parameters names.
+    //TodoListApplication REST API URL parameters names.
     static final String TODO_LIST_ID_PARAM = ":todolistid";
     static final String TASK_ID_PARAM = ":taskid";
 
@@ -46,7 +58,6 @@ public class TodoListApplication {
     private final Service service = ignite();
     private final Authentication authentication;
     private final TodoService todoService;
-
 
     /**
      * Creates {@code TodoListApplication} instance.
@@ -77,14 +88,14 @@ public class TodoListApplication {
 
         service.post(AUTHENTICATION_ROUTE, new AuthenticationHandler(authentication));
 
-        service.post(CREATE_LIST_ROUTE, new ListController.ListCreationRequestHandler(todoService));
+        service.post(CREATE_LIST_ROUTE, new TodoListController.CreateTodoListRequestHandler(todoService));
 
         service.get(READ_TASKS_ROUTE, new ReadTasksRequestHandler(todoService));
 
         service.get(TASKS_ROUTE, new GetTaskRequestHandler(todoService));
         service.post(TASKS_ROUTE, new CreateTaskRequestHandler(todoService));
-        service.put(TASKS_ROUTE, new TaskUpdateRequestHandler(todoService));
-        service.delete(TASKS_ROUTE, new TaskRemoveRequestHandler(todoService));
+        service.put(TASKS_ROUTE, new UpdateTaskRequestHandler(todoService));
+        service.delete(TASKS_ROUTE, new RemoveTaskRequestHandler(todoService));
     }
 
     /**
