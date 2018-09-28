@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+import static org.javaclasses.todo.web.Routes.getCreateTodoListRoute;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
-import static org.javaclasses.todo.web.TodoListApplication.CREATE_LIST_ROUTE;
 
 @DisplayName("CreateListHandler should")
 class CreateListHandlerTest extends AbstractSecuredHandlerTest {
@@ -32,7 +32,7 @@ class CreateListHandlerTest extends AbstractSecuredHandlerTest {
         Response response = specification
                 .header(X_TODO_TOKEN, USER_1.getToken().getValue())
                 .body(new Gson().toJson(payload))
-                .post(CREATE_LIST_ROUTE);
+                .post(getCreateTodoListRoute());
 
         Assertions.assertEquals(HTTP_OK, response.getStatusCode(),
                 "response status must be 200, when signed in user creates list, but it don't.");
@@ -44,6 +44,7 @@ class CreateListHandlerTest extends AbstractSecuredHandlerTest {
                 new TodoListId(UUID.randomUUID().toString())
         );
 
-        return specification.body(new Gson().toJson(payload)).post(CREATE_LIST_ROUTE);
+        return specification.body(new Gson().toJson(payload))
+                            .post(getCreateTodoListRoute());
     }
 }

@@ -1,5 +1,6 @@
 package org.javaclasses.todo.web;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.auth.InvalidCredentialsException;
 import org.javaclasses.todo.model.AuthorizationFailedException;
@@ -16,6 +17,10 @@ import static org.javaclasses.todo.web.ExceptionHandlers.InvalidCredentialsHandl
 import static org.javaclasses.todo.web.ExceptionHandlers.TaskNotFoundHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.TodoListNotFoundHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.UpdateCompletedTaskHandler;
+import static org.javaclasses.todo.web.Routes.getAuthenticationRoute;
+import static org.javaclasses.todo.web.Routes.getCreateTodoListRoute;
+import static org.javaclasses.todo.web.Routes.getReadTasksRoute;
+import static org.javaclasses.todo.web.Routes.getTasksRoute;
 import static org.javaclasses.todo.web.TaskController.CreateTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.GetTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.RemoveTaskRequestHandler;
@@ -42,12 +47,6 @@ import static spark.Service.ignite;
 @SuppressWarnings({"OverlyCoupledClass", // TodoListApplication is REST API, it needs to use many dependencies to work.
         "WeakerAccess"}) // TodoListApplication is public API, so its methods and static field must be public.
 public class TodoListApplication {
-
-    // TodoListApplication REST API endpoints
-    public static final String AUTHENTICATION_ROUTE = "/auth";
-    public static final String CREATE_LIST_ROUTE = "/lists";
-    public static final String READ_TASKS_ROUTE = "/lists/:todolistid";
-    public static final String TASKS_ROUTE = "/lists/:todolistid/:taskid";
 
     //TodoListApplication REST API URL parameters names.
     static final String TODO_LIST_ID_PARAM = ":todolistid";
@@ -86,16 +85,16 @@ public class TodoListApplication {
         service.exception(TaskNotFoundException.class, new TaskNotFoundHandler());
         service.exception(UpdateCompletedTaskException.class, new UpdateCompletedTaskHandler());
 
-        service.post(AUTHENTICATION_ROUTE, new AuthenticationHandler(authentication));
+        service.post(getAuthenticationRoute(), new AuthenticationHandler(authentication));
 
-        service.post(CREATE_LIST_ROUTE, new TodoListController.CreateTodoListRequestHandler(todoService));
+        service.post(getCreateTodoListRoute(), new TodoListController.CreateTodoListRequestHandler(todoService));
 
-        service.get(READ_TASKS_ROUTE, new ReadTasksRequestHandler(todoService));
+        service.get(getReadTasksRoute(), new ReadTasksRequestHandler(todoService));
 
-        service.get(TASKS_ROUTE, new GetTaskRequestHandler(todoService));
-        service.post(TASKS_ROUTE, new CreateTaskRequestHandler(todoService));
-        service.put(TASKS_ROUTE, new UpdateTaskRequestHandler(todoService));
-        service.delete(TASKS_ROUTE, new RemoveTaskRequestHandler(todoService));
+        service.get(getTasksRoute(), new GetTaskRequestHandler(todoService));
+        service.post(getTasksRoute(), new CreateTaskRequestHandler(todoService));
+        service.put(getTasksRoute(), new UpdateTaskRequestHandler(todoService));
+        service.delete(getTasksRoute(), new RemoveTaskRequestHandler(todoService));
     }
 
     /**
@@ -105,6 +104,7 @@ public class TodoListApplication {
         service.stop();
     }
 
+    @VisibleForTesting
     public Authentication getAuthentication() {
         return authentication;
     }

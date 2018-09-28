@@ -14,8 +14,8 @@ import java.util.Base64;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.javaclasses.todo.web.AuthenticationController.authenticationMethodName;
 import static org.javaclasses.todo.web.AuthenticationController.headerName;
+import static org.javaclasses.todo.web.Routes.getAuthenticationRoute;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
-import static org.javaclasses.todo.web.TodoListApplication.AUTHENTICATION_ROUTE;
 
 @DisplayName("AuthenticationController should")
 class AuthenticationHandlerTest extends AbstractHandlerTest {
@@ -54,7 +54,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         Response response = specification
                 .header(headerName(), getAuthenticationHeaderValue(USER_1.getPassword()))
                 .when()
-                .post(AUTHENTICATION_ROUTE);
+                .post(getAuthenticationRoute());
 
         Token token = null;
         if (!response.body()
@@ -77,7 +77,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         Response response = specification
                 .header(headerName(), getAuthenticationHeaderValue(invalidPassword))
                 .when()
-                .post(AUTHENTICATION_ROUTE);
+                .post(getAuthenticationRoute());
 
         Assertions.assertEquals(403, response.getStatusCode(),
                                 "responds with status code 403 when got invalid credentials, but it don't.");
@@ -89,7 +89,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         Response response = specification
                 .header("WRONG_HEADER", getAuthenticationHeaderValue(USER_1.getPassword()))
                 .when()
-                .post(AUTHENTICATION_ROUTE);
+                .post(getAuthenticationRoute());
 
         Assertions.assertEquals(401, response.getStatusCode(),
                                 "responds with status code 401, but it don't.");
@@ -102,7 +102,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         Response response = specification
                 .header(headerName(), "INVALID " + getBase64EncodedCredentials(USER_1.getPassword()))
                 .when()
-                .post(AUTHENTICATION_ROUTE);
+                .post(getAuthenticationRoute());
 
         Assertions.assertEquals(401, response.getStatusCode(),
                                 "responds with status code 401 when " +
@@ -117,7 +117,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .header(headerName(),
                         "INVALID" + getBase64EncodedCredentials(USER_1.getPassword()))
                 .when()
-                .post(AUTHENTICATION_ROUTE);
+                .post(getAuthenticationRoute());
 
         Assertions.assertEquals(400, response.getStatusCode(),
                                 "responds with status code 400 when space is absent after scheme name.");
@@ -130,7 +130,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         Response response = specification
                 .header(headerName(), "Basic " + getBase64EncodedInvalidFormatCredentials())
                 .when()
-                .post(AUTHENTICATION_ROUTE);
+                .post(getAuthenticationRoute());
 
         Assertions.assertEquals(400, response.getStatusCode(),
                                 "responds with status code 400 when encoded credentials in invalid format.");

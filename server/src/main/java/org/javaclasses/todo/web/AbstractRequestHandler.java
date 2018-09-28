@@ -2,6 +2,7 @@ package org.javaclasses.todo.web;
 
 import com.google.gson.Gson;
 import spark.Request;
+import spark.Response;
 import spark.Route;
 
 import java.util.HashMap;
@@ -47,7 +48,7 @@ abstract class AbstractRequestHandler<P> implements Route {
     }
 
     @Override
-    public Object handle(Request request, spark.Response response) {
+    public Object handle(Request request, Response response) {
         P value = null;
 
         if (payloadClass != Void.class) {

@@ -12,8 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
 import static org.javaclasses.todo.web.PortProvider.getAvailablePort;
+import static org.javaclasses.todo.web.Routes.getCreateTodoListRoute;
 import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
-import static org.javaclasses.todo.web.TodoListApplication.CREATE_LIST_ROUTE;
 
 //abstract test has nothing to test.
 @SuppressWarnings("AbstractClassWithoutAbstractMethods")
@@ -42,7 +42,7 @@ abstract class AbstractHandlerTest {
         String requestBody = new Gson().toJson(payload);
 
         specification.body(requestBody);
-        specification.post(CREATE_LIST_ROUTE);
+        specification.post(getCreateTodoListRoute());
     }
 
     void addTask(TaskId taskId, TodoListId todoListId, String description) {
@@ -57,7 +57,8 @@ abstract class AbstractHandlerTest {
                 todoListId.getValue(),
                 taskId.getValue()));
 
-        String taskJson = response.body().asString();
+        String taskJson = response.body()
+                                  .asString();
 
         return new Gson().fromJson(taskJson, Task.class);
     }
