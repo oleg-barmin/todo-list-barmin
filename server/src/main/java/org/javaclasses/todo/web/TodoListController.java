@@ -15,6 +15,8 @@ import static org.javaclasses.todo.web.TodoListApplication.TODO_LIST_ID_PARAM;
 
 /**
  * Processes requests which modifies {@link TodoList}.
+ *
+ * @author Oleg Barmin
  */
 class TodoListController {
 

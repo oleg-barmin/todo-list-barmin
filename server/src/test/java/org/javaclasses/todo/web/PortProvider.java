@@ -4,6 +4,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Provides ports for TodoList application testing.
+ *
+ * @author Oleg Barmin
  */
 class PortProvider {
 
@@ -12,7 +14,12 @@ class PortProvider {
     private PortProvider() {
     }
 
-    static int getPort() {
+    /**
+     * Provides available port.
+     *
+     * @return available port
+     */
+    static int getAvailablePort() {
         return atomicInteger.incrementAndGet();
     }
 }

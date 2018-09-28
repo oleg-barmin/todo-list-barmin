@@ -5,8 +5,11 @@ import java.util.Map;
 
 /**
  * Parameters of request.
+ *
+ * @author Oleg Barmin
  */
 class RequestParams {
+
     private final Map<String, String> paramsMap;
 
     /**

@@ -11,6 +11,8 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
  * Process user authentication requests.
+ *
+ * @author Oleg Barmin
  */
 class AuthenticationController {
 

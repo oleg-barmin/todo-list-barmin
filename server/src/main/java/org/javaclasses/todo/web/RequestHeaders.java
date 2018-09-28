@@ -5,8 +5,11 @@ import java.util.Map;
 
 /**
  * Headers of request.
+ *
+ * @author Oleg Barmin
  */
 class RequestHeaders {
+
     private final Map<String, String> headersMap;
 
     /**

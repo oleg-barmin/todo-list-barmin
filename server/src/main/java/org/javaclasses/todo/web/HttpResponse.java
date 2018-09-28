@@ -11,6 +11,8 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 /**
  * Response to request.
+ *
+ * @author Oleg Barmin
  */
 class HttpResponse {
 

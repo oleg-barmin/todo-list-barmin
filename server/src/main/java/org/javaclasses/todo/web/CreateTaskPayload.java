@@ -2,6 +2,8 @@ package org.javaclasses.todo.web;
 
 /**
  * Payload of create task request.
+ *
+ * @author Oleg Barmin
  */
 class CreateTaskPayload {
 

@@ -11,6 +11,8 @@ import spark.Response;
 
 /**
  * Exception handlers of exceptions which may occur in TodoList application.
+ *
+ * @author Oleg Barmin
  */
 //Contains inner classes to handle exceptions
 @SuppressWarnings("unused")

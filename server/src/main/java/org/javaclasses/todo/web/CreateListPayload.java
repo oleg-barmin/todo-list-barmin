@@ -4,6 +4,8 @@ import org.javaclasses.todo.model.TodoListId;
 
 /**
  * Payload of create list request.
+ *
+ * @author Oleg Barmin
  */
 public class CreateListPayload {
 

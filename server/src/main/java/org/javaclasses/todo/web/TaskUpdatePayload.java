@@ -2,6 +2,8 @@ package org.javaclasses.todo.web;
 
 /**
  * Payload of task update request.
+ *
+ * @author Oleg Barmin
  */
 class TaskUpdatePayload {
 

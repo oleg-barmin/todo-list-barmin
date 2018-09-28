@@ -6,8 +6,10 @@ import javax.annotation.Nullable;
  * Data of received request.
  *
  * @param <P> payload of received request
+ * @author Oleg Barmin
  */
 class RequestData<P> {
+
     private final P payload;
     private final RequestParams requestParams;
     private final RequestHeaders requestHeaders;

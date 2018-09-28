@@ -11,9 +11,11 @@ import java.util.Map;
  * Abstract handler of requests by endpoint.
  *
  * @param <P> payload of request to process.
+ * @author Oleg Barmin
  */
 abstract class AbstractRequestHandler<P> implements Route {
-    private final Class<P> valueClass;
+
+    private final Class<P> payloadClass;
 
     /**
      * Creates {@code AbstractRequestHandler} instance.
@@ -21,7 +23,7 @@ abstract class AbstractRequestHandler<P> implements Route {
      * @param payloadClass class of payload.
      */
     AbstractRequestHandler(Class<P> payloadClass) {
-        this.valueClass = payloadClass;
+        this.payloadClass = payloadClass;
     }
 
     /**
@@ -41,14 +43,14 @@ abstract class AbstractRequestHandler<P> implements Route {
      * @return object created from given JSON
      */
     private P objectFromJson(String json) {
-        return new Gson().fromJson(json, valueClass);
+        return new Gson().fromJson(json, payloadClass);
     }
 
     @Override
     public Object handle(Request request, spark.Response response) {
         P value = null;
 
-        if (valueClass != Void.class) {
+        if (payloadClass != Void.class) {
             value = objectFromJson(request.body());
         }
 

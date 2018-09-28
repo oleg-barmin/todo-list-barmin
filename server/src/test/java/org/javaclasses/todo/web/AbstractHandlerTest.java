@@ -11,14 +11,14 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
-import static org.javaclasses.todo.web.PortProvider.getPort;
+import static org.javaclasses.todo.web.PortProvider.getAvailablePort;
 import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
 import static org.javaclasses.todo.web.TodoListApplication.CREATE_LIST_ROUTE;
 
 //abstract test has nothing to test.
 @SuppressWarnings("AbstractClassWithoutAbstractMethods")
 abstract class AbstractHandlerTest {
-    private final int port = getPort();
+    private final int port = getAvailablePort();
 
     private final TodoListApplication todoListApplication = new TestTodoListApplication(port);
     private final RequestSpecification specification = given().port(port);
