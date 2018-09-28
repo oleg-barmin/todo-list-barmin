@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Base64;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static org.javaclasses.todo.web.AuthenticationController.authenticationMethodName;
 import static org.javaclasses.todo.web.AuthenticationController.headerName;
-import static org.javaclasses.todo.web.AuthenticationController.schemeName;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 import static org.javaclasses.todo.web.TodoListApplication.AUTHENTICATION_ROUTE;
 
@@ -32,7 +32,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
     }
 
     private static String getAuthenticationHeaderValue(Password password) {
-        return schemeName() + ' ' + getBase64EncodedCredentials(password);
+        return authenticationMethodName() + ' ' + getBase64EncodedCredentials(password);
     }
 
     private static String getBase64EncodedInvalidFormatCredentials() {

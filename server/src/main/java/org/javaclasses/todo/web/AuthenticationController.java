@@ -15,17 +15,39 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 class AuthenticationController {
 
     private static final String AUTHENTICATION_HEADER = "Authentication";
-    private static final String AUTHENTICATION_SCHEME = "Basic";
+    private static final String AUTHENTICATION_METHOD = "Basic";
 
     private AuthenticationController() {
     }
 
+    /**
+     * Provides Authentication header value.
+     *
+     * <p>Authentication header should be provided by user to authenticate into the system.
+     *
+     * <p>Value of Authentication header should be base64 encoded
+     * user credentials (username and password divided by single colon), divided by space.
+     *
+     * <p>Encoded user credentials should be prepended with authentication method and space.
+     *
+     * <p>Example of Header and its value:
+     * {@code Authentication: Basic bm90X2FfdXNlcjp3cm9uZ19wYXNzd29yZAo }
+     *
+     * @return name of Authentication header.
+     */
     static String headerName() {
         return AUTHENTICATION_HEADER;
     }
 
-    static String schemeName() {
-        return AUTHENTICATION_SCHEME;
+    /**
+     * Provides name of Authentication method.
+     *
+     * <p>In to-do list application by default it is Basic.
+     *
+     * @return name of Authentication method.
+     */
+    static String authenticationMethodName() {
+        return AUTHENTICATION_METHOD;
     }
 
     /**
@@ -58,22 +80,22 @@ class AuthenticationController {
          * - 200 with token if user was signed.
          */
         @Override
-        Response process(RequestData<Void> requestData) {
+        HttpResponse process(RequestData<Void> requestData) {
             String authorizationHeader = requestData.getRequestHeaders()
                                                     .getHeaderValue(AUTHENTICATION_HEADER);
 
             if (authorizationHeader == null) {
-                return Response.unauthorize();
+                return HttpResponse.unauthorize();
             }
 
             String[] schemeAndCredentials = authorizationHeader.split(" ");
 
             if (schemeAndCredentials.length != 2) {
-                return Response.badRequest();
+                return HttpResponse.badRequest();
             }
 
-            if (!schemeAndCredentials[0].equals(AUTHENTICATION_SCHEME)) {
-                return Response.unauthorize();
+            if (!schemeAndCredentials[0].equals(AUTHENTICATION_METHOD)) {
+                return HttpResponse.unauthorize();
             }
 
             String base64EncodedCredentials = schemeAndCredentials[1];
@@ -84,7 +106,7 @@ class AuthenticationController {
             String[] usernameAndPassword = decodedCredentials.split(":");
 
             if (usernameAndPassword.length != 2) {
-                return Response.badRequest();
+                return HttpResponse.badRequest();
             }
 
             Username username = new Username(usernameAndPassword[0]);
@@ -92,7 +114,7 @@ class AuthenticationController {
 
             Token token = authentication.signIn(username, password);
 
-            return Response.ok(objectToJson(token));
+            return HttpResponse.ok(objectToJson(token));
         }
     }
 

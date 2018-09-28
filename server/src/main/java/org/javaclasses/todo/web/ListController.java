@@ -35,7 +35,6 @@ class ListController {
             this.todoService = checkNotNull(todoService);
         }
 
-
         /**
          * Creates to-do list with ID specified in URL parameters.
          *
@@ -45,16 +44,16 @@ class ListController {
          * @throws AuthorizationFailedException if user token expired.
          */
         @Override
-        Response processVerifiedRequest(RequestData<CreateListPayload> requestData, Token token) {
+        HttpResponse processVerifiedRequest(RequestData<CreateListPayload> requestData, Token token) {
             CreateListPayload payload = requestData.getPayload();
 
             TodoListId todoListId = payload.getTodoListId();
 
             todoService.createList(todoListId)
-                    .authorizedWith(token)
-                    .execute();
+                       .authorizedWith(token)
+                       .execute();
 
-            return Response.ok();
+            return HttpResponse.ok();
         }
     }
 
@@ -74,7 +73,6 @@ class ListController {
             this.todoService = checkNotNull(todoService);
         }
 
-
         /**
          * Reads all tasks from to-do list with ID specified in URL params.
          *
@@ -87,18 +85,19 @@ class ListController {
          *                                      user has no permission to read task from this list.
          */
         @Override
-        Response processVerifiedRequest(RequestData<Void> requestData, Token token) {
-            String todoListIdParam = requestData.getRequestParams().getParamValue(TODO_LIST_ID_PARAM);
+        HttpResponse processVerifiedRequest(RequestData<Void> requestData, Token token) {
+            String todoListIdParam = requestData.getRequestParams()
+                                                .getParamValue(TODO_LIST_ID_PARAM);
 
             TodoListId todoListId = new TodoListId(todoListIdParam);
 
             List<Task> tasks = todoService.readTasksFrom(todoListId)
-                    .authorizedWith(token)
-                    .execute();
+                                          .authorizedWith(token)
+                                          .execute();
 
             String answerBody = objectToJson(tasks);
 
-            return Response.ok(answerBody);
+            return HttpResponse.ok(answerBody);
         }
     }
 }

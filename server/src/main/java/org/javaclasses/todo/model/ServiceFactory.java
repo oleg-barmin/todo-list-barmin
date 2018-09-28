@@ -18,10 +18,6 @@ public class ServiceFactory {
     private Authentication authentication;
     private TodoService todoService;
 
-    public ServiceFactory(StorageFactory storageFactory) {
-        this.storageFactory = storageFactory;
-    }
-
     public ServiceFactory() {
         storageFactory = new StorageFactory();
     }
@@ -49,7 +45,8 @@ public class ServiceFactory {
     public synchronized Authentication getAuthentication() {
         if (authentication == null) {
             authentication =
-                    new Authentication(storageFactory.getUserStorage(), storageFactory.getAuthSessionStorage());
+                    new Authentication(storageFactory.getUserStorage(),
+                                       storageFactory.getAuthSessionStorage());
         }
         return authentication;
     }

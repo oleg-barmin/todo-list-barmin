@@ -9,8 +9,6 @@ import spark.ExceptionHandler;
 import spark.Request;
 import spark.Response;
 
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-
 /**
  * Exception handlers of exceptions which may occur in TodoList application.
  */
@@ -19,12 +17,12 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 class ExceptionHandlers {
 
     /**
-     * Handles thrown AuthorizationFailedException.
+     * Handles thrown {@link AuthorizationFailedException}.
      */
     public static class AuthorizationFailedHandler implements ExceptionHandler<AuthorizationFailedException> {
 
         /**
-         * Response with status code 403 and exception message in body.
+         * Responses with status code 403.
          *
          * @param exception occurred exception instance
          * @param request   request which caused exception
@@ -32,18 +30,18 @@ class ExceptionHandlers {
          */
         @Override
         public void handle(AuthorizationFailedException exception, Request request, Response response) {
-            response.status(HTTP_FORBIDDEN);
-            response.body(exception.getMessage());
+            HttpResponse httpResponse = HttpResponse.forbidden();
+            httpResponse.writeTo(response);
         }
     }
 
     /**
-     * Handles thrown InvalidCredentialsException.
+     * Handles thrown {@link InvalidCredentialsException}.
      */
     public static class InvalidCredentialsHandler implements ExceptionHandler<InvalidCredentialsException> {
 
         /**
-         * Response with status code 403 and exception message in body.
+         * Responses with status code 403.
          *
          * @param exception occurred exception instance
          * @param request   request which caused exception
@@ -51,64 +49,65 @@ class ExceptionHandlers {
          */
         @Override
         public void handle(InvalidCredentialsException exception, Request request, Response response) {
-            response.status(HTTP_FORBIDDEN);
-            response.body(exception.getMessage());
+            HttpResponse httpResponse = HttpResponse.forbidden();
+            httpResponse.writeTo(response);
         }
     }
 
     /**
-     * Handles thrown TodoListNotFoundException.
+     * Handles thrown {@link TodoListNotFoundException}.
      */
     public static class TodoListNotFoundHandler implements ExceptionHandler<TodoListNotFoundException> {
 
         /**
-         * Response with status code 403 and exception message in body.
+         * Responses with status code 403.
          *
          * @param exception occurred exception instance
-         * @param request request which caused exception
-         * @param response response to configure
+         * @param request   request which caused exception
+         * @param response  response to configure
          */
         @Override
         public void handle(TodoListNotFoundException exception, Request request, Response response) {
-            response.status(HTTP_FORBIDDEN);
+            HttpResponse httpResponse = HttpResponse.forbidden();
+            httpResponse.writeTo(response);
         }
     }
 
     /**
-     * Handles TaskNotFoundException.
+     * Handles {@link TaskNotFoundException}.
      */
     public static class TaskNotFoundHandler implements ExceptionHandler<TaskNotFoundException> {
 
         /**
-         * Response with status code 403 and exception message in body.
+         * Responses with status code 403.
          *
          * @param exception occurred exception instance
-         * @param request request which caused exception
-         * @param response response to configure
+         * @param request   request which caused exception
+         * @param response  response to configure
          */
         @Override
         public void handle(TaskNotFoundException exception, Request request, Response response) {
-            response.status(HTTP_FORBIDDEN);
-            response.body("");
+            HttpResponse httpResponse = HttpResponse.forbidden();
+            httpResponse.writeTo(response);
         }
     }
 
     /**
-     * Handles UpdateCompletedTaskException.
+     * Handles {@link UpdateCompletedTaskException}.
      */
     public static class UpdateCompletedTaskHandler implements ExceptionHandler<UpdateCompletedTaskException> {
 
         /**
-         * Response with status code 403 and exception message in body.
+         * Responses with status code 403.
          *
          * @param exception occurred exception instance
-         * @param request request which caused exception
-         * @param response response to configure
+         * @param request   request which caused exception
+         * @param response  response to configure
          */
         @Override
         public void handle(UpdateCompletedTaskException exception, Request request, Response response) {
-            response.status(HTTP_FORBIDDEN);
-            response.body(exception.getMessage());
+            HttpResponse httpResponse = HttpResponse.forbidden();
+            httpResponse.writeTo(response);
         }
     }
 }

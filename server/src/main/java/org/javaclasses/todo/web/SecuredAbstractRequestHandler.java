@@ -22,12 +22,12 @@ abstract class SecuredAbstractRequestHandler<P> extends AbstractRequestHandler<P
     }
 
     @Override
-    Response process(RequestData<P> requestData) {
+    HttpResponse process(RequestData<P> requestData) {
         String headerValue = requestData.getRequestHeaders()
                                         .getHeaderValue(X_TODO_TOKEN);
 
         if (headerValue == null) {
-            return Response.unauthorize();
+            return HttpResponse.unauthorize();
         }
 
         Token token = new Token(headerValue);
@@ -42,5 +42,5 @@ abstract class SecuredAbstractRequestHandler<P> extends AbstractRequestHandler<P
      * @param token       token of user who sent request
      * @return answer to received request
      */
-    abstract Response processVerifiedRequest(RequestData<P> requestData, Token token);
+    abstract HttpResponse processVerifiedRequest(RequestData<P> requestData, Token token);
 }

@@ -53,14 +53,15 @@ abstract class AbstractRequestHandler<P> implements Route {
         }
 
         Map<String, String> headersMap = new HashMap<>();
-        request.headers().forEach(header -> headersMap.put(header, request.headers(header)));
+        request.headers()
+               .forEach(header -> headersMap.put(header, request.headers(header)));
 
         RequestHeaders requestHeaders = new RequestHeaders(headersMap);
         RequestParams requestParams = new RequestParams(request.params());
 
         RequestData<P> requestData = new RequestData<>(value, requestParams, requestHeaders);
 
-        Response answer = process(requestData);
+        HttpResponse answer = process(requestData);
 
         response.status(answer.getCode());
         response.body(answer.getBody());
@@ -74,5 +75,5 @@ abstract class AbstractRequestHandler<P> implements Route {
      * @param requestData data of request
      * @return answer to requestData
      */
-    abstract Response process(RequestData<P> requestData);
+    abstract HttpResponse process(RequestData<P> requestData);
 }
