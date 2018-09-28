@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler.AUTHENTICATION_HEADER;
-import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler.AUTHENTICATION_SCHEME;
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static org.javaclasses.todo.web.AuthenticationController.headerName;
+import static org.javaclasses.todo.web.AuthenticationController.schemeName;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 import static org.javaclasses.todo.web.TodoListApplication.AUTHENTICATION_ROUTE;
 
@@ -22,22 +22,29 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
 
     private final RequestSpecification specification = getRequestSpecification();
 
-    private String getBase64EncodedCredentials(Password password) {
-        String credentials = String.format("%s:%s", USER_1.getUsername().getValue(), password.getValue());
-        String base64EncodedCredentials = new String(Base64.getEncoder().encode(credentials.getBytes(UTF_8)), UTF_8);
+    private static String getBase64EncodedCredentials(Password password) {
+        String credentials = String.format("%s:%s", USER_1.getUsername()
+                                                          .getValue(), password.getValue());
+        String base64EncodedCredentials = new String(Base64.getEncoder()
+                                                           .encode(credentials.getBytes(US_ASCII)), US_ASCII);
 
         return base64EncodedCredentials;
     }
 
-
-    private String getAuthenticationHeaderValue(Password password) {
-        return AUTHENTICATION_SCHEME + ' ' + getBase64EncodedCredentials(password);
+    private static String getAuthenticationHeaderValue(Password password) {
+        return schemeName() + ' ' + getBase64EncodedCredentials(password);
     }
 
-    private String getBase64EncodedInvalidFormatCredentials() {
-        String credentials = String.format("%s:%s:%s", USER_1.getUsername().getValue(),
-                USER_1.getPassword().getValue(), "invalid");
-        String base64EncodedCredentials = new String(Base64.getEncoder().encode(credentials.getBytes(UTF_8)), UTF_8);
+    private static String getBase64EncodedInvalidFormatCredentials() {
+        String credentials = String.format("%s:%s:%s",
+                                           USER_1.getUsername()
+                                                 .getValue(),
+                                           USER_1.getPassword()
+                                                 .getValue(),
+                                           "invalid");
+
+        String base64EncodedCredentials = new String(Base64.getEncoder()
+                                                           .encode(credentials.getBytes(US_ASCII)), US_ASCII);
         return base64EncodedCredentials;
     }
 
@@ -45,18 +52,20 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
     @DisplayName("authenticate registered users and provide them `Token`s.")
     void testValidCredentials() {
         Response response = specification
-                .header(AUTHENTICATION_HEADER, getAuthenticationHeaderValue(USER_1.getPassword()))
+                .header(headerName(), getAuthenticationHeaderValue(USER_1.getPassword()))
                 .when()
                 .post(AUTHENTICATION_ROUTE);
 
-
         Token token = null;
-        if (!response.body().asString().isEmpty()) {
-            token = new Gson().fromJson(response.body().asString(), Token.class);
+        if (!response.body()
+                     .asString()
+                     .isEmpty()) {
+            token = new Gson().fromJson(response.body()
+                                                .asString(), Token.class);
         }
 
         Assertions.assertEquals(200, response.getStatusCode(),
-                "responds with status code 200, but it don't.");
+                                "responds with status code 200, but it don't.");
         Assertions.assertNotNull(token, "provide token, but it don't.");
     }
 
@@ -66,12 +75,12 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         Password invalidPassword = new Password("_invalidPassWord13_");
 
         Response response = specification
-                .header(AUTHENTICATION_HEADER, getAuthenticationHeaderValue(invalidPassword))
+                .header(headerName(), getAuthenticationHeaderValue(invalidPassword))
                 .when()
                 .post(AUTHENTICATION_ROUTE);
 
         Assertions.assertEquals(403, response.getStatusCode(),
-                "responds with status code 403 when got invalid credentials, but it don't.");
+                                "responds with status code 403 when got invalid credentials, but it don't.");
     }
 
     @Test
@@ -83,7 +92,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .post(AUTHENTICATION_ROUTE);
 
         Assertions.assertEquals(401, response.getStatusCode(),
-                "responds with status code 401, but it don't.");
+                                "responds with status code 401, but it don't.");
     }
 
     @Test
@@ -91,13 +100,13 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
     void testInvalidAuthScheme() {
         //invalid authentication scheme
         Response response = specification
-                .header(AUTHENTICATION_HEADER, "INVALID " + getBase64EncodedCredentials(USER_1.getPassword()))
+                .header(headerName(), "INVALID " + getBase64EncodedCredentials(USER_1.getPassword()))
                 .when()
                 .post(AUTHENTICATION_ROUTE);
 
-        Assertions.assertEquals(403, response.getStatusCode(),
-                "responds with status code 403 when invalid occurs scheme in Authentication header, " +
-                        "but it don't.");
+        Assertions.assertEquals(401, response.getStatusCode(),
+                                "responds with status code 401 when " +
+                                        "invalid occurs scheme in Authentication header, but it don't.");
     }
 
     @Test
@@ -105,13 +114,13 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
     void testInvalidHeaderValue() {
         //missing space after authentication scheme
         Response response = specification
-                .header(AUTHENTICATION_HEADER,
+                .header(headerName(),
                         "INVALID" + getBase64EncodedCredentials(USER_1.getPassword()))
                 .when()
                 .post(AUTHENTICATION_ROUTE);
 
-        Assertions.assertEquals(403, response.getStatusCode(),
-                "responds with status code 403 when space is absent after scheme name.");
+        Assertions.assertEquals(400, response.getStatusCode(),
+                                "responds with status code 400 when space is absent after scheme name.");
     }
 
     @Test
@@ -119,11 +128,11 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
     void testInvalidDecodedCredentialsFormat() {
         //invalid credentials format
         Response response = specification
-                .header(AUTHENTICATION_HEADER, "Basic " + getBase64EncodedInvalidFormatCredentials())
+                .header(headerName(), "Basic " + getBase64EncodedInvalidFormatCredentials())
                 .when()
                 .post(AUTHENTICATION_ROUTE);
 
-        Assertions.assertEquals(403, response.getStatusCode(),
-                "responds with status code 403 when encoded credentials in invalid format.");
+        Assertions.assertEquals(400, response.getStatusCode(),
+                                "responds with status code 400 when encoded credentials in invalid format.");
     }
 }
