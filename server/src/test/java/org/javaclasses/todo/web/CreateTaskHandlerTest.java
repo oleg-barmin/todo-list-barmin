@@ -12,15 +12,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
-import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
+import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("CreateTaskHandlerTest should")
 class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
 
@@ -43,7 +45,7 @@ class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
         addTodoList(todoListId);
 
         Response response = specification.body(payload)
-                                         .post(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
+                                         .post(getTaskUrl(todoListId, taskId));
         response.then()
                 .statusCode(describedAs("response with status code 200, but it don't.", is(HTTP_OK)));
 
@@ -65,6 +67,6 @@ class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
         CreateTaskPayload payload = new CreateTaskPayload("implement task creation tests");
 
         return specification.body(payload)
-                            .post(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
+                            .post(getTaskUrl(todoListId, taskId));
     }
 }

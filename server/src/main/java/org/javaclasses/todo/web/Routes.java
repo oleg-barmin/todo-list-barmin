@@ -6,9 +6,8 @@ package org.javaclasses.todo.web;
 class Routes {
 
     private static final String AUTHENTICATION_ROUTE = "/auth";
-    private static final String CREATE_TODO_LIST_ROUTE = "/lists";
-    private static final String READ_TASKS_ROUTE = "/lists/:todolistid";
-    private static final String TASKS_ROUTE = "/lists/:todolistid/:taskid";
+    private static final String TODO_LIST_ROUTE = "/lists/:todolistid";
+    private static final String TASK_ROUTE = "/lists/:todolistid/:taskid";
 
     private Routes() {
     }
@@ -22,22 +21,14 @@ class Routes {
         return AUTHENTICATION_ROUTE;
     }
 
-    /**
-     * Provides create to-do list route.
-     *
-     * @return create to-do list route
-     */
-    static String getCreateTodoListRoute() {
-        return CREATE_TODO_LIST_ROUTE;
-    }
 
     /**
      * Provides read tasks route.
      *
      * @return read tasks route
      */
-    static String getReadTasksRoute() {
-        return READ_TASKS_ROUTE;
+    static String getTodoListRoute() {
+        return TODO_LIST_ROUTE;
     }
 
     /**
@@ -45,7 +36,7 @@ class Routes {
      *
      * @return tasks route.
      */
-    static String getTasksRoute() {
-        return TASKS_ROUTE;
+    static String getTaskRoute() {
+        return TASK_ROUTE;
     }
 }

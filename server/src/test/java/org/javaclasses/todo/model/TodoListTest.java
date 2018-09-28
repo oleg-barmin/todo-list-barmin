@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+/**
+ * @author Oleg Barmin
+ */
 /* Duplicate literals of hashcode and equals test were left for better readability.*/
 @SuppressWarnings("DuplicateStringLiteralInspection")
 @DisplayName("TodoList should")

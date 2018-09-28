@@ -21,9 +21,12 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.describedAs;
 import static org.hamcrest.CoreMatchers.is;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
-import static org.javaclasses.todo.web.TestRoutesFormat.TODO_LIST_ROUTE_FORMAT;
+import static org.javaclasses.todo.web.TestRoutesProvider.getTodoListUrl;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("ReadTaskHandler should")
 class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
     private final RequestSpecification specification = getRequestSpecification();
@@ -53,7 +56,7 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
         addedTasks.add(firstTask);
         addedTasks.add(secondTask);
 
-        Response response = specification.get(String.format(TODO_LIST_ROUTE_FORMAT, todoListId.getValue()));
+        Response response = specification.get(getTodoListUrl(todoListId));
 
         response.then()
                 .statusCode(describedAs("return status code 200, when" +
@@ -91,6 +94,6 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
         addTask(firstTaskId, todoListId, "write negative cases tests on read tasks.");
         addTask(secondTaskId, todoListId, "write more negative tests");
 
-        return specification.get(String.format(TODO_LIST_ROUTE_FORMAT, todoListId.getValue()));
+        return specification.get(getTodoListUrl(todoListId));
     }
 }

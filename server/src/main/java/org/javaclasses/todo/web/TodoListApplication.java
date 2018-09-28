@@ -11,17 +11,17 @@ import org.javaclasses.todo.model.TodoService;
 import org.javaclasses.todo.model.UpdateCompletedTaskException;
 import spark.Service;
 
+import java.util.regex.Pattern;
+
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
-import static org.javaclasses.todo.web.Configurations.getDefaultPort;
 import static org.javaclasses.todo.web.ExceptionHandlers.AuthorizationFailedHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.InvalidCredentialsHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.TaskNotFoundHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.TodoListNotFoundHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.UpdateCompletedTaskHandler;
 import static org.javaclasses.todo.web.Routes.getAuthenticationRoute;
-import static org.javaclasses.todo.web.Routes.getCreateTodoListRoute;
-import static org.javaclasses.todo.web.Routes.getReadTasksRoute;
-import static org.javaclasses.todo.web.Routes.getTasksRoute;
+import static org.javaclasses.todo.web.Routes.getTaskRoute;
+import static org.javaclasses.todo.web.Routes.getTodoListRoute;
 import static org.javaclasses.todo.web.TaskController.CreateTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.GetTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.RemoveTaskRequestHandler;
@@ -53,8 +53,6 @@ public class TodoListApplication {
     static final String TODO_LIST_ID_PARAM = ":todolistid";
     static final String TASK_ID_PARAM = ":taskid";
 
-
-
     private final Service service = ignite();
     private final Authentication authentication;
     private final TodoService todoService;
@@ -72,7 +70,13 @@ public class TodoListApplication {
     }
 
     public static void main(String[] args) {
-        new TodoListApplication(getDefaultPort()).start();
+
+        final Pattern pattern = Pattern.compile(TODO_LIST_ID_PARAM + '|' + TASK_ID_PARAM);
+        String all = pattern.matcher(Routes.getTaskRoute())
+                            .replaceAll("%s");
+        System.out.println(all);
+
+//        new TodoListApplication(getDefaultPort()).start();
     }
 
     /**
@@ -88,14 +92,14 @@ public class TodoListApplication {
 
         service.post(getAuthenticationRoute(), new AuthenticationHandler(authentication));
 
-        service.post(getCreateTodoListRoute(), new TodoListController.CreateTodoListRequestHandler(todoService));
+        service.post(getTodoListRoute(), new TodoListController.CreateTodoListRequestHandler(todoService));
 
-        service.get(getReadTasksRoute(), new ReadTasksRequestHandler(todoService));
+        service.get(getTodoListRoute(), new ReadTasksRequestHandler(todoService));
 
-        service.get(getTasksRoute(), new GetTaskRequestHandler(todoService));
-        service.post(getTasksRoute(), new CreateTaskRequestHandler(todoService));
-        service.put(getTasksRoute(), new UpdateTaskRequestHandler(todoService));
-        service.delete(getTasksRoute(), new RemoveTaskRequestHandler(todoService));
+        service.get(getTaskRoute(), new GetTaskRequestHandler(todoService));
+        service.post(getTaskRoute(), new CreateTaskRequestHandler(todoService));
+        service.put(getTaskRoute(), new UpdateTaskRequestHandler(todoService));
+        service.delete(getTaskRoute(), new RemoveTaskRequestHandler(todoService));
     }
 
     /**
@@ -109,4 +113,5 @@ public class TodoListApplication {
     public Authentication getAuthentication() {
         return authentication;
     }
+
 }

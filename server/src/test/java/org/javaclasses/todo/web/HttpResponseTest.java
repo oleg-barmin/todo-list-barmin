@@ -4,6 +4,9 @@ import com.google.common.testing.EqualsTester;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("HttpResponse should")
 class HttpResponseTest {
 

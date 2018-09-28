@@ -13,10 +13,13 @@ import java.util.UUID;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
-import static org.javaclasses.todo.web.Routes.getCreateTodoListRoute;
+import static org.javaclasses.todo.web.Routes.getTodoListRoute;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("CreateListHandler should")
 class CreateListHandlerTest extends AbstractSecuredHandlerTest {
 
@@ -34,7 +37,7 @@ class CreateListHandlerTest extends AbstractSecuredHandlerTest {
                 .header(X_TODO_TOKEN, USER_1.getToken()
                                             .getValue())
                 .body(payload)
-                .post(getCreateTodoListRoute());
+                .post(getTodoListRoute());
 
         response.then()
                 .statusCode(describedAs("response status must be 200, " +
@@ -49,6 +52,6 @@ class CreateListHandlerTest extends AbstractSecuredHandlerTest {
         );
 
         return specification.body(payload)
-                            .post(getCreateTodoListRoute());
+                            .post(getTodoListRoute());
     }
 }

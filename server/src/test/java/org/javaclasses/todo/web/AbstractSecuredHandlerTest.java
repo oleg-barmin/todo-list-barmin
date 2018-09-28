@@ -15,6 +15,9 @@ import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKE
 import static org.javaclasses.todo.web.TestUsers.UN_SINGED_IN_USER;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
+/**
+ * @author Oleg Barmin
+ */
 abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
 
     private final RequestSpecification specification = getRequestSpecification();

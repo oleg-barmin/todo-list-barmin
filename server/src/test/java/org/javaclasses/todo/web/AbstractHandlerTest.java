@@ -8,12 +8,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import static io.restassured.RestAssured.given;
-import static java.lang.String.format;
 import static org.javaclasses.todo.web.Configurations.getContentType;
 import static org.javaclasses.todo.web.PortProvider.getAvailablePort;
-import static org.javaclasses.todo.web.Routes.getCreateTodoListRoute;
-import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
+import static org.javaclasses.todo.web.Routes.getTodoListRoute;
+import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
 
+/**
+ * @author Oleg Barmin
+ */
 //abstract test has nothing to test.
 @SuppressWarnings("AbstractClassWithoutAbstractMethods")
 abstract class AbstractHandlerTest {
@@ -40,20 +42,17 @@ abstract class AbstractHandlerTest {
     void addTodoList(TodoListId todoListId) {
         CreateListPayload payload = new CreateListPayload(todoListId);
         specification.body(payload);
-        specification.post(getCreateTodoListRoute());
+        specification.post(getTodoListRoute());
     }
 
     void addTask(TaskId taskId, TodoListId todoListId, String description) {
         CreateTaskPayload payload = new CreateTaskPayload(description);
         specification.body(payload)
-                     .post(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
+                     .post(getTaskUrl(todoListId, taskId));
     }
 
     Task readTask(TodoListId todoListId, TaskId taskId) {
-        return specification.get(format(
-                TASK_ROUTE_FORMAT,
-                todoListId.getValue(),
-                taskId.getValue()))
+        return specification.get(getTaskUrl(todoListId, taskId))
                             .body()
                             .as(Task.class);
     }

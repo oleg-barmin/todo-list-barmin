@@ -22,6 +22,9 @@ import static org.javaclasses.todo.web.AuthenticationController.headerName;
 import static org.javaclasses.todo.web.Routes.getAuthenticationRoute;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("AuthenticationController should")
 class AuthenticationHandlerTest extends AbstractHandlerTest {
 

@@ -12,15 +12,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.DescribedAs.describedAs;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
-import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
+import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("GetTaskHandler should")
 class GetTaskHandlerTest extends AbstractSecuredHandlerTest {
 
@@ -40,7 +42,7 @@ class GetTaskHandlerTest extends AbstractSecuredHandlerTest {
         addTodoList(todoListId);
         addTask(taskId, todoListId, "write tests on find task by ID.");
 
-        specification.get(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()))
+        specification.get(getTaskUrl(todoListId, taskId))
                      .then()
                      .statusCode(describedAs("return status code 200, " +
                                                      "when signed in user find tasks by ID from his to-do list.",
@@ -58,6 +60,6 @@ class GetTaskHandlerTest extends AbstractSecuredHandlerTest {
         addTodoList(todoListId);
         addTask(taskId, todoListId, "write negative cases tests on find task by ID.");
 
-        return specification.get(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
+        return specification.get(getTaskUrl(todoListId, taskId));
     }
 }

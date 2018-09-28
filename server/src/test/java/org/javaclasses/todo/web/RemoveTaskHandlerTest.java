@@ -11,14 +11,16 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
-import static org.javaclasses.todo.web.TestRoutesFormat.TASK_ROUTE_FORMAT;
+import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
+/**
+ * @author Oleg Barmin
+ */
 @DisplayName("RemoveTaskHandler should")
 class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
 
@@ -35,7 +37,7 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
         addTodoList(todoListId);
         addTask(taskId, todoListId, "write tests on remove task by ID.");
 
-        Response response = specification.delete(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
+        Response response = specification.delete(getTaskUrl(todoListId, taskId));
 
         response.then()
                 .statusCode(describedAs("return status code 200, when " +
@@ -50,6 +52,6 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
         addTodoList(todoListId);
         addTask(taskId, todoListId, "write negative cases tests on remove task by ID.");
 
-        return specification.delete(format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue()));
+        return specification.delete(getTaskUrl(todoListId, taskId));
     }
 }
