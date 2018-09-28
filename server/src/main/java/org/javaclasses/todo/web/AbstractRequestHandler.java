@@ -2,7 +2,6 @@ package org.javaclasses.todo.web;
 
 import com.google.gson.Gson;
 import spark.Request;
-import spark.Response;
 import spark.Route;
 
 import java.util.HashMap;
@@ -46,7 +45,7 @@ abstract class AbstractRequestHandler<P> implements Route {
     }
 
     @Override
-    public Object handle(Request request, Response response) {
+    public Object handle(Request request, spark.Response response) {
         P value = null;
 
         if (valueClass != Void.class) {
@@ -61,7 +60,7 @@ abstract class AbstractRequestHandler<P> implements Route {
 
         RequestData<P> requestData = new RequestData<>(value, requestParams, requestHeaders);
 
-        Answer answer = process(requestData);
+        Response answer = process(requestData);
 
         response.status(answer.getCode());
         response.body(answer.getBody());
@@ -75,5 +74,5 @@ abstract class AbstractRequestHandler<P> implements Route {
      * @param requestData data of request
      * @return answer to requestData
      */
-    abstract Answer process(RequestData<P> requestData);
+    abstract Response process(RequestData<P> requestData);
 }

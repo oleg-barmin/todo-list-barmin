@@ -2,8 +2,6 @@ package org.javaclasses.todo.web;
 
 import org.javaclasses.todo.model.Token;
 
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-
 /**
  * Secured request handler, which verifies {@link Token} in header of Request.
  *
@@ -24,11 +22,12 @@ abstract class SecuredAbstractRequestHandler<P> extends AbstractRequestHandler<P
     }
 
     @Override
-    Answer process(RequestData<P> requestData) {
-        String headerValue = requestData.getRequestHeaders().getHeaderValue(X_TODO_TOKEN);
+    Response process(RequestData<P> requestData) {
+        String headerValue = requestData.getRequestHeaders()
+                                        .getHeaderValue(X_TODO_TOKEN);
 
         if (headerValue == null) {
-            return new Answer(HTTP_UNAUTHORIZED);
+            return Response.unauthorize();
         }
 
         Token token = new Token(headerValue);
@@ -43,5 +42,5 @@ abstract class SecuredAbstractRequestHandler<P> extends AbstractRequestHandler<P
      * @param token       token of user who sent request
      * @return answer to received request
      */
-    abstract Answer processVerifiedRequest(RequestData<P> requestData, Token token);
+    abstract Response processVerifiedRequest(RequestData<P> requestData, Token token);
 }

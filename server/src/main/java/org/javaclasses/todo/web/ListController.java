@@ -1,6 +1,12 @@
 package org.javaclasses.todo.web;
 
-import org.javaclasses.todo.model.*;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.Task;
+import org.javaclasses.todo.model.TodoList;
+import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.model.TodoListNotFoundException;
+import org.javaclasses.todo.model.TodoService;
+import org.javaclasses.todo.model.Token;
 
 import java.util.List;
 
@@ -39,7 +45,7 @@ class ListController {
          * @throws AuthorizationFailedException if user token expired.
          */
         @Override
-        Answer processVerifiedRequest(RequestData<CreateListPayload> requestData, Token token) {
+        Response processVerifiedRequest(RequestData<CreateListPayload> requestData, Token token) {
             CreateListPayload payload = requestData.getPayload();
 
             TodoListId todoListId = payload.getTodoListId();
@@ -48,7 +54,7 @@ class ListController {
                     .authorizedWith(token)
                     .execute();
 
-            return Answer.ok();
+            return Response.ok();
         }
     }
 
@@ -81,7 +87,7 @@ class ListController {
          *                                      user has no permission to read task from this list.
          */
         @Override
-        Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
+        Response processVerifiedRequest(RequestData<Void> requestData, Token token) {
             String todoListIdParam = requestData.getRequestParams().getParamValue(TODO_LIST_ID_PARAM);
 
             TodoListId todoListId = new TodoListId(todoListIdParam);
@@ -92,7 +98,7 @@ class ListController {
 
             String answerBody = objectToJson(tasks);
 
-            return Answer.ok(answerBody);
+            return Response.ok(answerBody);
         }
     }
 }

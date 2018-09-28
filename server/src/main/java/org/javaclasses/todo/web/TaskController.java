@@ -1,6 +1,13 @@
 package org.javaclasses.todo.web;
 
-import org.javaclasses.todo.model.*;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.Task;
+import org.javaclasses.todo.model.TaskId;
+import org.javaclasses.todo.model.TaskNotFoundException;
+import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.model.TodoListNotFoundException;
+import org.javaclasses.todo.model.TodoService;
+import org.javaclasses.todo.model.Token;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.javaclasses.todo.web.TodoListApplication.TASK_ID_PARAM;
@@ -69,7 +76,7 @@ class TaskController {
          *                                      user has no permission to modify to-do list with given ID
          */
         @Override
-        Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
+        Response processVerifiedRequest(RequestData<Void> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             Task task = todoService.findTask(taskId).
@@ -78,7 +85,7 @@ class TaskController {
 
             String answerBody = objectToJson(task);
 
-            return Answer.ok(answerBody);
+            return Response.ok(answerBody);
         }
     }
 
@@ -113,7 +120,7 @@ class TaskController {
          *                                      user has no permission to modify to-do list with given ID
          */
         @Override
-        Answer processVerifiedRequest(RequestData<CreateTaskPayload> requestData, Token token) {
+        Response processVerifiedRequest(RequestData<CreateTaskPayload> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
             TodoListId todoListId = extractTodoListId(requestData.getRequestParams());
 
@@ -126,7 +133,7 @@ class TaskController {
                     .withDescription(taskDescription)
                     .execute();
 
-            return Answer.ok();
+            return Response.ok();
         }
     }
 
@@ -161,7 +168,7 @@ class TaskController {
          *                                      user has no permission to modify to-do list with given ID
          */
         @Override
-        Answer processVerifiedRequest(RequestData<TaskUpdatePayload> requestData, Token token) {
+        Response processVerifiedRequest(RequestData<TaskUpdatePayload> requestData, Token token) {
             TaskUpdatePayload payload = requestData.getPayload();
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
@@ -174,7 +181,7 @@ class TaskController {
                     .withDescription(taskDescription)
                     .execute();
 
-            return Answer.ok();
+            return Response.ok();
         }
     }
 
@@ -207,14 +214,14 @@ class TaskController {
          *                                      user has no permission to modify to-do list with given ID
          */
         @Override
-        Answer processVerifiedRequest(RequestData<Void> requestData, Token token) {
+        Response processVerifiedRequest(RequestData<Void> requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             todoService.removeTask(taskId)
                     .authorizedWith(token)
                     .execute();
 
-            return Answer.ok();
+            return Response.ok();
         }
     }
 }
