@@ -23,7 +23,7 @@ import static org.javaclasses.todo.web.TestUsers.USER_1;
  * @author Oleg Barmin
  */
 @DisplayName("CreateListHandler should")
-class CreateListHandlerTest extends AbstractSecuredHandlerTest {
+class CreateListHandlerTest extends AbstractPayloadHandlerTest {
 
     private final RequestSpecification specification = getRequestSpecification();
 
@@ -76,5 +76,10 @@ class CreateListHandlerTest extends AbstractSecuredHandlerTest {
 
         return specification.body(payload)
                             .post(getTodoListRoute());
+    }
+
+    @Override
+    Response sendEmptyPayloadRequest() {
+        return specification.post(getTodoListRoute());
     }
 }

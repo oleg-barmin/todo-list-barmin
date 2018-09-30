@@ -19,7 +19,7 @@ import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
 @DisplayName("UpdateTaskHandler should")
-class UpdateTaskHandlerTest extends AbstractSecuredHandlerTest {
+class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
 
     private final RequestSpecification specification = getRequestSpecification();
 
@@ -129,11 +129,25 @@ class UpdateTaskHandlerTest extends AbstractSecuredHandlerTest {
                                                    .toString());
 
         addTodoList(todoListId);
-        addTask(taskId, todoListId, "write negative cases tests on task update.");
+        addTask(taskId, todoListId, "implement sendRequest method in task update handler test.");
 
         TaskUpdatePayload payload = new TaskUpdatePayload(false, "new task description");
 
         return specification.body(payload)
+                            .put(getTaskUrl(todoListId, taskId));
+    }
+
+    @Override
+    Response sendEmptyPayloadRequest() {
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+
+        addTodoList(todoListId);
+        addTask(taskId, todoListId, "any description");
+
+        return specification.body("")
                             .put(getTaskUrl(todoListId, taskId));
     }
 }

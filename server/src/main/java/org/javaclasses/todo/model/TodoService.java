@@ -88,7 +88,7 @@ public class TodoService {
             throw new TaskAlreadyExistsException(taskId);
         }
 
-        return new AddTask(taskId, taskStorage, authentication);
+        return new AddTask(taskId, taskStorage, authentication, authorization);
     }
 
     /**

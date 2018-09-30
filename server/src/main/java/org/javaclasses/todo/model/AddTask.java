@@ -22,6 +22,7 @@ public final class AddTask extends Operation<AddTask> {
 
     private final TaskStorage taskStorage;
     private Task.TaskBuilder taskBuilder;
+    private final Authorization authorization;
 
     /**
      * Creates {@code AddTask} instance.
@@ -29,11 +30,13 @@ public final class AddTask extends Operation<AddTask> {
      * @param taskId         ID of the {@code Task} to add
      * @param taskStorage    storage to store new {@code Task}
      * @param authentication to authenticate user token
+     * @param authorization  to validate task adding
      */
-    AddTask(TaskId taskId, TaskStorage taskStorage, Authentication authentication) {
+    AddTask(TaskId taskId, TaskStorage taskStorage, Authentication authentication,
+            Authorization authorization) {
         super(authentication);
-
         this.taskStorage = checkNotNull(taskStorage);
+        this.authorization = checkNotNull(authorization);
 
         taskBuilder = new Task.TaskBuilder()
                 .setTaskId(taskId)
@@ -66,11 +69,16 @@ public final class AddTask extends Operation<AddTask> {
 
     /**
      * Uploads task with previously set values.
+     *
+     * @throws AuthorizationFailedException if try to add task to {@link TodoList} of other user
+     * @throws TodoListNotFoundException    if try to add task to non-existing {@code TodoList}
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")  // to create task user ID is not needed.
     public void execute() throws AuthorizationFailedException {
-        validateToken();
         Task task = taskBuilder.build();
+
+        UserId userId = validateToken();
+        authorization.validateAccess(userId, task.getTodoListId());
+
         taskStorage.write(task);
     }
 }

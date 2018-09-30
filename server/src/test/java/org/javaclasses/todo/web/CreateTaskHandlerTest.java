@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Oleg Barmin
  */
 @DisplayName("CreateTaskHandlerTest should")
-class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
+class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
 
     private final RequestSpecification specification = getRequestSpecification();
 
@@ -170,6 +170,19 @@ class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
         CreateTaskPayload payload = new CreateTaskPayload("implement task creation tests");
 
         return specification.body(payload)
+                            .post(getTaskUrl(todoListId, taskId));
+    }
+
+    @Override
+    Response sendEmptyPayloadRequest() {
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+
+        addTodoList(todoListId);
+
+        return specification.body("")
                             .post(getTaskUrl(todoListId, taskId));
     }
 }
