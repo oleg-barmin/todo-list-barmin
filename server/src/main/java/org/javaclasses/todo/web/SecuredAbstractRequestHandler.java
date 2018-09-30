@@ -5,34 +5,24 @@ import org.javaclasses.todo.model.Token;
 /**
  * Secured request handler, which verifies {@link Token} in header of Request.
  *
- * @param <P> payload of request
  * @author Oleg Barmin
  */
-abstract class SecuredAbstractRequestHandler<P> extends AbstractRequestHandler<P> {
+abstract class SecuredAbstractRequestHandler extends AbstractRequestHandler {
 
     static final String X_TODO_TOKEN = "X-Todo-Token";
 
-    /**
-     * Creates {@code SecuredAbstractRequestHandler} instance.
-     *
-     * @param payloadClass class of payload.
-     */
-    SecuredAbstractRequestHandler(Class<P> payloadClass) {
-        super(payloadClass);
-    }
-
     @Override
-    HttpResponse process(RequestData<P> requestData) {
+    HttpResponse process(RequestData requestData) {
         String headerValue = requestData.getRequestHeaders()
                                         .getHeaderValue(X_TODO_TOKEN);
 
         if (headerValue == null) {
-            return HttpResponse.unauthorize();
+            return HttpResponse.unauthorized();
         }
 
         Token token = new Token(headerValue);
 
-        return processVerifiedRequest(requestData, token);
+        return process(requestData, token);
     }
 
     /**
@@ -42,5 +32,5 @@ abstract class SecuredAbstractRequestHandler<P> extends AbstractRequestHandler<P
      * @param token       token of user who sent request
      * @return answer to received request
      */
-    abstract HttpResponse processVerifiedRequest(RequestData<P> requestData, Token token);
+    abstract HttpResponse process(RequestData requestData, Token token);
 }

@@ -14,10 +14,10 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
  *
  * @author Oleg Barmin
  */
-class HttpResponse {
+class HttpResponse<B> {
 
     private final int code;
-    private final String body;
+    private final ResponseBody<?> body;
 
     /**
      * Creates {@code HttpResponse} instance with given status code and empty body.
@@ -26,7 +26,7 @@ class HttpResponse {
      */
     private HttpResponse(int code) {
         this.code = code;
-        this.body = "";
+        this.body = ResponseBody.empty();
     }
 
     /**
@@ -35,9 +35,9 @@ class HttpResponse {
      * @param code status code of HttpResponse
      * @param body body of response
      */
-    private HttpResponse(int code, String body) {
+    private HttpResponse(int code, B body) {
         this.code = code;
-        this.body = body;
+        this.body = ResponseBody.of(body);
     }
 
     /**
@@ -46,8 +46,8 @@ class HttpResponse {
      * @param body body of response
      * @return response with 200 status code and given body
      */
-    static HttpResponse ok(String body) {
-        return new HttpResponse(HTTP_OK, body);
+    static <B> HttpResponse ok(B body) {
+        return new HttpResponse<>(HTTP_OK, body);
     }
 
     /**
@@ -64,7 +64,7 @@ class HttpResponse {
      *
      * @return response with 403 status code and empty body
      */
-    static HttpResponse unauthorize() {
+    static HttpResponse unauthorized() {
         return new HttpResponse(HTTP_UNAUTHORIZED);
     }
 
@@ -93,14 +93,14 @@ class HttpResponse {
      */
     void writeTo(Response response) {
         response.status(this.code);
-        response.body(body);
+        response.body(body.asJson());
     }
 
     int getCode() {
         return code;
     }
 
-    String getBody() {
+    ResponseBody getBody() {
         return body;
     }
 

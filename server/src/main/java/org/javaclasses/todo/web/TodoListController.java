@@ -23,7 +23,7 @@ class TodoListController {
     /**
      * Handles create {@code TodoList} request.
      */
-    static class CreateTodoListRequestHandler extends SecuredAbstractRequestHandler<CreateListPayload> {
+    static class CreateTodoListRequestHandler extends SecuredAbstractRequestHandler {
 
         private final TodoService todoService;
 
@@ -33,7 +33,6 @@ class TodoListController {
          * @param todoService service to work with
          */
         CreateTodoListRequestHandler(TodoService todoService) {
-            super(CreateListPayload.class);
             this.todoService = checkNotNull(todoService);
         }
 
@@ -46,8 +45,14 @@ class TodoListController {
          * @throws AuthorizationFailedException if user token expired.
          */
         @Override
-        HttpResponse processVerifiedRequest(RequestData<CreateListPayload> requestData, Token token) {
-            CreateListPayload payload = requestData.getPayload();
+        HttpResponse process(RequestData requestData, Token token) {
+            RequestBody requestBody = requestData.getRequestBody();
+
+            if (requestBody.isEmpty()) {
+                return HttpResponse.badRequest();
+            }
+
+            CreateListPayload payload = requestBody.as(CreateListPayload.class);
 
             TodoListId todoListId = payload.getTodoListId();
 
@@ -62,7 +67,7 @@ class TodoListController {
     /**
      * Handles read all {@code Task}s from {@code TodoList} request.
      */
-    static class ReadTasksRequestHandler extends SecuredAbstractRequestHandler<Void> {
+    static class ReadTasksRequestHandler extends SecuredAbstractRequestHandler {
         private final TodoService todoService;
 
         /**
@@ -71,7 +76,6 @@ class TodoListController {
          * @param todoService service to work with.
          */
         ReadTasksRequestHandler(TodoService todoService) {
-            super(Void.class);
             this.todoService = checkNotNull(todoService);
         }
 
@@ -87,7 +91,7 @@ class TodoListController {
          *                                      user has no permission to read task from this list.
          */
         @Override
-        HttpResponse processVerifiedRequest(RequestData<Void> requestData, Token token) {
+        HttpResponse process(RequestData requestData, Token token) {
             String todoListIdParam = requestData.getRequestParams()
                                                 .getParamValue(getTodoListIdParam());
 
@@ -97,9 +101,7 @@ class TodoListController {
                                           .authorizedWith(token)
                                           .execute();
 
-            String answerBody = objectToJson(tasks);
-
-            return HttpResponse.ok(answerBody);
+            return HttpResponse.ok(tasks);
         }
     }
 }

@@ -57,7 +57,7 @@ class AuthenticationController {
      *
      * <p>Authentication is based on <a href="https://bit.ly/2DV5cNC">Basis authentication scheme</a>.
      */
-    static class AuthenticationHandler extends AbstractRequestHandler<Void> {
+    static class AuthenticationHandler extends AbstractRequestHandler {
 
         private final Authentication authentication;
 
@@ -67,7 +67,6 @@ class AuthenticationController {
          * @param authentication authentication service to work with
          */
         AuthenticationHandler(Authentication authentication) {
-            super(Void.class);
             this.authentication = authentication;
         }
 
@@ -82,12 +81,12 @@ class AuthenticationController {
          * - 200 with token if user was signed.
          */
         @Override
-        HttpResponse process(RequestData<Void> requestData) {
+        HttpResponse process(RequestData requestData) {
             String authorizationHeader = requestData.getRequestHeaders()
                                                     .getHeaderValue(AUTHENTICATION_HEADER);
 
             if (authorizationHeader == null) {
-                return HttpResponse.unauthorize();
+                return HttpResponse.unauthorized();
             }
 
             String[] schemeAndCredentials = authorizationHeader.split(" ");
@@ -97,7 +96,7 @@ class AuthenticationController {
             }
 
             if (!schemeAndCredentials[0].equals(AUTHENTICATION_METHOD)) {
-                return HttpResponse.unauthorize();
+                return HttpResponse.unauthorized();
             }
 
             String base64EncodedCredentials = schemeAndCredentials[1];
@@ -116,7 +115,7 @@ class AuthenticationController {
 
             Token token = authentication.signIn(username, password);
 
-            return HttpResponse.ok(objectToJson(token));
+            return HttpResponse.ok(token);
         }
     }
 

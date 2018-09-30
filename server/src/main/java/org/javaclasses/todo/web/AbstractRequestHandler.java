@@ -1,6 +1,5 @@
 package org.javaclasses.todo.web;
 
-import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -13,66 +12,29 @@ import static org.javaclasses.todo.web.Configurations.getContentType;
 /**
  * Abstract handler of requests by endpoint.
  *
- * @param <P> payload of request to process.
  * @author Oleg Barmin
  */
-abstract class AbstractRequestHandler<P> implements Route {
-
-    private final Class<P> payloadClass;
-
-    /**
-     * Creates {@code AbstractRequestHandler} instance.
-     *
-     * @param payloadClass class of payload.
-     */
-    AbstractRequestHandler(Class<P> payloadClass) {
-        this.payloadClass = payloadClass;
-    }
-
-    /**
-     * Creates JSON from given object.
-     *
-     * @param object object to creates JSON from
-     * @return JSON of given object.
-     */
-    String objectToJson(Object object) {
-        return new Gson().toJson(object);
-    }
-
-    /**
-     * Creates object of {@code payloadClass} from given JSON.
-     *
-     * @param json JSON to create object from
-     * @return object created from given JSON
-     */
-    private P objectFromJson(String json) {
-        return new Gson().fromJson(json, payloadClass);
-    }
+abstract class AbstractRequestHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
-        P value = null;
-
-        if (payloadClass != Void.class) {
-            value = objectFromJson(request.body());
-        }
-
         Map<String, String> headersMap = new HashMap<>();
         request.headers()
                .forEach(header -> headersMap.put(header, request.headers(header)));
 
-        RequestHeaders requestHeaders = new RequestHeaders(headersMap);
-        RequestParams requestParams = new RequestParams(request.params());
+        RequestBody body = RequestBody.of(request.body());
+        RequestParams params = new RequestParams(request.params());
+        RequestHeaders headers = new RequestHeaders(headersMap);
 
-        RequestData<P> requestData = new RequestData<>(value, requestParams, requestHeaders);
+        RequestData requestData = new RequestData(body, params, headers);
 
-        HttpResponse answer = process(requestData);
+        HttpResponse httpResponse = process(requestData);
 
-        response.status(answer.getCode());
-        response.body(answer.getBody());
+        response.status(httpResponse.getCode());
         response.type(getContentType());
 
-        return answer.getBody();
+        return httpResponse.getBody()
+                           .asJson();
     }
 
     /**
@@ -81,5 +43,5 @@ abstract class AbstractRequestHandler<P> implements Route {
      * @param requestData data of request
      * @return answer to requestData
      */
-    abstract HttpResponse process(RequestData<P> requestData);
+    abstract HttpResponse process(RequestData requestData);
 }

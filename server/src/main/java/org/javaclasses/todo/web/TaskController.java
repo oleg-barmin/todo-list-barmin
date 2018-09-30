@@ -49,7 +49,7 @@ class TaskController {
      *
      * @author Oleg Barmin
      */
-    static class GetTaskRequestHandler extends SecuredAbstractRequestHandler<Void> {
+    static class GetTaskRequestHandler extends SecuredAbstractRequestHandler {
 
         private final TodoService todoService;
 
@@ -59,7 +59,6 @@ class TaskController {
          * @param todoService service to work with
          */
         GetTaskRequestHandler(TodoService todoService) {
-            super(Void.class);
             this.todoService = checkNotNull(todoService);
         }
 
@@ -75,16 +74,14 @@ class TaskController {
          *                                      user has no permission to modify to-do list with given ID
          */
         @Override
-        HttpResponse processVerifiedRequest(RequestData<Void> requestData, Token token) {
+        HttpResponse process(RequestData requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             Task task = todoService.findTask(taskId)
                                    .authorizedWith(token)
                                    .execute();
 
-            String answerBody = objectToJson(task);
-
-            return HttpResponse.ok(answerBody);
+            return HttpResponse.ok(task);
         }
     }
 
@@ -93,7 +90,7 @@ class TaskController {
      *
      * @author Oleg Barmin
      */
-    static class CreateTaskRequestHandler extends SecuredAbstractRequestHandler<CreateTaskPayload> {
+    static class CreateTaskRequestHandler extends SecuredAbstractRequestHandler {
 
         private final TodoService todoService;
 
@@ -103,7 +100,6 @@ class TaskController {
          * @param todoService service to work with
          */
         CreateTaskRequestHandler(TodoService todoService) {
-            super(CreateTaskPayload.class);
             this.todoService = checkNotNull(todoService);
         }
 
@@ -119,11 +115,18 @@ class TaskController {
          *                                      user has no permission to modify to-do list with given ID
          */
         @Override
-        HttpResponse processVerifiedRequest(RequestData<CreateTaskPayload> requestData, Token token) {
+        HttpResponse process(RequestData requestData, Token token) {
+            RequestBody body = requestData.getRequestBody();
+
+            if (body.isEmpty()) {
+                return HttpResponse.badRequest();
+            }
+
             TaskId taskId = extractTaskId(requestData.getRequestParams());
             TodoListId todoListId = extractTodoListId(requestData.getRequestParams());
 
-            CreateTaskPayload payload = requestData.getPayload();
+            CreateTaskPayload payload = body.as(CreateTaskPayload.class);
+
             String taskDescription = payload.getTaskDescription();
 
             todoService.addTask(taskId)
@@ -141,7 +144,7 @@ class TaskController {
      *
      * @author Oleg Barmin
      */
-    static class UpdateTaskRequestHandler extends SecuredAbstractRequestHandler<TaskUpdatePayload> {
+    static class UpdateTaskRequestHandler extends SecuredAbstractRequestHandler {
 
         private final TodoService todoService;
 
@@ -151,7 +154,6 @@ class TaskController {
          * @param todoService service to work with
          */
         UpdateTaskRequestHandler(TodoService todoService) {
-            super(TaskUpdatePayload.class);
             this.todoService = checkNotNull(todoService);
         }
 
@@ -167,10 +169,16 @@ class TaskController {
          *                                      user has no permission to modify to-do list with given ID
          */
         @Override
-        HttpResponse processVerifiedRequest(RequestData<TaskUpdatePayload> requestData, Token token) {
-            TaskUpdatePayload payload = requestData.getPayload();
-            TaskId taskId = extractTaskId(requestData.getRequestParams());
+        HttpResponse process(RequestData requestData, Token token) {
+            RequestBody body = requestData.getRequestBody();
 
+            if (body.isEmpty()) {
+                return HttpResponse.badRequest();
+            }
+
+            TaskUpdatePayload payload = body.as(TaskUpdatePayload.class);
+
+            TaskId taskId = extractTaskId(requestData.getRequestParams());
             String taskDescription = payload.getTaskDescription();
             boolean taskStatus = payload.isTaskStatus();
 
@@ -187,7 +195,7 @@ class TaskController {
     /**
      * Handles remove {@code Task} request.
      */
-    static class RemoveTaskRequestHandler extends SecuredAbstractRequestHandler<Void> {
+    static class RemoveTaskRequestHandler extends SecuredAbstractRequestHandler {
 
         private final TodoService todoService;
 
@@ -197,7 +205,6 @@ class TaskController {
          * @param todoService service to work with
          */
         RemoveTaskRequestHandler(TodoService todoService) {
-            super(Void.class);
             this.todoService = checkNotNull(todoService);
         }
 
@@ -213,7 +220,7 @@ class TaskController {
          *                                      user has no permission to modify to-do list with given ID
          */
         @Override
-        HttpResponse processVerifiedRequest(RequestData<Void> requestData, Token token) {
+        HttpResponse process(RequestData requestData, Token token) {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             todoService.removeTask(taskId)
