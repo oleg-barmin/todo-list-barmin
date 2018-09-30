@@ -6,7 +6,6 @@ import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.Task;
 import org.javaclasses.todo.model.TaskId;
 import org.javaclasses.todo.model.TodoListId;
-import org.javaclasses.todo.model.Token;
 import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +24,8 @@ import static org.javaclasses.todo.web.TestRoutesProvider.getTodoListUrl;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
 /**
+ * Integration test of retrieving all {@link Task Tasks} of to-do list with specified ID creation with REST API.
+ *
  * @author Oleg Barmin
  */
 @DisplayName("ReadTaskHandler should")
@@ -60,7 +61,8 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
 
         response.then()
                 .statusCode(describedAs("return status code 200, when" +
-                                                " signed in user read tasks from his to-do list.", is(HTTP_OK)));
+                                                " signed in user read tasks from his to-do list.",
+                                        is(HTTP_OK)));
 
         Task[] receivedTasks = response.body()
                                        .as(Task[].class);
@@ -82,7 +84,7 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
     }
 
     @Override
-    Response sendRequest(Token invalidToken, UserId userId) {
+    Response sendRequest(UserId userId) {
         TodoListId todoListId = new TodoListId(UUID.randomUUID()
                                                    .toString());
         TaskId firstTaskId = new TaskId(UUID.randomUUID()

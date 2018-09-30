@@ -26,7 +26,8 @@ public final class CreateList extends Operation<CreateList> {
      * @param todoListId      ID of {@code TodoList} to create
      * @param todoListStorage to store newly created list
      */
-    CreateList(TodoListId todoListId, TodoListStorage todoListStorage, Authentication authentication) {
+    CreateList(TodoListId todoListId, TodoListStorage todoListStorage,
+               Authentication authentication) {
         super(authentication);
         this.todoListStorage = todoListStorage;
         checkNotNull(todoListId);
@@ -39,8 +40,10 @@ public final class CreateList extends Operation<CreateList> {
      * Creates new {@code TodoList} with given values in storage.
      */
     public void execute() throws AuthorizationFailedException {
+        UserId userId = validateToken();
+
         TodoList todoList = todoListBuilder
-                .setOwner(validateToken())
+                .setOwner(userId)
                 .build();
 
         todoListStorage.write(todoList);

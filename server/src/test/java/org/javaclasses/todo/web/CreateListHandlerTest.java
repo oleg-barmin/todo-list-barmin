@@ -3,7 +3,6 @@ package org.javaclasses.todo.web;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.TodoListId;
-import org.javaclasses.todo.model.Token;
 import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,8 @@ import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKE
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
 /**
+ * Integration test of to-do list creation with REST API.
+ *
  * @author Oleg Barmin
  */
 @DisplayName("CreateListHandler should")
@@ -41,11 +42,12 @@ class CreateListHandlerTest extends AbstractSecuredHandlerTest {
 
         response.then()
                 .statusCode(describedAs("response status must be 200, " +
-                                                "when signed in user creates list, but it don't.", is(HTTP_OK)));
+                                                "when signed in user creates list, but it don't.",
+                                        is(HTTP_OK)));
     }
 
     @Override
-    Response sendRequest(Token token, UserId userId) {
+    Response sendRequest(UserId userId) {
         CreateListPayload payload = new CreateListPayload(
                 new TodoListId(UUID.randomUUID()
                                    .toString())

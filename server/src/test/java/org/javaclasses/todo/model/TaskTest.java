@@ -15,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
+ * Test of {@link Task} equals and hashcode methods, and {@link Task} builder.
+ *
  * @author Oleg Barmin
  */
 /* Duplicate literals of hashcode and equals test were left for better readability.*/
@@ -26,8 +28,10 @@ class TaskTest {
     @Test
     @DisplayName("perform equals and hashcode methods properly.")
     void testEqualsAndHashCode() {
-        String taskId = UUID.randomUUID().toString();
-        String todoListId = UUID.randomUUID().toString();
+        String taskId = UUID.randomUUID()
+                            .toString();
+        String todoListId = UUID.randomUUID()
+                                .toString();
 
         String description = "description";
         Date creationDate = new Date();
@@ -59,8 +63,10 @@ class TaskTest {
     @DisplayName("TaskBuilder should")
     class TaskBuilderTest {
         private static final String description = "task description";
-        private final TaskId taskId = new TaskId(UUID.randomUUID().toString());
-        private final TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
+        private final TaskId taskId = new TaskId(UUID.randomUUID()
+                                                     .toString());
+        private final TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                                 .toString());
         private final Date creationDate = new Date();
         private final Date lastUpdateDate = new Date();
 

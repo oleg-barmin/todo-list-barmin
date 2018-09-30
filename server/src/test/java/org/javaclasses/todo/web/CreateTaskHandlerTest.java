@@ -5,7 +5,6 @@ import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.Task;
 import org.javaclasses.todo.model.TaskId;
 import org.javaclasses.todo.model.TodoListId;
-import org.javaclasses.todo.model.Token;
 import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,8 @@ import static org.javaclasses.todo.web.TestUsers.USER_1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
+ * Integration test of {@link Task} creation with REST API.
+ *
  * @author Oleg Barmin
  */
 @DisplayName("CreateTaskHandlerTest should")
@@ -47,16 +48,19 @@ class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
         Response response = specification.body(payload)
                                          .post(getTaskUrl(todoListId, taskId));
         response.then()
-                .statusCode(describedAs("response with status code 200, but it don't.", is(HTTP_OK)));
+                .statusCode(
+                        describedAs("response with status code 200, but it don't.", is(HTTP_OK)));
 
         Task task = readTask(todoListId, taskId);
         assertEquals(taskId, task.getId(), "add task with uploaded ID, but it don't.");
-        assertEquals(todoListId, task.getTodoListId(), "add task with uploaded to-do list ID, but it don't.");
-        assertEquals(taskDescription, taskDescription, "add task with uploaded description, but it don't.");
+        assertEquals(todoListId, task.getTodoListId(),
+                     "add task with uploaded to-do list ID, but it don't.");
+        assertEquals(taskDescription, taskDescription,
+                     "add task with uploaded description, but it don't.");
     }
 
     @Override
-    Response sendRequest(Token token, UserId userId) {
+    Response sendRequest(UserId userId) {
         TaskId taskId = new TaskId(UUID.randomUUID()
                                        .toString());
         TodoListId todoListId = new TodoListId(UUID.randomUUID()

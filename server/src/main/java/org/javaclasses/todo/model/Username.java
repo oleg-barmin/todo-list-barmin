@@ -25,15 +25,19 @@ public final class Username {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Username)) return false;
-        Username username = (Username) o;
-        return Objects.equals(value, username.value);
+    public int hashCode() {
+        return Objects.hash(value);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(value);
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Username)) {
+            return false;
+        }
+        Username username = (Username) o;
+        return Objects.equals(value, username.value);
     }
 }

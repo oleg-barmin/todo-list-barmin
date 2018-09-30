@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 /**
+ * Testing {@link TodoList} equals and hashcode and {@link TodoListBuilder}.
+ *
  * @author Oleg Barmin
  */
 /* Duplicate literals of hashcode and equals test were left for better readability.*/
@@ -19,8 +21,10 @@ class TodoListTest {
     @Test
     @DisplayName("perform equals and hashcode methods properly.")
     void testEqualsAndHashCode() {
-        String todoListId = UUID.randomUUID().toString();
-        String userId = UUID.randomUUID().toString();
+        String todoListId = UUID.randomUUID()
+                                .toString();
+        String userId = UUID.randomUUID()
+                            .toString();
 
         new EqualsTester()
                 .addEqualityGroup(
@@ -40,9 +44,12 @@ class TodoListTest {
     class TodoListBuilder {
 
         @Test
+        @DisplayName("create TodoList instances.")
         void tesBuildTodoList() {
-            TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
-            UserId ownerId = new UserId(UUID.randomUUID().toString());
+            TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                       .toString());
+            UserId ownerId = new UserId(UUID.randomUUID()
+                                            .toString());
 
             TodoList build = new TodoList.TodoListBuilder()
                     .setTodoListId(todoListId)

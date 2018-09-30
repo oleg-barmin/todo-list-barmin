@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
+ * Testing {@link TodoListStorage}.
+ *
  * @author Oleg Barmin
  */
 @DisplayName("TodoListStorage should")
@@ -19,25 +21,9 @@ class TodoListStorageTest extends InMemoryStorageTest<TodoListId, TodoList> {
     private final TodoListStorage storage = new TodoListStorage(map);
 
     @Override
-    InMemoryStorage<TodoListId, TodoList> getStorage() {
-        return storage;
-    }
-
-    @Override
-    TodoList createEntityWithId(TodoListId entityId) {
-        return new TodoList.TodoListBuilder()
-                .setTodoListId(entityId)
-                .setOwner(new UserId(UUID.randomUUID().toString()))
-                .build();
-    }
-
-    @Override
-    void testWriteEntityWithNullId() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-                    TodoList entity = createEntityWithNullId();
-                    storage.write(entity);
-                },
-                "throw NullPointerException if try to write todo list with null ID, but it don't.");
+    TodoListId createID() {
+        return new TodoListId(UUID.randomUUID()
+                                  .toString());
     }
 
     @Override
@@ -48,7 +34,25 @@ class TodoListStorageTest extends InMemoryStorageTest<TodoListId, TodoList> {
     }
 
     @Override
-    TodoListId createID() {
-        return new TodoListId(UUID.randomUUID().toString());
+    InMemoryStorage<TodoListId, TodoList> getStorage() {
+        return storage;
+    }
+
+    @Override
+    TodoList createEntityWithId(TodoListId entityId) {
+        return new TodoList.TodoListBuilder()
+                .setTodoListId(entityId)
+                .setOwner(new UserId(UUID.randomUUID()
+                                         .toString()))
+                .build();
+    }
+
+    @Override
+    void testWriteEntityWithNullId() {
+        Assertions.assertThrows(NullPointerException.class, () -> {
+                                    TodoList entity = createEntityWithNullId();
+                                    storage.write(entity);
+                                },
+                                "throw NullPointerException if try to write todo list with null ID, but it don't.");
     }
 }

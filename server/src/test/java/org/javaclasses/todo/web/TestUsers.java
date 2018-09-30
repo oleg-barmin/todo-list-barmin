@@ -19,14 +19,6 @@ enum TestUsers {
 
     private Token token;
 
-    public void setUsername(Username username) {
-        this.username = username;
-    }
-
-    public void setPassword(Password password) {
-        this.password = password;
-    }
-
     public UserId getUserId() {
         return userId;
     }
@@ -47,7 +39,15 @@ enum TestUsers {
         return username;
     }
 
+    public void setUsername(Username username) {
+        this.username = username;
+    }
+
     public Password getPassword() {
         return password;
+    }
+
+    public void setPassword(Password password) {
+        this.password = password;
     }
 }

@@ -1,5 +1,6 @@
 package org.javaclasses.todo.model;
 
+import org.javaclasses.todo.storage.Storage;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 import org.javaclasses.todo.storage.impl.TodoListStorage;
 import org.junit.jupiter.api.Assertions;
@@ -10,13 +11,15 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
+ * Testing {@link Authorization} service which should allow to validate if user has access to entity by their IDs.
+ *
  * @author Oleg Barmin
  */
 @DisplayName("Authorization should")
 class AuthorizationTest {
-    private final TaskStorage taskStorage = new TaskStorage();
+    private final Storage<TaskId, Task> taskStorage = new TaskStorage();
     private final TodoListStorage todoListStorage = new TodoListStorage();
-    private final Authorization authorization = new Authorization(taskStorage, todoListStorage);
+    private final Authorization authorization = new Authorization(todoListStorage);
 
     private static TodoList getBuild(UserId owner, TodoListId todoListId) {
         return new TodoList.TodoListBuilder()
@@ -37,12 +40,13 @@ class AuthorizationTest {
     @Test
     @DisplayName("validate access to to-do lists.")
     void testValidateAccessToTodoList() {
-        UserId userId = new UserId(UUID.randomUUID().toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
+        UserId userId = new UserId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
 
         TodoList todoList = getBuild(userId, todoListId);
         todoListStorage.write(todoList);
-
 
         authorization.validateAccess(userId, todoListId);
     }
@@ -50,70 +54,51 @@ class AuthorizationTest {
     @Test
     @DisplayName("throw TodoListNotFoundException if try to access to to-do list which doesn't exist.")
     void testValidateAccessToNonExistingTodoList() {
-        UserId userId = new UserId(UUID.randomUUID().toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
+        UserId userId = new UserId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
 
-        Assertions.assertThrows(TodoListNotFoundException.class, () -> authorization.validateAccess(userId, todoListId));
+        Assertions.assertThrows(TodoListNotFoundException.class,
+                                () -> authorization.validateAccess(userId, todoListId));
     }
 
     @Test
     @DisplayName("throw AccessDeniedException if try to access to to-do list which has other owner.")
     void testValidateAccessToForeignTodoList() {
-        UserId owner = new UserId(UUID.randomUUID().toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
+        UserId owner = new UserId(UUID.randomUUID()
+                                      .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
         TodoList todoList = getBuild(owner, todoListId);
         todoListStorage.write(todoList);
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userId = new UserId(UUID.randomUUID()
+                                       .toString());
 
-        Assertions.assertThrows(AuthorizationFailedException.class, () -> authorization.validateAccess(userId, todoListId));
-    }
-
-    @Test
-    @DisplayName("validate access to tasks.")
-    void testValidateAccessToTask() {
-        UserId userId = new UserId(UUID.randomUUID().toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
-
-        TodoList todoList = getBuild(userId, todoListId);
-        todoListStorage.write(todoList);
-
-        TaskId taskId = new TaskId(UUID.randomUUID().toString());
-        Task task = createTask(todoListId, taskId);
-
-        taskStorage.write(task);
-
-        authorization.validateAccess(userId, taskId);
-    }
-
-    @Test
-    @DisplayName("throw TaskNotFoundException if try to access task which doesn't exist")
-    void testValidateAccessNonExistingToTask() {
-        UserId userId = new UserId(UUID.randomUUID().toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
-
-        TodoList todoList = getBuild(userId, todoListId);
-        todoListStorage.write(todoList);
-
-        TaskId taskId = new TaskId(UUID.randomUUID().toString());
-
-        Assertions.assertThrows(TaskNotFoundException.class, () -> authorization.validateAccess(userId, taskId));
+        Assertions.assertThrows(AuthorizationFailedException.class,
+                                () -> authorization.validateAccess(userId, todoListId));
     }
 
     @Test
     @DisplayName("throw AccessDeniedException if try to access to task which belongs to to-do list with other owner.")
     void testValidateAccessToForeignTask() {
-        UserId owner = new UserId(UUID.randomUUID().toString());
-        UserId userId = new UserId(UUID.randomUUID().toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
+        UserId owner = new UserId(UUID.randomUUID()
+                                      .toString());
+        UserId userId = new UserId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
 
         TodoList todoList = getBuild(owner, todoListId);
         todoListStorage.write(todoList);
 
-        TaskId taskId = new TaskId(UUID.randomUUID().toString());
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
         Task task = createTask(todoListId, taskId);
 
         taskStorage.write(task);
 
-        Assertions.assertThrows(AuthorizationFailedException.class, () -> authorization.validateAccess(userId, todoListId));
+        Assertions.assertThrows(AuthorizationFailedException.class,
+                                () -> authorization.validateAccess(userId, todoListId));
     }
 }

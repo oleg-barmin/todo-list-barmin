@@ -1,6 +1,12 @@
 package org.javaclasses.todo.auth;
 
-import org.javaclasses.todo.model.*;
+import org.javaclasses.todo.model.AuthSession;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.Password;
+import org.javaclasses.todo.model.Token;
+import org.javaclasses.todo.model.User;
+import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.model.Username;
 import org.javaclasses.todo.storage.impl.AuthSessionStorage;
 import org.javaclasses.todo.storage.impl.UserStorage;
 import org.junit.jupiter.api.Assertions;
@@ -10,14 +16,20 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 /**
+ * Testing {@link Authentication} service which should validate user {@link Token} and allow user to:
+ * - sign-in into the system;
+ * - register in the system;
+ * - sign-out from the system.
+ *
+ *
  * @author Oleg Barmin
  */
 @DisplayName("Authentication should")
 class AuthenticationTest {
     private final AuthSessionStorage authSessionStorage = new AuthSessionStorage();
     private final UserStorage userStorage = new UserStorage();
-    private final Authentication authentication = new Authentication(userStorage, authSessionStorage);
-
+    private final Authentication authentication = new Authentication(userStorage,
+                                                                     authSessionStorage);
 
     private final Username username = new Username("example@mail.org");
     private final Password password = new Password("t24h6RSz7");
@@ -36,11 +48,10 @@ class AuthenticationTest {
         User user = optionalUser.get();
 
         Assertions.assertEquals(username, user.getUsername(),
-                "save user with equal username, but it don't.");
+                                "save user with equal username, but it don't.");
         Assertions.assertEquals(password, user.getPassword(),
-                "save user with equal password, but it don't.");
+                                "save user with equal password, but it don't.");
     }
-
 
     @Test
     /*
@@ -54,9 +65,8 @@ class AuthenticationTest {
         Password secondUserPassword = new Password("example1966");
 
         Assertions.assertThrows(UserAlreadyExistsException.class,
-                () -> authentication.createUser(username, secondUserPassword));
+                                () -> authentication.createUser(username, secondUserPassword));
     }
-
 
     @Test
     @DisplayName("sign in registered users.")
@@ -90,9 +100,8 @@ class AuthenticationTest {
         Password invalidPassword = new Password("invalid password");
 
         Assertions.assertThrows(InvalidCredentialsException.class,
-                () -> authentication.signIn(username, invalidPassword));
+                                () -> authentication.signIn(username, invalidPassword));
     }
-
 
     @Test
     @DisplayName("sign out users.")
@@ -109,7 +118,8 @@ class AuthenticationTest {
         Optional<AuthSession> optionalAuthSession = authSessionStorage.read(token);
 
         if (optionalAuthSession.isPresent()) {
-            Assertions.fail("On sign out authSession with user token should be removed from storage, but it don't.");
+            Assertions.fail(
+                    "On sign out authSession with user token should be removed from storage, but it don't.");
         }
     }
 
@@ -138,6 +148,7 @@ class AuthenticationTest {
         Token token = authentication.signIn(username, password);
         authentication.signOut(token);
 
-        Assertions.assertThrows(AuthorizationFailedException.class, () -> authentication.validate(token));
+        Assertions.assertThrows(AuthorizationFailedException.class,
+                                () -> authentication.validate(token));
     }
 }

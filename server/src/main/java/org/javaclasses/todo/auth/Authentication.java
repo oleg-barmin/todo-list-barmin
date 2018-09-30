@@ -1,6 +1,12 @@
 package org.javaclasses.todo.auth;
 
-import org.javaclasses.todo.model.*;
+import org.javaclasses.todo.model.AuthSession;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.Password;
+import org.javaclasses.todo.model.Token;
+import org.javaclasses.todo.model.User;
+import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.model.Username;
 import org.javaclasses.todo.storage.Storage;
 import org.javaclasses.todo.storage.impl.UserStorage;
 
@@ -39,13 +45,15 @@ public class Authentication {
      * @throws InvalidCredentialsException if user with given username doesn't exist or given password is invalid.
      */
     public Token signIn(Username username, Password password) throws InvalidCredentialsException {
-        Optional<User> userByUsername = userStorage.findUserByUsername(username);
+        Optional<User> userByUsername = userStorage.findBy(username);
 
         if (userByUsername.isPresent()) {
             User user = userByUsername.get();
 
-            if (user.getPassword().equals(password)) {
-                Token token = new Token(UUID.randomUUID().toString());
+            if (user.getPassword()
+                    .equals(password)) {
+                Token token = new Token(UUID.randomUUID()
+                                            .toString());
 
                 AuthSession authSession = new AuthSession(token);
                 authSession.setUserId(user.getId());
@@ -68,13 +76,14 @@ public class Authentication {
      * @throws UserAlreadyExistsException if user with given username already exists.
      */
     public UserId createUser(Username username, Password password) throws UserAlreadyExistsException {
-        Optional<User> userByUsername = userStorage.findUserByUsername(username);
+        Optional<User> userByUsername = userStorage.findBy(username);
 
         if (userByUsername.isPresent()) {
             throw new UserAlreadyExistsException(username);
         }
 
-        UserId userId = new UserId(UUID.randomUUID().toString());
+        UserId userId = new UserId(UUID.randomUUID()
+                                       .toString());
         User user = new User(userId);
 
         user.setUsername(username);
@@ -107,7 +116,8 @@ public class Authentication {
         Optional<AuthSession> authSessionOptional = authSessionStorage.read(token);
 
         if (authSessionOptional.isPresent()) {
-            return authSessionOptional.get().getUserId();
+            return authSessionOptional.get()
+                                      .getUserId();
         }
 
         throw new AuthorizationFailedException(token);

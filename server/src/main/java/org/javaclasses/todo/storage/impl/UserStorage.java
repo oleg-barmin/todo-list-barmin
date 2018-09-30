@@ -30,7 +30,7 @@ public class UserStorage extends InMemoryStorage<UserId, User> {
      * @return Optional with {@code User} with given ID.
      * If optional is empty means that user with given {@code Username} doesn't exists in storage.
      */
-    public Optional<User> findUserByUsername(Username username) {
+    public Optional<User> findBy(Username username) {
         List<User> users = findByField("username", username);
 
         if (users.isEmpty()) {

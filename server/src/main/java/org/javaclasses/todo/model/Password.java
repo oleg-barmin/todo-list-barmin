@@ -25,15 +25,19 @@ public final class Password {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Password)) return false;
-        Password password1 = (Password) o;
-        return Objects.equals(password, password1.password);
+    public int hashCode() {
+        return Objects.hash(password);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(password);
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Password)) {
+            return false;
+        }
+        Password password1 = (Password) o;
+        return Objects.equals(password, password1.password);
     }
 }

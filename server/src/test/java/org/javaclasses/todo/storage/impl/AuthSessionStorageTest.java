@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
+ * Testing {@link AuthSessionStorage}.
+ *
  * @author Oleg Barmin
  */
 @DisplayName("AuthSessionStorage should")
@@ -18,8 +20,9 @@ class AuthSessionStorageTest extends InMemoryStorageTest<Token, AuthSession> {
     private final AuthSessionStorage storage = new AuthSessionStorage(map);
 
     @Override
-    InMemoryStorage<Token, AuthSession> getStorage() {
-        return storage;
+    Token createID() {
+        return new Token(UUID.randomUUID()
+                             .toString());
     }
 
     @Override
@@ -30,14 +33,15 @@ class AuthSessionStorageTest extends InMemoryStorageTest<Token, AuthSession> {
     }
 
     @Override
-    AuthSession createEntityWithId(Token entityId) {
-        AuthSession authSession = new AuthSession(entityId);
-        authSession.setUserId(new UserId(UUID.randomUUID().toString()));
-        return authSession;
+    InMemoryStorage<Token, AuthSession> getStorage() {
+        return storage;
     }
 
     @Override
-    Token createID() {
-        return new Token(UUID.randomUUID().toString());
+    AuthSession createEntityWithId(Token entityId) {
+        AuthSession authSession = new AuthSession(entityId);
+        authSession.setUserId(new UserId(UUID.randomUUID()
+                                             .toString()));
+        return authSession;
     }
 }

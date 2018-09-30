@@ -26,8 +26,8 @@ public class AuthorizationFailedException extends RuntimeException {
      * @param todoListId ID of to-do list which attempted to access
      */
     AuthorizationFailedException(UserId userId, TodoListId todoListId) {
-        super(String.format("User with ID '%s' has no authority to modify TodoList with ID: '%s'", userId, todoListId));
+        super(String.format("User with ID '%s' has no authority to modify TodoList with ID: '%s'",
+                            userId, todoListId));
     }
-
 
 }

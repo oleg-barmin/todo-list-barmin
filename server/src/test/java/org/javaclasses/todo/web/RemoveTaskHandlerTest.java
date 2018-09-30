@@ -4,7 +4,6 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.TaskId;
 import org.javaclasses.todo.model.TodoListId;
-import org.javaclasses.todo.model.Token;
 import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +18,8 @@ import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
 /**
+ * Integration test of {@code Task} removing with REST API.
+ *
  * @author Oleg Barmin
  */
 @DisplayName("RemoveTaskHandler should")
@@ -29,10 +30,13 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
     @Test
     @DisplayName("remove tasks from system by ID.")
     void testFindTaskById() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken().getValue());
+        specification.header(X_TODO_TOKEN, USER_1.getToken()
+                                                 .getValue());
 
-        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
-        TaskId taskId = new TaskId(UUID.randomUUID().toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
 
         addTodoList(todoListId);
         addTask(taskId, todoListId, "write tests on remove task by ID.");
@@ -41,13 +45,16 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
 
         response.then()
                 .statusCode(describedAs("return status code 200, when " +
-                                                "signed in user removes task by ID from his to-do list.", is(HTTP_OK)));
+                                                "signed in user removes task by ID from his to-do list.",
+                                        is(HTTP_OK)));
     }
 
     @Override
-    Response sendRequest(Token token, UserId userId) {
-        TaskId taskId = new TaskId(UUID.randomUUID().toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID().toString());
+    Response sendRequest(UserId userId) {
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
 
         addTodoList(todoListId);
         addTask(taskId, todoListId, "write negative cases tests on remove task by ID.");

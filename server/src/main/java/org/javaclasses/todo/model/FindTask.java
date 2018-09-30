@@ -1,6 +1,9 @@
 package org.javaclasses.todo.model;
 
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.storage.impl.TaskStorage;
+
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -13,17 +16,21 @@ public class FindTask extends Operation<FindTask> {
 
     private final TaskId taskId;
     private final Authorization authorization;
+    private final TaskStorage taskStorage;
 
     /**
      * Creates {@code FindTask} instance.
      *
      * @param taskId         ID of the {@code Task} to find
+     * @param taskStorage    storage to get tasks from
      * @param authorization  to validate if user has access to {@code Task} with given ID
      * @param authentication to validate user token
      */
-    FindTask(TaskId taskId, Authorization authorization, Authentication authentication) {
+    FindTask(TaskId taskId, TaskStorage taskStorage,
+             Authorization authorization, Authentication authentication) {
         super(authentication);
         this.taskId = checkNotNull(taskId);
+        this.taskStorage = checkNotNull(taskStorage);
         this.authorization = checkNotNull(authorization);
     }
 
@@ -36,6 +43,18 @@ public class FindTask extends Operation<FindTask> {
      * @throws AuthorizationFailedException if user has no authority to read {@code Task} with given ID
      */
     public Task execute() {
-        return authorization.validateAccess(validateToken(), taskId);
+        UserId userId = validateToken();
+
+        Optional<Task> optionalTask = taskStorage.read(taskId);
+
+        if (!optionalTask.isPresent()) {
+            throw new TaskNotFoundException(taskId);
+        }
+
+        Task task = optionalTask.get();
+
+        authorization.validateAccess(userId, task.getTodoListId());
+
+        return task;
     }
 }

@@ -11,9 +11,8 @@ import org.javaclasses.todo.model.TodoService;
 import org.javaclasses.todo.model.UpdateCompletedTaskException;
 import spark.Service;
 
-import java.util.regex.Pattern;
-
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
+import static org.javaclasses.todo.web.Configurations.getDefaultPort;
 import static org.javaclasses.todo.web.ExceptionHandlers.AuthorizationFailedHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.InvalidCredentialsHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.TaskNotFoundHandler;
@@ -49,11 +48,8 @@ import static spark.Service.ignite;
         "WeakerAccess"}) // TodoListApplication is public API, so its methods and static field must be public.
 public class TodoListApplication {
 
-    //TodoListApplication REST API URL parameters names.
-    static final String TODO_LIST_ID_PARAM = ":todolistid";
-    static final String TASK_ID_PARAM = ":taskid";
-
     private final Service service = ignite();
+
     private final Authentication authentication;
     private final TodoService todoService;
 
@@ -70,13 +66,7 @@ public class TodoListApplication {
     }
 
     public static void main(String[] args) {
-
-        final Pattern pattern = Pattern.compile(TODO_LIST_ID_PARAM + '|' + TASK_ID_PARAM);
-        String all = pattern.matcher(Routes.getTaskRoute())
-                            .replaceAll("%s");
-        System.out.println(all);
-
-//        new TodoListApplication(getDefaultPort()).start();
+        new TodoListApplication(getDefaultPort()).start();
     }
 
     /**

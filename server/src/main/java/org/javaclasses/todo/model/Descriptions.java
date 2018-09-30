@@ -23,7 +23,8 @@ class Descriptions {
     static void validate(String description) throws EmptyTaskDescriptionException {
         checkNotNull(description);
 
-        if (description.trim().isEmpty()) {
+        if (description.trim()
+                       .isEmpty()) {
             throw new EmptyTaskDescriptionException(description);
         }
     }

@@ -1,7 +1,5 @@
 package org.javaclasses.todo.model;
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import org.javaclasses.todo.storage.impl.TaskStorage;
 import org.javaclasses.todo.storage.impl.TodoListStorage;
 
 import java.util.Optional;
@@ -16,16 +14,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 class Authorization {
 
     private final TodoListStorage todoListStorage;
-    private final TaskStorage taskStorage;
 
     /**
      * Creates {@code Authorization} instance.
      *
-     * @param taskStorage     storage of tasks
      * @param todoListStorage storage of to-do lists
      */
-    Authorization(TaskStorage taskStorage, TodoListStorage todoListStorage) {
-        this.taskStorage = checkNotNull(taskStorage);
+    Authorization(TodoListStorage todoListStorage) {
         this.todoListStorage = checkNotNull(todoListStorage);
     }
 
@@ -47,38 +42,11 @@ class Authorization {
             throw new TodoListNotFoundException(todoListId);
         }
 
-        UserId owner = optionalTodoList.get().getOwner();
+        UserId owner = optionalTodoList.get()
+                                       .getOwner();
 
         if (!owner.equals(userId)) {
             throw new AuthorizationFailedException(userId, todoListId);
         }
-
-    }
-
-    /**
-     * Validates if user with given ID has access to {@code Task} with given ID.
-     *
-     * @param userId user which tries to access {@code Task}
-     * @param taskId ID of {@code Task}
-     * @throws TaskNotFoundException        if {@code Task} with given ID was not found
-     * @throws TodoListNotFoundException    if to-do list with ID specified in given task doesn't exists
-     * @throws AuthorizationFailedException if user with given ID has no access to {@code Task} with given ID
-     */
-    @CanIgnoreReturnValue
-    Task validateAccess(UserId userId, TaskId taskId) {
-        checkNotNull(userId);
-        checkNotNull(taskId);
-
-        Optional<Task> optionalTask = taskStorage.read(taskId);
-
-        if (!optionalTask.isPresent()) {
-            throw new TaskNotFoundException(taskId);
-        }
-
-        TodoListId todoListId = optionalTask.get().getTodoListId();
-
-        validateAccess(userId, todoListId);
-
-        return optionalTask.get();
     }
 }

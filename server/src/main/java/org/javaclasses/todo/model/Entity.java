@@ -25,15 +25,19 @@ public abstract class Entity<I extends EntityId> {
     }
 
     @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Entity)) return false;
-        Entity<?> entity = (Entity<?>) o;
-        return Objects.equals(getId(), entity.getId());
+    public final int hashCode() {
+        return Objects.hash(getId());
     }
 
     @Override
-    public final int hashCode() {
-        return Objects.hash(getId());
+    public final boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Entity)) {
+            return false;
+        }
+        Entity<?> entity = (Entity<?>) o;
+        return Objects.equals(getId(), entity.getId());
     }
 }

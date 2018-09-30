@@ -14,6 +14,12 @@ import static org.javaclasses.todo.web.Routes.getTodoListRoute;
 import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
 
 /**
+ * An abstract integration test of all handlers, which starts and stops server on each test method,
+ * provides methods to:
+ * - read {@link Task Tasks} {@link AbstractHandlerTest#readTask(TodoListId, TaskId)};
+ * - add {@link Task Tasks} {@link AbstractHandlerTest#addTask(TaskId, TodoListId, String)};
+ * - add {@link TodoList TodoLists} {@link AbstractHandlerTest#addTodoList(TodoListId)}.
+ *
  * @author Oleg Barmin
  */
 //abstract test has nothing to test.

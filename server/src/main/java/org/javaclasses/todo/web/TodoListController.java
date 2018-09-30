@@ -11,7 +11,7 @@ import org.javaclasses.todo.model.Token;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.javaclasses.todo.web.TodoListApplication.TODO_LIST_ID_PARAM;
+import static org.javaclasses.todo.web.Routes.getTodoListIdParam;
 
 /**
  * Processes requests which modifies {@link TodoList}.
@@ -89,7 +89,7 @@ class TodoListController {
         @Override
         HttpResponse processVerifiedRequest(RequestData<Void> requestData, Token token) {
             String todoListIdParam = requestData.getRequestParams()
-                                                .getParamValue(TODO_LIST_ID_PARAM);
+                                                .getParamValue(getTodoListIdParam());
 
             TodoListId todoListId = new TodoListId(todoListIdParam);
 

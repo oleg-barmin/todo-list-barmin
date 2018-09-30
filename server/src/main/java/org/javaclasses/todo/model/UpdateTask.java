@@ -4,6 +4,7 @@ import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 
 import java.util.Date;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,7 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class UpdateTask extends Operation<UpdateTask> {
 
     private final TaskId taskId;
-    private final Authorization operationAuth;
+    private final Authorization authorization;
     private final TaskStorage taskStorage;
     private Task.TaskBuilder taskBuilder;
 
@@ -43,12 +44,13 @@ public final class UpdateTask extends Operation<UpdateTask> {
      * @param authorization  to validate access to {@code Task}
      * @param authentication to authenticate token
      */
-    UpdateTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization, Authentication authentication) {
+    UpdateTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization,
+               Authentication authentication) {
         super(authentication);
 
         this.taskStorage = checkNotNull(taskStorage);
         this.taskId = checkNotNull(taskId);
-        this.operationAuth = checkNotNull(authorization);
+        this.authorization = checkNotNull(authorization);
         taskBuilder = new Task.TaskBuilder();
     }
 
@@ -78,27 +80,39 @@ public final class UpdateTask extends Operation<UpdateTask> {
     /**
      * Uploads previously modified task to storage.
      *
-     * @throws TaskNotFoundException        if task to update was not found.
+     * @throws TaskNotFoundException        if task to update was not found
+     * @throws TodoListNotFoundException    if to-do list of task was not found
      * @throws UpdateCompletedTaskException if task to update is completed
      * @throws AuthorizationFailedException if user has no authority to update task with given ID.
      */
     public void execute() throws AuthorizationFailedException, TaskNotFoundException {
-        Task taskToUpdate = operationAuth.validateAccess(validateToken(), taskId);
+        UserId userId = validateToken();
+
+        Optional<Task> optionalTask = taskStorage.read(taskId);
+
+        if (!optionalTask.isPresent()) {
+            throw new TaskNotFoundException(taskId);
+        }
+
+        Task taskToUpdate = optionalTask.get();
+
+        authorization.validateAccess(userId, taskToUpdate.getTodoListId());
 
         if (taskToUpdate.isCompleted()) {
             throw new UpdateCompletedTaskException(taskToUpdate.getId());
         }
 
+        // if new description was no set, sets old description
         if (taskDescription == null) {
             taskDescription = taskToUpdate.getDescription();
         }
 
         Task build = taskBuilder.setTaskId(taskId)
-                .setTodoListId(taskToUpdate.getTodoListId())
-                .setDescription(taskDescription)
-                .setCreationDate(taskToUpdate.getCreationDate())
-                .setLastUpdateDate(new Date())
-                .build();
+                                .setTodoListId(taskToUpdate.getTodoListId())
+                                .setDescription(taskDescription)
+                                .setCreationDate(taskToUpdate.getCreationDate())
+                                .setLastUpdateDate(new Date())
+                                .build();
 
         taskStorage.write(build);
     }

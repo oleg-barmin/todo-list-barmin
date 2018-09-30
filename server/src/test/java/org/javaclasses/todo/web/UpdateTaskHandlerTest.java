@@ -4,7 +4,6 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.TaskId;
 import org.javaclasses.todo.model.TodoListId;
-import org.javaclasses.todo.model.Token;
 import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,11 +42,12 @@ class UpdateTaskHandlerTest extends AbstractSecuredHandlerTest {
                      .put(getTaskUrl(todoListId, taskId))
                      .then()
                      .statusCode(describedAs("return status code 200, if" +
-                                                     " update completed successfully", is(HTTP_OK)));
+                                                     " update completed successfully",
+                                             is(HTTP_OK)));
     }
 
     @Override
-    Response sendRequest(Token token, UserId userId) {
+    Response sendRequest(UserId userId) {
         TaskId taskId = new TaskId(UUID.randomUUID()
                                        .toString());
         TodoListId todoListId = new TodoListId(UUID.randomUUID()

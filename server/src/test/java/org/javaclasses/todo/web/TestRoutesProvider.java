@@ -6,12 +6,14 @@ import org.javaclasses.todo.model.TodoListId;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static org.javaclasses.todo.web.Routes.getTaskIdParam;
 import static org.javaclasses.todo.web.Routes.getTaskRoute;
+import static org.javaclasses.todo.web.Routes.getTodoListIdParam;
 import static org.javaclasses.todo.web.Routes.getTodoListRoute;
-import static org.javaclasses.todo.web.TodoListApplication.TASK_ID_PARAM;
-import static org.javaclasses.todo.web.TodoListApplication.TODO_LIST_ID_PARAM;
 
 /**
+ * Provides methods for easily creating of links with given URL params.
+ *
  * @author Oleg Barmin
  */
 class TestRoutesProvider {
@@ -19,7 +21,7 @@ class TestRoutesProvider {
     private static final String TODO_LIST_ROUTE_FORMAT;
 
     static {
-        Pattern pattern = Pattern.compile(TODO_LIST_ID_PARAM + '|' + TASK_ID_PARAM);
+        Pattern pattern = Pattern.compile(getTodoListIdParam() + '|' + getTaskIdParam());
         TASK_ROUTE_FORMAT = pattern.matcher(getTaskRoute())
                                    .replaceAll("%s");
         TODO_LIST_ROUTE_FORMAT = pattern.matcher(getTodoListRoute())

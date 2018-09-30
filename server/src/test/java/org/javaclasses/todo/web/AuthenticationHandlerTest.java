@@ -23,9 +23,11 @@ import static org.javaclasses.todo.web.Routes.getAuthenticationRoute;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
 /**
+ * Testing {@code AuthenticationHandler} which should allow users to sign-in into the system.
+ *
  * @author Oleg Barmin
  */
-@DisplayName("AuthenticationController should")
+@DisplayName("AuthenticationHandler should")
 class AuthenticationHandlerTest extends AbstractHandlerTest {
 
     private final RequestSpecification specification = getRequestSpecification();
@@ -34,7 +36,8 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         String credentials = String.format("%s:%s", USER_1.getUsername()
                                                           .getValue(), password.getValue());
         String base64EncodedCredentials = new String(Base64.getEncoder()
-                                                           .encode(credentials.getBytes(US_ASCII)), US_ASCII);
+                                                           .encode(credentials.getBytes(US_ASCII)),
+                                                     US_ASCII);
 
         return base64EncodedCredentials;
     }
@@ -52,7 +55,8 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                                            "invalid");
 
         String base64EncodedCredentials = new String(Base64.getEncoder()
-                                                           .encode(credentials.getBytes(US_ASCII)), US_ASCII);
+                                                           .encode(credentials.getBytes(US_ASCII)),
+                                                     US_ASCII);
         return base64EncodedCredentials;
     }
 
@@ -65,7 +69,8 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .post(getAuthenticationRoute());
 
         response.then()
-                .statusCode(describedAs("responds with status code 200, but it don't.", is(HTTP_OK)))
+                .statusCode(
+                        describedAs("responds with status code 200, but it don't.", is(HTTP_OK)))
                 .body(describedAs("provide token, but it don't.", notNullValue(Token.class)));
     }
 
@@ -86,7 +91,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
     }
 
     @Test
-    @DisplayName("unauthorize requests without Authentication header.")
+    @DisplayName("forbid requests without Authentication header.")
     void testInvalidHeader() {
         Response response = specification
                 .header("WRONG_HEADER", getAuthenticationHeaderValue(USER_1.getPassword()))
@@ -103,7 +108,8 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
     void testInvalidAuthScheme() {
         //invalid authentication scheme
         Response response = specification
-                .header(headerName(), "INVALID " + getBase64EncodedCredentials(USER_1.getPassword()))
+                .header(headerName(),
+                        "INVALID " + getBase64EncodedCredentials(USER_1.getPassword()))
                 .when()
                 .post(getAuthenticationRoute());
 

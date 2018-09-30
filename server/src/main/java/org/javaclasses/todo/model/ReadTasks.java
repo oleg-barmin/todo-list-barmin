@@ -27,7 +27,8 @@ public final class ReadTasks extends Operation<ReadTasks> {
      * @param authorization  to validate access to {@code TodoList}
      * @param authentication to authenticate user token
      */
-    ReadTasks(TodoListId todoListId, TaskStorage taskStorage, Authorization authorization, Authentication authentication) {
+    ReadTasks(TodoListId todoListId, TaskStorage taskStorage, Authorization authorization,
+              Authentication authentication) {
         super(authentication);
         this.taskStorage = checkNotNull(taskStorage);
         this.todoListId = checkNotNull(todoListId);

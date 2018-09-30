@@ -7,7 +7,11 @@ import org.javaclasses.todo.model.EntityId;
 import org.javaclasses.todo.storage.Storage;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage of Entities by their ID in memory.
@@ -58,6 +62,18 @@ abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implemen
         return Optional.ofNullable(storage.get(id));
     }
 
+    @Override
+    public Optional<E> remove(I id) {
+        Preconditions.checkNotNull(id, "Cannot remove entity with null ID.");
+
+        return Optional.ofNullable(storage.remove(id));
+    }
+
+    @Override
+    public void clear() {
+        this.storage.clear();
+    }
+
     private void create(E entity) {
         Preconditions.checkNotNull(entity);
         Preconditions.checkNotNull(entity.getId(), "To create Entity it must have not null ID.");
@@ -70,13 +86,6 @@ abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implemen
         Preconditions.checkNotNull(entity.getId());
 
         storage.put(entity.getId(), entity);
-    }
-
-    @Override
-    public Optional<E> remove(I id) {
-        Preconditions.checkNotNull(id, "Cannot remove entity with null ID.");
-
-        return Optional.ofNullable(storage.remove(id));
     }
 
     /**
@@ -119,10 +128,5 @@ abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implemen
         }
 
         return result;
-    }
-
-    @Override
-    public void clear() {
-        this.storage.clear();
     }
 }

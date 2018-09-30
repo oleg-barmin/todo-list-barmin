@@ -16,13 +16,16 @@ import static org.javaclasses.todo.web.TestUsers.UN_SINGED_IN_USER;
 import static org.javaclasses.todo.web.TestUsers.USER_1;
 
 /**
+ * Abstract class which allows to sub-classes to test if their operation is
+ * secured.
+ *
  * @author Oleg Barmin
  */
 abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
 
     private final RequestSpecification specification = getRequestSpecification();
 
-    abstract Response sendRequest(Token token, UserId userId);
+    abstract Response sendRequest(UserId userId);
 
     @Test
     @DisplayName("forbid operation to unauthorized users.")
@@ -30,7 +33,7 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
         Token token = new Token("invalid token");
         specification.header(X_TODO_TOKEN, token.getValue());
 
-        sendRequest(token, UN_SINGED_IN_USER.getUserId())
+        sendRequest(UN_SINGED_IN_USER.getUserId())
                 .then()
                 .statusCode(describedAs("response status must be 403, " +
                                                 "when not signed in user creates list, but it don't.",
@@ -43,7 +46,7 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
         specification.header("INVALID_HEADER", USER_1.getToken()
                                                      .getValue());
 
-        sendRequest(USER_1.getToken(), USER_1.getUserId())
+        sendRequest(USER_1.getUserId())
                 .then()
                 .statusCode(describedAs("response status must be 401, when attempt to " +
                                                 "create list with invalid token header, but it don't.",

@@ -31,14 +31,13 @@ class TestTodoListApplication extends TodoListApplication {
         UN_SINGED_IN_USER.setUsername(new Username("un_signed_in_user"));
         UN_SINGED_IN_USER.setPassword(new Password("un_signed_in_user_password"));
 
-        USER_1.setUserId(getAuthentication().createUser(USER_1.getUsername(), USER_1.getPassword()));
+        USER_1.setUserId(
+                getAuthentication().createUser(USER_1.getUsername(), USER_1.getPassword()));
         USER_1.setToken(getAuthentication().signIn(USER_1.getUsername(), USER_1.getPassword()));
-
 
         UN_SINGED_IN_USER.setUserId(getAuthentication().createUser(
                 UN_SINGED_IN_USER.getUsername(),
                 UN_SINGED_IN_USER.getPassword()));
-
 
         super.start();
     }

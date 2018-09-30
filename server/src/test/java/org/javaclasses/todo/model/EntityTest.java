@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 /**
+ * Testing equals and hashcode methods of {@link Entity} sub-classes.
+ *
  * @author Oleg Barmin
  */
 /* display name of equals and hashcode test left for better readability.*/
@@ -21,7 +23,8 @@ class EntityTest {
         @Test
         @DisplayName("perform equals and hashcode methods properly.")
         void testEqualsAndHashCode() {
-            String token = UUID.randomUUID().toString();
+            String token = UUID.randomUUID()
+                               .toString();
 
             new EqualsTester()
                     .addEqualityGroup(

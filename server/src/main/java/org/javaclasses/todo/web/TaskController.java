@@ -10,8 +10,8 @@ import org.javaclasses.todo.model.TodoService;
 import org.javaclasses.todo.model.Token;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.javaclasses.todo.web.TodoListApplication.TASK_ID_PARAM;
-import static org.javaclasses.todo.web.TodoListApplication.TODO_LIST_ID_PARAM;
+import static org.javaclasses.todo.web.Routes.getTaskIdParam;
+import static org.javaclasses.todo.web.Routes.getTodoListIdParam;
 
 /**
  * Handles {@link Task} related requests.
@@ -27,7 +27,7 @@ class TaskController {
      * @return {@code TaskId} from parameters
      */
     private static TaskId extractTaskId(RequestParams requestParams) {
-        String taskIdParam = requestParams.getParamValue(TASK_ID_PARAM);
+        String taskIdParam = requestParams.getParamValue(getTaskIdParam());
         return new TaskId(taskIdParam);
     }
 
@@ -40,7 +40,7 @@ class TaskController {
     //method used once, but added for consistency.
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private static TodoListId extractTodoListId(RequestParams requestParams) {
-        String taskIdParam = requestParams.getParamValue(TODO_LIST_ID_PARAM);
+        String taskIdParam = requestParams.getParamValue(getTodoListIdParam());
         return new TodoListId(taskIdParam);
     }
 
@@ -79,8 +79,7 @@ class TaskController {
             TaskId taskId = extractTaskId(requestData.getRequestParams());
 
             Task task = todoService.findTask(taskId)
-                                   .
-                                           authorizedWith(token)
+                                   .authorizedWith(token)
                                    .execute();
 
             String answerBody = objectToJson(task);

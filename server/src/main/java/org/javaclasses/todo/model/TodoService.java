@@ -26,13 +26,13 @@ public class TodoService {
     private final TaskStorage taskStorage;
     private final Authorization authorization;
 
-    TodoService(Authentication authentication, TodoListStorage todoListStorage, TaskStorage taskStorage) {
+    TodoService(Authentication authentication, TodoListStorage todoListStorage,
+                TaskStorage taskStorage) {
         this.authentication = checkNotNull(authentication);
         this.todoListStorage = checkNotNull(todoListStorage);
         this.taskStorage = checkNotNull(taskStorage);
-        this.authorization = new Authorization(taskStorage, todoListStorage);
+        this.authorization = new Authorization(todoListStorage);
     }
-
 
     /**
      * Creates instance of {@link CreateList} to create new list.
@@ -69,7 +69,7 @@ public class TodoService {
      * @return {@code FindTask} instance
      */
     public FindTask findTask(TaskId taskId) {
-        return new FindTask(taskId, authorization, authentication);
+        return new FindTask(taskId, taskStorage, authorization, authentication);
     }
 
     /**

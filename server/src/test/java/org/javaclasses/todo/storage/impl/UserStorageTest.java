@@ -14,6 +14,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
+ * Testing {@link UserStorage}:
+ * - basic methods inherited from {@link InMemoryStorage};
+ * - {@link UserStorage#findBy(Username)}.
+ *
  * @author Oleg Barmin
  */
 @DisplayName("UserStorage should")
@@ -21,14 +25,8 @@ class UserStorageTest extends InMemoryStorageTest<UserId, User> {
     private final Map<UserId, User> map = new HashMap<>();
     private final UserStorage storage = new UserStorage(map);
 
-
     private final Username username = new Username("exmapleUsername@gmail.ru");
     private final Password password = new Password("qwerty123");
-
-    @Override
-    UserId createID() {
-        return new UserId(UUID.randomUUID().toString());
-    }
 
     @Override
     User createEntity() {
@@ -36,8 +34,14 @@ class UserStorageTest extends InMemoryStorageTest<UserId, User> {
     }
 
     @Override
-    InMemoryStorage<UserId, User> getStorage() {
-        return storage;
+    User createEntityWithNullId() {
+        return createEntityWithId(null);
+    }
+
+    @Override
+    UserId createID() {
+        return new UserId(UUID.randomUUID()
+                              .toString());
     }
 
     @Override
@@ -48,8 +52,8 @@ class UserStorageTest extends InMemoryStorageTest<UserId, User> {
     }
 
     @Override
-    User createEntityWithNullId() {
-        return createEntityWithId(null);
+    InMemoryStorage<UserId, User> getStorage() {
+        return storage;
     }
 
     @Override
@@ -67,7 +71,7 @@ class UserStorageTest extends InMemoryStorageTest<UserId, User> {
 
         storage.write(entity);
 
-        Optional<User> optionalUser = storage.findUserByUsername(entity.getUsername());
+        Optional<User> optionalUser = storage.findBy(entity.getUsername());
 
         if (!optionalUser.isPresent()) {
             Assertions.fail("return Optional with user, but don't.");

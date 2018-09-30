@@ -3,6 +3,8 @@ package org.javaclasses.todo.model;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 
+import java.util.Optional;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -27,13 +29,13 @@ public final class RemoveTask extends Operation<RemoveTask> {
      * @param authorization  to validate access to {@code Task}
      * @param authentication to authenticate user token
      */
-    RemoveTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization, Authentication authentication) {
+    RemoveTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization,
+               Authentication authentication) {
         super(authentication);
         this.taskId = checkNotNull(taskId);
         this.taskStorage = checkNotNull(taskStorage);
         this.authorization = checkNotNull(authorization);
     }
-
 
     /**
      * Removes task with given ID from storage.
@@ -45,7 +47,17 @@ public final class RemoveTask extends Operation<RemoveTask> {
     //return values is not needed to remove task
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void execute() throws TaskNotFoundException {
-        authorization.validateAccess(validateToken(), taskId);
+        UserId userId = validateToken();
+
+        Optional<Task> optionalTask = taskStorage.read(taskId);
+
+        if (!optionalTask.isPresent()) {
+            throw new TaskNotFoundException(taskId);
+        }
+
+        Task task = optionalTask.get();
+
+        authorization.validateAccess(userId, task.getTodoListId());
         taskStorage.remove(taskId);
     }
 }
