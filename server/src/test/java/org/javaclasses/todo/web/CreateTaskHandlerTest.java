@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
@@ -57,6 +59,103 @@ class CreateTaskHandlerTest extends AbstractSecuredHandlerTest {
                      "add task with uploaded to-do list ID, but it don't.");
         assertEquals(taskDescription, taskDescription,
                      "add task with uploaded description, but it don't.");
+    }
+
+    @Test
+    @DisplayName("response with 500 status code if given task description is empty.")
+    void testCreationTaskWithEmptyDescription() {
+        specification.header(X_TODO_TOKEN, USER_1.getToken()
+                                                 .getValue());
+
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+        String taskDescription = "";
+
+        CreateTaskPayload payload = new CreateTaskPayload(taskDescription);
+
+        addTodoList(todoListId);
+
+        Response response = specification.body(payload)
+                                         .post(getTaskUrl(todoListId, taskId));
+        response.then()
+                .statusCode(describedAs("response with status code 500, but it don't.",
+                                        is(HTTP_INTERNAL_ERROR)));
+
+    }
+
+    @Test
+    @DisplayName("response with 500 status code if given task description is filled only with spaces.")
+    void testCreationTaskWithOnlySpacesDescription() {
+        specification.header(X_TODO_TOKEN, USER_1.getToken()
+                                                 .getValue());
+
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+        String taskDescription = "    ";
+
+        CreateTaskPayload payload = new CreateTaskPayload(taskDescription);
+
+        addTodoList(todoListId);
+
+        Response response = specification.body(payload)
+                                         .post(getTaskUrl(todoListId, taskId));
+        response.then()
+                .statusCode(describedAs("response with status code 500 " +
+                                                "when description is only spaces, but it don't.",
+                                        is(HTTP_INTERNAL_ERROR)));
+    }
+
+    @Test
+    @DisplayName("response with 403 status code when create task with existing ID.")
+    void testCreationTaskWithExistingId() {
+        specification.header(X_TODO_TOKEN, USER_1.getToken()
+                                                 .getValue());
+
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+        String taskDescription = "buy milk";
+
+        CreateTaskPayload payload = new CreateTaskPayload(taskDescription);
+
+        addTodoList(todoListId);
+        addTask(taskId, todoListId, taskDescription);
+
+        Response response = specification.body(payload)
+                                         .post(getTaskUrl(todoListId, taskId));
+
+        response.then()
+                .statusCode(describedAs("response with status code 403 " +
+                                                "when try to add task with existing ID.",
+                                        is(HTTP_FORBIDDEN)));
+    }
+
+    @Test
+    @DisplayName("response with 403 status code when create task with non-existing to-do-list ID.")
+    void testCreationTaskWithNonExistingId() {
+        specification.header(X_TODO_TOKEN, USER_1.getToken()
+                                                 .getValue());
+
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+        String taskDescription = "watch \"Predator\"";
+
+        CreateTaskPayload payload = new CreateTaskPayload(taskDescription);
+
+        Response response = specification.body(payload)
+                                         .post(getTaskUrl(todoListId, taskId));
+
+        response.then()
+                .statusCode(describedAs("response with status code 403 when try to add " +
+                                                "task with non-existing to-do list ID.",
+                                        is(HTTP_FORBIDDEN)));
     }
 
     @Override

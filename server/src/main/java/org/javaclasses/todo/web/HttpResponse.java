@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
@@ -44,6 +45,7 @@ class HttpResponse<B> {
      * Creates instance of {@code HttpResponse} with given body and 200 status code.
      *
      * @param body body of response
+     * @param <B> body type
      * @return response with 200 status code and given body
      */
     static <B> HttpResponse ok(B body) {
@@ -78,12 +80,23 @@ class HttpResponse<B> {
     }
 
     /**
-     * Creates instance of {@code HttpResponse} with empty and 403 status code.
+     * Creates instance of {@code HttpResponse} with empty body and 403 status code.
      *
      * @return response with 403 status code and empty status code
      */
     static HttpResponse forbidden() {
         return new HttpResponse(HTTP_FORBIDDEN);
+    }
+
+    /**
+     * Creates instance of {@code HttpResponse} with given body and 500 status code.
+     *
+     * @param body body of response
+     * @param <B>  body type
+     * @return response with 500 status code and given body
+     */
+    static <B> HttpResponse internalError(B body) {
+        return new HttpResponse<>(HTTP_INTERNAL_ERROR, body);
     }
 
     /**

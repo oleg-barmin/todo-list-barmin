@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
@@ -44,6 +45,80 @@ class UpdateTaskHandlerTest extends AbstractSecuredHandlerTest {
                      .statusCode(describedAs("return status code 200, if" +
                                                      " update completed successfully",
                                              is(HTTP_OK)));
+    }
+
+    @Test
+    @DisplayName("response with 500 status code when update tasks with empty description.")
+    void testUpdateTaskWithEmptyDescription() {
+        specification.header(X_TODO_TOKEN, USER_1.getToken()
+                                                 .getValue());
+
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+
+        addTodoList(todoListId);
+        addTask(taskId, todoListId, "task to test update with");
+
+        TaskUpdatePayload payload = new TaskUpdatePayload(false, "");
+
+        specification.body(payload)
+                     .put(getTaskUrl(todoListId, taskId))
+                     .then()
+                     .statusCode(describedAs("return status code 500",
+                                             is(HTTP_INTERNAL_ERROR)));
+    }
+
+    @Test
+    @DisplayName("response with 500 status code when update tasks with only spaces description.")
+    void testUpdateTaskWithOnlySpacesDescription() {
+        specification.header(X_TODO_TOKEN, USER_1.getToken()
+                                                 .getValue());
+
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+
+        addTodoList(todoListId);
+        addTask(taskId, todoListId, "task to test update with only spaces description");
+
+        TaskUpdatePayload payload = new TaskUpdatePayload(false, "    ");
+
+        specification.body(payload)
+                     .put(getTaskUrl(todoListId, taskId))
+                     .then()
+                     .statusCode(describedAs("return status code 500 when description is only spaces",
+                                             is(HTTP_INTERNAL_ERROR)));
+    }
+
+    @Test
+    @DisplayName("response with 500 status code when update completed task.")
+    void testUpdateCompletedTask() {
+        specification.header(X_TODO_TOKEN, USER_1.getToken()
+                                                 .getValue());
+
+        TaskId taskId = new TaskId(UUID.randomUUID()
+                                       .toString());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+
+        addTodoList(todoListId);
+        addTask(taskId, todoListId, "task to complete");
+
+        TaskUpdatePayload payload = new TaskUpdatePayload(true, "completed task");
+
+        specification.body(payload)
+                     .put(getTaskUrl(todoListId, taskId));
+
+        payload = new TaskUpdatePayload(true, "new description of completed task");
+
+        specification.body(payload)
+                     .put(getTaskUrl(todoListId, taskId))
+                     .then()
+                     .statusCode(describedAs("return status code 500 when update completed task",
+                                             is(HTTP_INTERNAL_ERROR)));
     }
 
     @Override

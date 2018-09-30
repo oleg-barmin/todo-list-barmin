@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
@@ -44,6 +45,26 @@ class CreateListHandlerTest extends AbstractSecuredHandlerTest {
                 .statusCode(describedAs("response status must be 200, " +
                                                 "when signed in user creates list, but it don't.",
                                         is(HTTP_OK)));
+    }
+
+    @Test
+    @DisplayName("response with 403 status code when try to add to-do list with existing ID.")
+    void testCreateListWithExistingId() {
+        specification.header(X_TODO_TOKEN, USER_1.getToken()
+                                                 .getValue());
+        TodoListId todoListId = new TodoListId(UUID.randomUUID()
+                                                   .toString());
+        CreateListPayload payload = new CreateListPayload(todoListId);
+
+        addTodoList(todoListId);
+
+        Response response = specification.body(payload)
+                                         .post(getTodoListRoute());
+
+        response.then()
+                .statusCode(describedAs("response status must be 403 when " +
+                                                "try to create list with existing Id.",
+                                        is(HTTP_FORBIDDEN)));
     }
 
     @Override
