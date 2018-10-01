@@ -27,7 +27,7 @@ class CreateListHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("create new lists by signed in user.")
     void testCreateList() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         CreateListPayload payload = new CreateListPayload(generateTodoListId());
 
@@ -44,7 +44,7 @@ class CreateListHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 403 status code when try to add to-do list with existing ID.")
     void testCreateListWithExistingId() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TodoListId todoListId = generateTodoListId();
         CreateListPayload payload = new CreateListPayload(todoListId);

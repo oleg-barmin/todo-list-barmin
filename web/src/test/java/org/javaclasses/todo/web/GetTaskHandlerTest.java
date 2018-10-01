@@ -9,6 +9,7 @@ import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -45,6 +46,24 @@ class GetTaskHandlerTest extends AbstractSecuredHandlerTest {
                                              is(HTTP_OK)))
                      .body(describedAs("provide task by ID, but it don't.",
                                        notNullValue(Task.class)));
+    }
+
+    @Test
+    @DisplayName("read tasks from other user to-do list.")
+    void testGetTaskFromOtherUserTodoList() {
+        setTokenToRequestSpecification(specification);
+
+        TaskId firstUserTaskId = generateTaskId();
+        TodoListId firstUserTodoListId = generateTodoListId();
+
+        addTodoList(firstUserTodoListId);
+        addTask(firstUserTaskId, firstUserTodoListId, "buy bread");
+
+        RequestSpecification secondUserSpec = getNewSpecification();
+
+        secondUserSpec.get(getTaskUrl(firstUserTodoListId, firstUserTaskId))
+                      .then()
+                      .statusCode(HTTP_FORBIDDEN);
     }
 
     @Override
