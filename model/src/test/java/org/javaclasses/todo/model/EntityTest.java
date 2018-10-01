@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Testing equals and hashcode methods of {@link Entity} sub-classes.
  *
@@ -48,6 +50,16 @@ class EntityTest {
                             new Password(password),
                             new Password(password))
                     .testEquals();
+        }
+
+        @Test
+        @DisplayName("store given value of password.")
+        void testGetValue() {
+            String passwordStr = "securedPassword";
+
+            Password password = new Password(passwordStr);
+
+            assertEquals(passwordStr, password.getValue());
         }
     }
 
