@@ -22,7 +22,7 @@ public class Actor {
      * @param username username of registered user
      * @param password password of registered user
      */
-    Actor(UserId userId, Username username, Password password) {
+    public Actor(UserId userId, Username username, Password password) {
         this.userId = userId;
         this.username = username;
         this.password = password;

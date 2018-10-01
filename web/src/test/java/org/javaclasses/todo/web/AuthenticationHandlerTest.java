@@ -111,8 +111,10 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         Actor actor = getTestEnvironment().registerUser();
         Password invalidPassword = new Password(actor.getPassword() + "_invalidPassWord13_");
 
+        Actor invalidCredentialsActor = new Actor(actor.getUserId(), actor.getUsername(), invalidPassword);
+
         Response response = specification
-                .header(headerName(), getAuthenticationHeaderValue(actor))
+                .header(headerName(), getAuthenticationHeaderValue(invalidCredentialsActor))
                 .when()
                 .post(getAuthenticationRoute());
 
