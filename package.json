@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "directories": {
-    "test": "test"
+    "test": "js/test"
   },
   "scripts": {
-    "test": "qunit test/todo-test-bundle.js",
-    "doc": "jsdoc src -r -d doc -c jsdoc.config.json",
+    "doc": "jsdoc js/src -r -d js/doc -c jsdoc.config.json",
     "rollup": "rollup -c rollup.config.js"
   },
   "author": "barmin",

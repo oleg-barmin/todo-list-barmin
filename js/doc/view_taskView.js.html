@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: view/taskView.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: view/taskView.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {TodoComponent} from "./todoComponent";
+import {TaskDisplay} from "./taskDisplay";
+import {EventTypes} from "../event/event";
+import {TaskEdit} from "./taskEdit";
+
+/**
+ * Component which responsible for displaying of task.
+ *
+ * Has two states:
+ *  - {@link TaskDisplay}
+ *  - {@link TaskEdit}
+ *
+ *
+ *  In `TaskDisplay` state end user is able to:
+ *  - mark task as completed
+ *  - remove task
+ *  - switch to `TaskEdit` state
+ *
+ *
+ *  In `TaskEdit` state end user is able to:
+ *  - edit task description
+ *  - save new task description
+ *  - cancel editing (switch to `TaskDisplay` state)
+ *
+ * @extends TodoComponent
+ */
+export class TaskView extends TodoComponent {
+
+    /**
+     * Creates `TaskView` instance.
+     *
+     * @param {jQuery} element jQuery element to render into
+     * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
+     * @param {Number} number number of the task in the list of tasks
+     * @param {Task} task task to render
+     */
+    constructor(element, eventBus, number, task) {
+        super(element, eventBus);
+
+        this.eventBus = eventBus;
+        this.task = task;
+        this.number = number;
+        this.currentState = new TaskDisplay(null, this.eventBus, null, null);
+
+        const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingStarted,
+            occurredEvent => {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
+                    this.element.empty();
+                    this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task);
+                    this.currentState.render();
+                }
+            });
+
+        const cancelTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingCanceled,
+            occurredEvent => {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
+                    this.element.empty();
+                    this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                    this.currentState.render();
+                }
+            });
+
+        const taskUpdatePerformedHandler = this.eventBus.subscribe(EventTypes.TaskUpdated,
+            occurredEvent => {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
+                    this.element.empty();
+                    this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                    this.currentState.render();
+                }
+            });
+
+        const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemoved,
+            (occurredEvent) => {
+                if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
+                    this.element.remove();
+                    this.eventBus.unsubscribe(EventTypes.TaskEditingStarted, startTaskEditingHandler);
+                    this.eventBus.unsubscribe(EventTypes.TaskEditingCanceled, cancelTaskEditingHandler);
+                    this.eventBus.unsubscribe(EventTypes.TaskRemoved, taskRemovalPerformedHandler);
+                    this.eventBus.unsubscribe(EventTypes.TaskUpdated, taskUpdatePerformedHandler);
+                }
+            });
+    }
+
+    /**
+     * todo jsDoc
+     */
+    isEditing() {
+        return this.currentState instanceof TaskEdit;
+    }
+
+    /**
+     * Removes previous element, stores given element to render into, task and number of the task in the TodoList.
+     *
+     * @param {jQuery} element jQuery element to render into
+     * @param {number} number number of the task in list
+     * @param {Task} task task to render.
+     */
+    update(element, number, task) {
+        this.element.remove();
+        this.element = element;
+        this.number = number;
+        this.task = task;
+    }
+
+    /**
+     * Renders task in current state of TaskView onto given element.
+     */
+    render() {
+        this.currentState.element = this.element;
+        this.currentState.number = this.number;
+        this.currentState.task = this.task;
+
+        this.currentState.render();
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2>
+    <h3>Classes</h3>
+    <ul>
+        <li><a href="AddTaskForm.html">AddTaskForm</a></li>
+        <li><a href="AddTaskRequest.html">AddTaskRequest</a></li>
+        <li><a href="CannotUpdateCompletedTaskException.html">CannotUpdateCompletedTaskException</a>
+        </li>
+        <li><a href="Controller.html">Controller</a></li>
+        <li><a href="DatePointsToFutureException.html">DatePointsToFutureException</a></li>
+        <li><a href="EmptyStringException.html">EmptyStringException</a></li>
+        <li><a href="Event.html">Event</a></li>
+        <li><a href="EventBus.html">EventBus</a></li>
+        <li><a href="EventType.html">EventType</a></li>
+        <li><a href="NewTaskAdded.html">NewTaskAdded</a></li>
+        <li><a href="NewTaskValidationFailed.html">NewTaskValidationFailed</a></li>
+        <li><a href="ParameterIsNotDefinedException.html">ParameterIsNotDefinedException</a></li>
+        <li><a href="Preconditions.html">Preconditions</a></li>
+        <li><a href="Task.html">Task</a></li>
+        <li><a href="TaskAlreadyCompletedException.html">TaskAlreadyCompletedException</a></li>
+        <li><a href="TaskCompletionFailed.html">TaskCompletionFailed</a></li>
+        <li><a href="TaskCompletionRequested.html">TaskCompletionRequested</a></li>
+        <li><a href="TaskDisplay.html">TaskDisplay</a></li>
+        <li><a href="TaskEdit.html">TaskEdit</a></li>
+        <li><a href="TaskEditingCanceled.html">TaskEditingCanceled</a></li>
+        <li><a href="TaskEditingStarted.html">TaskEditingStarted</a></li>
+        <li><a href="TaskId.html">TaskId</a></li>
+        <li><a href="TaskIdGenerator.html">TaskIdGenerator</a></li>
+        <li><a href="TaskListUpdated.html">TaskListUpdated</a></li>
+        <li><a href="TaskNotFoundException.html">TaskNotFoundException</a></li>
+        <li><a href="TaskRemovalFailed.html">TaskRemovalFailed</a></li>
+        <li><a href="TaskRemovalRequested.html">TaskRemovalRequested</a></li>
+        <li><a href="TaskRemoved.html">TaskRemoved</a></li>
+        <li><a href="TasksClone.html">TasksClone</a></li>
+        <li><a href="TaskSorter.html">TaskSorter</a></li>
+        <li><a href="TaskUpdated.html">TaskUpdated</a></li>
+        <li><a href="TaskUpdateFailed.html">TaskUpdateFailed</a></li>
+        <li><a href="TaskUpdateRequested.html">TaskUpdateRequested</a></li>
+        <li><a href="TaskView.html">TaskView</a></li>
+        <li><a href="TodoComponent.html">TodoComponent</a></li>
+        <li><a href="TodoList.html">TodoList</a></li>
+        <li><a href="TodoListApp.html">TodoListApp</a></li>
+        <li><a href="TodoWidget.html">TodoWidget</a></li>
+    </ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Oct
+    01 2018 19:10:32 GMT+0300 (Eastern European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

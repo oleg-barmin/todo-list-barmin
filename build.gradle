@@ -21,7 +21,16 @@ test {
     useJUnitPlatform()
 }
 
-task rollup(type:Exec) {
-    commandLine 'cmd', '/c', 'npm', 'run', 'rollup'
+task rollup(type: Exec) {
+    String osName = System.getProperty("os.name").toLowerCase()
+    String rollupCommand = 'npm run rollup'
+
+    if (osName.contains("windows")) {
+        commandLine 'cmd', '/c', rollupCommand
+    } else {
+        commandLine rollupCommand
+    }
 }
+
+build.dependsOn rollup
 
