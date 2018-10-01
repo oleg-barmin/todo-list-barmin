@@ -49,7 +49,7 @@ class GetTaskHandlerTest extends AbstractSecuredHandlerTest {
     }
 
     @Test
-    @DisplayName("read tasks from other user to-do list.")
+    @DisplayName("return 403 status code when read tasks from other user to-do list.")
     void testGetTaskFromOtherUserTodoList() {
         setTokenToRequestSpecification(specification);
 

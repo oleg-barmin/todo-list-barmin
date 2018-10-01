@@ -12,16 +12,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.UUID;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.describedAs;
 import static org.hamcrest.CoreMatchers.is;
 import static org.javaclasses.todo.web.given.TasksIdGenerator.generateTaskId;
+import static org.javaclasses.todo.web.given.TestRoutesProvider.getTaskUrl;
 import static org.javaclasses.todo.web.given.TestRoutesProvider.getTodoListUrl;
 import static org.javaclasses.todo.web.given.TodoListsIdGenerator.generateTodoListId;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -36,7 +35,7 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
     @Test
     @DisplayName("read tasks from to-do list.")
     void testReadTasks() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TodoListId todoListId = generateTodoListId();
         TaskId firstTaskId = generateTaskId();
@@ -68,15 +67,33 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
     }
 
     @Test
+    @DisplayName("response with 403 status code when reading tasks from other user to-do list.")
+    void testReadTasksOtherUserTodoList() {
+        setTokenToRequestSpecification(specification);
+
+        TodoListId todoListId = generateTodoListId();
+        TaskId firstTaskId = generateTaskId();
+        TaskId secondTaskId = generateTaskId();
+
+        addTodoList(todoListId);
+
+        addTask(firstTaskId, todoListId, "first task of first user.");
+        addTask(secondTaskId, todoListId, "second task of first user.");
+
+        RequestSpecification secondUserSpec = getNewSpecification();
+
+        secondUserSpec.get(getTaskUrl(todoListId, firstTaskId));
+    }
+
+    @Test
     @DisplayName("forbid to read tasks from non-existing to-do lists.")
     void testReadTasksNonExistingTodoList() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
-        Response response = specification.get("/lists/123414/" + UUID.randomUUID()
-                                                                     .toString());
+        specification.get(getTaskUrl(generateTodoListId(), generateTaskId()))
+                     .then()
+                     .statusCode(HTTP_FORBIDDEN);
 
-        assertEquals(HTTP_FORBIDDEN, response.getStatusCode(),
-                     "return status code 403, when signed in user read tasks from non-existing to-do list.");
     }
 
     @Override
