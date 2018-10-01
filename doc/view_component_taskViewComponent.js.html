@@ -79,7 +79,7 @@ export class TaskView extends TodoComponent {
             this.eventBus.post(new TaskCompletionRequested(task.id));
         });
 
-        if (task.completed) {
+        if (task.taskStatus) {
             completeBtn.remove();
             this.element.css({background: "#dddddd"})
         }

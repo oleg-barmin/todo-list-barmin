@@ -94,7 +94,7 @@ export class TaskDisplay extends TodoComponent {
             }
         });
 
-        if (task.completed) {
+        if (task.taskStatus) {
             completeBtn.remove();
             editBtn.remove();
             taskDescriptionDiv.replaceWith(() => $(`&lt;del style="white-space: pre-wrap;"/>`).append(taskDescriptionDiv.contents()));
