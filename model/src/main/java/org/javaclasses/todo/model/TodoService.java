@@ -106,15 +106,9 @@ public class TodoService {
      *
      * @param taskId ID of the task to remove
      * @return {@code RemoveTask} instance to build task to remove it
-     * @throws TaskNotFoundException if task to remove was not found
      */
     public RemoveTask removeTask(TaskId taskId) throws TaskNotFoundException {
         checkNotNull(taskId);
-
-        Optional<Task> task = taskStorage.read(taskId);
-        if (!task.isPresent()) {
-            throw new TaskNotFoundException(taskId);
-        }
 
         return new RemoveTask(taskId, taskStorage, authorization, authentication);
     }
