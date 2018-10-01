@@ -8,6 +8,7 @@ import org.javaclasses.todo.model.TodoListId;
 import org.javaclasses.todo.model.TodoListNotFoundException;
 import org.javaclasses.todo.model.TodoService;
 import org.javaclasses.todo.model.Token;
+import org.javaclasses.todo.model.UpdateTask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -169,6 +170,7 @@ class TaskController {
          * @throws AuthorizationFailedException if user token expired or
          *                                      user has no permission to modify to-do list with given ID
          */
+        @SuppressWarnings("ResultOfMethodCallIgnored") // watch inside method
         @Override
         HttpResponse process(RequestData requestData, Token token) {
             RequestBody body = requestData.getRequestBody();
@@ -183,11 +185,16 @@ class TaskController {
             String taskDescription = payload.getTaskDescription();
             boolean taskStatus = payload.isTaskStatus();
 
-            todoService.updateTask(taskId)
-                       .authorizedWith(token)
-                       .setStatus(taskStatus)
-                       .withDescription(taskDescription)
-                       .execute();
+            UpdateTask updateTask = todoService.updateTask(taskId)
+                                               .authorizedWith(token)
+                                               .setStatus(taskStatus);
+
+            // if block necessary if user tries to update only task status, not it's description
+            if (taskDescription != null) {
+                updateTask.withDescription(taskDescription);
+            }
+
+            updateTask.execute();
 
             return HttpResponse.ok();
         }

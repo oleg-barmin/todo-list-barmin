@@ -21,6 +21,9 @@ import spark.Response;
 @SuppressWarnings("unused")
 class ExceptionHandlers {
 
+    private ExceptionHandlers() {
+    }
+
     /**
      * Handles thrown {@link AuthorizationFailedException}.
      */

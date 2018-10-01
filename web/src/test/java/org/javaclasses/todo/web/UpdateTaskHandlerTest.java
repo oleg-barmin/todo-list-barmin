@@ -2,6 +2,7 @@ package org.javaclasses.todo.web;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.javaclasses.todo.model.Task;
 import org.javaclasses.todo.model.TaskId;
 import org.javaclasses.todo.model.TodoListId;
 import org.javaclasses.todo.model.UserId;
@@ -16,6 +17,8 @@ import static org.hamcrest.core.DescribedAs.describedAs;
 import static org.javaclasses.todo.web.given.TasksIdGenerator.generateTaskId;
 import static org.javaclasses.todo.web.given.TestRoutesProvider.getTaskUrl;
 import static org.javaclasses.todo.web.given.TodoListsIdGenerator.generateTodoListId;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("UpdateTaskHandler should")
 class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
@@ -121,6 +124,62 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
                      .put(getTaskUrl(todoListId, taskId))
                      .then()
                      .statusCode(HTTP_FORBIDDEN);
+    }
+
+    @Test
+    @DisplayName("update only description.")
+    void testUpdateOnlyDescription() {
+        setTokenToRequestSpecification();
+
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
+        String taskDescription = "task with false status";
+
+        addTodoList(todoListId);
+        addTask(taskId, todoListId, taskDescription);
+        Task notUpdatedTask = readTask(todoListId, taskId);
+
+        String newTaskDescription = "new description of task";
+        TaskUpdatePayload payload = new TaskUpdatePayload(newTaskDescription);
+
+        specification.body(payload)
+                     .put(getTaskUrl(todoListId, taskId))
+                     .then()
+                     .statusCode(HTTP_OK);
+
+        Task updatedTask = readTask(todoListId, taskId);
+
+        assertEquals(newTaskDescription, updatedTask.getDescription(),
+                     "task description should be updated, but it don't.");
+        assertEquals(notUpdatedTask.isCompleted(), updatedTask.isCompleted(),
+                     "task status should not be updated, but it was.");
+    }
+
+    @Test
+    @DisplayName("update only status.")
+    void testUpdateOnlyStatus() {
+        setTokenToRequestSpecification();
+
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
+        String taskDescription = "old task";
+
+        addTodoList(todoListId);
+        addTask(taskId, todoListId, taskDescription);
+        Task notUpdatedTask = readTask(todoListId, taskId);
+
+        TaskUpdatePayload payload = new TaskUpdatePayload(true);
+
+        specification.body(payload)
+                     .put(getTaskUrl(todoListId, taskId))
+                     .then()
+                     .statusCode(HTTP_OK);
+
+        Task updatedTask = readTask(todoListId, taskId);
+
+        assertEquals(notUpdatedTask.getDescription(), updatedTask.getDescription(),
+                     "task description should not be updated, but it is.");
+        assertTrue(updatedTask.isCompleted(), "task status should be updated, but it don't.");
     }
 
     @Override

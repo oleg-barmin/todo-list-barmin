@@ -7,8 +7,16 @@ package org.javaclasses.todo.web;
  */
 class TaskUpdatePayload {
 
-    private final boolean taskStatus;
-    private final String taskDescription;
+    private boolean taskStatus;
+    private String taskDescription;
+
+    TaskUpdatePayload(boolean taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
+    TaskUpdatePayload(String taskDescription) {
+        this.taskDescription = taskDescription;
+    }
 
     /**
      * Creates {@code TaskUpdatePayload} instance.
