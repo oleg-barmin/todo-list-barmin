@@ -12,7 +12,7 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
-import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
+import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.getxTodoToken;
 
 /**
  * Abstract class which allows to sub-classes to test if their operation is
@@ -32,8 +32,8 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
      */
     void setTokenToRequestSpecification() {
         SignedInActor actor = getTestEnvironment().createAndSignInActor();
-        specification.header(X_TODO_TOKEN, actor.getToken()
-                                                .getValue());
+        specification.header(getxTodoToken(), actor.getToken()
+                                                   .getValue());
     }
 
     @Test
@@ -44,7 +44,7 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
         Token token = new Token(actor.getToken()
                                      .getValue() + "invalid token");
 
-        specification.header(X_TODO_TOKEN, token.getValue());
+        specification.header(getxTodoToken(), token.getValue());
 
         sendRequest(actor.getUserId())
                 .then()

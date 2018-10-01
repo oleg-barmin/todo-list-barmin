@@ -9,7 +9,7 @@ import org.javaclasses.todo.model.Token;
  */
 abstract class SecuredAbstractRequestHandler extends AbstractRequestHandler {
 
-    static final String X_TODO_TOKEN = "X-Todo-Token";
+    private static final String X_TODO_TOKEN = "X-Todo-Token";
 
     @Override
     HttpResponse process(RequestData requestData) {
@@ -23,6 +23,10 @@ abstract class SecuredAbstractRequestHandler extends AbstractRequestHandler {
         Token token = new Token(headerValue);
 
         return process(requestData, token);
+    }
+
+    public static String getxTodoToken() {
+        return X_TODO_TOKEN;
     }
 
     /**
