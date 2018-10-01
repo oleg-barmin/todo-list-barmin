@@ -1,6 +1,7 @@
 /package-lock.json
 /node_modules/
-.idea/
 /server/build/
 /server/.gradle/
 /server/out/
+/.gradle/
+/build/

@@ -35,12 +35,12 @@ import {Task} from "../src/model/task.js";
  *
  * Allows:
  *  - add new tasks
- *  - marks them as completed
+ *  - marks them as taskStatus
  *  - update their descriptions
  *  - remove from list
  *
  * Task is being sorted by:
- * - Status (uncompleted tasks first, completed last).
+ * - Status (uncompleted tasks first, taskStatus last).
  * - Date of last update.
  * - Lexicographically by description.
  *
@@ -122,12 +122,12 @@ export class TodoList {
     }
 
     /**
-     * Finds task by ID and marks it as completed.
+     * Finds task by ID and marks it as taskStatus.
      *
      * @param {TaskId} taskId ID of specified task
      *
      * @throws TaskNotFoundException if task with specified ID was not found
-     * @throws TaskAlreadyCompletedException if task with specified ID is already completed
+     * @throws TaskAlreadyCompletedException if task with specified ID is already taskStatus
      */
     complete(taskId) {
         Preconditions.isDefined(taskId, "task ID");
@@ -138,10 +138,10 @@ export class TodoList {
             throw new TaskNotFoundException(taskId);
         }
 
-        if (storedTask.completed) {
+        if (storedTask.taskStatus) {
             throw new TaskAlreadyCompletedException(taskId);
         }
-        storedTask.completed = true;
+        storedTask.taskStatus = true;
         TaskSorter.sortTasksArray(this._tasksArray);
     }
 
@@ -152,7 +152,7 @@ export class TodoList {
      * @param {string} updatedDescription new description of the task
      *
      * @throws TaskNotFoundException if task with specified ID was not found
-     * @throws CannotUpdateCompletedTaskException if try to updated completed task
+     * @throws CannotUpdateCompletedTaskException if try to updated taskStatus task
      */
     update(taskId, updatedDescription) {
         Preconditions.isDefined(taskId, "task ID");
@@ -164,7 +164,7 @@ export class TodoList {
             throw new TaskNotFoundException(taskId);
         }
 
-        if (taskToUpdate.completed) {
+        if (taskToUpdate.taskStatus) {
             throw new CannotUpdateCompletedTaskException(taskId);
         }
 
@@ -213,7 +213,7 @@ export class TaskSorter {
 
     /**
      * Sorts array of tasks by:
-     * - Status (uncompleted then completed).
+     * - Status (uncompleted then taskStatus).
      * - Date of last update.
      * - Lexicographically by description.
      * - Lexicographically by ID.
@@ -222,7 +222,7 @@ export class TaskSorter {
      */
     static sortTasksArray(array) {
         array.sort((firstTask, secondTask) => {
-            if (firstTask.completed === secondTask.completed) {
+            if (firstTask.taskStatus === secondTask.taskStatus) {
                 let compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
                 if (compareByDateResult === 0) {
                     let compareByDescriptionResult = firstTask.description.localeCompare(secondTask.description);
@@ -234,7 +234,7 @@ export class TaskSorter {
                 return compareByDateResult;
             }
 
-            return firstTask.completed ? 1 : -1;
+            return firstTask.taskStatus ? 1 : -1;
         });
     }
 }
@@ -436,7 +436,7 @@ export class TaskNotFoundException extends Error {
 
 
 /**
- * Indicates that task was already completed.
+ * Indicates that task was already taskStatus.
  *
  * @extends Error
  */
@@ -445,10 +445,10 @@ export class TaskAlreadyCompletedException extends Error {
     /**
      * Crates `TaskAlreadyCompletedException` instance.
      *
-     * @param {TaskId} taskId  ID of task which was already completed.
+     * @param {TaskId} taskId  ID of task which was already taskStatus.
      */
     constructor(taskId) {
-        super(`Task with ID ${taskId.id} is alredy completed.`);
+        super(`Task with ID ${taskId.id} is alredy taskStatus.`);
         this.name = this.constructor.name;
     }
 }
@@ -472,7 +472,7 @@ export class DatePointsToFutureException extends Error {
 }
 
 /**
- * Occurs when trying to update completed task.
+ * Occurs when trying to update taskStatus task.
  *
  * @extends Error
  */
@@ -481,10 +481,10 @@ export class CannotUpdateCompletedTaskException extends Error {
     /**
      * Crates `CannotUpdateCompletedTaskException` instance.
      *
-     * @param {TaskId} taskId ID of task which was already completed before update attempt.
+     * @param {TaskId} taskId ID of task which was already taskStatus before update attempt.
      */
     constructor(taskId) {
-        super(`Completed tasks cannot be updated. Task with ID: ${taskId} is completed.`);
+        super(`Completed tasks cannot be updated. Task with ID: ${taskId} is taskStatus.`);
         this.name = this.constructor.name;
     }
 }

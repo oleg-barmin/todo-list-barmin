@@ -30,7 +30,7 @@
 /**
  * Task to do.
  *
- * It stores task ID, its description, status (is it completed or not),
+ * It stores task ID, its description, status (is it taskStatus or not),
  * date of creation and date of last update (if task wasn't updated
  * the date of creation equals to last update date).
  */
@@ -47,13 +47,13 @@ export class Task {
     constructor(id, description, creationDate) {
         this.id = id;
         this.description = description;
-        this.completed = false;
+        this.taskStatus = false;
         this.creationDate = creationDate;
         this.lastUpdateDate = creationDate;
     }
 
     toString() {
-        return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
+        return `Task: [ID = ${this.id}, description = ${this.description}, taskStatus = ${this.taskStatus}, `
             + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
     }
 }</code></pre>

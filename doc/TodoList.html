@@ -34,13 +34,13 @@
 <p>Allows:</p>
 <ul>
 <li>add new tasks</li>
-<li>marks them as completed</li>
+    <li>marks them as taskStatus</li>
 <li>update their descriptions</li>
 <li>remove from list</li>
 </ul>
 <p>Task is being sorted by:</p>
 <ul>
-<li>Status (uncompleted tasks first, completed last).</li>
+    <li>Status (uncompleted tasks first, taskStatus last).</li>
 <li>Date of last update.</li>
 <li>Lexicographically by description.</li>
 </ul>
@@ -472,7 +472,7 @@
 
 
 <div class="description">
-    <p>Finds task by ID and marks it as completed.</p>
+    <p>Finds task by ID and marks it as taskStatus.</p>
 </div>
 
 
@@ -601,8 +601,8 @@
         <li>
 
     <div class="param-desc">
-    
-        <p>TaskAlreadyCompletedException if task with specified ID is already completed</p>
+
+        <p>TaskAlreadyCompletedException if task with specified ID is already taskStatus</p>
     
     </div>
 
@@ -928,8 +928,8 @@
         <li>
 
     <div class="param-desc">
-    
-        <p>CannotUpdateCompletedTaskException if try to updated completed task</p>
+
+        <p>CannotUpdateCompletedTaskException if try to updated taskStatus task</p>
     
     </div>
 
