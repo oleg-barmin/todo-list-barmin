@@ -8,6 +8,7 @@ import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
@@ -27,7 +28,7 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
 
     @Test
     @DisplayName("remove tasks from system by ID.")
-    void testFindTaskById() {
+    void testRemoveTaskById() {
         setTokenToRequestSpecification();
 
         TaskId taskId = generateTaskId();
@@ -42,6 +43,21 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
                 .statusCode(describedAs("return status code 200, when " +
                                                 "signed in user removes task by ID from his to-do list.",
                                         is(HTTP_OK)));
+    }
+
+    @Test
+    @DisplayName("response with 403 status code when removing non-existing task.")
+    void testFindTaskById() {
+        setTokenToRequestSpecification();
+
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
+
+        addTodoList(todoListId);
+
+        specification.delete(getTaskUrl(todoListId, taskId))
+                     .then()
+                     .statusCode(HTTP_FORBIDDEN);
     }
 
     @Override

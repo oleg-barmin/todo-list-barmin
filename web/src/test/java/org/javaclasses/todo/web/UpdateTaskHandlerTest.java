@@ -8,6 +8,7 @@ import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
@@ -37,9 +38,7 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
         specification.body(payload)
                      .put(getTaskUrl(todoListId, taskId))
                      .then()
-                     .statusCode(describedAs("return status code 200, if" +
-                                                     " update completed successfully",
-                                             is(HTTP_OK)));
+                     .statusCode(HTTP_OK);
     }
 
     @Test
@@ -58,8 +57,7 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
         specification.body(payload)
                      .put(getTaskUrl(todoListId, taskId))
                      .then()
-                     .statusCode(describedAs("return status code 500",
-                                             is(HTTP_INTERNAL_ERROR)));
+                     .statusCode(HTTP_INTERNAL_ERROR);
     }
 
     @Test
@@ -105,6 +103,24 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
                      .then()
                      .statusCode(describedAs("return status code 500 when update completed task",
                                              is(HTTP_INTERNAL_ERROR)));
+    }
+
+    @Test
+    @DisplayName("response with 403 status code when update non-existing task.")
+    void testUpdateNonExistingTask() {
+        setTokenToRequestSpecification();
+
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
+
+        addTodoList(todoListId);
+
+        TaskUpdatePayload payload = new TaskUpdatePayload(false, "non-existing task");
+
+        specification.body(payload)
+                     .put(getTaskUrl(todoListId, taskId))
+                     .then()
+                     .statusCode(HTTP_FORBIDDEN);
     }
 
     @Override
