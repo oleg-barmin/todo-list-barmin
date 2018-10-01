@@ -45,7 +45,7 @@ class HttpResponse<B> {
      * Creates instance of {@code HttpResponse} with given body and 200 status code.
      *
      * @param body body of response
-     * @param <B> body type
+     * @param <B>  body type
      * @return response with 200 status code and given body
      */
     static <B> HttpResponse ok(B body) {

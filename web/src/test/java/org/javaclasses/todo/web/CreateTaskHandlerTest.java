@@ -9,16 +9,14 @@ import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
-import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
-import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
-import static org.javaclasses.todo.web.TestUsers.USER_1;
+import static org.javaclasses.todo.web.given.TasksIdGenerator.generateTaskId;
+import static org.javaclasses.todo.web.given.TestRoutesProvider.getTaskUrl;
+import static org.javaclasses.todo.web.given.TodoListsIdGenerator.generateTodoListId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -34,13 +32,10 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("create tasks.")
     void testTaskCreation() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken()
-                                                 .getValue());
+        setTokenToRequestSpecification();
 
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
         String taskDescription = "implement task creation";
 
         CreateTaskPayload payload = new CreateTaskPayload(taskDescription);
@@ -64,13 +59,10 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 500 status code if given task description is empty.")
     void testCreationTaskWithEmptyDescription() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken()
-                                                 .getValue());
+        setTokenToRequestSpecification();
 
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
         String taskDescription = "";
 
         CreateTaskPayload payload = new CreateTaskPayload(taskDescription);
@@ -88,13 +80,10 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 500 status code if given task description is filled only with spaces.")
     void testCreationTaskWithOnlySpacesDescription() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken()
-                                                 .getValue());
+        setTokenToRequestSpecification();
 
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
         String taskDescription = "    ";
 
         CreateTaskPayload payload = new CreateTaskPayload(taskDescription);
@@ -112,13 +101,10 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 403 status code when create task with existing ID.")
     void testCreationTaskWithExistingId() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken()
-                                                 .getValue());
+        setTokenToRequestSpecification();
 
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
         String taskDescription = "buy milk";
 
         CreateTaskPayload payload = new CreateTaskPayload(taskDescription);
@@ -138,13 +124,10 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 403 status code when create task with non-existing to-do-list ID.")
     void testCreationTaskWithNonExistingId() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken()
-                                                 .getValue());
+        setTokenToRequestSpecification();
 
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
         String taskDescription = "watch \"Predator\"";
 
         CreateTaskPayload payload = new CreateTaskPayload(taskDescription);
@@ -160,10 +143,8 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
 
     @Override
     Response sendRequest(UserId userId) {
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
 
         addTodoList(todoListId);
 
@@ -175,10 +156,8 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
 
     @Override
     Response sendEmptyPayloadRequest() {
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
 
         addTodoList(todoListId);
 

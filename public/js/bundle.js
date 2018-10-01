@@ -1455,7 +1455,7 @@
         /**
          * todo jsDoc
          */
-        isEditing(){
+        isEditing() {
             return this.currentState instanceof TaskEdit;
         }
 

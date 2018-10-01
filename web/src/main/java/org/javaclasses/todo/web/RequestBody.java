@@ -52,7 +52,7 @@ class RequestBody {
     }
 
     /**
-     * Deserializes value of this {@code RequestBody} into an object of the given tClass.
+     * Deserializers value of this {@code RequestBody} into an object of the given tClass.
      *
      * @param tClass the class of T
      * @param <T>    the type of the desired object

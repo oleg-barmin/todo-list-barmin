@@ -4,15 +4,15 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.Token;
 import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.web.given.SignedInActor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
-import static org.javaclasses.todo.web.TestUsers.UN_SINGED_IN_USER;
-import static org.javaclasses.todo.web.TestUsers.USER_1;
 
 /**
  * Abstract class which allows to sub-classes to test if their operation is
@@ -26,26 +26,42 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
 
     abstract Response sendRequest(UserId userId);
 
+    /**
+     * Sets a valid token of random registered user
+     * to {@link AbstractHandlerTest#specification request specification}.
+     */
+    void setTokenToRequestSpecification() {
+        SignedInActor actor = getTestEnvironment().createAndSignInActor();
+        specification.header(X_TODO_TOKEN, actor.getToken()
+                                                .getValue());
+    }
+
     @Test
     @DisplayName("forbid operation to unauthorized users.")
     void testForbidOperation() {
-        Token token = new Token("invalid token");
+        SignedInActor actor = getTestEnvironment().createAndSignInActor();
+
+        Token token = new Token(actor.getToken()
+                                     .getValue() + "invalid token");
+
         specification.header(X_TODO_TOKEN, token.getValue());
 
-        sendRequest(UN_SINGED_IN_USER.getUserId())
+        sendRequest(actor.getUserId())
                 .then()
                 .statusCode(describedAs("response status must be 403, " +
                                                 "when not signed in user creates list, but it don't.",
-                                        is(403))); // todo 403
+                                        is(HTTP_FORBIDDEN)));
     }
 
     @Test
     @DisplayName("unauthorized if header with token is invalid.")
     void testUnauthorizedOperation() {
-        specification.header("INVALID_HEADER", USER_1.getToken()
-                                                     .getValue());
+        SignedInActor actor = getTestEnvironment().createAndSignInActor();
 
-        sendRequest(USER_1.getUserId())
+        specification.header("INVALID_HEADER", actor.getToken()
+                                                    .getValue());
+
+        sendRequest(actor.getUserId())
                 .then()
                 .statusCode(describedAs("response status must be 401, when attempt to " +
                                                 "create list with invalid token header, but it don't.",

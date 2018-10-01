@@ -3,7 +3,7 @@ package org.javaclasses.todo.web;
 /**
  * Default configuration of TodoList application.
  */
-class Configurations {
+public class Configurations {
 
     private static final int DEFAULT_PORT = 4567;
     private static final String CONTENT_TYPE = "application/json";
@@ -11,7 +11,7 @@ class Configurations {
     private Configurations() {
     }
 
-    static int getDefaultPort() {
+    public static int getDefaultPort() {
         return DEFAULT_PORT;
     }
 

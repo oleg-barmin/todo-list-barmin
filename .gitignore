@@ -5,3 +5,5 @@
 /server/out/
 /.gradle/
 /build/
+/web/build/
+/model/build/

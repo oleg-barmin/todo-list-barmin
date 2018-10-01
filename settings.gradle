@@ -1,3 +1,4 @@
 rootProject.name = 'todo-list-barmin'
-include 'server'
 include 'web'
+include 'model'
+

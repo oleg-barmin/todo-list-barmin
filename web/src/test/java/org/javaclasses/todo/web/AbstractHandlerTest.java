@@ -4,20 +4,20 @@ import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.Task;
 import org.javaclasses.todo.model.TaskId;
 import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.web.given.TestEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import static io.restassured.RestAssured.given;
 import static org.javaclasses.todo.web.Configurations.getContentType;
-import static org.javaclasses.todo.web.PortProvider.getAvailablePort;
 import static org.javaclasses.todo.web.Routes.getTodoListRoute;
-import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
+import static org.javaclasses.todo.web.given.TestRoutesProvider.getTaskUrl;
 
 /**
  * An abstract integration test of all handlers, which starts and stops server on each test method,
  * provides methods to:
- * - read {@link Task Tasks} {@link AbstractHandlerTest#readTask(TodoListId, TaskId)};
- * - add {@link Task Tasks} {@link AbstractHandlerTest#addTask(TaskId, TodoListId, String)};
+ * - read {@link Task TasksIdGenerator} {@link AbstractHandlerTest#readTask(TodoListId, TaskId)};
+ * - add {@link Task TasksIdGenerator} {@link AbstractHandlerTest#addTask(TaskId, TodoListId, String)};
  * - add {@code TodoList} {@link AbstractHandlerTest#addTodoList(TodoListId)}.
  *
  * @author Oleg Barmin
@@ -25,24 +25,27 @@ import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
 //abstract test has nothing to test.
 @SuppressWarnings("AbstractClassWithoutAbstractMethods")
 abstract class AbstractHandlerTest {
-    private final int port = getAvailablePort();
 
-    private final TodoListApplication todoListApplication = new TestTodoListApplication(port);
-    private final RequestSpecification specification = given().port(port)
+    private final TestEnvironment testEnvironment = new TestEnvironment();
+    private final RequestSpecification specification = given().port(testEnvironment.getApplicationPort())
                                                               .contentType(getContentType());
 
     RequestSpecification getRequestSpecification() {
         return specification;
     }
 
+    TestEnvironment getTestEnvironment() {
+        return testEnvironment;
+    }
+
     @BeforeEach
     void startServer() {
-        todoListApplication.start();
+        testEnvironment.startServer();
     }
 
     @AfterEach
     void stopServer() {
-        todoListApplication.stop();
+        testEnvironment.stopServer();
     }
 
     void addTodoList(TodoListId todoListId) {

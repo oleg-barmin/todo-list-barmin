@@ -18,6 +18,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 class TaskController {
 
+    private TaskController() {
+    }
+
     /**
      * Extracts {@link TaskId} from parameters of Request.
      *

@@ -75,7 +75,6 @@
     <inspection_tool class="BreakStatement" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BreakStatementWithLabel" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BusyWait" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="CStyleArrayDeclaration" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="CallToNativeMethodWhileLocked" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="CallToStringConcatCanBeReplacedByOperator" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="CastConflictsWithInstanceof" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -285,7 +284,8 @@
     <inspection_tool class="InconsistentLanguageLevel" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="IncrementDecrementUsedAsExpression" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="InnerClassMayBeStatic" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="TYPO" enabled="false" />
+      <scope name="Production" level="WARNING" enabled="true" />
+      <scope name="Tests" level="WARNING" enabled="false" />
     </inspection_tool>
     <inspection_tool class="InstanceMethodNamingConvention" enabled="true" level="INFO" enabled_by_default="true">
       <scope name="Tests" level="INFO" enabled="false">
@@ -345,38 +345,6 @@
     <inspection_tool class="JDBCPrepareStatementWithNonConstantString" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="JUnit5Converter" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="JavaDoc" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false">
-        <option name="TOP_LEVEL_CLASS_OPTIONS">
-          <value>
-            <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
-            <option name="REQUIRED_TAGS" value="" />
-          </value>
-        </option>
-        <option name="INNER_CLASS_OPTIONS">
-          <value>
-            <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
-            <option name="REQUIRED_TAGS" value="" />
-          </value>
-        </option>
-        <option name="METHOD_OPTIONS">
-          <value>
-            <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
-            <option name="REQUIRED_TAGS" value="" />
-          </value>
-        </option>
-        <option name="FIELD_OPTIONS">
-          <value>
-            <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
-            <option name="REQUIRED_TAGS" value="" />
-          </value>
-        </option>
-        <option name="IGNORE_DEPRECATED" value="false" />
-        <option name="IGNORE_JAVADOC_PERIOD" value="false" />
-        <option name="IGNORE_DUPLICATED_THROWS" value="false" />
-        <option name="IGNORE_POINT_TO_ITSELF" value="false" />
-        <option name="myAdditionalJavadocTags" value="" />
-        <IGNORE_DUPLICATED_THROWS_TAGS value="false" />
-      </scope>
       <option name="TOP_LEVEL_CLASS_OPTIONS">
         <value>
           <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
@@ -407,12 +375,13 @@
       <option name="IGNORE_POINT_TO_ITSELF" value="false" />
       <option name="myAdditionalJavadocTags" value="" />
       <IGNORE_DUPLICATED_THROWS_TAGS value="false" />
-      <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
-      <option name="REQUIRED_TAGS" value="@author" />
     </inspection_tool>
     <inspection_tool class="JavaLangImport" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="JavaLangReflect" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="JavadocHtmlLint" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="JavadocReference" enabled="true" level="ERROR" enabled_by_default="true">
+      <scope name="Tests" level="ERROR" enabled="false" />
+    </inspection_tool>
     <inspection_tool class="LabeledStatement" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="LengthOneStringInIndexOf" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="LengthOneStringsInConcatenation" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -593,6 +562,7 @@
       <option name="ignoreRequiredObsoleteCollectionTypes" value="false" />
     </inspection_tool>
     <inspection_tool class="OctalAndDecimalIntegersMixed" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="OnDemandImport" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="OverloadedMethodsWithSameNumberOfParameters" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreInconvertibleTypes" value="true" />
     </inspection_tool>
@@ -819,7 +789,6 @@
       <option name="m_ignoreStaticMethodCalls" value="false" />
       <option name="m_ignoreStaticAccessFromStaticContext" value="false" />
     </inspection_tool>
-    <inspection_tool class="UnnecessaryCallToStringValueOf" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnnecessaryConstantArrayCreationExpression" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnnecessaryConstructor" enabled="false" level="TYPO" enabled_by_default="false">
       <option name="ignoreAnnotations" value="true" />

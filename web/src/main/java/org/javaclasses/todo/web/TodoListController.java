@@ -19,6 +19,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 class TodoListController {
 
+    private TodoListController() {
+    }
+
     /**
      * Handles create {@code TodoList} request.
      */

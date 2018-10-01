@@ -7,15 +7,12 @@ import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
 import static org.javaclasses.todo.web.Routes.getTodoListRoute;
-import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
-import static org.javaclasses.todo.web.TestUsers.USER_1;
+import static org.javaclasses.todo.web.given.TodoListsIdGenerator.generateTodoListId;
 
 /**
  * Integration test of to-do list creation with REST API.
@@ -30,14 +27,11 @@ class CreateListHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("create new lists by signed in user.")
     void testCreateList() {
-        CreateListPayload payload = new CreateListPayload(
-                new TodoListId(UUID.randomUUID()
-                                   .toString())
-        );
+        setTokenToRequestSpecification();
+
+        CreateListPayload payload = new CreateListPayload(generateTodoListId());
 
         Response response = specification
-                .header(X_TODO_TOKEN, USER_1.getToken()
-                                            .getValue())
                 .body(payload)
                 .post(getTodoListRoute());
 
@@ -50,10 +44,9 @@ class CreateListHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 403 status code when try to add to-do list with existing ID.")
     void testCreateListWithExistingId() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken()
-                                                 .getValue());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        setTokenToRequestSpecification();
+
+        TodoListId todoListId = generateTodoListId();
         CreateListPayload payload = new CreateListPayload(todoListId);
 
         addTodoList(todoListId);
@@ -69,10 +62,7 @@ class CreateListHandlerTest extends AbstractPayloadHandlerTest {
 
     @Override
     Response sendRequest(UserId userId) {
-        CreateListPayload payload = new CreateListPayload(
-                new TodoListId(UUID.randomUUID()
-                                   .toString())
-        );
+        CreateListPayload payload = new CreateListPayload(generateTodoListId());
 
         return specification.body(payload)
                             .post(getTodoListRoute());

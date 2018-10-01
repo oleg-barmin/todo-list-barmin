@@ -1,4 +1,4 @@
-package org.javaclasses.todo.web;
+package org.javaclasses.todo.web.given;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,7 +17,7 @@ class PortProvider {
     }
 
     /**
-     * Provides available port.
+     * Provides an available port.
      *
      * @return available port
      */

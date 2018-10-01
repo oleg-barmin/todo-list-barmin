@@ -18,6 +18,7 @@ import static org.javaclasses.todo.web.TaskController.CreateTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.GetTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.RemoveTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.UpdateTaskRequestHandler;
+import static org.javaclasses.todo.web.TodoListController.CreateTodoListRequestHandler;
 import static org.javaclasses.todo.web.TodoListController.ReadTasksRequestHandler;
 
 /**
@@ -74,7 +75,7 @@ public class TodoListApplication {
         service.post(Routes.getAuthenticationRoute(),
                      new AuthenticationController.AuthenticationHandler(authentication));
 
-        service.post(Routes.getTodoListRoute(), new TodoListController.CreateTodoListRequestHandler(todoService));
+        service.post(Routes.getTodoListRoute(), new CreateTodoListRequestHandler(todoService));
 
         service.get(Routes.getTodoListRoute(), new ReadTasksRequestHandler(todoService));
 
@@ -92,7 +93,7 @@ public class TodoListApplication {
     }
 
     @VisibleForTesting
-    public Authentication getAuthentication() {
+    protected Authentication getAuthentication() {
         return authentication;
     }
 

@@ -8,15 +8,13 @@ import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
-import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.X_TODO_TOKEN;
-import static org.javaclasses.todo.web.TestRoutesProvider.getTaskUrl;
-import static org.javaclasses.todo.web.TestUsers.USER_1;
+import static org.javaclasses.todo.web.given.TasksIdGenerator.generateTaskId;
+import static org.javaclasses.todo.web.given.TestRoutesProvider.getTaskUrl;
+import static org.javaclasses.todo.web.given.TodoListsIdGenerator.generateTodoListId;
 
 @DisplayName("UpdateTaskHandler should")
 class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
@@ -26,13 +24,10 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("update tasks in the system.")
     void testUpdateTask() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken()
-                                                 .getValue());
+        setTokenToRequestSpecification();
 
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
 
         addTodoList(todoListId);
         addTask(taskId, todoListId, "write tests on update task.");
@@ -50,13 +45,10 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 500 status code when update tasks with empty description.")
     void testUpdateTaskWithEmptyDescription() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken()
-                                                 .getValue());
+        setTokenToRequestSpecification();
 
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
 
         addTodoList(todoListId);
         addTask(taskId, todoListId, "task to test update with");
@@ -73,13 +65,10 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 500 status code when update tasks with only spaces description.")
     void testUpdateTaskWithOnlySpacesDescription() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken()
-                                                 .getValue());
+        setTokenToRequestSpecification();
 
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
 
         addTodoList(todoListId);
         addTask(taskId, todoListId, "task to test update with only spaces description");
@@ -96,13 +85,10 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 500 status code when update completed task.")
     void testUpdateCompletedTask() {
-        specification.header(X_TODO_TOKEN, USER_1.getToken()
-                                                 .getValue());
+        setTokenToRequestSpecification();
 
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
 
         addTodoList(todoListId);
         addTask(taskId, todoListId, "task to complete");
@@ -123,10 +109,8 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
 
     @Override
     Response sendRequest(UserId userId) {
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
 
         addTodoList(todoListId);
         addTask(taskId, todoListId, "implement sendRequest method in task update handler test.");
@@ -139,10 +123,8 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
 
     @Override
     Response sendEmptyPayloadRequest() {
-        TaskId taskId = new TaskId(UUID.randomUUID()
-                                       .toString());
-        TodoListId todoListId = new TodoListId(UUID.randomUUID()
-                                                   .toString());
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
 
         addTodoList(todoListId);
         addTask(taskId, todoListId, "any description");

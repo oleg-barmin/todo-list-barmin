@@ -1,4 +1,4 @@
-package org.javaclasses.todo.web;
+package org.javaclasses.todo.web.given;
 
 import org.javaclasses.todo.model.TaskId;
 import org.javaclasses.todo.model.TodoListId;
@@ -15,7 +15,8 @@ import static org.javaclasses.todo.web.Routes.getTodoListRoute;
  *
  * @author Oleg Barmin
  */
-class TestRoutesProvider {
+public class TestRoutesProvider {
+
     private static final String TASK_ROUTE_FORMAT;
     private static final String TODO_LIST_ROUTE_FORMAT;
 
@@ -28,14 +29,26 @@ class TestRoutesProvider {
     }
 
     private TestRoutesProvider() {
-
     }
 
-    static String getTaskUrl(TodoListId todoListId, TaskId taskId) {
+    /**
+     * Creates a URL with IDs of to-do list and task to access task in REST API of to-do list application.
+     *
+     * @param todoListId ID of to-do list to set into the URL
+     * @param taskId     ID of task to set into the URL
+     * @return URL with given params
+     */
+    public static String getTaskUrl(TodoListId todoListId, TaskId taskId) {
         return String.format(TASK_ROUTE_FORMAT, todoListId.getValue(), taskId.getValue());
     }
 
-    static String getTodoListUrl(TodoListId todoListId) {
+    /**
+     * Creates a URL with ID of to-do list to access to-do list in REST API of to-do list application.
+     *
+     * @param todoListId ID of to-do list to set into the URL
+     * @return URL with given param
+     */
+    public static String getTodoListUrl(TodoListId todoListId) {
         return String.format(TODO_LIST_ROUTE_FORMAT, todoListId.getValue());
     }
 }
