@@ -26,7 +26,7 @@ abstract class AbstractPayloadHandlerTest extends AbstractSecuredHandlerTest {
     @Test
     @DisplayName("response with 400 status code if request was with empty body")
     void testWithEmptyPayload() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(getRequestSpecification());
 
         Response response = sendEmptyPayloadRequest();
 

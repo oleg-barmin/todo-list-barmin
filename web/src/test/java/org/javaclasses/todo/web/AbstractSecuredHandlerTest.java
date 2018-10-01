@@ -26,14 +26,23 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
 
     abstract Response sendRequest(UserId userId);
 
+    @Override
+    RequestSpecification getNewSpecification() {
+        RequestSpecification newSpecification = super.getNewSpecification();
+        setTokenToRequestSpecification(newSpecification);
+        return newSpecification;
+    }
+
     /**
      * Sets a valid token of random registered user
      * to {@link AbstractHandlerTest#specification request specification}.
+     *
+     * @param requestSpecification request specification to set token into
      */
-    void setTokenToRequestSpecification() {
+    void setTokenToRequestSpecification(RequestSpecification requestSpecification) {
         SignedInActor actor = getTestEnvironment().createAndSignInActor();
-        specification.header(getxTodoToken(), actor.getToken()
-                                                   .getValue());
+        requestSpecification.header(getxTodoToken(), actor.getToken()
+                                                          .getValue());
     }
 
     @Test

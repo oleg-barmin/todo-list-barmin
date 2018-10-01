@@ -29,7 +29,7 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
     @Test
     @DisplayName("remove tasks from system by ID.")
     void testRemoveTaskById() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -47,8 +47,8 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
 
     @Test
     @DisplayName("response with 403 status code when removing non-existing task.")
-    void testFindTaskById() {
-        setTokenToRequestSpecification();
+    void testRemoveTaskNonExisting() {
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -58,6 +58,28 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
         specification.delete(getTaskUrl(todoListId, taskId))
                      .then()
                      .statusCode(HTTP_FORBIDDEN);
+    }
+
+    @Test
+    @DisplayName("response with 403 status code when removing to-do list of other user.")
+    void testRemoveTaskFromOtherUserTodoList() {
+        setTokenToRequestSpecification(specification);
+
+        TaskId taskId = generateTaskId();
+        TodoListId todoListId = generateTodoListId();
+        addTodoList(todoListId);
+        addTask(taskId, todoListId, "buy bread");
+
+        RequestSpecification newSpecification = getNewSpecification();
+
+        TaskId taskIdActor = generateTaskId();
+        TodoListId todoListIdActor = generateTodoListId();
+        addTodoList(todoListIdActor, newSpecification);
+        addTask(taskIdActor, todoListIdActor, "buy bread for actor 1", newSpecification);
+
+        newSpecification.delete(getTaskUrl(todoListId, taskId))
+                        .then()
+                        .statusCode(HTTP_FORBIDDEN);
     }
 
     @Override

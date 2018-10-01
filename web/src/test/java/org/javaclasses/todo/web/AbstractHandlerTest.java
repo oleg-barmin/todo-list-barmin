@@ -34,6 +34,11 @@ abstract class AbstractHandlerTest {
         return specification;
     }
 
+    RequestSpecification getNewSpecification() {
+        return given().port(testEnvironment.getApplicationPort())
+                      .contentType(getContentType());
+    }
+
     TestEnvironment getTestEnvironment() {
         return testEnvironment;
     }
@@ -52,6 +57,18 @@ abstract class AbstractHandlerTest {
         CreateListPayload payload = new CreateListPayload(todoListId);
         specification.body(payload);
         specification.post(getTodoListRoute());
+    }
+
+    void addTodoList(TodoListId todoListId, RequestSpecification requestSpecification) {
+        CreateListPayload payload = new CreateListPayload(todoListId);
+        requestSpecification.body(payload);
+        requestSpecification.post(getTodoListRoute());
+    }
+
+    void addTask(TaskId taskId, TodoListId todoListId, String description, RequestSpecification requestSpecification) {
+        CreateTaskPayload payload = new CreateTaskPayload(description);
+        requestSpecification.body(payload)
+                            .post(getTaskUrl(todoListId, taskId));
     }
 
     void addTask(TaskId taskId, TodoListId todoListId, String description) {
