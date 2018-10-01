@@ -32,7 +32,7 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("create tasks.")
     void testTaskCreation() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -59,7 +59,7 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 500 status code if given task description is empty.")
     void testCreationTaskWithEmptyDescription() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -80,7 +80,7 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 500 status code if given task description is filled only with spaces.")
     void testCreationTaskWithOnlySpacesDescription() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -101,7 +101,7 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 403 status code when create task with existing ID.")
     void testCreationTaskWithExistingId() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -124,7 +124,7 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 403 status code when create task with non-existing to-do-list ID.")
     void testCreationTaskWithNonExistingId() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -139,6 +139,30 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
                 .statusCode(describedAs("response with status code 403 when try to add " +
                                                 "task with non-existing to-do list ID.",
                                         is(HTTP_FORBIDDEN)));
+    }
+
+    @Test
+    @DisplayName("response with 403 status code when create task in other user to-do list.")
+    void testCreationTaskInOtherUserTodoList() {
+        setTokenToRequestSpecification(specification);
+
+        TodoListId firstUserTodoListId = generateTodoListId();
+        addTodoList(firstUserTodoListId);
+
+        RequestSpecification secondUserSpec = getNewSpecification();
+
+        TaskId secondUserTaskId = generateTaskId();
+        TodoListId secondUserTodoListId = generateTodoListId();
+
+        addTodoList(secondUserTodoListId, secondUserSpec);
+
+        CreateTaskPayload payload = new CreateTaskPayload("win the race");
+
+        Response response = specification.body(payload)
+                                         .post(getTaskUrl(secondUserTodoListId, secondUserTaskId));
+
+        response.then()
+                .statusCode(HTTP_FORBIDDEN);
     }
 
     @Override
