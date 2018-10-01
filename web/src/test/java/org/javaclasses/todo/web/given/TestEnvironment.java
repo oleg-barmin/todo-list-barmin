@@ -74,7 +74,7 @@ public class TestEnvironment {
     }
 
     /**
-     * Creates and signs in {@link User} with random username, password into the {@link TestTodoListApplication}.
+     * Creates and signs in {@code User} with random username, password into the {@link TestTodoListApplication}.
      *
      * @return instance of {@link SignedInActor} with registered users username, password, ID and token.
      */
