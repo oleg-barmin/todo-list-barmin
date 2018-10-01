@@ -34,6 +34,11 @@ abstract class AbstractHandlerTest {
         return specification;
     }
 
+    /**
+     * Creates new {@link RequestSpecification} to test cases with multiple users.
+     *
+     * @return new {@code RequestSpecification} instance
+     */
     RequestSpecification getNewSpecification() {
         return given().port(testEnvironment.getApplicationPort())
                       .contentType(getContentType());
@@ -53,24 +58,36 @@ abstract class AbstractHandlerTest {
         testEnvironment.stopServer();
     }
 
+    /**
+     * Adds new {@code TodoList} with {@link AbstractHandlerTest#specification}.
+     *
+     * @param todoListId ID of {@code TodoList} to add.
+     */
     void addTodoList(TodoListId todoListId) {
         CreateListPayload payload = new CreateListPayload(todoListId);
         specification.body(payload);
         specification.post(getTodoListRoute());
     }
 
+    /**
+     * Adds new {@code TodoList} with given {@code RequestSpecification}.
+     *
+     * @param todoListId           ID of {@code TodoList} to add
+     * @param requestSpecification request specification to use
+     */
     void addTodoList(TodoListId todoListId, RequestSpecification requestSpecification) {
         CreateListPayload payload = new CreateListPayload(todoListId);
         requestSpecification.body(payload);
         requestSpecification.post(getTodoListRoute());
     }
 
-    void addTask(TaskId taskId, TodoListId todoListId, String description, RequestSpecification requestSpecification) {
-        CreateTaskPayload payload = new CreateTaskPayload(description);
-        requestSpecification.body(payload)
-                            .post(getTaskUrl(todoListId, taskId));
-    }
-
+    /**
+     * Adds new {@code Task} with {@link AbstractHandlerTest#specification}.
+     *
+     * @param taskId      ID of {@code Task} to add
+     * @param todoListId  ID of {@code TodoList} to which tasks belongs
+     * @param description description of {@code Task} to add
+     */
     void addTask(TaskId taskId, TodoListId todoListId, String description) {
         CreateTaskPayload payload = new CreateTaskPayload(description);
         specification.body(payload)

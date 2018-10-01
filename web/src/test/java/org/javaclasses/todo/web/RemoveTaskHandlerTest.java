@@ -65,19 +65,15 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
     void testRemoveTaskFromOtherUserTodoList() {
         setTokenToRequestSpecification(specification);
 
-        TaskId taskId = generateTaskId();
-        TodoListId todoListId = generateTodoListId();
-        addTodoList(todoListId);
-        addTask(taskId, todoListId, "buy bread");
+        TaskId firstUserTaskId = generateTaskId();
+        TodoListId firstUserTodoListId = generateTodoListId();
 
-        RequestSpecification newSpecification = getNewSpecification();
+        addTodoList(firstUserTodoListId);
+        addTask(firstUserTaskId, firstUserTodoListId, "buy bread for mom");
 
-        TaskId taskIdActor = generateTaskId();
-        TodoListId todoListIdActor = generateTodoListId();
-        addTodoList(todoListIdActor, newSpecification);
-        addTask(taskIdActor, todoListIdActor, "buy bread for actor 1", newSpecification);
+        RequestSpecification secondUserSpec = getNewSpecification();
 
-        newSpecification.delete(getTaskUrl(todoListId, taskId))
+        secondUserSpec.delete(getTaskUrl(firstUserTodoListId, firstUserTaskId))
                         .then()
                         .statusCode(HTTP_FORBIDDEN);
     }

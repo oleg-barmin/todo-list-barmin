@@ -31,7 +31,7 @@ class GetTaskHandlerTest extends AbstractSecuredHandlerTest {
     @Test
     @DisplayName("read tasks by ID.")
     void testGetTaskById() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
