@@ -28,7 +28,7 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("update tasks in the system.")
     void testUpdateTask() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -47,7 +47,7 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 500 status code when update tasks with empty description.")
     void testUpdateTaskWithEmptyDescription() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -66,7 +66,7 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 500 status code when update tasks with only spaces description.")
     void testUpdateTaskWithOnlySpacesDescription() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -86,7 +86,7 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 500 status code when update completed task.")
     void testUpdateCompletedTask() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -111,7 +111,7 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("response with 403 status code when update non-existing task.")
     void testUpdateNonExistingTask() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -129,7 +129,7 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("update only description.")
     void testUpdateOnlyDescription() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -158,7 +158,7 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     @Test
     @DisplayName("update only status.")
     void testUpdateOnlyStatus() {
-        setTokenToRequestSpecification();
+        setTokenToRequestSpecification(specification);
 
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
@@ -180,6 +180,28 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
         assertEquals(notUpdatedTask.getDescription(), updatedTask.getDescription(),
                      "task description should not be updated, but it is.");
         assertTrue(updatedTask.isCompleted(), "task status should be updated, but it don't.");
+    }
+
+    @Test
+    @DisplayName("response with status code 403 when try to update task from other user to-do list.")
+    void testUpdateTaskFromOtherUserTodoList() {
+        setTokenToRequestSpecification(specification);
+
+        TaskId firstUserTaskId = generateTaskId();
+        TodoListId firstUserTodoListId = generateTodoListId();
+
+        addTodoList(firstUserTodoListId);
+        addTask(firstUserTaskId, firstUserTodoListId, "buy cat");
+
+        RequestSpecification secondUserSpec = getNewSpecification();
+
+        TaskUpdatePayload payload = new TaskUpdatePayload("buy milk for mom");
+
+        secondUserSpec.body(payload)
+                      .put(getTaskUrl(firstUserTodoListId, firstUserTaskId))
+                      .then()
+                      .statusCode(HTTP_FORBIDDEN);
+
     }
 
     @Override

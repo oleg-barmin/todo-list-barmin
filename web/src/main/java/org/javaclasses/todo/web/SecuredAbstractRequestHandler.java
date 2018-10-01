@@ -25,7 +25,7 @@ abstract class SecuredAbstractRequestHandler extends AbstractRequestHandler {
         return process(requestData, token);
     }
 
-    public static String getxTodoToken() {
+    static String getxTodoToken() {
         return X_TODO_TOKEN;
     }
 
