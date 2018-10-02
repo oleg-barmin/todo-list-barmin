@@ -7,7 +7,6 @@ import org.javaclasses.todo.model.entity.TaskId;
  *
  * @author Oleg Barmin
  */
-@SuppressWarnings("WeakerAccess") // part of Public API should be public
 public class TaskAlreadyExistsException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

@@ -7,7 +7,6 @@ import org.javaclasses.todo.model.entity.TodoListId;
  *
  * @author Oleg Barmin
  */
-@SuppressWarnings("WeakerAccess") // part of Public API should be public
 public class TodoListAlreadyExistsException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

@@ -5,7 +5,6 @@ package org.javaclasses.todo.auth;
  *
  * @author Oleg Barmin
  */
-@SuppressWarnings("WeakerAccess") // part public API should be public
 public class InvalidCredentialsException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

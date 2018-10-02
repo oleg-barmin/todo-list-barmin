@@ -24,7 +24,6 @@ import java.util.UUID;
  *
  * @author Oleg Barmin
  */
-@SuppressWarnings("WeakerAccess") // All methods of public API should be public
 public class Authentication {
 
     private final UserStorage userStorage;

@@ -12,8 +12,6 @@ import org.javaclasses.todo.model.TodoService;
  * @author Oleg Barmin
  * @implNote all services are lazy initialized
  */
-// part of public API should remain public.
-@SuppressWarnings("WeakerAccess")
 public class ServiceFactory {
 
     private final StorageFactory storageFactory;
