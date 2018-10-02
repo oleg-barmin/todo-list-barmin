@@ -109,7 +109,10 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
     @DisplayName("forbid access for requests with invalid credentials.")
     void testInvalidCredentials() {
         Actor actor = getTestEnvironment().registerUser();
-        Password invalidPassword = new Password(actor.getPassword() + "_invalidPassWord13_");
+        String actorPasswordValue = actor.getPassword()
+                                         .getValue();
+
+        Password invalidPassword = new Password(actorPasswordValue + "_invalidPassWord13_");
 
         Actor invalidCredentialsActor = new Actor(actor.getUserId(), actor.getUsername(), invalidPassword);
 
