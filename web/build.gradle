@@ -1,6 +1,8 @@
 plugins {
     id 'java'
+    id 'application'
 }
+mainClassName = "org.javaclasses.todo.web.TodoListApplication"
 
 group 'org.javaclasses.todo'
 version '1.0-SNAPSHOT'
