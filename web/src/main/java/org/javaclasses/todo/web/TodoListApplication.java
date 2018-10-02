@@ -75,22 +75,25 @@ public class TodoListApplication {
      */
     @SuppressWarnings("OverlyCoupledMethod") // start server method needs many dependencies to init all handlers.
     public void start() {
-        service.exception(AuthorizationFailedException.class, new AuthorizationFailedHandler());
-        service.exception(EmptyTaskDescriptionException.class, new EmptyTaskDescriptionHandler());
-        service.exception(TaskAlreadyExistsException.class, new TaskAlreadyExistsHandler());
-        service.exception(TaskNotFoundException.class, new TaskNotFoundHandler());
-        service.exception(TodoListAlreadyExistsException.class, new TodoListAlreadyExistsHandler());
-        service.exception(TodoListNotFoundException.class, new TodoListNotFoundHandler());
-        service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
-        service.exception(UpdateCompletedTaskException.class, new UpdateCompletedTaskHandler());
         service.exception(JsonSyntaxException.class, new JsonSyntaxExceptionHandler());
 
+        service.exception(AuthorizationFailedException.class, new AuthorizationFailedHandler());
+        service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
         service.post(Routes.getAuthenticationRoute(),
                      new AuthenticationController.AuthenticationHandler(authentication));
 
+        service.exception(TodoListAlreadyExistsException.class, new TodoListAlreadyExistsHandler());
+        service.exception(TodoListNotFoundException.class, new TodoListNotFoundHandler());
         service.post(Routes.getTodoListRoute(), new CreateTodoListRequestHandler(todoService));
 
         service.get(Routes.getTodoListRoute(), new ReadTasksRequestHandler(todoService));
+
+
+        service.exception(EmptyTaskDescriptionException.class, new EmptyTaskDescriptionHandler());
+        service.exception(UpdateCompletedTaskException.class, new UpdateCompletedTaskHandler());
+
+        service.exception(TaskAlreadyExistsException.class, new TaskAlreadyExistsHandler());
+        service.exception(TaskNotFoundException.class, new TaskNotFoundHandler());
 
         service.get(Routes.getTaskRoute(), new GetTaskRequestHandler(todoService));
         service.post(Routes.getTaskRoute(), new CreateTaskRequestHandler(todoService));
