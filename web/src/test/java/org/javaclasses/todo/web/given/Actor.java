@@ -1,8 +1,8 @@
 package org.javaclasses.todo.web.given;
 
 import org.javaclasses.todo.model.Password;
-import org.javaclasses.todo.model.UserId;
-import org.javaclasses.todo.model.Username;
+import org.javaclasses.todo.model.entity.UserId;
+import org.javaclasses.todo.model.entity.Username;
 
 /**
  * Represents a user which was registered in the system.

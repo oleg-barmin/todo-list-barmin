@@ -3,9 +3,9 @@ package org.javaclasses.todo.web.given;
 import com.devskiller.jfairy.Fairy;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.model.Password;
-import org.javaclasses.todo.model.Token;
-import org.javaclasses.todo.model.UserId;
-import org.javaclasses.todo.model.Username;
+import org.javaclasses.todo.model.entity.Token;
+import org.javaclasses.todo.model.entity.UserId;
+import org.javaclasses.todo.model.entity.Username;
 
 import static org.javaclasses.todo.web.given.PortProvider.getAvailablePort;
 

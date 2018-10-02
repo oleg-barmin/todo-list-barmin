@@ -16,6 +16,7 @@ import java.util.UUID;
  */
 @DisplayName("AuthSessionStorage should")
 class AuthSessionStorageTest extends InMemoryStorageTest<Token, AuthSession> {
+
     private final Map<Token, AuthSession> map = new HashMap<>();
     private final AuthSessionStorage storage = new AuthSessionStorage(map);
 

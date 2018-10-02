@@ -1,6 +1,6 @@
 package org.javaclasses.todo.web.given;
 
-import org.javaclasses.todo.model.TaskId;
+import org.javaclasses.todo.model.entity.TaskId;
 
 import java.util.UUID;
 

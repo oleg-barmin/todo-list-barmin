@@ -24,6 +24,7 @@ import java.util.UUID;
  */
 @DisplayName("TaskStorage should")
 class TaskStorageTest extends InMemoryStorageTest<TaskId, Task> {
+
     private final Map<TaskId, Task> map = new HashMap<>();
     private final TaskStorage storage = new TaskStorage(map);
 

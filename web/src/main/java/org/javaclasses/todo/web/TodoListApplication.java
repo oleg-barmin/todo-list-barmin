@@ -5,7 +5,7 @@ import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.auth.InvalidCredentialsException;
 import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.EmptyTaskDescriptionException;
-import org.javaclasses.todo.model.ServiceFactory;
+import org.javaclasses.todo.ServiceFactory;
 import org.javaclasses.todo.model.TaskAlreadyExistsException;
 import org.javaclasses.todo.model.TaskNotFoundException;
 import org.javaclasses.todo.model.TodoListAlreadyExistsException;
@@ -14,6 +14,7 @@ import org.javaclasses.todo.model.TodoService;
 import org.javaclasses.todo.model.UpdateCompletedTaskException;
 import spark.Service;
 
+import static org.javaclasses.todo.web.Configurations.getDefaultPort;
 import static org.javaclasses.todo.web.TaskController.CreateTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.GetTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.RemoveTaskRequestHandler;
@@ -56,6 +57,15 @@ public class TodoListApplication {
         this.authentication = serviceFactory.getAuthentication();
         this.todoService = serviceFactory.getTodoService();
         service.port(port);
+    }
+
+    public static void main(String[] args) {
+        int port = getDefaultPort();
+        if (args.length == 1) {
+            String arg = args[0];
+            port = Integer.parseInt(arg);
+        }
+        new TodoListApplication(port).start();
     }
 
     /**

@@ -1,6 +1,6 @@
 package org.javaclasses.todo.web;
 
-import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.model.entity.TodoListId;
 
 /**
  * Payload of create list request.

@@ -25,6 +25,7 @@ import java.util.Optional;
  */
 @DisplayName("Authentication should")
 class AuthenticationTest {
+
     private final AuthSessionStorage authSessionStorage = new AuthSessionStorage();
     private final UserStorage userStorage = new UserStorage();
     private final Authentication authentication = new Authentication(userStorage,

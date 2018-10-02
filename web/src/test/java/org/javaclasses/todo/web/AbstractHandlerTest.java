@@ -1,9 +1,9 @@
 package org.javaclasses.todo.web;
 
 import io.restassured.specification.RequestSpecification;
-import org.javaclasses.todo.model.Task;
-import org.javaclasses.todo.model.TaskId;
-import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.model.entity.Task;
+import org.javaclasses.todo.model.entity.TaskId;
+import org.javaclasses.todo.model.entity.TodoListId;
 import org.javaclasses.todo.web.given.TestEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

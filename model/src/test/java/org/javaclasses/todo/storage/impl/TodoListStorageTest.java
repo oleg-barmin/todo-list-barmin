@@ -17,6 +17,7 @@ import java.util.UUID;
  */
 @DisplayName("TodoListStorage should")
 class TodoListStorageTest extends InMemoryStorageTest<TodoListId, TodoList> {
+
     private final Map<TodoListId, TodoList> map = new HashMap<>();
     private final TodoListStorage storage = new TodoListStorage(map);
 

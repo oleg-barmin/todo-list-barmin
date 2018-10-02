@@ -1,6 +1,6 @@
 package org.javaclasses.todo.web.given;
 
-import org.javaclasses.todo.model.Token;
+import org.javaclasses.todo.model.entity.Token;
 
 /**
  * Represents a user which was registered and signed in into the system.

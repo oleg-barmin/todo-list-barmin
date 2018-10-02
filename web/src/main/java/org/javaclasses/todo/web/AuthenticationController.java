@@ -3,8 +3,8 @@ package org.javaclasses.todo.web;
 import com.google.common.base.Splitter;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.model.Password;
-import org.javaclasses.todo.model.Token;
-import org.javaclasses.todo.model.Username;
+import org.javaclasses.todo.model.entity.Token;
+import org.javaclasses.todo.model.entity.Username;
 
 import java.util.Base64;
 import java.util.List;

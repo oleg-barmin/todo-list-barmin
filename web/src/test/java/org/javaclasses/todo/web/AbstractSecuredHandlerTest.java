@@ -2,8 +2,8 @@ package org.javaclasses.todo.web;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.javaclasses.todo.model.Token;
-import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.model.entity.Token;
+import org.javaclasses.todo.model.entity.UserId;
 import org.javaclasses.todo.web.given.SignedInActor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.DescribedAs.describedAs;
-import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.getxTodoToken;
+import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.getXTodoToken;
 
 /**
  * Abstract class which allows to sub-classes to test if their operation is
@@ -41,7 +41,7 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
      */
     void setTokenToRequestSpecification(RequestSpecification requestSpecification) {
         SignedInActor actor = getTestEnvironment().createAndSignInActor();
-        requestSpecification.header(getxTodoToken(), actor.getToken()
+        requestSpecification.header(getXTodoToken(), actor.getToken()
                                                           .getValue());
     }
 
@@ -53,7 +53,7 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
         Token token = new Token(actor.getToken()
                                      .getValue() + "invalid token");
 
-        specification.header(getxTodoToken(), token.getValue());
+        specification.header(getXTodoToken(), token.getValue());
 
         sendRequest(actor.getUserId())
                 .then()

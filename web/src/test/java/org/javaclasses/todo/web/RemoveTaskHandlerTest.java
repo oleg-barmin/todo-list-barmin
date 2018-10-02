@@ -2,9 +2,9 @@ package org.javaclasses.todo.web;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.javaclasses.todo.model.TaskId;
-import org.javaclasses.todo.model.TodoListId;
-import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.model.entity.TaskId;
+import org.javaclasses.todo.model.entity.TodoListId;
+import org.javaclasses.todo.model.entity.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -74,8 +74,8 @@ class RemoveTaskHandlerTest extends AbstractSecuredHandlerTest {
         RequestSpecification secondUserSpec = getNewSpecification();
 
         secondUserSpec.delete(getTaskUrl(firstUserTodoListId, firstUserTaskId))
-                        .then()
-                        .statusCode(HTTP_FORBIDDEN);
+                      .then()
+                      .statusCode(HTTP_FORBIDDEN);
     }
 
     @Override

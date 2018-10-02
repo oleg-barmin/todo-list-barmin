@@ -1,7 +1,7 @@
 package org.javaclasses.todo.web.given;
 
-import org.javaclasses.todo.model.TaskId;
-import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.model.entity.TaskId;
+import org.javaclasses.todo.model.entity.TodoListId;
 
 import java.util.regex.Pattern;
 

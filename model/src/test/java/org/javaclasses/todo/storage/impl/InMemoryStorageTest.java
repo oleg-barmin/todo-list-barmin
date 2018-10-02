@@ -22,6 +22,7 @@ import java.util.Optional;
  * @author Oleg Barmin
  */
 abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
+
     private InMemoryStorage<I, E> storage;
     private Map<I, E> map;
 

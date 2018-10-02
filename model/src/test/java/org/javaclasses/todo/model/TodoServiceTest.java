@@ -39,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 // integration test of TodoService should have many dependencies.
 @DisplayName("TodoService should")
 class TodoServiceTest {
+
     private final Username username = new Username("examaple@mail.org");
     private final Password password = new Password("qwerty12345");
     private Authentication authentication;

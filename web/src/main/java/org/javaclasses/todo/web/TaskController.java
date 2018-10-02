@@ -1,14 +1,14 @@
 package org.javaclasses.todo.web;
 
 import org.javaclasses.todo.model.AuthorizationFailedException;
-import org.javaclasses.todo.model.Task;
-import org.javaclasses.todo.model.TaskId;
+import org.javaclasses.todo.model.entity.Task;
+import org.javaclasses.todo.model.entity.TaskId;
 import org.javaclasses.todo.model.TaskNotFoundException;
-import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.model.entity.TodoListId;
 import org.javaclasses.todo.model.TodoListNotFoundException;
 import org.javaclasses.todo.model.TodoService;
-import org.javaclasses.todo.model.Token;
-import org.javaclasses.todo.model.UpdateTask;
+import org.javaclasses.todo.model.entity.Token;
+import org.javaclasses.todo.model.operation.UpdateTask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

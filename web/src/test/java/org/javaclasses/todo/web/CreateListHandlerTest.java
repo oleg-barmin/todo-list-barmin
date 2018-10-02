@@ -2,8 +2,8 @@ package org.javaclasses.todo.web;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.javaclasses.todo.model.TodoListId;
-import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.model.entity.TodoListId;
+import org.javaclasses.todo.model.entity.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

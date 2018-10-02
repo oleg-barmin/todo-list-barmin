@@ -1,6 +1,6 @@
 package org.javaclasses.todo.web;
 
-import org.javaclasses.todo.model.Token;
+import org.javaclasses.todo.model.entity.Token;
 
 /**
  * Secured request handler, which verifies {@link Token} in header of Request.
@@ -10,6 +10,10 @@ import org.javaclasses.todo.model.Token;
 abstract class SecuredAbstractRequestHandler extends AbstractRequestHandler {
 
     private static final String X_TODO_TOKEN = "X-Todo-Token";
+
+    static String getXTodoToken() {
+        return X_TODO_TOKEN;
+    }
 
     @Override
     HttpResponse process(RequestData requestData) {
@@ -23,10 +27,6 @@ abstract class SecuredAbstractRequestHandler extends AbstractRequestHandler {
         Token token = new Token(headerValue);
 
         return process(requestData, token);
-    }
-
-    static String getxTodoToken() {
-        return X_TODO_TOKEN;
     }
 
     /**

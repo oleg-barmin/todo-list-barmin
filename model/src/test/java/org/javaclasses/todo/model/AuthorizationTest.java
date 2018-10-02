@@ -22,6 +22,7 @@ import java.util.UUID;
  */
 @DisplayName("Authorization should")
 class AuthorizationTest {
+
     private final Storage<TaskId, Task> taskStorage = new TaskStorage();
     private final TodoListStorage todoListStorage = new TodoListStorage();
     private final Authorization authorization = new Authorization(todoListStorage);
