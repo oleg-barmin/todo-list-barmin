@@ -1,11 +1,11 @@
 package org.javaclasses.todo.web;
 
 import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.TodoListNotFoundException;
+import org.javaclasses.todo.model.TodoService;
 import org.javaclasses.todo.model.entity.Task;
 import org.javaclasses.todo.model.entity.TodoList;
 import org.javaclasses.todo.model.entity.TodoListId;
-import org.javaclasses.todo.model.TodoListNotFoundException;
-import org.javaclasses.todo.model.TodoService;
 import org.javaclasses.todo.model.entity.Token;
 
 import java.util.List;

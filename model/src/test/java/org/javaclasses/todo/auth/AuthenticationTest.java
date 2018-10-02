@@ -1,8 +1,8 @@
 package org.javaclasses.todo.auth;
 
-import org.javaclasses.todo.model.entity.AuthSession;
 import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.Password;
+import org.javaclasses.todo.model.entity.AuthSession;
 import org.javaclasses.todo.model.entity.Token;
 import org.javaclasses.todo.model.entity.User;
 import org.javaclasses.todo.model.entity.UserId;

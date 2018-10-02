@@ -6,6 +6,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Testing {@link ServiceFactory} which should provide same instances of services on one instance of itself.
+ */
 @DisplayName("ServiceFactory should")
 class ServiceFactoryTest {
 
@@ -15,7 +20,7 @@ class ServiceFactoryTest {
         ServiceFactory serviceFactory = new ServiceFactory();
         Authentication authentication = serviceFactory.getAuthentication();
 
-        Assertions.assertNotNull(authentication,
+        assertNotNull(authentication,
                                  "provide not null Authentication, but it don't.");
     }
 
@@ -25,7 +30,7 @@ class ServiceFactoryTest {
         ServiceFactory serviceFactory = new ServiceFactory();
         TodoService todoService = serviceFactory.getTodoService();
 
-        Assertions.assertNotNull(todoService,
+        assertNotNull(todoService,
                                  "provide not null TodoService, but it don't.");
     }
 }

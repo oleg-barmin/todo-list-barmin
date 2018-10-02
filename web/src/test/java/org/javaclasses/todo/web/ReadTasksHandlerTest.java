@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @DisplayName("ReadTaskHandler should")
 class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
+
     private final RequestSpecification specification = getRequestSpecification();
 
     @Test

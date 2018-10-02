@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.javaclasses.todo.model.entity.Descriptions.*;
+import static org.javaclasses.todo.model.entity.Descriptions.validate;
 
 /**
  * API which simplifies task updating.

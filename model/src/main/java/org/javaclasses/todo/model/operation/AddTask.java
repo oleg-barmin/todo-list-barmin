@@ -15,7 +15,7 @@ import org.javaclasses.todo.storage.impl.TaskStorage;
 import java.util.Date;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.javaclasses.todo.model.entity.Descriptions.*;
+import static org.javaclasses.todo.model.entity.Descriptions.validate;
 
 /**
  * API which simplifies task adding.

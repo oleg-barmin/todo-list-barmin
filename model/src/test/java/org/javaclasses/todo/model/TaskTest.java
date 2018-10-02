@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 /* Duplicate literals of hashcode and equals test were left for better readability.*/
 @SuppressWarnings("DuplicateStringLiteralInspection")
-@Nested
 @DisplayName("Task should")
 class TaskTest {
 

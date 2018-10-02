@@ -1,11 +1,11 @@
 package org.javaclasses.todo.web;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.javaclasses.todo.ServiceFactory;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.auth.InvalidCredentialsException;
 import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.EmptyTaskDescriptionException;
-import org.javaclasses.todo.ServiceFactory;
 import org.javaclasses.todo.model.TaskAlreadyExistsException;
 import org.javaclasses.todo.model.TaskNotFoundException;
 import org.javaclasses.todo.model.TodoListAlreadyExistsException;
