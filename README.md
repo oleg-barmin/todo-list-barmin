@@ -3,7 +3,7 @@
 To-do list application is an application which allows you to manage your tasks in web interface
 
 ### Application allows end-user to:
-- Sign-in into the system
+- Sign-in into the system.
 - Create new to-do lists.
 - Add tasks to create new tasks in to-do lists.
 - Mark tasks as completed.
@@ -39,4 +39,4 @@ To run server you have to execute following command:
 ```sh
 $ gradle run --args <port>
 ```
-If port number was not provide application will start on port 4567.
+If port number was not provided application will start on port 4567.
