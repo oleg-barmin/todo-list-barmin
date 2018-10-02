@@ -142,7 +142,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
 
         Optional<E> optionalEntity = storage.remove(entityId);
         if (!optionalEntity.isPresent()) {
-            Assertions.fail("Storage has to remove written entity by ID, but it don't.");
+            Assertions.fail("Storage has to remove entity by ID, but it don't.");
             return;
         }
         E storedEntity = optionalEntity.get();

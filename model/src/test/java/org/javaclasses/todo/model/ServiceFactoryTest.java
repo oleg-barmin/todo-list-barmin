@@ -2,11 +2,10 @@ package org.javaclasses.todo.model;
 
 import org.javaclasses.todo.ServiceFactory;
 import org.javaclasses.todo.auth.Authentication;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Testing {@link ServiceFactory} which should provide same instances of services on one instance of itself.
