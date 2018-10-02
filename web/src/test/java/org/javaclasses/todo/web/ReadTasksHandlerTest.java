@@ -10,8 +10,8 @@ import org.javaclasses.todo.model.UserId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -49,7 +49,7 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
         Task firstTask = readTask(todoListId, firstTaskId);
         Task secondTask = readTask(todoListId, secondTaskId);
 
-        Collection<Task> addedTasks = new LinkedList<>();
+        Collection<Task> addedTasks = new ArrayList<>();
         addedTasks.add(firstTask);
         addedTasks.add(secondTask);
 

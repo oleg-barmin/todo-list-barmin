@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -82,7 +82,7 @@ class TaskStorageTest extends InMemoryStorageTest<TaskId, Task> {
         TodoListId secondId = new TodoListId(UUID.randomUUID()
                                                  .toString());
 
-        Collection<Task> writtenTaskFirstTodoList = new LinkedList<>();
+        Collection<Task> writtenTaskFirstTodoList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Task task = createTaskWith(firstId);
             storage.write(task);

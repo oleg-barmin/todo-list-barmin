@@ -7,8 +7,8 @@ import org.javaclasses.todo.model.EntityId;
 import org.javaclasses.todo.storage.Storage;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -99,7 +99,7 @@ abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implemen
     /* reflect API converted to SearchByFieldException, because in this case it marks about programming error. */
     @SuppressWarnings("ThrowInsideCatchBlockWhichIgnoresCaughtException")
     List<E> findByField(String fieldName, Object fieldValue) throws SearchByFieldException {
-        List<E> result = new LinkedList<>();
+        List<E> result = new ArrayList<>();
 
         for (E entity : storage.values()) {
             Class<? extends Entity> aClass = entity.getClass();
