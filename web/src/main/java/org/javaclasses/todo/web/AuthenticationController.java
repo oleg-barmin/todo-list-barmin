@@ -1,11 +1,13 @@
 package org.javaclasses.todo.web;
 
+import com.google.common.base.Splitter;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.model.Password;
 import org.javaclasses.todo.model.Token;
 import org.javaclasses.todo.model.Username;
 
 import java.util.Base64;
+import java.util.List;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
@@ -80,6 +82,7 @@ class AuthenticationController {
          * - 403 if given credentials is invalid
          * - 200 with token if user was signed.
          */
+        @SuppressWarnings("UnstableApiUsage") // splitToList should be used because of errorprompt advice
         @Override
         HttpResponse process(RequestData requestData) {
             String authorizationHeader = requestData.getRequestHeaders()
@@ -89,34 +92,36 @@ class AuthenticationController {
                 return HttpResponse.unauthorized();
             }
 
-            String[] schemeAndCredentials = authorizationHeader.split(" ");
+            List<String> schemeAndCredentials = Splitter.on(' ')
+                                                        .splitToList(authorizationHeader);
 
-            if (schemeAndCredentials.length != 2) {
+            if (schemeAndCredentials.size() != 2) {
                 return HttpResponse.badRequest();
             }
 
-            if (!schemeAndCredentials[0].equals(AUTHENTICATION_METHOD)) {
+            if (!schemeAndCredentials.get(0)
+                                     .equals(AUTHENTICATION_METHOD)) {
                 return HttpResponse.unauthorized();
             }
 
-            String base64EncodedCredentials = schemeAndCredentials[1];
+            String base64EncodedCredentials = schemeAndCredentials.get(1);
 
-            String decodedCredentials = new String(Base64.getDecoder()
-                                                         .decode(base64EncodedCredentials), US_ASCII);
+            CharSequence decodedCredentials = new String(Base64.getDecoder()
+                                                               .decode(base64EncodedCredentials), US_ASCII);
 
-            String[] usernameAndPassword = decodedCredentials.split(":");
+            List<String> usernameAndPassword = Splitter.on(':')
+                                                       .splitToList(decodedCredentials);
 
-            if (usernameAndPassword.length != 2) {
+            if (usernameAndPassword.size() != 2) {
                 return HttpResponse.badRequest();
             }
 
-            Username username = new Username(usernameAndPassword[0]);
-            Password password = new Password(usernameAndPassword[1]);
+            Username username = new Username(usernameAndPassword.get(0));
+            Password password = new Password(usernameAndPassword.get(1));
 
             Token token = authentication.signIn(username, password);
 
             return HttpResponse.ok(token);
         }
     }
-
 }
