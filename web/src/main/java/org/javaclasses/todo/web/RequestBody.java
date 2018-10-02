@@ -7,6 +7,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Body of HTTP request.
  *
+ * <p>{@code RequestBody} contain a JSON string as value.
+ * Stored JSON cam be deserialized into object of given class {@link RequestBody#as(Class)}.
+ *
+ * <p>{@code RequestBody} can be empty, if given value is empty string.
+ * If try to deserialize value of empty {@code RequestBody} {@link IllegalStateException} will occur,
+ * so before deserialize value of empty {@code RequestBody} {@link RequestBody#isEmpty()} method should be called,
+ * to validate is occurred {@code RequestBody} is empty.
+ *
  * @author Oleg Barmin
  */
 class RequestBody {
@@ -57,7 +65,10 @@ class RequestBody {
      * @param tClass the class of T
      * @param <T>    the type of the desired object
      * @return an object of type T from stored {@code value}
-     * @throws IllegalStateException if try to deserialize an empty {@code RequestBody}
+     * @throws IllegalStateException               if try to deserialize an empty {@code RequestBody}
+     * @throws com.google.gson.JsonSyntaxException if stored request body is not
+     *                                             valid representation of object of {@code <T>} class.
+     * @implNote for deserialization {@link Gson} is used.
      */
     <T> T as(Class<T> tClass) {
         checkNotNull(tClass);
@@ -65,6 +76,7 @@ class RequestBody {
         if (value == null) {
             throw new IllegalStateException("RequestBody.get() cannot be called on empty value.");
         }
+
         return gson.fromJson(value, tClass);
     }
 
