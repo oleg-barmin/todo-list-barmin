@@ -1,4 +1,4 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.entity;
 
 /**
  * An entity which represents a user session.

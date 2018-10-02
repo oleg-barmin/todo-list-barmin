@@ -1,8 +1,8 @@
 package org.javaclasses.todo.storage.impl;
 
-import org.javaclasses.todo.model.AuthSession;
-import org.javaclasses.todo.model.Token;
-import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.model.entity.AuthSession;
+import org.javaclasses.todo.model.entity.Token;
+import org.javaclasses.todo.model.entity.UserId;
 import org.junit.jupiter.api.DisplayName;
 
 import java.util.HashMap;

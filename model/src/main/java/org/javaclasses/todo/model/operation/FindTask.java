@@ -1,6 +1,13 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.operation;
 
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.model.Authorization;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.TaskNotFoundException;
+import org.javaclasses.todo.model.TodoListNotFoundException;
+import org.javaclasses.todo.model.entity.Task;
+import org.javaclasses.todo.model.entity.TaskId;
+import org.javaclasses.todo.model.entity.UserId;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 
 import java.util.Optional;
@@ -12,7 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Oleg Barmin
  */
-public class FindTask extends Operation<FindTask> {
+public final class FindTask extends Operation<FindTask> {
 
     private final TaskId taskId;
     private final Authorization authorization;
@@ -26,8 +33,8 @@ public class FindTask extends Operation<FindTask> {
      * @param authorization  to validate if user has access to {@code Task} with given ID
      * @param authentication to validate user token
      */
-    FindTask(TaskId taskId, TaskStorage taskStorage,
-             Authorization authorization, Authentication authentication) {
+    public FindTask(TaskId taskId, TaskStorage taskStorage,
+                    Authorization authorization, Authentication authentication) {
         super(authentication);
         this.taskId = checkNotNull(taskId);
         this.taskStorage = checkNotNull(taskStorage);

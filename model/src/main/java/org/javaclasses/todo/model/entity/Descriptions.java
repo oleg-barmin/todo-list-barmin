@@ -1,4 +1,6 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.entity;
+
+import org.javaclasses.todo.model.EmptyTaskDescriptionException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -7,7 +9,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Oleg Barmin
  */
-class Descriptions {
+public class Descriptions {
 
     private Descriptions() {
     }
@@ -20,7 +22,7 @@ class Descriptions {
      * @param description task description to validate
      * @throws EmptyTaskDescriptionException if given description is empty.
      */
-    static void validate(String description) throws EmptyTaskDescriptionException {
+    public static void validate(String description) throws EmptyTaskDescriptionException {
         checkNotNull(description);
 
         if (description.trim()

@@ -17,7 +17,7 @@ public class EmptyTaskDescriptionException extends RuntimeException {
      *
      * @param description task description which is null or empty.
      */
-    EmptyTaskDescriptionException(@Nullable String description) {
+    public EmptyTaskDescriptionException(@Nullable String description) {
         super(String.format("Task description cannot be null or empty. Actual Value: '%s'.",
                             description));
     }

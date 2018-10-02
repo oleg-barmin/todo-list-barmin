@@ -1,5 +1,7 @@
 package org.javaclasses.todo.model;
 
+import org.javaclasses.todo.model.entity.TaskId;
+
 /**
  * Occurs when try to add task with ID which already exists in the system.
  *

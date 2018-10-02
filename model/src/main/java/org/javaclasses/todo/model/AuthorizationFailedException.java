@@ -1,5 +1,9 @@
 package org.javaclasses.todo.model;
 
+import org.javaclasses.todo.model.entity.TodoListId;
+import org.javaclasses.todo.model.entity.Token;
+import org.javaclasses.todo.model.entity.UserId;
+
 /**
  * Occurs when trying to validate {@code Token} which does not exists in the system.
  *

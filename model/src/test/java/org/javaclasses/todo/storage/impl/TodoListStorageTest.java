@@ -1,8 +1,8 @@
 package org.javaclasses.todo.storage.impl;
 
-import org.javaclasses.todo.model.TodoList;
-import org.javaclasses.todo.model.TodoListId;
-import org.javaclasses.todo.model.UserId;
+import org.javaclasses.todo.model.entity.TodoList;
+import org.javaclasses.todo.model.entity.TodoListId;
+import org.javaclasses.todo.model.entity.UserId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 

@@ -1,5 +1,7 @@
 package org.javaclasses.todo.model;
 
+import org.javaclasses.todo.model.entity.TaskId;
+
 /**
  * Occurs when try to update completed task.
  *
@@ -14,7 +16,7 @@ public class UpdateCompletedTaskException extends RuntimeException {
      *
      * @param taskId ID of the completed task
      */
-    UpdateCompletedTaskException(TaskId taskId) {
+    public UpdateCompletedTaskException(TaskId taskId) {
         super("Task with ID: '" + taskId + "' is completed. Completed tasks cannot be updated.");
     }
 }

@@ -1,6 +1,6 @@
 package org.javaclasses.todo.auth;
 
-import org.javaclasses.todo.model.Username;
+import org.javaclasses.todo.model.entity.Username;
 
 /**
  * Occurs when attempt to create user with username, which already exists in the system.

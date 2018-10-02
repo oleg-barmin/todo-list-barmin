@@ -2,6 +2,13 @@ package org.javaclasses.todo.model;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.model.entity.Task;
+import org.javaclasses.todo.model.entity.TaskId;
+import org.javaclasses.todo.model.entity.TodoList;
+import org.javaclasses.todo.model.entity.TodoListId;
+import org.javaclasses.todo.model.entity.Token;
+import org.javaclasses.todo.model.entity.UserId;
+import org.javaclasses.todo.model.entity.Username;
 import org.javaclasses.todo.storage.impl.AuthSessionStorage;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 import org.javaclasses.todo.storage.impl.TodoListStorage;

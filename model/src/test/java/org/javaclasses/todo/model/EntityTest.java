@@ -1,6 +1,9 @@
 package org.javaclasses.todo.model;
 
 import com.google.common.testing.EqualsTester;
+import org.javaclasses.todo.model.entity.Entity;
+import org.javaclasses.todo.model.entity.Token;
+import org.javaclasses.todo.model.entity.Username;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

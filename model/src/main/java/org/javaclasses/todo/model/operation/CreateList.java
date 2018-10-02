@@ -1,6 +1,10 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.operation;
 
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.entity.TodoList;
+import org.javaclasses.todo.model.entity.TodoListId;
+import org.javaclasses.todo.model.entity.UserId;
 import org.javaclasses.todo.storage.impl.TodoListStorage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -26,8 +30,8 @@ public final class CreateList extends Operation<CreateList> {
      * @param todoListId      ID of {@code TodoList} to create
      * @param todoListStorage to store newly created list
      */
-    CreateList(TodoListId todoListId, TodoListStorage todoListStorage,
-               Authentication authentication) {
+    public CreateList(TodoListId todoListId, TodoListStorage todoListStorage,
+                      Authentication authentication) {
         super(authentication);
         this.todoListStorage = todoListStorage;
         checkNotNull(todoListId);

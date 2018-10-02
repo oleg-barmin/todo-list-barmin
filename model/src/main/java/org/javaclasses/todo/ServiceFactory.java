@@ -1,6 +1,8 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo;
 
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.model.StorageFactory;
+import org.javaclasses.todo.model.TodoService;
 
 /**
  * Provides services of TodoList application.

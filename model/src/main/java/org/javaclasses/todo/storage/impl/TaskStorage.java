@@ -1,15 +1,15 @@
 package org.javaclasses.todo.storage.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.javaclasses.todo.model.Task;
-import org.javaclasses.todo.model.TaskId;
-import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.model.entity.Task;
+import org.javaclasses.todo.model.entity.TaskId;
+import org.javaclasses.todo.model.entity.TodoListId;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Storage of {@code Task} entities by their {@code TaskId}.
+ * Storage of {@code Task} entity by their {@code TaskId}.
  *
  * @author Oleg Barmin
  */

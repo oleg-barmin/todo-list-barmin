@@ -1,5 +1,7 @@
 package org.javaclasses.todo.model;
 
+import org.javaclasses.todo.model.entity.TodoListId;
+
 /**
  * Occurs when try when {@code TodoList} with desired {@code TodoListId} was not found in the system.
  *

@@ -1,6 +1,11 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.operation;
 
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.model.Authorization;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.TodoListNotFoundException;
+import org.javaclasses.todo.model.entity.Task;
+import org.javaclasses.todo.model.entity.TodoListId;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 
 import java.util.List;
@@ -27,8 +32,8 @@ public final class ReadTasks extends Operation<ReadTasks> {
      * @param authorization  to validate access to {@code TodoList}
      * @param authentication to authenticate user token
      */
-    ReadTasks(TodoListId todoListId, TaskStorage taskStorage, Authorization authorization,
-              Authentication authentication) {
+    public ReadTasks(TodoListId todoListId, TaskStorage taskStorage, Authorization authorization,
+                     Authentication authentication) {
         super(authentication);
         this.taskStorage = checkNotNull(taskStorage);
         this.todoListId = checkNotNull(todoListId);

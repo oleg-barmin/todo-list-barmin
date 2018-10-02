@@ -1,9 +1,9 @@
 package org.javaclasses.todo.storage.impl;
 
 import org.javaclasses.todo.model.Password;
-import org.javaclasses.todo.model.User;
-import org.javaclasses.todo.model.UserId;
-import org.javaclasses.todo.model.Username;
+import org.javaclasses.todo.model.entity.User;
+import org.javaclasses.todo.model.entity.UserId;
+import org.javaclasses.todo.model.entity.Username;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

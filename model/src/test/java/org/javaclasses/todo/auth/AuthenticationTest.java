@@ -1,12 +1,12 @@
 package org.javaclasses.todo.auth;
 
-import org.javaclasses.todo.model.AuthSession;
+import org.javaclasses.todo.model.entity.AuthSession;
 import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.Password;
-import org.javaclasses.todo.model.Token;
-import org.javaclasses.todo.model.User;
-import org.javaclasses.todo.model.UserId;
-import org.javaclasses.todo.model.Username;
+import org.javaclasses.todo.model.entity.Token;
+import org.javaclasses.todo.model.entity.User;
+import org.javaclasses.todo.model.entity.UserId;
+import org.javaclasses.todo.model.entity.Username;
 import org.javaclasses.todo.storage.impl.AuthSessionStorage;
 import org.javaclasses.todo.storage.impl.UserStorage;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +20,6 @@ import java.util.Optional;
  * - sign-in into the system;
  * - register in the system;
  * - sign-out from the system.
- *
  *
  * @author Oleg Barmin
  */

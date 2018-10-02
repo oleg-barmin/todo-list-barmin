@@ -1,11 +1,21 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.operation;
 
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.model.Authorization;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.EmptyTaskDescriptionException;
+import org.javaclasses.todo.model.TodoListNotFoundException;
+import org.javaclasses.todo.model.entity.Task;
+import org.javaclasses.todo.model.entity.TaskId;
+import org.javaclasses.todo.model.entity.TodoList;
+import org.javaclasses.todo.model.entity.TodoListId;
+import org.javaclasses.todo.model.entity.UserId;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 
 import java.util.Date;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.javaclasses.todo.model.entity.Descriptions.*;
 
 /**
  * API which simplifies task adding.
@@ -21,8 +31,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class AddTask extends Operation<AddTask> {
 
     private final TaskStorage taskStorage;
-    private Task.TaskBuilder taskBuilder;
     private final Authorization authorization;
+    private Task.TaskBuilder taskBuilder;
 
     /**
      * Creates {@code AddTask} instance.
@@ -32,8 +42,8 @@ public final class AddTask extends Operation<AddTask> {
      * @param authentication to authenticate user token
      * @param authorization  to validate task adding
      */
-    AddTask(TaskId taskId, TaskStorage taskStorage, Authentication authentication,
-            Authorization authorization) {
+    public AddTask(TaskId taskId, TaskStorage taskStorage, Authentication authentication,
+                   Authorization authorization) {
         super(authentication);
         this.taskStorage = checkNotNull(taskStorage);
         this.authorization = checkNotNull(authorization);
@@ -62,7 +72,7 @@ public final class AddTask extends Operation<AddTask> {
      * @throws EmptyTaskDescriptionException if given task description is null or empty
      */
     public AddTask withDescription(String description) throws EmptyTaskDescriptionException {
-        Descriptions.validate(description);
+        validate(description);
         taskBuilder = taskBuilder.setDescription(description.trim());
         return this;
     }

@@ -1,6 +1,13 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.operation;
 
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.model.Authorization;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.TaskNotFoundException;
+import org.javaclasses.todo.model.TodoListNotFoundException;
+import org.javaclasses.todo.model.entity.Task;
+import org.javaclasses.todo.model.entity.TaskId;
+import org.javaclasses.todo.model.entity.UserId;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 
 import java.util.Optional;
@@ -29,8 +36,8 @@ public final class RemoveTask extends Operation<RemoveTask> {
      * @param authorization  to validate access to {@code Task}
      * @param authentication to authenticate user token
      */
-    RemoveTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization,
-               Authentication authentication) {
+    public RemoveTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization,
+                      Authentication authentication) {
         super(authentication);
         this.taskId = checkNotNull(taskId);
         this.taskStorage = checkNotNull(taskStorage);

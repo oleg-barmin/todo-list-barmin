@@ -1,13 +1,13 @@
 package org.javaclasses.todo.storage.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.javaclasses.todo.model.TodoList;
-import org.javaclasses.todo.model.TodoListId;
+import org.javaclasses.todo.model.entity.TodoList;
+import org.javaclasses.todo.model.entity.TodoListId;
 
 import java.util.Map;
 
 /**
- * Storage of {@code TodoList} entities by {@code TodoListId}.
+ * Storage of {@code TodoList} entity by {@code TodoListId}.
  *
  * @author Oleg Barmin
  */

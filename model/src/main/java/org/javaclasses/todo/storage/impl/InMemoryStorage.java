@@ -2,8 +2,8 @@ package org.javaclasses.todo.storage.impl;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import org.javaclasses.todo.model.Entity;
-import org.javaclasses.todo.model.EntityId;
+import org.javaclasses.todo.model.entity.Entity;
+import org.javaclasses.todo.model.entity.EntityId;
 import org.javaclasses.todo.storage.Storage;
 
 import java.lang.reflect.Field;
@@ -21,7 +21,7 @@ import java.util.Optional;
  * @author Oleg Barmin
  */
 /*
- * Sub-classes of InMemoryStorage must work only with entities of TodoList application,
+ * Sub-classes of InMemoryStorage must work only with entity of TodoList application,
  * so InMemoryStorage with generics should be abstract.
  */
 @SuppressWarnings("AbstractClassWithoutAbstractMethods")
@@ -89,11 +89,11 @@ abstract class InMemoryStorage<I extends EntityId, E extends Entity<I>> implemen
     }
 
     /**
-     * Finds all entities which field with given name, has given value.
+     * Finds all entity which field with given name, has given value.
      *
      * @param fieldName  name of {@code Entity} field
      * @param fieldValue value of desired field
-     * @return list of entities with field of desired value
+     * @return list of entity with field of desired value
      * @throws SearchByFieldException if field with given name doesn't exists in entity.
      */
     /* reflect API converted to SearchByFieldException, because in this case it marks about programming error. */

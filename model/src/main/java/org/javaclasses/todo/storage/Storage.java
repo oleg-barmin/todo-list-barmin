@@ -1,7 +1,7 @@
 package org.javaclasses.todo.storage;
 
-import org.javaclasses.todo.model.Entity;
-import org.javaclasses.todo.model.EntityId;
+import org.javaclasses.todo.model.entity.Entity;
+import org.javaclasses.todo.model.entity.EntityId;
 
 import java.util.Optional;
 

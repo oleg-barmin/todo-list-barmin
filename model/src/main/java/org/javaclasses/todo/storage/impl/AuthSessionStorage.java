@@ -1,13 +1,13 @@
 package org.javaclasses.todo.storage.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.javaclasses.todo.model.AuthSession;
-import org.javaclasses.todo.model.Token;
+import org.javaclasses.todo.model.entity.AuthSession;
+import org.javaclasses.todo.model.entity.Token;
 
 import java.util.Map;
 
 /**
- * Storage of {@code AuthSession} entities by their {@code Token}.
+ * Storage of {@code AuthSession} entity by their {@code Token}.
  *
  * @author Oleg Barmin
  */

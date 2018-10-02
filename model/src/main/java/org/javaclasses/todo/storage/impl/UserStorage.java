@@ -1,16 +1,16 @@
 package org.javaclasses.todo.storage.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.javaclasses.todo.model.User;
-import org.javaclasses.todo.model.UserId;
-import org.javaclasses.todo.model.Username;
+import org.javaclasses.todo.model.entity.User;
+import org.javaclasses.todo.model.entity.UserId;
+import org.javaclasses.todo.model.entity.Username;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage of {@code User} entities by their {@code UserId}.
+ * Storage of {@code User} entity by their {@code UserId}.
  *
  * @author Oleg Barmin
  */

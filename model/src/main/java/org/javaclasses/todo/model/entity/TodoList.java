@@ -1,4 +1,4 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

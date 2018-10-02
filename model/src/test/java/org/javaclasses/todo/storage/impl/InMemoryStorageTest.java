@@ -1,7 +1,7 @@
 package org.javaclasses.todo.storage.impl;
 
-import org.javaclasses.todo.model.Entity;
-import org.javaclasses.todo.model.EntityId;
+import org.javaclasses.todo.model.entity.Entity;
+import org.javaclasses.todo.model.entity.EntityId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +48,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
     }
 
     @Test
-    @DisplayName("write new entities.")
+    @DisplayName("write new entity.")
     void testWrite() {
         E entity = createEntity();
 
@@ -93,7 +93,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
     }
 
     @Test
-    @DisplayName("read entities by ID.")
+    @DisplayName("read entity by ID.")
     void testRead() {
         E entity = createEntity();
         I entityId = entity.getId();
@@ -102,7 +102,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
 
         Optional<E> optionalEntity = storage.read(entityId);
         if (!optionalEntity.isPresent()) {
-            Assertions.fail("Storage has to read written entities by ID, but it don't.");
+            Assertions.fail("Storage has to read written entity by ID, but it don't.");
             return;
         }
         E storedEntity = optionalEntity.get();
@@ -132,7 +132,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
     }
 
     @Test
-    @DisplayName("remove entities by ID")
+    @DisplayName("remove entity by ID")
     void removeTest() {
         E entity = createEntity();
         I entityId = entity.getId();
@@ -141,7 +141,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
 
         Optional<E> optionalEntity = storage.remove(entityId);
         if (!optionalEntity.isPresent()) {
-            Assertions.fail("Storage has to remove written entities by ID, but it don't.");
+            Assertions.fail("Storage has to remove written entity by ID, but it don't.");
             return;
         }
         E storedEntity = optionalEntity.get();
@@ -162,7 +162,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
     }
 
     @Test
-    @DisplayName("erase all stored entities.")
+    @DisplayName("erase all stored entity.")
     void testClear() {
         E firstEntity = createEntity();
         E secondEntity = createEntity();
@@ -174,7 +174,7 @@ abstract class InMemoryStorageTest<I extends EntityId, E extends Entity<I>> {
 
         storage.clear();
 
-        Assertions.assertEquals(0, map.size(), "erase all entities from storage, but it don't.");
+        Assertions.assertEquals(0, map.size(), "erase all entity from storage, but it don't.");
     }
 
     /*

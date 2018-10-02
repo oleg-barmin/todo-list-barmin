@@ -1,5 +1,7 @@
 package org.javaclasses.todo.model;
 
+import org.javaclasses.todo.model.entity.TodoListId;
+
 /**
  * Occurs when try to add TodoList with ID which already exists in the storage.
  *

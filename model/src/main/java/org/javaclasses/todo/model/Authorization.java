@@ -1,5 +1,8 @@
 package org.javaclasses.todo.model;
 
+import org.javaclasses.todo.model.entity.TodoList;
+import org.javaclasses.todo.model.entity.TodoListId;
+import org.javaclasses.todo.model.entity.UserId;
 import org.javaclasses.todo.storage.impl.TodoListStorage;
 
 import java.util.Optional;
@@ -11,7 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Oleg Barmin
  */
-class Authorization {
+public class Authorization {
 
     private final TodoListStorage todoListStorage;
 
@@ -32,7 +35,7 @@ class Authorization {
      * @throws TodoListNotFoundException    if {@code TodoList} with given ID was not found
      * @throws AuthorizationFailedException if user with given ID has no access to {@code TodoList} with given ID
      */
-    void validateAccess(UserId userId, TodoListId todoListId) {
+    public void validateAccess(UserId userId, TodoListId todoListId) {
         checkNotNull(userId);
         checkNotNull(todoListId);
 

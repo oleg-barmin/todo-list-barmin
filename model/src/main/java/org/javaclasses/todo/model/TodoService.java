@@ -1,6 +1,16 @@
 package org.javaclasses.todo.model;
 
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.model.entity.Task;
+import org.javaclasses.todo.model.entity.TaskId;
+import org.javaclasses.todo.model.entity.TodoList;
+import org.javaclasses.todo.model.entity.TodoListId;
+import org.javaclasses.todo.model.operation.AddTask;
+import org.javaclasses.todo.model.operation.CreateList;
+import org.javaclasses.todo.model.operation.FindTask;
+import org.javaclasses.todo.model.operation.ReadTasks;
+import org.javaclasses.todo.model.operation.RemoveTask;
+import org.javaclasses.todo.model.operation.UpdateTask;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 import org.javaclasses.todo.storage.impl.TodoListStorage;
 
@@ -26,8 +36,8 @@ public class TodoService {
     private final TaskStorage taskStorage;
     private final Authorization authorization;
 
-    TodoService(Authentication authentication, TodoListStorage todoListStorage,
-                TaskStorage taskStorage) {
+    public TodoService(Authentication authentication, TodoListStorage todoListStorage,
+                       TaskStorage taskStorage) {
         this.authentication = checkNotNull(authentication);
         this.todoListStorage = checkNotNull(todoListStorage);
         this.taskStorage = checkNotNull(taskStorage);

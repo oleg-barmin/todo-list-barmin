@@ -1,4 +1,6 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.entity;
+
+import org.javaclasses.todo.model.Password;
 
 /**
  * An entity which represents user of TodoList application.

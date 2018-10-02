@@ -1,12 +1,22 @@
-package org.javaclasses.todo.model;
+package org.javaclasses.todo.model.operation;
 
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.model.Authorization;
+import org.javaclasses.todo.model.AuthorizationFailedException;
+import org.javaclasses.todo.model.EmptyTaskDescriptionException;
+import org.javaclasses.todo.model.TaskNotFoundException;
+import org.javaclasses.todo.model.TodoListNotFoundException;
+import org.javaclasses.todo.model.UpdateCompletedTaskException;
+import org.javaclasses.todo.model.entity.Task;
+import org.javaclasses.todo.model.entity.TaskId;
+import org.javaclasses.todo.model.entity.UserId;
 import org.javaclasses.todo.storage.impl.TaskStorage;
 
 import java.util.Date;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.javaclasses.todo.model.entity.Descriptions.*;
 
 /**
  * API which simplifies task updating.
@@ -44,8 +54,8 @@ public final class UpdateTask extends Operation<UpdateTask> {
      * @param authorization  to validate access to {@code Task}
      * @param authentication to authenticate token
      */
-    UpdateTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization,
-               Authentication authentication) {
+    public UpdateTask(TaskId taskId, TaskStorage taskStorage, Authorization authorization,
+                      Authentication authentication) {
         super(authentication);
 
         this.taskStorage = checkNotNull(taskStorage);
@@ -62,7 +72,7 @@ public final class UpdateTask extends Operation<UpdateTask> {
      * @throws EmptyTaskDescriptionException if given task description is null or empty
      */
     public UpdateTask withDescription(String description) throws EmptyTaskDescriptionException {
-        Descriptions.validate(description);
+        validate(description);
         taskDescription = description.trim();
         return this;
     }
