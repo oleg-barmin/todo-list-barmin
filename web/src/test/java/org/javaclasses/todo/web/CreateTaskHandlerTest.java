@@ -179,13 +179,13 @@ class CreateTaskHandlerTest extends AbstractPayloadHandlerTest {
     }
 
     @Override
-    Response sendEmptyPayloadRequest() {
+    Response sendWithBodyRequest(String requestBody) {
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
 
         addTodoList(todoListId);
 
-        return specification.body("")
+        return specification.body(requestBody)
                             .post(getTaskUrl(todoListId, taskId));
     }
 }

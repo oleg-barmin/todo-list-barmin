@@ -69,7 +69,8 @@ class CreateListHandlerTest extends AbstractPayloadHandlerTest {
     }
 
     @Override
-    Response sendEmptyPayloadRequest() {
-        return specification.post(getTodoListRoute());
+    Response sendWithBodyRequest(String requestBody) {
+        return specification.body(requestBody)
+                            .post(getTodoListRoute());
     }
 }

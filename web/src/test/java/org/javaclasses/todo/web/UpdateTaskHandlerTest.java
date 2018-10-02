@@ -219,14 +219,14 @@ class UpdateTaskHandlerTest extends AbstractPayloadHandlerTest {
     }
 
     @Override
-    Response sendEmptyPayloadRequest() {
+    Response sendWithBodyRequest(String requestBody) {
         TaskId taskId = generateTaskId();
         TodoListId todoListId = generateTodoListId();
 
         addTodoList(todoListId);
         addTask(taskId, todoListId, "any description");
 
-        return specification.body("")
+        return specification.body(requestBody)
                             .put(getTaskUrl(todoListId, taskId));
     }
 }

@@ -5,8 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.DescribedAs.describedAs;
 
 /**
  * Provides contract which allows to easily test if handler sub-class
@@ -17,20 +15,32 @@ import static org.hamcrest.core.DescribedAs.describedAs;
 abstract class AbstractPayloadHandlerTest extends AbstractSecuredHandlerTest {
 
     /**
-     * Sends request with empty body.
+     * Sends request with given body.
      *
+     * @param requestBody body of request to send
      * @return response to requests with empty body
      */
-    abstract Response sendEmptyPayloadRequest();
+    abstract Response sendWithBodyRequest(String requestBody);
 
     @Test
-    @DisplayName("response with 400 status code if request was with empty body")
+    @DisplayName("response with 400 status code if request was with empty body.")
     void testWithEmptyPayload() {
         setTokenToRequestSpecification(getRequestSpecification());
 
-        Response response = sendEmptyPayloadRequest();
+        Response response = sendWithBodyRequest("");
 
         response.then()
-                .statusCode(describedAs("response code should be 400", is(HTTP_BAD_REQUEST)));
+                .statusCode(HTTP_BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("response with 400 status code if request body is invalid JSON.")
+    void testWithInvalidJson() {
+        setTokenToRequestSpecification(getRequestSpecification());
+
+        Response response = sendWithBodyRequest("invalid JSON");
+
+        response.then()
+                .statusCode(HTTP_BAD_REQUEST);
     }
 }
