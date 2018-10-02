@@ -26,6 +26,9 @@ class ExceptionHandlers {
 
     /**
      * Handles thrown {@link AuthorizationFailedException}.
+     *
+     * <p>Occurs when {@code SecuredAbstractRequestHandler} received request with access request to entity
+     * which is forbidden for occurred user to access.
      */
     public static class AuthorizationFailedHandler implements ExceptionHandler<AuthorizationFailedException> {
 
@@ -45,6 +48,9 @@ class ExceptionHandlers {
 
     /**
      * Handles thrown {@link EmptyTaskDescriptionException}.
+     *
+     * <p>Occurs when {@code CreateTaskRequestHandler} or {@code UpdateTaskRequestHandler} received request
+     * to create/update {@code Task} with invalid description.
      */
     public static class EmptyTaskDescriptionHandler implements ExceptionHandler<EmptyTaskDescriptionException> {
 
@@ -65,6 +71,9 @@ class ExceptionHandlers {
 
     /**
      * Handles thrown {@link TaskAlreadyExistsException}.
+     *
+     * <p>Occurs when {@code CreateTaskRequestHandler} received request
+     * to create {@code Task} with existing ID.
      */
     public static class TaskAlreadyExistsHandler implements ExceptionHandler<TaskAlreadyExistsException> {
 
@@ -85,6 +94,9 @@ class ExceptionHandlers {
 
     /**
      * Handles {@link TaskNotFoundException}.
+     *
+     * <p>Occurs when {@code AbstractRequestHandler} sub-classes received request
+     * to find/modify {@code Task} with non-existing ID.
      */
     public static class TaskNotFoundHandler implements ExceptionHandler<TaskNotFoundException> {
 
@@ -104,6 +116,9 @@ class ExceptionHandlers {
 
     /**
      * Handles {@link TodoListAlreadyExistsException}.
+     *
+     * <p>Occurs when {@code CreateTodoListRequestHandler} received request
+     * to create {@code TodoList} with existing ID.
      */
     public static class TodoListAlreadyExistsHandler implements ExceptionHandler<TodoListAlreadyExistsException> {
 
@@ -123,6 +138,9 @@ class ExceptionHandlers {
 
     /**
      * Handles thrown {@link TodoListNotFoundException}.
+     *
+     * <p>Occurs when {@code AbstractRequestHandler} sub-classes received request
+     * to find/modify {@code TodoList} with non-existing ID.
      */
     public static class TodoListNotFoundHandler implements ExceptionHandler<TodoListNotFoundException> {
 
@@ -142,6 +160,8 @@ class ExceptionHandlers {
 
     /**
      * Handles thrown {@link InvalidCredentialsException}.
+     *
+     * <p>Occurs when {@code AuthenticationHandler} received request to sign in with invalid credentials.
      */
     public static class InvalidCredentialsHandler implements ExceptionHandler<InvalidCredentialsException> {
 
@@ -162,6 +182,8 @@ class ExceptionHandlers {
 
     /**
      * Handles {@link UpdateCompletedTaskException}.
+     *
+     * <p>Occurs when {@code UpdateTaskHandler} received request to update completed task.
      */
     public static class UpdateCompletedTaskHandler implements ExceptionHandler<UpdateCompletedTaskException> {
 
