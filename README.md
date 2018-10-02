@@ -2,7 +2,7 @@
 
 To-do list application is an application which allows you to manage your tasks in web interface
 
-### Application allows end-user to:
+### Application allows end-users to:
 - Sign-in into the system.
 - Create new to-do lists.
 - Add tasks to create new tasks in to-do lists.
@@ -20,8 +20,7 @@ To-do list application is an application which allows you to manage your tasks i
 manages to-do lists and tasks on its own and then uploads it to the server (currently un implemented).
  
 ### Prerequisites
-* Java 8 or higher.
-* [Gradle](https://gradle.org/) - to build project and resolve dependencies.
+* [JDK 8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) or higher.
 * [npm](https://www.npmjs.com/) - to build JS module.
 
 ### Installation
