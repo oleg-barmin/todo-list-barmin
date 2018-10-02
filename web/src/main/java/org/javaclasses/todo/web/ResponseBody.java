@@ -7,6 +7,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Response body of {@link HttpResponse HTTP response}.
  *
+ * <p>{@code ResponseBody} contains an instance of {@code <V>} class.
+ * Stored value can be serialized to JSON with {@link ResponseBody#asJson()}.
+ *
+ * <p>Empty {@code ResponseBody} can be created with {@link ResponseBody#empty()}.
+ * If try to serialize to JSON an empty {@code ResponseBody} empty string will be returned.
+ *
  * @param <V> value of response body
  * @author Oleg Barmin
  */
@@ -60,6 +66,7 @@ class ResponseBody<V> {
      *
      * @return JSON representation of {@code ResponseBody} value or empty string
      * if {@code ResponseBody} is empty.
+     * @implNote to serialize value to JSON {@link Gson} is used
      */
     String asJson() {
         return value == null ? "" : gson.toJson(value);
