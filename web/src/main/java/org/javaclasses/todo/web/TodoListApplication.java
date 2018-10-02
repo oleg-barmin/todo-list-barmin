@@ -1,6 +1,7 @@
 package org.javaclasses.todo.web;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.gson.JsonSyntaxException;
 import org.javaclasses.todo.ServiceFactory;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.auth.InvalidCredentialsException;
@@ -15,6 +16,7 @@ import org.javaclasses.todo.model.UpdateCompletedTaskException;
 import spark.Service;
 
 import static org.javaclasses.todo.web.Configurations.getDefaultPort;
+import static org.javaclasses.todo.web.ExceptionHandlers.*;
 import static org.javaclasses.todo.web.TaskController.CreateTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.GetTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.RemoveTaskRequestHandler;
@@ -73,14 +75,15 @@ public class TodoListApplication {
      */
     @SuppressWarnings("OverlyCoupledMethod") // start server method needs many dependencies to init all handlers.
     public void start() {
-        service.exception(AuthorizationFailedException.class, new ExceptionHandlers.AuthorizationFailedHandler());
-        service.exception(EmptyTaskDescriptionException.class, new ExceptionHandlers.EmptyTaskDescriptionHandler());
-        service.exception(TaskAlreadyExistsException.class, new ExceptionHandlers.TaskAlreadyExistsHandler());
-        service.exception(TaskNotFoundException.class, new ExceptionHandlers.TaskNotFoundHandler());
-        service.exception(TodoListAlreadyExistsException.class, new ExceptionHandlers.TodoListAlreadyExistsHandler());
-        service.exception(TodoListNotFoundException.class, new ExceptionHandlers.TodoListNotFoundHandler());
-        service.exception(InvalidCredentialsException.class, new ExceptionHandlers.InvalidCredentialsHandler());
-        service.exception(UpdateCompletedTaskException.class, new ExceptionHandlers.UpdateCompletedTaskHandler());
+        service.exception(AuthorizationFailedException.class, new AuthorizationFailedHandler());
+        service.exception(EmptyTaskDescriptionException.class, new EmptyTaskDescriptionHandler());
+        service.exception(TaskAlreadyExistsException.class, new TaskAlreadyExistsHandler());
+        service.exception(TaskNotFoundException.class, new TaskNotFoundHandler());
+        service.exception(TodoListAlreadyExistsException.class, new TodoListAlreadyExistsHandler());
+        service.exception(TodoListNotFoundException.class, new TodoListNotFoundHandler());
+        service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
+        service.exception(UpdateCompletedTaskException.class, new UpdateCompletedTaskHandler());
+        service.exception(JsonSyntaxException.class, new JsonSyntaxExceptionHandler());
 
         service.post(Routes.getAuthenticationRoute(),
                      new AuthenticationController.AuthenticationHandler(authentication));

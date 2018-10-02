@@ -1,5 +1,6 @@
 package org.javaclasses.todo.web;
 
+import com.google.gson.JsonSyntaxException;
 import org.javaclasses.todo.auth.InvalidCredentialsException;
 import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.EmptyTaskDescriptionException;
@@ -197,6 +198,28 @@ class ExceptionHandlers {
         @Override
         public void handle(UpdateCompletedTaskException exception, Request request, Response response) {
             HttpResponse httpResponse = HttpResponse.internalError(exception.getMessage());
+            httpResponse.writeTo(response);
+        }
+    }
+
+    /**
+     * Handles {@link JsonSyntaxException}.
+     *
+     * <p>Occurs when {@link AbstractRequestHandler} sub-classes tries to deserialize invalid request body with
+     * invalid syntax.
+     */
+    public static class JsonSyntaxExceptionHandler implements ExceptionHandler<JsonSyntaxException> {
+
+        /**
+         * Responses with status code 400.
+         *
+         * @param exception occurred exception instance
+         * @param request   request which caused exception
+         * @param response  response to configure
+         */
+        @Override
+        public void handle(JsonSyntaxException exception, Request request, Response response) {
+            HttpResponse httpResponse = HttpResponse.badRequest();
             httpResponse.writeTo(response);
         }
     }
