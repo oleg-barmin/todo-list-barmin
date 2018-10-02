@@ -1,29 +1,52 @@
 plugins {
-    id 'java'
+    id("net.ltgt.errorprone") version "0.6" apply false
 }
 
-group 'org.javaclasses.todo'
-version '1.0-SNAPSHOT'
+final def errorProneVersion = "2.3.1"
+final def errorProneJavacVersion = "9+181-r4173-1"
 
-sourceCompatibility = 1.8
+wrapper.gradleVersion = '4.10.2'
 
-repositories {
-    mavenCentral()
-}
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'net.ltgt.errorprone'
 
-dependencies {
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.2.0')
-    testCompile('org.junit.jupiter:junit-jupiter-api:5.2.0')
-    testCompile('org.junit.jupiter:junit-jupiter-params:5.2.0')
-}
+    group 'org.javaclasses.todo'
+    version '1.5'
 
-test {
-    useJUnitPlatform()
+    sourceCompatibility = 1.8
+
+    test {
+        useJUnitPlatform()
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile group: 'com.google.guava', name: 'guava-testlib', version: '26.0-jre'
+
+        testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+        testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.1'
+
+
+        compile 'org.slf4j:slf4j-api:1.7.25'
+        compile 'org.slf4j:slf4j-simple:1.7.25'
+        compile 'com.google.guava:guava:26.0-jre'
+
+        errorprone("com.google.errorprone:error_prone_core:$errorProneVersion")
+        errorproneJavac("com.google.errorprone:javac:$errorProneJavacVersion")
+    }
+
+    tasks.withType(JavaCompile) {
+        options.errorprone.errorproneArgs << "-XepExcludedPaths:.*/generated/.*" << "-Xep:ClassCanBeStatic:OFF"
+    }
 }
 
 task rollup(type: Exec) {
-    String osName = System.getProperty("os.name").toLowerCase()
-    String rollupCommand = 'npm run rollup'
+    final String osName = System.getProperty("os.name").toLowerCase()
+    final String rollupCommand = 'npm run rollup'
 
     if (osName.contains("windows")) {
         commandLine 'cmd', '/c', rollupCommand
