@@ -84,7 +84,7 @@ public class TodoListApplication {
      */
     @SuppressWarnings("OverlyCoupledMethod") // start server method needs many dependencies to init all handlers.
     public void start() {
-        service.staticFileLocation("resources/public/");
+        service.staticFileLocation("public/");
 
         // general exception handlers
         service.exception(AuthorizationFailedException.class, new AuthorizationFailedHandler());
