@@ -11,5 +11,4 @@
 /.idea/vcs.xml
 /.idea/uiDesigner.xml
 /.idea/workspace.xml
-/.gradle/
-/js/doc/
+/model/out/
