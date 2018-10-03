@@ -7,16 +7,16 @@ To-do list application is an application which allows you to manage your tasks i
 - Create new to-do lists.
 - Add tasks to create new tasks in to-do lists.
 - Mark tasks as completed.
-- Update uncompleted tasks with new description.
+- Update created tasks.
 
 ###  Modules
 1. **Model**
-  Responsible for all business logic of application, 
+  responsible for all business logic of application, 
   connection with database (currently in memory database).
 2. **Web**
- Depends on **Model** module and responsible for REST API of the application.
+ depends on **Model** module and responsible for REST API of the application.
 3. **JS**
- Responsible for client side of application. It is rich client, so it 
+ responsible for client side of application. It is rich client, so it 
 manages to-do lists and tasks on its own and then uploads it to the server (currently un implemented).
  
 ### Prerequisites
@@ -30,12 +30,12 @@ $ npm build
 ```
 and Gradle dependencies.
 ```sh
-$ gradle build
+$ ./gradlew build
 ```
 
 ### Running
 To run server you have to execute following command:
 ```sh
-$ gradle run --args <port>
+$ ./gradlew run --args <port>
 ```
 If port number was not provided application will start on port 4567.
