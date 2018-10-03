@@ -122,9 +122,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .post(getAuthenticationRoute());
 
         response.then()
-                .statusCode(describedAs("responds with status code 403 " +
-                                                "when got invalid credentials, but it don't.",
-                                        is(HTTP_FORBIDDEN)));
+                .statusCode(HTTP_UNAUTHORIZED);
     }
 
     @Test
@@ -155,9 +153,7 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
                 .post(getAuthenticationRoute());
 
         response.then()
-                .statusCode(describedAs("responds with status code 401 when " +
-                                                "invalid occurs scheme in Authentication header, but it don't.",
-                                        is(HTTP_UNAUTHORIZED)));
+                .statusCode(HTTP_BAD_REQUEST);
     }
 
     @Test
