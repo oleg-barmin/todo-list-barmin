@@ -2,6 +2,8 @@ package org.javaclasses.todo.web;
 
 /**
  * Default configuration of TodoList application.
+ *
+ * @author Oleg Barmin
  */
 public class Configurations {
 
@@ -11,10 +13,20 @@ public class Configurations {
     private Configurations() {
     }
 
+    /**
+     * Returns default port of application: 4567.
+     *
+     * @return default port.
+     */
     public static int getDefaultPort() {
         return DEFAULT_PORT;
     }
 
+    /**
+     * Returns default content type of application: 'application/json'.
+     *
+     * @return default content type.
+     */
     static String getContentType() {
         return CONTENT_TYPE;
     }
