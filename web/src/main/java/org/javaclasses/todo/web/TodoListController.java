@@ -48,15 +48,10 @@ class TodoListController {
          */
         @Override
         HttpResponse process(RequestData requestData, Token token) {
-            RequestBody requestBody = requestData.getRequestBody();
+            String uuid = requestData.getRequestParams()
+                                           .getParamValue(Routes.getTodoListIdParam());
 
-            if (requestBody.isEmpty()) {
-                return HttpResponse.badRequest();
-            }
-
-            CreateListPayload payload = requestBody.as(CreateListPayload.class);
-
-            TodoListId todoListId = payload.getTodoListId();
+            TodoListId todoListId = new TodoListId(uuid);
 
             todoService.createList(todoListId)
                        .authorizedWith(token)
