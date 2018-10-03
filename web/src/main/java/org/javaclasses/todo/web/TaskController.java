@@ -8,7 +8,6 @@ import org.javaclasses.todo.model.entity.Task;
 import org.javaclasses.todo.model.entity.TaskId;
 import org.javaclasses.todo.model.entity.TodoListId;
 import org.javaclasses.todo.model.entity.Token;
-import org.javaclasses.todo.model.operation.UpdateTask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -185,16 +184,11 @@ class TaskController {
             String taskDescription = payload.getTaskDescription();
             boolean taskStatus = payload.isTaskStatus();
 
-            UpdateTask updateTask = todoService.updateTask(taskId)
-                                               .authorizedWith(token)
-                                               .setStatus(taskStatus);
-
-            // if block necessary if user tries to update only task status, not it's description
-            if (taskDescription != null) {
-                updateTask.withDescription(taskDescription);
-            }
-
-            updateTask.execute();
+            todoService.updateTask(taskId)
+                       .authorizedWith(token)
+                       .withDescription(taskDescription)
+                       .setStatus(taskStatus)
+                       .execute();
 
             return HttpResponse.ok();
         }
