@@ -62,9 +62,9 @@ class HttpResponse<B> {
     }
 
     /**
-     * Creates instance of {@code HttpResponse} with empty body and 403 status code.
+     * Creates instance of {@code HttpResponse} with empty body and 401 status code.
      *
-     * @return response with 403 status code and empty body
+     * @return response with 401 status code and empty body
      */
     static HttpResponse unauthorized() {
         return new HttpResponse(HTTP_UNAUTHORIZED);

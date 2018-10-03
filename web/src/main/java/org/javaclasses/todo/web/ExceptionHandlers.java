@@ -175,8 +175,7 @@ class ExceptionHandlers {
          */
         @Override
         public void handle(InvalidCredentialsException exception, Request request, Response response) {
-            HttpResponse httpResponse = HttpResponse.forbidden();
-            httpResponse.writeTo(response);
+            HttpResponse httpResponse = HttpResponse.unauthorized();
         }
 
     }

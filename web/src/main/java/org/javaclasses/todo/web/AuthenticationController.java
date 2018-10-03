@@ -101,7 +101,7 @@ class AuthenticationController {
 
             if (!schemeAndCredentials.get(0)
                                      .equals(AUTHENTICATION_METHOD)) {
-                return HttpResponse.unauthorized();
+                return HttpResponse.badRequest();
             }
 
             String base64EncodedCredentials = schemeAndCredentials.get(1);
