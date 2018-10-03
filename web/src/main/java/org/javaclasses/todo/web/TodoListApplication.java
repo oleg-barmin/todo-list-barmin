@@ -15,8 +15,17 @@ import org.javaclasses.todo.model.TodoService;
 import org.javaclasses.todo.model.UpdateCompletedTaskException;
 import spark.Service;
 
+import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
 import static org.javaclasses.todo.web.Configurations.getDefaultPort;
-import static org.javaclasses.todo.web.ExceptionHandlers.*;
+import static org.javaclasses.todo.web.ExceptionHandlers.AuthorizationFailedHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.EmptyTaskDescriptionHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.InvalidCredentialsHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.JsonSyntaxExceptionHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.TaskAlreadyExistsHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.TaskNotFoundHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.TodoListAlreadyExistsHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.TodoListNotFoundHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.UpdateCompletedTaskHandler;
 import static org.javaclasses.todo.web.TaskController.CreateTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.GetTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.RemoveTaskRequestHandler;
@@ -75,30 +84,36 @@ public class TodoListApplication {
      */
     @SuppressWarnings("OverlyCoupledMethod") // start server method needs many dependencies to init all handlers.
     public void start() {
+        service.staticFileLocation("resources/public/");
+
+        // general exception handlers
+        service.exception(AuthorizationFailedException.class, new AuthorizationFailedHandler());
         service.exception(JsonSyntaxException.class, new JsonSyntaxExceptionHandler());
 
-        service.exception(AuthorizationFailedException.class, new AuthorizationFailedHandler());
+        // authentication routes
         service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
-        service.post(Routes.getAuthenticationRoute(),
-                     new AuthenticationController.AuthenticationHandler(authentication));
 
+        service.post(Routes.getAuthenticationRoute(), new AuthenticationHandler(authentication));
+
+        // todo list routes
         service.exception(TodoListAlreadyExistsException.class, new TodoListAlreadyExistsHandler());
         service.exception(TodoListNotFoundException.class, new TodoListNotFoundHandler());
-        service.post(Routes.getTodoListRoute(), new CreateTodoListRequestHandler(todoService));
 
+        service.post(Routes.getTodoListRoute(), new CreateTodoListRequestHandler(todoService));
         service.get(Routes.getTodoListRoute(), new ReadTasksRequestHandler(todoService));
 
+        // tasks routes
+        service.exception(TaskAlreadyExistsException.class, new TaskAlreadyExistsHandler());
+        service.exception(TaskNotFoundException.class, new TaskNotFoundHandler());
 
         service.exception(EmptyTaskDescriptionException.class, new EmptyTaskDescriptionHandler());
         service.exception(UpdateCompletedTaskException.class, new UpdateCompletedTaskHandler());
-
-        service.exception(TaskAlreadyExistsException.class, new TaskAlreadyExistsHandler());
-        service.exception(TaskNotFoundException.class, new TaskNotFoundHandler());
 
         service.get(Routes.getTaskRoute(), new GetTaskRequestHandler(todoService));
         service.post(Routes.getTaskRoute(), new CreateTaskRequestHandler(todoService));
         service.put(Routes.getTaskRoute(), new UpdateTaskRequestHandler(todoService));
         service.delete(Routes.getTaskRoute(), new RemoveTaskRequestHandler(todoService));
+
     }
 
     /**

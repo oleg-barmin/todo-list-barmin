@@ -24,7 +24,7 @@ export default [
         input: 'js/src/todo-list-app.js',
         output: {
             name: "bundle",
-            file: 'web/src/main/resources/js/bundle.js',
+            file: 'web/src/main/resources/public/js/bundle.js',
             format: 'umd',
         }
     },
