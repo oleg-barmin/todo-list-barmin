@@ -1,18 +1,28 @@
 package org.javaclasses.todo.web.given;
 
+import org.javaclasses.todo.model.entity.TaskId;
 import org.javaclasses.todo.model.entity.TodoListId;
 
 import java.util.UUID;
 
 /**
- * Generates unique {@link TodoListId}.
+ * Generates unique IDs for {@code Entity} of to-do list application.
  *
  * @author Oleg Barmin
- * @implNote ID generation is based on {@link UUID}
  */
-public class TodoListsIdGenerator {
+public class IdGenerator {
 
-    private TodoListsIdGenerator() {
+    private IdGenerator() {
+    }
+
+    /**
+     * Generates unique {@code TaskId}.
+     *
+     * @return unique {@code TaskId}
+     */
+    public static TaskId generateTaskId() {
+        return new TaskId(UUID.randomUUID()
+                              .toString());
     }
 
     /**
