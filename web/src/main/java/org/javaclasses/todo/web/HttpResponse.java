@@ -89,14 +89,12 @@ class HttpResponse<B> {
     }
 
     /**
-     * Creates instance of {@code HttpResponse} with given body and 500 status code.
+     * Creates instance of {@code HttpResponse} with 500 status code.
      *
-     * @param body body of response
-     * @param <B>  body type
      * @return response with 500 status code and given body
      */
-    static <B> HttpResponse internalError(B body) {
-        return new HttpResponse<>(HTTP_INTERNAL_ERROR, body);
+    static HttpResponse internalError() {
+        return new HttpResponse<>(HTTP_INTERNAL_ERROR);
     }
 
     /**

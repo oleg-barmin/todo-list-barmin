@@ -120,7 +120,7 @@ class TaskController {
             RequestBody body = requestData.getRequestBody();
 
             if (body.isEmpty()) {
-                return HttpResponse.badRequest();
+                return HttpResponse.internalError();
             }
 
             TaskId taskId = extractTaskId(requestData.getRequestParams());
@@ -175,7 +175,7 @@ class TaskController {
             RequestBody body = requestData.getRequestBody();
 
             if (body.isEmpty()) {
-                return HttpResponse.badRequest();
+                return HttpResponse.internalError();
             }
 
             TaskUpdatePayload payload = body.as(TaskUpdatePayload.class);

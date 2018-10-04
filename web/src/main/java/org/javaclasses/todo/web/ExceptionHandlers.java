@@ -64,7 +64,7 @@ class ExceptionHandlers {
          */
         @Override
         public void handle(EmptyTaskDescriptionException exception, Request request, Response response) {
-            HttpResponse httpResponse = HttpResponse.internalError(exception.getMessage());
+            HttpResponse httpResponse = HttpResponse.internalError();
             httpResponse.writeTo(response);
         }
 
@@ -197,7 +197,7 @@ class ExceptionHandlers {
          */
         @Override
         public void handle(UpdateCompletedTaskException exception, Request request, Response response) {
-            HttpResponse httpResponse = HttpResponse.internalError(exception.getMessage());
+            HttpResponse httpResponse = HttpResponse.internalError();
             httpResponse.writeTo(response);
         }
     }
@@ -211,7 +211,7 @@ class ExceptionHandlers {
     public static class JsonSyntaxExceptionHandler implements ExceptionHandler<JsonSyntaxException> {
 
         /**
-         * Responses with status code 400.
+         * Responses with status code 500.
          *
          * @param exception occurred exception instance
          * @param request   request which caused exception
@@ -219,7 +219,7 @@ class ExceptionHandlers {
          */
         @Override
         public void handle(JsonSyntaxException exception, Request request, Response response) {
-            HttpResponse httpResponse = HttpResponse.badRequest();
+            HttpResponse httpResponse = HttpResponse.internalError();
             httpResponse.writeTo(response);
         }
     }
