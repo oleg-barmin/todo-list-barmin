@@ -23,7 +23,7 @@ task rollup(type: Exec) {
     if (osName.contains("windows")) {
         commandLine 'cmd', '/c', rollupCommand
     } else {
-        commandLine rollupCommand
+        commandLine 'npm', 'run', 'rollup'
     }
 }
 

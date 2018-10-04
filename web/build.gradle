@@ -27,7 +27,7 @@ test {
     useJUnitPlatform()
 }
 
-task jar(type: Jar) {
+task buildJar(type: Jar) {
     manifest {
         attributes 'Main-Class': mainClassName
     }
