@@ -3,16 +3,15 @@ package org.javaclasses.todo.web;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.entity.TodoListId;
-import org.javaclasses.todo.model.entity.UserId;
+import org.javaclasses.todo.web.given.SampleUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.DescribedAs.describedAs;
-import static org.javaclasses.todo.web.Routes.getTodoListRoute;
-import static org.javaclasses.todo.web.given.TodoListsIdGenerator.generateTodoListId;
+import static org.javaclasses.todo.web.given.IdGenerator.generateTodoListId;
+import static org.javaclasses.todo.web.given.TestRoutesProvider.getTodoListUrl;
+import static org.javaclasses.todo.web.given.UserSourceTestEnv.getBob;
 
 /**
  * Integration test of to-do list creation with REST API.
@@ -20,57 +19,34 @@ import static org.javaclasses.todo.web.given.TodoListsIdGenerator.generateTodoLi
  * @author Oleg Barmin
  */
 @DisplayName("CreateListHandler should")
-class CreateListHandlerTest extends AbstractPayloadHandlerTest {
+class CreateListHandlerTest extends AbstractSecuredHandlerTest {
 
-    private final RequestSpecification specification = getRequestSpecification();
+    // Bob data
+    private final SampleUser bob = getBob();
+    private final RequestSpecification specification = getRequestSpecificationFor(bob);
+    private final TodoListId todoListId = generateTodoListId();
+
 
     @Test
-    @DisplayName("create new lists by signed in user.")
+    @DisplayName("create new lists by signed in bob.")
     void testCreateList() {
-        setTokenToRequestSpecification(specification);
-
-        CreateListPayload payload = new CreateListPayload(generateTodoListId());
-
-        Response response = specification
-                .body(payload)
-                .post(getTodoListRoute());
-
-        response.then()
-                .statusCode(describedAs("response status must be 200, " +
-                                                "when signed in user creates list, but it don't.",
-                                        is(HTTP_OK)));
+        specification.post(getTodoListUrl(todoListId))
+                     .then()
+                     .statusCode(HTTP_OK);
     }
 
     @Test
     @DisplayName("response with 403 status code when try to add to-do list with existing ID.")
     void testCreateListWithExistingId() {
-        setTokenToRequestSpecification(specification);
+        addTodoList(todoListId, specification);
 
-        TodoListId todoListId = generateTodoListId();
-        CreateListPayload payload = new CreateListPayload(todoListId);
-
-        addTodoList(todoListId);
-
-        Response response = specification.body(payload)
-                                         .post(getTodoListRoute());
-
-        response.then()
-                .statusCode(describedAs("response status must be 403 when " +
-                                                "try to create list with existing Id.",
-                                        is(HTTP_FORBIDDEN)));
+        specification.post(getTodoListUrl(todoListId))
+                     .then()
+                     .statusCode(HTTP_FORBIDDEN);
     }
 
     @Override
-    Response sendRequest(UserId userId) {
-        CreateListPayload payload = new CreateListPayload(generateTodoListId());
-
-        return specification.body(payload)
-                            .post(getTodoListRoute());
-    }
-
-    @Override
-    Response sendWithBodyRequest(String requestBody) {
-        return specification.body(requestBody)
-                            .post(getTodoListRoute());
+    Response sendRequest(RequestSpecification specification) {
+        return specification.post(getTodoListUrl(generateTodoListId()));
     }
 }

@@ -1,24 +1,31 @@
 package org.javaclasses.todo.web;
 
+import com.google.common.collect.Lists;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.entity.Task;
 import org.javaclasses.todo.model.entity.TaskId;
 import org.javaclasses.todo.model.entity.TodoListId;
-import org.javaclasses.todo.web.given.TestEnvironment;
+import org.javaclasses.todo.web.given.SampleTask;
+import org.javaclasses.todo.web.given.SampleUser;
+import org.javaclasses.todo.web.given.TestApplicationEnv;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import static io.restassured.RestAssured.given;
 import static org.javaclasses.todo.web.Configurations.getContentType;
-import static org.javaclasses.todo.web.Routes.getTodoListRoute;
+import static org.javaclasses.todo.web.given.IdGenerator.generateTaskId;
 import static org.javaclasses.todo.web.given.TestRoutesProvider.getTaskUrl;
+import static org.javaclasses.todo.web.given.TestRoutesProvider.getTodoListUrl;
 
 /**
  * An abstract integration test of all handlers, which starts and stops server on each test method,
  * provides methods to:
- * - read {@link Task TasksIdGenerator} {@link AbstractHandlerTest#readTask(TodoListId, TaskId)};
- * - add {@link Task TasksIdGenerator} {@link AbstractHandlerTest#addTask(TaskId, TodoListId, String)};
- * - add {@code TodoList} {@link AbstractHandlerTest#addTodoList(TodoListId)}.
+ * - read {@link Task Tasks} {@link AbstractHandlerTest#readTask(TodoListId, TaskId, RequestSpecification)};
+ * - add {@link Task Tasks} {@link AbstractHandlerTest#addTask(TaskId, TodoListId, String, RequestSpecification)};
+ * - add {@code TodoList}s {@link AbstractHandlerTest#addTodoList(TodoListId, RequestSpecification)}.
  *
  * @author Oleg Barmin
  */
@@ -26,13 +33,7 @@ import static org.javaclasses.todo.web.given.TestRoutesProvider.getTaskUrl;
 @SuppressWarnings("AbstractClassWithoutAbstractMethods")
 abstract class AbstractHandlerTest {
 
-    private final TestEnvironment testEnvironment = new TestEnvironment();
-    private final RequestSpecification specification = given().port(testEnvironment.getApplicationPort())
-                                                              .contentType(getContentType());
-
-    RequestSpecification getRequestSpecification() {
-        return specification;
-    }
+    private final TestApplicationEnv testApplicationEnv = new TestApplicationEnv();
 
     /**
      * Creates new {@link RequestSpecification} to test cases with multiple users.
@@ -40,63 +41,111 @@ abstract class AbstractHandlerTest {
      * @return new {@code RequestSpecification} instance
      */
     RequestSpecification getNewSpecification() {
-        return given().port(testEnvironment.getApplicationPort())
+        return given().port(testApplicationEnv.getApplicationPort())
                       .contentType(getContentType());
     }
 
-    TestEnvironment getTestEnvironment() {
-        return testEnvironment;
+    TestApplicationEnv getTestApplicationEnv() {
+        return testApplicationEnv;
     }
 
     @BeforeEach
     void startServer() {
-        testEnvironment.startServer();
+        testApplicationEnv.startServer();
     }
 
     @AfterEach
     void stopServer() {
-        testEnvironment.stopServer();
+        testApplicationEnv.stopServer();
     }
 
     /**
-     * Adds new {@code TodoList} with {@link AbstractHandlerTest#specification}.
-     *
-     * @param todoListId ID of {@code TodoList} to add.
-     */
-    void addTodoList(TodoListId todoListId) {
-        CreateListPayload payload = new CreateListPayload(todoListId);
-        specification.body(payload);
-        specification.post(getTodoListRoute());
-    }
-
-    /**
-     * Adds new {@code TodoList} with given {@code RequestSpecification}.
+     * Adds new {@code TodoList} with usage of given {@code RequestSpecification}.
      *
      * @param todoListId           ID of {@code TodoList} to add
      * @param requestSpecification request specification to use
      */
     void addTodoList(TodoListId todoListId, RequestSpecification requestSpecification) {
-        CreateListPayload payload = new CreateListPayload(todoListId);
-        requestSpecification.body(payload);
-        requestSpecification.post(getTodoListRoute());
+        requestSpecification.post(getTodoListUrl(todoListId));
     }
 
     /**
-     * Adds new {@code Task} with {@link AbstractHandlerTest#specification}.
+     * Adds all {@code Task}s of given {@link SampleUser} to {@code TodoList} with given ID,
+     * using given {@code RequestSpecification}.
      *
-     * @param taskId      ID of {@code Task} to add
-     * @param todoListId  ID of {@code TodoList} to which tasks belongs
-     * @param description description of {@code Task} to add
+     * @param user          user whose {@code Task}s should be added
+     * @param todoListId    ID of {@code TodoList} to add tasks into
+     * @param specification specification to use
+     * @return {@code Collection} of added tasks.
      */
-    void addTask(TaskId taskId, TodoListId todoListId, String description) {
+    Collection<SampleTask> addAllTasksOf(SampleUser user, TodoListId todoListId, RequestSpecification specification) {
+        Collection<SampleTask> uploadedSampleTasks = new ArrayList<>(user.getTaskDescriptions()
+                                                                         .size());
+        // add all tasks of bob
+        for (String taskDescription : user.getTaskDescriptions()) {
+            TaskId taskId = generateTaskId();
+
+            specification.body(new CreateTaskPayload(taskDescription))
+                         .post(getTaskUrl(todoListId, taskId));
+
+            uploadedSampleTasks.add(new SampleTask(taskId, todoListId, taskDescription));
+        }
+
+        return uploadedSampleTasks;
+    }
+
+    /**
+     * Adds new {@code Task} with usage of given {@code RequestSpecification}.
+     *
+     * @param taskId        ID of {@code Task} to add
+     * @param todoListId    ID of {@code TodoList} to which tasks belongs
+     * @param description   description of {@code Task} to add
+     * @param specification request specification to use
+     */
+    void addTask(TaskId taskId, TodoListId todoListId, String description,
+                 RequestSpecification specification) {
         CreateTaskPayload payload = new CreateTaskPayload(description);
         specification.body(payload)
                      .post(getTaskUrl(todoListId, taskId));
     }
 
-    Task readTask(TodoListId todoListId, TaskId taskId) {
+    /**
+     * Reads {@link Task} from given {@code TodoList} with usage of given {@code RequestSpecification}.
+     *
+     * @param todoListId    ID of {@code TodoList} to read task from
+     * @param taskId        ID desired {@code Task}
+     * @param specification specification to use with request
+     * @return {@code Task} with given ID
+     */
+    Task readTask(TodoListId todoListId, TaskId taskId, RequestSpecification specification) {
         return specification.get(getTaskUrl(todoListId, taskId))
-                            .body()
                             .as(Task.class);
+    }
+
+    /**
+     * Converts array of {@linkplain Task tasks} to {@code Collection} of {@linkplain SampleTask SampleTasks}.
+     *
+     * @param tasks array of {@code Task}s to convert.
+     * @return {@code Collection} of {@code SampleTask}s
+     */
+    Collection<SampleTask> toSampleTasksCollection(Task[] tasks) {
+        Collection<SampleTask> sampleTasks = new ArrayList<>();
+        Lists.newArrayList(tasks)
+             .forEach(el -> sampleTasks.add(new SampleTask(el.getId(),
+                                                           el.getTodoListId(),
+                                                           el.getDescription())));
+        return sampleTasks;
+    }
+
+    /**
+     * Reads all {@code Tasks} from {@code TodoList} with given ID with usage of given {@code RequestSpecification}.
+     *
+     * @param todoListId    ID of {@code TodoList} to read tasks from
+     * @param specification specification to use
+     * @return {@code Collection} of all {@code SampleTask}s from {@code TodoList} with given ID.
+     */
+    Collection<SampleTask> readTasks(TodoListId todoListId, RequestSpecification specification) {
+        return toSampleTasksCollection(specification.get(getTodoListUrl(todoListId))
+                                                    .as(Task[].class));
     }
 }

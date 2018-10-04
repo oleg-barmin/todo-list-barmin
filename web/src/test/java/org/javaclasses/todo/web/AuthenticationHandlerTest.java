@@ -1,18 +1,17 @@
 package org.javaclasses.todo.web;
 
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.Password;
 import org.javaclasses.todo.model.entity.Token;
 import org.javaclasses.todo.model.entity.Username;
-import org.javaclasses.todo.web.given.Actor;
+import org.javaclasses.todo.web.given.SampleUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 
+import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -22,6 +21,7 @@ import static org.hamcrest.core.DescribedAs.describedAs;
 import static org.javaclasses.todo.web.AuthenticationController.authenticationMethodName;
 import static org.javaclasses.todo.web.AuthenticationController.headerName;
 import static org.javaclasses.todo.web.Routes.getAuthenticationRoute;
+import static org.javaclasses.todo.web.given.UserSourceTestEnv.getBob;
 
 /**
  * Testing {@code AuthenticationHandler} which should allow users to sign-in into the system.
@@ -31,7 +31,8 @@ import static org.javaclasses.todo.web.Routes.getAuthenticationRoute;
 @DisplayName("AuthenticationHandler should")
 class AuthenticationHandlerTest extends AbstractHandlerTest {
 
-    private final RequestSpecification specification = getRequestSpecification();
+    private final SampleUser bob = getBob();
+    private final RequestSpecification specification = getNewSpecification();
 
     /**
      * Encodes given string to base64.
@@ -46,18 +47,16 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
     }
 
     /**
-     * Encodes username and password of given {@link Actor} to base64.
+     * Encodes given username and password to base64.
      *
      * <p>Credentials are encoded in format: username:password
      *
-     * @param actor actor whose credentials to encode
-     * @return encoded credentials of given actor
+     * @param username username to encode
+     * @param password password to encode
+     * @return encoded credentials
      */
-    private static String getEncodedCredentials(Actor actor) {
-        String credentials = String.format("%s:%s", actor.getUsername()
-                                                         .getValue(), actor.getPassword()
-                                                                           .getValue());
-
+    private static String getEncodedCredentials(Username username, Password password) {
+        String credentials = format("%s:%s", username.getValue(), password.getValue());
         return encode(credentials);
     }
 
@@ -67,128 +66,97 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
      * @param actor actor with whose credentials value of header will be created.
      * @return string with header value
      */
-    private static String getAuthenticationHeaderValue(Actor actor) {
-        return authenticationMethodName() + ' ' + getEncodedCredentials(actor);
-    }
-
-    /**
-     * Get encoded credentials in invalid format.
-     *
-     * <p>Format: username:password:invalid.
-     *
-     * @param username username
-     * @param password password
-     * @return invalid encoded credentials
-     */
-    private static String getEncodedInvalidFormatCredentials(Username username, Password password) {
-        String credentials = String.format("%s:%s:%s",
-                                           username.getValue(),
-                                           password.getValue(),
-                                           "invalid");
-
-        return encode(credentials);
+    private static String getAuthenticationHeaderValue(Username username, Password password) {
+        return authenticationMethodName() + ' ' + getEncodedCredentials(username, password);
     }
 
     @Test
     @DisplayName("authenticate registered users and provide them `Token`s.")
     void testValidCredentials() {
-        Actor actor = getTestEnvironment().registerUser();
+        getTestApplicationEnv().registerUser(bob);
 
-        Response response = specification
-                .header(headerName(), getAuthenticationHeaderValue(actor))
-                .when()
-                .post(getAuthenticationRoute());
-
-        response.then()
-                .statusCode(
-                        describedAs("responds with status code 200, but it don't.", is(HTTP_OK)))
-                .body(describedAs("provide token, but it don't.", notNullValue(Token.class)));
+        specification.header(headerName(), getAuthenticationHeaderValue(bob.getUsername(),
+                                                                        bob.getPassword()))
+                     .when()
+                     .post(getAuthenticationRoute())
+                     .then()
+                     .statusCode(HTTP_OK)
+                     .body(describedAs("provide token, but it don't.", notNullValue(Token.class)));
     }
 
     @Test
     @DisplayName("forbid access for requests with invalid credentials.")
     void testInvalidCredentials() {
-        Actor actor = getTestEnvironment().registerUser();
-        String actorPasswordValue = actor.getPassword()
-                                         .getValue();
+        String userPasswordValue = bob.getPassword()
+                                      .getValue();
 
-        Password invalidPassword = new Password(actorPasswordValue + "_invalidPassWord13_");
+        Password invalidPassword = new Password(userPasswordValue + "_invalidPassWord13_");
 
-        Actor invalidCredentialsActor = new Actor(actor.getUserId(), actor.getUsername(), invalidPassword);
-
-        Response response = specification
-                .header(headerName(), getAuthenticationHeaderValue(invalidCredentialsActor))
-                .when()
-                .post(getAuthenticationRoute());
-
-        response.then()
-                .statusCode(HTTP_UNAUTHORIZED);
+        specification.header(headerName(), getAuthenticationHeaderValue(bob.getUsername(),
+                                                                        invalidPassword))
+                     .when()
+                     .post(getAuthenticationRoute())
+                     .then()
+                     .statusCode(HTTP_UNAUTHORIZED);
     }
 
     @Test
     @DisplayName("forbid requests without Authentication header.")
     void testInvalidHeader() {
-        Actor actor = getTestEnvironment().registerUser();
-
-        Response response = specification
-                .header("WRONG_HEADER",
-                        getAuthenticationHeaderValue(actor))
-                .when()
-                .post(getAuthenticationRoute());
-
-        response.then()
-                .statusCode(describedAs("responds with status code 401, " +
-                                                "but it don't.", is(HTTP_UNAUTHORIZED)));
+        specification.header("WRONG_HEADER",
+                             getAuthenticationHeaderValue(bob.getUsername(),
+                                                          bob.getPassword()))
+                     .when()
+                     .post(getAuthenticationRoute())
+                     .then()
+                     .statusCode(HTTP_UNAUTHORIZED);
     }
 
     @Test
     @DisplayName("forbid access for requests with invalid Authentication scheme.")
     void testInvalidAuthScheme() {
-        Actor actor = getTestEnvironment().registerUser();
         //invalid authentication scheme
-        Response response = specification
-                .header(headerName(),
-                        "INVALID " + getEncodedCredentials(actor))
-                .when()
-                .post(getAuthenticationRoute());
-
-        response.then()
-                .statusCode(HTTP_BAD_REQUEST);
+        specification.header(headerName(),
+                             "INVALID " + getEncodedCredentials(bob.getUsername(),
+                                                                bob.getPassword()))
+                     .when()
+                     .post(getAuthenticationRoute())
+                     .then()
+                     .statusCode(HTTP_BAD_REQUEST);
     }
 
     @Test
     @DisplayName("forbid access for requests with absent space after authentication scheme.")
     void testInvalidHeaderValue() {
-        Actor actor = getTestEnvironment().registerUser();
         //missing space after authentication scheme
-        Response response = specification
-                .header(headerName(),
-                        "INVALID" + getEncodedCredentials(actor))
-                .when()
-                .post(getAuthenticationRoute());
-
-        response.then()
-                .statusCode(describedAs("responds with status code 400 " +
-                                                "when space is absent after scheme name.",
-                                        is(HTTP_BAD_REQUEST)));
+        specification.header(headerName(),
+                             "INVALID" + getEncodedCredentials(bob.getUsername(), bob.getPassword()))
+                     .when()
+                     .post(getAuthenticationRoute())
+                     .then()
+                     .statusCode(describedAs("responds with status code 400 " +
+                                                     "when space is absent after scheme name.",
+                                             is(HTTP_BAD_REQUEST)));
     }
 
     @Test
     @DisplayName("forbid access for requests with invalid credentials format.")
     void testInvalidDecodedCredentialsFormat() {
-        Actor actor = getTestEnvironment().registerUser();
+        String invalidFormatCredentials = format("%s:%s:%s",
+                                                 bob.getUsername()
+                                                    .getValue(),
+                                                 bob.getPassword()
+                                                    .getValue(),
+                                                 "invalid");
 
         //invalid credentials format
-        Response response = specification
-                .header(headerName(),
-                        "Basic " + getEncodedInvalidFormatCredentials(actor.getUsername(),
-                                                                      actor.getPassword()))
-                .when()
-                .post(getAuthenticationRoute());
-
-        response.then()
-                .statusCode(describedAs("responds with status code 400" +
-                                                "when encoded credentials " +
-                                                "in invalid format.", is(HTTP_BAD_REQUEST)));
+        specification.header(headerName(),
+                             "Basic " + encode(invalidFormatCredentials))
+                     .when()
+                     .post(getAuthenticationRoute())
+                     .then()
+                     .statusCode(describedAs("responds with status code 400" +
+                                                     "when encoded credentials " +
+                                                     "in invalid format.", is(HTTP_BAD_REQUEST)));
     }
 }
