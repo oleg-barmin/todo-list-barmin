@@ -28,7 +28,7 @@ class TaskController {
      * @return {@code TaskId} from parameters
      */
     private static TaskId extractTaskId(RequestParams requestParams) {
-        String taskIdParam = requestParams.getParamValue(Routes.getTaskIdParam());
+        String taskIdParam = requestParams.getParamValue(Params.getTaskIdParam());
         return new TaskId(taskIdParam);
     }
 
@@ -41,7 +41,7 @@ class TaskController {
     //method used once, but added for consistency.
     @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private static TodoListId extractTodoListId(RequestParams requestParams) {
-        String taskIdParam = requestParams.getParamValue(Routes.getTodoListIdParam());
+        String taskIdParam = requestParams.getParamValue(Params.getTodoListIdParam());
         return new TodoListId(taskIdParam);
     }
 

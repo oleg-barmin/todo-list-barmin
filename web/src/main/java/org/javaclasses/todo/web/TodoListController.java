@@ -49,7 +49,7 @@ class TodoListController {
         @Override
         HttpResponse process(RequestData requestData, Token token) {
             String uuid = requestData.getRequestParams()
-                                     .getParamValue(Routes.getTodoListIdParam());
+                                     .getParamValue(Params.getTodoListIdParam());
 
             TodoListId todoListId = new TodoListId(uuid);
 
@@ -90,7 +90,7 @@ class TodoListController {
         @Override
         HttpResponse process(RequestData requestData, Token token) {
             String todoListIdParam = requestData.getRequestParams()
-                                                .getParamValue(Routes.getTodoListIdParam());
+                                                .getParamValue(Params.getTodoListIdParam());
 
             TodoListId todoListId = new TodoListId(todoListIdParam);
 

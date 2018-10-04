@@ -7,12 +7,10 @@ import static java.lang.String.format;
  */
 public class Routes {
 
-    private static final String TODO_LIST_ID_PARAM = ":todolistid";
-    private static final String TASK_ID_PARAM = ":taskid";
-
     private static final String AUTHENTICATION_ROUTE = "/auth";
-    private static final String TODO_LIST_ROUTE = format("/lists/%s", TODO_LIST_ID_PARAM);
-    private static final String TASK_ROUTE = format("/lists/%s/%s", TODO_LIST_ID_PARAM, TASK_ID_PARAM);
+    private static final String TODO_LIST_ROUTE = format("/lists/%s", Params.getTodoListIdParam());
+    private static final String TASK_ROUTE = format("/lists/%s/%s", Params.getTodoListIdParam(),
+                                                    Params.getTaskIdParam());
 
     private Routes() {
     }
@@ -44,21 +42,4 @@ public class Routes {
         return TASK_ROUTE;
     }
 
-    /**
-     * URL parameter value for ID of to-do list.
-     *
-     * @return value of to-do list ID parameter
-     */
-    public static String getTodoListIdParam() {
-        return TODO_LIST_ID_PARAM;
-    }
-
-    /**
-     * URL parameter value for ID of task.
-     *
-     * @return value of task ID parameter
-     */
-    public static String getTaskIdParam() {
-        return TASK_ID_PARAM;
-    }
 }
