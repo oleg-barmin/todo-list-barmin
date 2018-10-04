@@ -32,7 +32,7 @@ task buildJar(type: Jar) {
         attributes 'Main-Class': mainClassName
     }
     baseName = rootProject.name
-    destinationDir = file("$rootDir/build")
+    destinationDir = file("$rootDir/build/jar")
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }

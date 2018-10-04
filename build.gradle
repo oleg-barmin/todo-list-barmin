@@ -1,3 +1,7 @@
+allprojects {
+    apply plugin: 'java'
+}
+
 final def errorProneVersion = "2.3.1"
 final def errorProneJavacVersion = "9+181-r4173-1"
 
@@ -15,30 +19,6 @@ buildscript {
         classpath "net.ltgt.gradle:gradle-errorprone-plugin:$errorPronePluginVersion"
     }
 }
-
-task rollup(type: Exec) {
-    final String osName = System.getProperty("os.name").toLowerCase()
-    final String rollupCommand = 'npm run rollup'
-
-    if (osName.contains("windows")) {
-        commandLine 'cmd', '/c', rollupCommand
-    } else {
-        commandLine 'npm', 'run', 'rollup'
-    }
-}
-
-task copyStaticFiles(type: Copy) {
-    final def source = "js/public"
-    final def destination = "web/src/main/resources/public"
-    from source
-    into destination
-}
-
-task prepareStatic() {
-    rollup.execute()
-    copyStaticFiles.execute()
-}
-
 
 subprojects {
     apply plugin: 'java'
@@ -75,3 +55,31 @@ subprojects {
         options.errorprone.errorproneArgs << "-XepExcludedPaths:.*/generated/.*" << "-Xep:ClassCanBeStatic:OFF"
     }
 }
+
+task rollup(type: Exec) {
+    final String osName = System.getProperty("os.name").toLowerCase()
+    final String rollupCommand = 'npm run rollup'
+
+    if (osName.contains("windows")) {
+        commandLine 'cmd', '/c', rollupCommand
+    } else {
+        commandLine 'npm', 'run', 'rollup'
+    }
+}
+
+task copyStaticFiles(type: Copy) {
+    from "js/public"
+    into "web/src/main/resources/public"
+}
+
+
+task cleanUp(type: Delete) {
+    doFirst {
+        delete 'build/jar'
+        delete 'web/src/main/resources/public'
+    }
+}
+
+rollup.dependsOn(copyStaticFiles)
+build.dependsOn(rollup)
+clean.dependsOn(cleanUp)
