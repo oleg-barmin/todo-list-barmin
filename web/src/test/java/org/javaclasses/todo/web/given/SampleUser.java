@@ -39,6 +39,11 @@ public class SampleUser {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(username, password, taskDescriptions);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -50,10 +55,5 @@ public class SampleUser {
         return Objects.equals(username, that.username) &&
                 Objects.equals(password, that.password) &&
                 Objects.equals(taskDescriptions, that.taskDescriptions);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(username, password, taskDescriptions);
     }
 }

@@ -12,9 +12,6 @@ import org.javaclasses.todo.model.entity.Username;
  */
 public class UserSourceTestEnv {
 
-    private UserSourceTestEnv() {
-    }
-
     private static final SampleUser bob = new SampleUser(
             new Username("bob"),
             new Password("bob1234"),
@@ -22,7 +19,6 @@ public class UserSourceTestEnv {
             "wash apple.",
             "sell apple."
     );
-
     private static final SampleUser alice = new SampleUser(
             new Username("alice"),
             new Password("qwerty123456"),
@@ -31,6 +27,9 @@ public class UserSourceTestEnv {
             "go to the gym.",
             "get the things done."
     );
+
+    private UserSourceTestEnv() {
+    }
 
     public static SampleUser getBob() {
         return bob;

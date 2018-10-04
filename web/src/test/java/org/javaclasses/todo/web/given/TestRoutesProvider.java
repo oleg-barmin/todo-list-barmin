@@ -5,9 +5,9 @@ import org.javaclasses.todo.model.entity.TodoListId;
 
 import java.util.regex.Pattern;
 
-import static org.javaclasses.todo.web.Routes.getTaskIdParam;
+import static org.javaclasses.todo.web.Params.getTaskIdParam;
+import static org.javaclasses.todo.web.Params.getTodoListIdParam;
 import static org.javaclasses.todo.web.Routes.getTaskRoute;
-import static org.javaclasses.todo.web.Routes.getTodoListIdParam;
 import static org.javaclasses.todo.web.Routes.getTodoListRoute;
 
 /**

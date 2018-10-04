@@ -19,8 +19,8 @@ public class SampleTask {
     /**
      * Creates {@code SampleTask} instance.
      *
-     * @param taskId ID of task
-     * @param todoListId ID of {@code TodoList} to which task belongs
+     * @param taskId      ID of task
+     * @param todoListId  ID of {@code TodoList} to which task belongs
      * @param description description of task
      */
     public SampleTask(TaskId taskId, TodoListId todoListId, String description) {
@@ -38,6 +38,11 @@ public class SampleTask {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(taskId, todoListId, description);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -49,10 +54,5 @@ public class SampleTask {
         return Objects.equals(taskId, that.taskId) &&
                 Objects.equals(todoListId, that.todoListId) &&
                 Objects.equals(description, that.description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(taskId, todoListId, description);
     }
 }
