@@ -37,9 +37,9 @@ class AuthenticationTest {
     @Test
     @DisplayName("create new users.")
     void testCreateUser() {
-        UserId userId = authentication.createUser(username, password);
+        authentication.createUser(username, password);
 
-        Optional<User> optionalUser = userStorage.read(userId);
+        Optional<User> optionalUser = userStorage.findBy(username);
 
         if (!optionalUser.isPresent()) {
             Assertions.fail("create new user in user storage, but he didn't.");
@@ -71,8 +71,9 @@ class AuthenticationTest {
     @Test
     @DisplayName("sign in registered users.")
     void testSignIn() {
-        UserId userId = authentication.createUser(username, password);
+        authentication.createUser(username, password);
         Token token = authentication.signIn(username, password);
+        UserId userId = authentication.validate(token);
 
         Optional<AuthSession> optional = authSessionStorage.read(token);
 

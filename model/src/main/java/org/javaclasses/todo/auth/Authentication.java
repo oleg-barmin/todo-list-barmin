@@ -71,10 +71,9 @@ public class Authentication {
      *
      * @param username username of new user
      * @param password password of new user
-     * @return {@link UserId} ID of newly created user
      * @throws UserAlreadyExistsException if user with given username already exists.
      */
-    public UserId createUser(Username username, Password password) throws UserAlreadyExistsException {
+    public void createUser(Username username, Password password) throws UserAlreadyExistsException {
         Optional<User> userByUsername = userStorage.findBy(username);
 
         if (userByUsername.isPresent()) {
@@ -89,8 +88,6 @@ public class Authentication {
         user.setPassword(password);
 
         userStorage.write(user);
-
-        return userId;
     }
 
     /**
@@ -100,7 +97,7 @@ public class Authentication {
      */
     //return values is not needed to sign out user
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void signOut(Token token) {
+    void signOut(Token token) {
         authSessionStorage.remove(token);
     }
 

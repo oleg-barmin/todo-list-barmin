@@ -57,8 +57,8 @@ class TodoServiceTest {
     }
 
     @CanIgnoreReturnValue
-    private UserId createUser() {
-        return authentication.createUser(username, password);
+    private void createUser() {
+        authentication.createUser(username, password);
     }
 
     private TodoList createAndSaveTodoList(UserId owner) {
@@ -173,8 +173,9 @@ class TodoServiceTest {
     @Test
     @DisplayName("find tasks by ID.")
     void testFindTask() {
-        UserId userId = createUser();
+        createUser();
         Token token = authentication.signIn(username, password);
+        UserId userId = authentication.validate(token);
         TodoList todoList = createAndSaveTodoList(userId);
         Task task = createAndSaveTask(todoList.getId());
 
@@ -204,9 +205,11 @@ class TodoServiceTest {
     @Test
     @DisplayName("add tasks.")
     void testAddTask() {
-        UserId userId = createUser();
-        TodoList todoList = createAndSaveTodoList(userId);
+        createUser();
         Token token = authentication.signIn(username, password);
+        UserId userId = authentication.validate(token);
+
+        TodoList todoList = createAndSaveTodoList(userId);
         TaskId taskId = new TaskId(UUID.randomUUID()
                                        .toString());
 
@@ -224,9 +227,10 @@ class TodoServiceTest {
     @Test
     @DisplayName("throw TaskAlreadyExistsException if task with given ID already exists in storage..")
     void testAddTaskWithSameID() {
-        UserId userId = createUser();
-        TodoList todoList = createAndSaveTodoList(userId);
+        createUser();
         Token token = authentication.signIn(username, password);
+        UserId userId = authentication.validate(token);
+        TodoList todoList = createAndSaveTodoList(userId);
         TaskId taskId = new TaskId(UUID.randomUUID()
                                        .toString());
 
@@ -248,8 +252,9 @@ class TodoServiceTest {
     @Test
     @DisplayName("update tasks.")
     void testUpdateTask() {
-        UserId userId = createUser();
+        createUser();
         Token token = authentication.signIn(username, password);
+        UserId userId = authentication.validate(token);
         TodoList todoList = createAndSaveTodoList(userId);
         TaskId taskId = new TaskId(UUID.randomUUID()
                                        .toString());
@@ -306,8 +311,9 @@ class TodoServiceTest {
     @Test
     @DisplayName("throw UpdateCom if try to updated absent task.")
     void testUpdateCompletedTask() {
-        UserId userId = createUser();
+        createUser();
         Token token = authentication.signIn(username, password);
+        UserId userId = authentication.validate(token);
         TaskId taskId = new TaskId(UUID.randomUUID()
                                        .toString());
         TodoList todoList = createAndSaveTodoList(userId);
@@ -334,10 +340,11 @@ class TodoServiceTest {
     @Test
     @DisplayName("remove tasks by ID.")
     void testTaskDelete() {
-        UserId userId = createUser();
+        createUser();
+        Token token = authentication.signIn(username, password);
+        UserId userId = authentication.validate(token);
         TodoList todoList = createAndSaveTodoList(userId);
         Task task = createAndSaveTask(todoList.getId());
-        Token token = authentication.signIn(username, password);
 
         todoService.removeTask(task.getId())
                    .authorizedWith(token)
