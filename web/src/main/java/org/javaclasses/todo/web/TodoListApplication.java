@@ -7,14 +7,17 @@ import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.auth.InvalidCredentialsException;
 import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.EmptyTaskDescriptionException;
+import org.javaclasses.todo.model.Password;
 import org.javaclasses.todo.model.TaskAlreadyExistsException;
 import org.javaclasses.todo.model.TaskNotFoundException;
 import org.javaclasses.todo.model.TodoListAlreadyExistsException;
 import org.javaclasses.todo.model.TodoListNotFoundException;
 import org.javaclasses.todo.model.TodoService;
 import org.javaclasses.todo.model.UpdateCompletedTaskException;
+import org.javaclasses.todo.model.entity.Username;
 import spark.Service;
 
+import static java.lang.System.getProperty;
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
 import static org.javaclasses.todo.web.Configurations.getDefaultPort;
 import static org.javaclasses.todo.web.ExceptionHandlers.AuthorizationFailedHandler;
@@ -70,13 +73,26 @@ public class TodoListApplication {
         service.port(port);
     }
 
+    // reading from system props default user credentials and port.
+    @SuppressWarnings("AccessOfSystemProperties")
     public static void main(String[] args) {
         int port = getDefaultPort();
-        if (args.length == 1) {
-            String arg = args[0];
-            port = Integer.parseInt(arg);
+
+        String usernameStr = getProperty("todo.username");
+        String passwordStr = getProperty("todo.password");
+        String portStr = getProperty("todo.port");
+
+        if (portStr != null) {
+            port = Integer.parseInt(portStr);
         }
-        new TodoListApplication(port).start();
+
+        TodoListApplication todoListApplication = new TodoListApplication(port);
+
+        if (!(usernameStr == null || passwordStr == null)) {
+            todoListApplication.authentication.createUser(new Username(usernameStr), new Password(passwordStr));
+        }
+
+        todoListApplication.start();
     }
 
     /**
