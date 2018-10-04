@@ -1,6 +1,5 @@
 package org.javaclasses.todo.model;
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.javaclasses.todo.auth.Authentication;
 import org.javaclasses.todo.model.entity.Task;
 import org.javaclasses.todo.model.entity.TaskId;
@@ -56,7 +55,6 @@ class TodoServiceTest {
         todoService = new TodoService(authentication, todoListStorage, taskStorage);
     }
 
-    @CanIgnoreReturnValue
     private void createUser() {
         authentication.createUser(username, password);
     }
@@ -309,7 +307,7 @@ class TodoServiceTest {
     }
 
     @Test
-    @DisplayName("throw UpdateCom if try to updated absent task.")
+    @DisplayName("throw UpdateCompletedTaskException if try to updated absent task.")
     void testUpdateCompletedTask() {
         createUser();
         Token token = authentication.signIn(username, password);
@@ -326,6 +324,7 @@ class TodoServiceTest {
 
         todoService.updateTask(taskId)
                    .authorizedWith(token)
+                   .withDescription("new task description.")
                    .setStatus(true)
                    .execute();
 
