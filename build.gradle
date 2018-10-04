@@ -1,13 +1,46 @@
-plugins {
-    id("net.ltgt.errorprone") version "0.6" apply false
-}
-
 final def errorProneVersion = "2.3.1"
 final def errorProneJavacVersion = "9+181-r4173-1"
 
 wrapper.gradleVersion = '4.10.2'
 
-allprojects {
+buildscript {
+    final def errorPronePluginVersion = "0.6"
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+
+    }
+    dependencies {
+        classpath "net.ltgt.gradle:gradle-errorprone-plugin:$errorPronePluginVersion"
+    }
+}
+
+task rollup(type: Exec) {
+    final String osName = System.getProperty("os.name").toLowerCase()
+    final String rollupCommand = 'npm run rollup'
+
+    if (osName.contains("windows")) {
+        commandLine 'cmd', '/c', rollupCommand
+    } else {
+        commandLine rollupCommand
+    }
+}
+
+task copyStaticFiles(type: Copy) {
+    final def source = "js/public"
+    final def destination = "web/src/main/resources/public"
+    from source
+    into destination
+}
+
+task prepareStatic() {
+    rollup.execute()
+    copyStaticFiles.execute()
+}
+
+
+subprojects {
     apply plugin: 'java'
     apply plugin: 'net.ltgt.errorprone'
 
@@ -30,7 +63,6 @@ allprojects {
         testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
         testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.1'
 
-
         compile 'org.slf4j:slf4j-api:1.7.25'
         compile 'org.slf4j:slf4j-simple:1.7.25'
         compile 'com.google.guava:guava:26.0-jre'
@@ -43,17 +75,3 @@ allprojects {
         options.errorprone.errorproneArgs << "-XepExcludedPaths:.*/generated/.*" << "-Xep:ClassCanBeStatic:OFF"
     }
 }
-
-task rollup(type: Exec) {
-    final String osName = System.getProperty("os.name").toLowerCase()
-    final String rollupCommand = 'npm run rollup'
-
-    if (osName.contains("windows")) {
-        commandLine 'cmd', '/c', rollupCommand
-    } else {
-        commandLine rollupCommand
-    }
-}
-
-build.dependsOn rollup
-
