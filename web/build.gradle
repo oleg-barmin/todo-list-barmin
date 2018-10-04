@@ -23,6 +23,16 @@ dependencies {
     compile project(":model")
 }
 
-test{
+test {
     useJUnitPlatform()
+}
+
+task jar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    baseName = rootProject.name
+    destinationDir = file("$rootDir/build")
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
