@@ -44,8 +44,6 @@ public final class UpdateTask extends Operation<UpdateTask> {
     private final TaskStorage taskStorage;
     private Task.TaskBuilder taskBuilder;
 
-    private String taskDescription = null;
-
     /**
      * Creates {@code UpdateTask} instance.
      *
@@ -73,7 +71,7 @@ public final class UpdateTask extends Operation<UpdateTask> {
      */
     public UpdateTask withDescription(String description) throws EmptyTaskDescriptionException {
         validate(description);
-        taskDescription = description.trim();
+        taskBuilder = taskBuilder.setDescription(description);
         return this;
     }
 
@@ -112,14 +110,8 @@ public final class UpdateTask extends Operation<UpdateTask> {
             throw new UpdateCompletedTaskException(taskToUpdate.getId());
         }
 
-        // if new description was no set, sets old description
-        if (taskDescription == null) {
-            taskDescription = taskToUpdate.getDescription();
-        }
-
         Task build = taskBuilder.setTaskId(taskId)
                                 .setTodoListId(taskToUpdate.getTodoListId())
-                                .setDescription(taskDescription)
                                 .setCreationDate(taskToUpdate.getCreationDate())
                                 .setLastUpdateDate(new Date())
                                 .build();
