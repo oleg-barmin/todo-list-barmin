@@ -97,7 +97,7 @@ public class Authentication {
      */
     //return values is not needed to sign out user
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    void signOut(Token token) {
+    public void signOut(Token token) {
         authSessionStorage.remove(token);
     }
 
