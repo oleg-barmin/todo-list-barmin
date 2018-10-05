@@ -19,6 +19,7 @@ import spark.Service;
 
 import static java.lang.System.getProperty;
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
+import static org.javaclasses.todo.web.AuthenticationController.SingOutHandler;
 import static org.javaclasses.todo.web.Configurations.getDefaultPort;
 import static org.javaclasses.todo.web.ExceptionHandlers.AuthorizationFailedHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.EmptyTaskDescriptionHandler;
@@ -29,6 +30,9 @@ import static org.javaclasses.todo.web.ExceptionHandlers.TaskNotFoundHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.TodoListAlreadyExistsHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.TodoListNotFoundHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.UpdateCompletedTaskHandler;
+import static org.javaclasses.todo.web.Routes.getAuthenticationRoute;
+import static org.javaclasses.todo.web.Routes.getTaskRoute;
+import static org.javaclasses.todo.web.Routes.getTodoListRoute;
 import static org.javaclasses.todo.web.TaskController.CreateTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.GetTaskRequestHandler;
 import static org.javaclasses.todo.web.TaskController.RemoveTaskRequestHandler;
@@ -109,14 +113,15 @@ public class TodoListApplication {
         // authentication routes
         service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
 
-        service.post(Routes.getAuthenticationRoute(), new AuthenticationHandler(authentication));
+        service.post(getAuthenticationRoute(), new AuthenticationHandler(authentication));
+        service.delete(getAuthenticationRoute(), new SingOutHandler(authentication));
 
         // todo list routes
         service.exception(TodoListAlreadyExistsException.class, new TodoListAlreadyExistsHandler());
         service.exception(TodoListNotFoundException.class, new TodoListNotFoundHandler());
 
-        service.post(Routes.getTodoListRoute(), new CreateTodoListRequestHandler(todoService));
-        service.get(Routes.getTodoListRoute(), new ReadTasksRequestHandler(todoService));
+        service.post(getTodoListRoute(), new CreateTodoListRequestHandler(todoService));
+        service.get(getTodoListRoute(), new ReadTasksRequestHandler(todoService));
 
         // tasks routes
         service.exception(TaskAlreadyExistsException.class, new TaskAlreadyExistsHandler());
@@ -125,10 +130,10 @@ public class TodoListApplication {
         service.exception(EmptyTaskDescriptionException.class, new EmptyTaskDescriptionHandler());
         service.exception(UpdateCompletedTaskException.class, new UpdateCompletedTaskHandler());
 
-        service.get(Routes.getTaskRoute(), new GetTaskRequestHandler(todoService));
-        service.post(Routes.getTaskRoute(), new CreateTaskRequestHandler(todoService));
-        service.put(Routes.getTaskRoute(), new UpdateTaskRequestHandler(todoService));
-        service.delete(Routes.getTaskRoute(), new RemoveTaskRequestHandler(todoService));
+        service.get(getTaskRoute(), new GetTaskRequestHandler(todoService));
+        service.post(getTaskRoute(), new CreateTaskRequestHandler(todoService));
+        service.put(getTaskRoute(), new UpdateTaskRequestHandler(todoService));
+        service.delete(getTaskRoute(), new RemoveTaskRequestHandler(todoService));
 
     }
 

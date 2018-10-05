@@ -55,7 +55,7 @@ class AuthenticationController {
     }
 
     /**
-     * Handlers user authentication and provides user token if given credentials are valid.
+     * Handlers user authentication and provides user {@link Token} if given credentials are valid.
      *
      * <p>Authentication is based on <a href="https://bit.ly/2DV5cNC">Basis authentication scheme</a>.
      */
@@ -76,10 +76,9 @@ class AuthenticationController {
          * Processes authentication requests.
          *
          * @param requestData data of request
-         * @return Answers:
-         * - 401 if request has no {@code Authentication} header;
-         * - 403 if {@code Authentication} header in invalid format
-         * - 403 if given credentials is invalid
+         * @return Responses:
+         * - 401 if request has no {@code Authentication} header or given credentials invalid;
+         * - 400 if {@code Authentication} header in invalid format
          * - 200 with token if user was signed.
          */
         @SuppressWarnings("UnstableApiUsage") // splitToList should be used because of errorprompt advice
@@ -122,6 +121,41 @@ class AuthenticationController {
             Token token = authentication.signIn(username, password);
 
             return HttpResponse.ok(token);
+        }
+    }
+
+    /**
+     * Handles signs out user request.
+     *
+     * <p>To sign out user should provide {@link SecuredAbstractRequestHandler#X_TODO_TOKEN} with
+     * value of token.
+     *
+     * @author Oleg Barmin
+     */
+    static class SingOutHandler extends SecuredAbstractRequestHandler {
+
+        private final Authentication authentication;
+
+        /**
+         * Creates {@code SingOutHandler} instance.
+         *
+         * @param authentication authentication service to work with
+         */
+        SingOutHandler(Authentication authentication) {
+            this.authentication = authentication;
+        }
+
+        /**
+         * Processes user sign out request.
+         *
+         * @param requestData data of received request
+         * @param token       token of user who sent request
+         * @return {@code HttpResponse} with 200 status code if request was processed successfully.
+         */
+        @Override
+        HttpResponse process(RequestData requestData, Token token) {
+            authentication.signOut(token);
+            return HttpResponse.ok();
         }
     }
 }
