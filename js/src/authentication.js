@@ -1,5 +1,5 @@
 /**
- * Signs in users by their usernames and passwords.
+ * Sign in user by his username and password and stored his token.
  *
  * @author Oleg Barmin
  */
@@ -25,7 +25,7 @@ export class Authentication {
      * @returns {Promise} to work with
      */
     signIn(username, password) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const usernameAndPassword = username + ":" + password;
             const encodedCredentials = btoa(usernameAndPassword);
 
@@ -36,7 +36,7 @@ export class Authentication {
                     this.token = JSON.parse(xmlHttpRequest.response);
                     resolve()
                 } else {
-                    throw new AuthenticationFailedException();
+                    reject(new AuthenticationFailedException());
                 }
             };
 
