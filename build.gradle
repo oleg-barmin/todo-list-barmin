@@ -68,6 +68,8 @@ task rollup(type: Exec) {
 }
 
 task copyStaticFiles(type: Copy) {
+    dependsOn rollup
+
     from "js/public"
     into "web/src/main/resources/public"
 }
@@ -79,7 +81,6 @@ task cleanUp(type: Delete) {
         delete 'web/src/main/resources/public'
     }
 }
-
-rollup.dependsOn(copyStaticFiles)
-build.dependsOn(rollup)
+copyStaticFiles.dependsOn(rollup)
+build.dependsOn(copyStaticFiles)
 clean.dependsOn(cleanUp)
