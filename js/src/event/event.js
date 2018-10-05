@@ -180,7 +180,8 @@ export const EventTypes = {
     NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
     TaskUpdateFailed: new EventType("TaskUpdateFailed"),
     TaskRemoved: new EventType("TaskRemoved"),
-    TaskUpdated: new EventType("TaskUpdated")
+    TaskUpdated: new EventType("TaskUpdated"),
+    CredentialsAccepted: new EventType("CredentialsSubmitted")
 };
 
 
