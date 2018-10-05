@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.getXTodoToken;
-import static org.javaclasses.todo.web.given.UserSourceTestEnv.getBob;
+import static org.javaclasses.todo.web.given.UserSourceTestEnv.getAlice;
 
 /**
  * Abstract class which allows to sub-classes to test if their operation is
@@ -19,8 +19,6 @@ import static org.javaclasses.todo.web.given.UserSourceTestEnv.getBob;
  * @author Oleg Barmin
  */
 abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
-
-    private final RequestSpecification specification = getNewSpecification();
 
     abstract Response sendRequest(RequestSpecification specification);
 
@@ -44,10 +42,10 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
     }
 
     @Test
-    @DisplayName("forbid operation to unauthorized users.")
+    @DisplayName("forbid operation to unauthenticated users.")
     void testForbidOperation() {
         RequestSpecification specification = getNewSpecification();
-        specification.header(getXTodoToken(), new Token("invalid_token"));
+        specification.header(getXTodoToken(), new Token("unregistered token"));
 
         sendRequest(specification).then()
                                   .statusCode(HTTP_FORBIDDEN);
@@ -56,7 +54,11 @@ abstract class AbstractSecuredHandlerTest extends AbstractHandlerTest {
     @Test
     @DisplayName("unauthorized if header with token is invalid.")
     void testUnauthorizedOperation() {
-        Token token = getTestApplicationEnv().signInUser(getBob());
+        SampleUser alice = getAlice();
+        RequestSpecification specification = getNewSpecification();
+        getTestApplicationEnv().registerUser(alice);
+
+        Token token = getTestApplicationEnv().signInUser(alice);
 
         specification.header("INVALID_HEADER", token);
         sendRequest(specification).then()
