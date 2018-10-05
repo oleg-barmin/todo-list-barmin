@@ -14,7 +14,7 @@ export class CredentialsSubmitted extends Event {
      * @param {String} password password of user
      */
     constructor(username, password) {
-        super(EventTypes.CredentialsAccepted);
+        super(EventTypes.CredentialsSubmitted);
         this.username = username;
         this.password = password;
     }

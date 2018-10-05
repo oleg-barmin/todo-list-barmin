@@ -181,8 +181,9 @@ export const EventTypes = {
     TaskUpdateFailed: new EventType("TaskUpdateFailed"),
     TaskRemoved: new EventType("TaskRemoved"),
     TaskUpdated: new EventType("TaskUpdated"),
-    CredentialsAccepted: new EventType("CredentialsSubmitted"),
-    SignInFailed: new EventType("SignInFailed")
+    CredentialsSubmitted: new EventType("CredentialsSubmitted"),
+    SignInFailed: new EventType("SignInFailed"),
+    SignInCompleted: new EventType("SignInCompleted")
 };
 
 
