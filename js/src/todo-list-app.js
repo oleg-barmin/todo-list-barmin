@@ -1,6 +1,7 @@
-import {EventBus} from "./event/event";
-import {AddTaskForm} from "./view/addTaskForm";
+import {EventBus, EventTypes} from "./event/event";
 import {Controller} from "./controller";
+import {SignInForm} from "./view/signInForm";
+import {AddTaskForm} from "./view/addTaskForm";
 import {TodoWidget} from "./view/todoWidget";
 
 /**
@@ -23,26 +24,34 @@ export class TodoListApp {
      * Creates an environment for necessary components and renders them.
      */
     start() {
-        this.root.append("<div class='container'></div>");
-        let container = $(this.root.find(".container")[0]);
+        this.root.append(`<div class='container'></div>`);
+        this.root.append(`<div hidden class="eventBus"></div>`);
 
-        container.append(`<div hidden class="eventBus"></div>
-        <div class="row justify-content-md-center">
-            <div class="col-md-auto">
-                <h1>To-Do</h1>
-            </div>
-        </div>
-        <div class="addTaskForm row justify-content-md-center"></div>
-        <div class="todoWidget"></div>`);
+        this.eventBus = new EventBus(this.root.find(".eventBus"));
+        const container = $(this.root.find(".container")[0]);
 
-        this.eventBus = new EventBus(container.find(".eventBus"));
         this.controller = new Controller(this.eventBus);
 
-        let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
-        let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
+        this.eventBus.subscribe(EventTypes.SignInCompleted, () => {
+            container.empty();
 
-        addTaskForm.render();
-        taskView.render();
+            container.append(`<div class="row justify-content-md-center">
+                                <div class="col-md-auto">
+                                    <h1>To-Do</h1>
+                                </div>
+                                </div>
+                            <div class="addTaskForm row justify-content-md-center"></div>
+                            <div class="todoWidget"></div>`);
+
+            let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
+            let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
+
+            addTaskForm.render();
+            taskView.render();
+        });
+
+        let signInForm = new SignInForm(container, this.eventBus);
+        signInForm.render()
     }
 }
 

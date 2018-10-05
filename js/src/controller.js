@@ -8,6 +8,9 @@ import {TaskListUpdated} from "./event/taskListUpdated";
 import {TaskUpdateFailed} from "./event/taskUpdateFailed";
 import {TaskRemoved} from "./event/taskRemoved";
 import {TaskUpdated} from "./event/taskUpdated";
+import {Authentication} from "./authentication";
+import {SignInFailed} from "./event/signInFailed";
+import {SignInCompleted} from "./event/signInCompleted";
 
 /**
  * Event-based facade for {@link TodoList}.
@@ -25,6 +28,7 @@ export class Controller {
     constructor(eventBus) {
         this.todoList = new TodoList();
         this.eventBus = eventBus;
+        this.authentication = new Authentication();
 
         /**
          * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
@@ -104,10 +108,32 @@ export class Controller {
             }
         };
 
+        /**
+         * Posts `SignInCompleted` event if user was successfully authenticated,
+         * otherwise posts `SignInFailed` event.
+         *
+         * @param {CredentialsSubmitted} credentialsSubmittedEvent event
+         *         which contains username and password typed in by user
+         */
+        const credentialsSubmittedRequestCallback = credentialsSubmittedEvent => {
+            const username = credentialsSubmittedEvent.username;
+            const password = credentialsSubmittedEvent.password;
+
+            this.authentication
+                .signIn(username, password)
+                .then(() => {
+                    this.eventBus.post(new SignInCompleted())
+                })
+                .catch(() => {
+                    this.eventBus.post(new SignInFailed())
+                });
+        };
+
         eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
         eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
         eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
         eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
+        eventBus.subscribe(EventTypes.CredentialsSubmitted, credentialsSubmittedRequestCallback)
     }
 
 }
