@@ -1,4 +1,4 @@
-import {TodoComponent} from "./todoComponent";
+import {UiComponent} from "./uiComponent";
 import {TaskEditingCanceled} from "../event/taskEditingCanceled";
 import {TaskUpdateRequested} from "../event/taskUpdateRequested";
 import {EventTypes} from "../event/event";
@@ -6,9 +6,9 @@ import {EventTypes} from "../event/event";
 /**
  * Component which responsible for rendering and processing of task in edit state.
  *
- * @extends TodoComponent
+ * @extends UiComponent
  */
-export class TaskEdit extends TodoComponent {
+export class TaskEdit extends UiComponent {
 
     /**
      * Creates `TaskEdit` instance.

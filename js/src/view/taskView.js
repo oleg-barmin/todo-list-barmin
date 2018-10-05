@@ -1,4 +1,4 @@
-import {TodoComponent} from "./todoComponent";
+import {UiComponent} from "./uiComponent";
 import {TaskDisplay} from "./taskDisplay";
 import {EventTypes} from "../event/event";
 import {TaskEdit} from "./taskEdit";
@@ -22,9 +22,9 @@ import {TaskEdit} from "./taskEdit";
  *  - save new task description
  *  - cancel editing (switch to `TaskDisplay` state)
  *
- * @extends TodoComponent
+ * @extends UiComponent
  */
-export class TaskView extends TodoComponent {
+export class TaskView extends UiComponent {
 
     /**
      * Creates `TaskView` instance.

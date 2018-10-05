@@ -1,4 +1,4 @@
-import {TodoComponent} from "./todoComponent";
+import {UiComponent} from "./uiComponent";
 import {AddTaskRequest} from "../event/addTaskRequest";
 import {EventTypes} from "../event/event";
 
@@ -6,7 +6,7 @@ import {EventTypes} from "../event/event";
 /**
  * Component which responsible for rendering and processing of add task form.
  */
-export class AddTaskForm extends TodoComponent {
+export class AddTaskForm extends UiComponent {
 
     /**
      * Creates `AddTaskForm` instance.

@@ -1,4 +1,4 @@
-import {TodoComponent} from "./todoComponent";
+import {UiComponent} from "./uiComponent";
 import {CredentialsSubmitted} from "../event/credentialsSubmitted";
 import {EventTypes} from "../event/event";
 
@@ -10,7 +10,7 @@ import {EventTypes} from "../event/event";
  *
  * @author Oleg Barmin
  */
-export class SignInForm extends TodoComponent {
+export class SignInForm extends UiComponent {
 
     /**
      * Creates `SignInForm` instance.

@@ -1,4 +1,4 @@
-import {TodoComponent} from "./todoComponent";
+import {UiComponent} from "./uiComponent";
 import {EventTypes} from "../event/event";
 import {TaskView} from "./taskView";
 
@@ -8,9 +8,9 @@ import {TaskView} from "./taskView";
  * When {@link NewTaskAdded} happens gets new tasks,
  * removes previous task list and renders new tasks from `NewTaskAdded`.
  *
- * @extends TodoComponent
+ * @extends UiComponent
  */
-export class TodoWidget extends TodoComponent {
+export class TodoWidget extends UiComponent {
 
     /**
      * Creates `TodoWidget` instance.

@@ -1,4 +1,4 @@
-import {TodoComponent} from "./todoComponent";
+import {UiComponent} from "./uiComponent";
 import {TaskRemovalRequested} from "../event/taskRemovalRequested";
 import {TaskCompletionRequested} from "../event/taskCompletionRequested";
 import {TaskEditingStarted} from "../event/taskEditingStarted";
@@ -6,9 +6,9 @@ import {TaskEditingStarted} from "../event/taskEditingStarted";
 /**
  * Component which responsible for rendering and processing of task in display state.
  *
- * @extends TodoComponent
+ * @extends UiComponent
  */
-export class TaskDisplay extends TodoComponent {
+export class TaskDisplay extends UiComponent {
 
     /**
      * Creates `TaskView` instance.
