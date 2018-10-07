@@ -1,8 +1,10 @@
 import {EventBus, EventTypes} from "./event/event";
-import {Controller} from "./controller";
+import {DashboardController} from "./dashboardController";
 import {SignInForm} from "./view/signInForm";
 import {AddTaskForm} from "./view/addTaskForm";
 import {TodoWidget} from "./view/todoWidget";
+import {Authentication} from "./authentication";
+import {SignInController} from "./signInController";
 
 /**
  * Starts a to-do list app.
@@ -28,9 +30,11 @@ export class TodoListApp {
         this.root.append(`<div hidden class="eventBus"></div>`);
 
         this.eventBus = new EventBus(this.root.find(".eventBus"));
+        this.authentication = new Authentication();
         const container = $(this.root.find(".container")[0]);
 
-        this.controller = new Controller(this.eventBus);
+        this.todoController = new DashboardController(this.eventBus, this.authentication);
+        this.signInController = new SignInController(this.eventBus, this.authentication);
 
         this.eventBus.subscribe(EventTypes.SignInCompleted, () => {
             container.empty();
