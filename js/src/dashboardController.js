@@ -108,10 +108,21 @@ export class DashboardController {
             }
         };
 
-        eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
-        eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
-        eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
-        eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
+        const addTaskHandler =
+            eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
+        const removeTaskHandler =
+            eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
+        const completeTaskHandler =
+            eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
+        const updateTaskHandler =
+            eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
+
+        eventBus.subscribe(EventTypes.SignOutCompleted, () => {
+            eventBus.unsubscribe(EventTypes.AddTaskRequest, addTaskHandler);
+            eventBus.unsubscribe(EventTypes.TaskRemovalRequested, removeTaskHandler);
+            eventBus.unsubscribe(EventTypes.TaskCompletionRequested, completeTaskHandler);
+            eventBus.unsubscribe(EventTypes.TaskUpdateRequested, updateTaskHandler);
+        })
     }
 
 }

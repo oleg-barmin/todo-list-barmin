@@ -40,6 +40,11 @@ export class SignInController {
                 });
         };
 
-        eventBus.subscribe(EventTypes.CredentialsSubmitted, credentialsSubmittedRequestCallback)
+        const credentialsSubmittedHandler =
+            eventBus.subscribe(EventTypes.CredentialsSubmitted, credentialsSubmittedRequestCallback);
+
+        eventBus.subscribe(EventTypes.SignOutCompleted, () => {
+            eventBus.unsubscribe(EventTypes.SignOutCompleted, credentialsSubmittedHandler);
+        })
     }
 }
