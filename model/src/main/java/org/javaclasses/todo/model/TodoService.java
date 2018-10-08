@@ -9,6 +9,7 @@ import org.javaclasses.todo.model.operation.AddTask;
 import org.javaclasses.todo.model.operation.CreateList;
 import org.javaclasses.todo.model.operation.FindTask;
 import org.javaclasses.todo.model.operation.ReadTasks;
+import org.javaclasses.todo.model.operation.ReadTodoLists;
 import org.javaclasses.todo.model.operation.RemoveTask;
 import org.javaclasses.todo.model.operation.UpdateTask;
 import org.javaclasses.todo.storage.impl.TaskStorage;
@@ -70,6 +71,15 @@ public class TodoService {
      */
     public ReadTasks readTasksFrom(TodoListId todoListId) {
         return new ReadTasks(todoListId, taskStorage, authorization, authentication);
+    }
+
+    /**
+     * Creates instance of {@link ReadTodoLists} to read all to-do lists of user.
+     *
+     * @return {@code ReadTodoLists} instance to build request to retrieve list of {@code TodoList}s os user
+     */
+    public ReadTodoLists readUserTodoLists() {
+        return new ReadTodoLists(todoListStorage, authentication);
     }
 
     /**

@@ -31,7 +31,7 @@ public class TodoListStorage extends InMemoryStorage<TodoListId, TodoList> {
      * @param userId ID of user whose to-do list is needed
      * @return list of {@link TodoList}s of user with given ID
      */
-    List<TodoList> readTodoListsOf(UserId userId) {
+    public List<TodoList> readTodoListsOf(UserId userId) {
         return findByField("owner", userId);
     }
 }
