@@ -52,9 +52,12 @@ export class TodoList {
 
     /**
      * Creates `TodoList` instance.
+     *
+     * @param {TodoListId} todoListId ID of to-do list
      */
-    constructor() {
+    constructor(todoListId) {
         this._tasksArray = [];
+        this.todoListId = todoListId;
     }
 
     /**
