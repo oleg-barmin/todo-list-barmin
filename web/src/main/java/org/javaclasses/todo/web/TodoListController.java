@@ -11,6 +11,7 @@ import org.javaclasses.todo.model.entity.Token;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.javaclasses.todo.web.Params.getTodoListIdParam;
 
 /**
  * Processes requests which modifies {@link TodoList}.
@@ -23,7 +24,47 @@ class TodoListController {
     }
 
     /**
+     * Handles get user lists request.
+     *
+     * <p>Allows to read all {@linkplain TodoList TodoLists} of user.
+     *
+     * @author Oleg Barmin
+     */
+    static class ReadUserListsHandler extends SecuredAbstractRequestHandler {
+
+        private final TodoService todoService;
+
+        /**
+         * Creates {@code ReadUserListsHandler} instance.
+         *
+         * @param todoService service to work with
+         */
+        ReadUserListsHandler(TodoService todoService) {
+            this.todoService = todoService;
+        }
+
+        /**
+         * Reads all to-do lists IDs of user.
+         *
+         * @param requestData data of received request
+         * @param token       token of user who sent request
+         * @return response with all users to-do lists.
+         */
+        @Override
+        HttpResponse process(RequestData requestData, Token token) {
+
+            List<TodoList> todoLists = todoService.readUserTodoLists()
+                                                  .authorizedWith(token)
+                                                  .execute();
+
+            return HttpResponse.ok(todoLists);
+        }
+    }
+
+    /**
      * Handles create {@code TodoList} request.
+     *
+     * @author Oleg Barmin
      */
     static class CreateTodoListRequestHandler extends SecuredAbstractRequestHandler {
 
@@ -32,7 +73,7 @@ class TodoListController {
         /**
          * Creates {@code CreateTodoListRequestHandler} instance.
          *
-         * @param todoService service to work with
+         * @param todoService todoService to work with
          */
         CreateTodoListRequestHandler(TodoService todoService) {
             this.todoService = checkNotNull(todoService);
@@ -49,7 +90,7 @@ class TodoListController {
         @Override
         HttpResponse process(RequestData requestData, Token token) {
             String uuid = requestData.getRequestParams()
-                                     .getParamValue(Params.getTodoListIdParam());
+                                     .getParamValue(getTodoListIdParam());
 
             TodoListId todoListId = new TodoListId(uuid);
 
@@ -63,6 +104,8 @@ class TodoListController {
 
     /**
      * Handles read all {@code Task}s from {@code TodoList} request.
+     *
+     * @author Oleg Barmin
      */
     static class ReadTasksRequestHandler extends SecuredAbstractRequestHandler {
         private final TodoService todoService;
@@ -70,7 +113,7 @@ class TodoListController {
         /**
          * Creates {@code ReadTasksRequestHandler} instance.
          *
-         * @param todoService service to work with.
+         * @param todoService todoService to work with.
          */
         ReadTasksRequestHandler(TodoService todoService) {
             this.todoService = checkNotNull(todoService);
@@ -90,7 +133,7 @@ class TodoListController {
         @Override
         HttpResponse process(RequestData requestData, Token token) {
             String todoListIdParam = requestData.getRequestParams()
-                                                .getParamValue(Params.getTodoListIdParam());
+                                                .getParamValue(getTodoListIdParam());
 
             TodoListId todoListId = new TodoListId(todoListIdParam);
 
