@@ -11,6 +11,20 @@ import {NavBar} from "../view/navBar";
  */
 export class DashboardPage extends Page {
 
+
+    /**
+     * Creates `DashboardPage` instance.
+     *
+     * @param {jQuery} element element to render page into
+     * @param {EventBus} eventBus to subscribe and post page specific events
+     * @param {Authentication} authentication to control user session
+     * @param {UserLists} userLists to work with user lists
+     */
+    constructor(element, eventBus, authentication, userLists) {
+        super(element, eventBus, authentication);
+        this.userLists = userLists;
+    }
+
     /**
      * Renders `DashboardPage` into given element.
      */
@@ -33,7 +47,8 @@ export class DashboardPage extends Page {
                             <div class="addTaskForm row justify-content-md-center"></div>
                             <div class="todoWidget"></div>`);
 
-        this.dashboardController = new DashboardController(this.eventBus, this.authentication);
+        this.dashboardController = new DashboardController(this.eventBus,
+            this.authentication, this.userLists);
 
         let navBar = new NavBar(navBarContainer, this.eventBus, this.authentication);
         let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);

@@ -9,8 +9,11 @@ export class SignInCompleted extends Event {
 
     /**
      * Creates `SignInCompleted` instance.
+     *
+     * @param token of user who signed in
      */
-    constructor() {
-        super(EventTypes.SignInCompleted)
+    constructor(token) {
+        super(EventTypes.SignInCompleted);
+        this.token = token;
     }
 }

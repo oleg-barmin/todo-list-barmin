@@ -32,16 +32,16 @@ export class SignInController {
 
             this.authentication
                 .signIn(username, password)
-                .then(() => {
-                    this.eventBus.post(new SignInCompleted())
+                .then((token) => {
+                    this.eventBus.post(new SignInCompleted(token))
                 })
                 .catch(() => {
                     this.eventBus.post(new SignInFailed())
                 });
         };
 
-        const credentialsSubmittedHandler =
-            eventBus.subscribe(EventTypes.CredentialsSubmitted, credentialsSubmittedRequestCallback);
+        const credentialsSubmittedHandler = eventBus.subscribe(EventTypes.CredentialsSubmitted,
+            credentialsSubmittedRequestCallback);
 
         eventBus.subscribe(EventTypes.SignOutCompleted, () => {
             eventBus.unsubscribe(EventTypes.SignOutCompleted, credentialsSubmittedHandler);

@@ -12,7 +12,6 @@ export class Authentication {
         this.token = null;
     }
 
-
     /**
      * Returns `Promise` which signs in user with given username and password.
      *
@@ -34,7 +33,7 @@ export class Authentication {
             xmlHttpRequest.onload = () => {
                 if (xmlHttpRequest.status === 200) {
                     this.token = JSON.parse(xmlHttpRequest.response).value;
-                    resolve()
+                    resolve(this.token)
                 } else {
                     reject(new AuthenticationFailedException());
                 }

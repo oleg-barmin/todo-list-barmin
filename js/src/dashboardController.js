@@ -9,6 +9,7 @@ import {TaskUpdateFailed} from "./event/taskUpdateFailed";
 import {TaskRemoved} from "./event/taskRemoved";
 import {TaskUpdated} from "./event/taskUpdated";
 import {Authentication} from "./authentication";
+import {TodoListIdGenerator} from "./lib/todoListIdGenerator";
 
 /**
  * Event-based facade for {@link TodoList}.
@@ -23,11 +24,26 @@ export class DashboardController {
      *
      * @param {EventBus} eventBus evenBus to work with
      * @param {Authentication} authentication to authorized operations
+     * @param {UserLists} userLists service to work with user lists.
      */
-    constructor(eventBus, authentication) {
-        this.todoList = new TodoList();
+    constructor(eventBus, authentication, userLists) {
+        this.userLists = userLists;
         this.eventBus = eventBus;
         this.authentication = authentication;
+
+        this.userLists.readLists()
+            .then(todoListsIds => {
+                if (todoListsIds.length === 0) {
+                    const todoList = new TodoList(TodoListIdGenerator.generateID());
+                    this.userLists.create(todoList.todoListId)
+                        .then(() => {
+                            this.todoList = todoList;
+                        });
+                } else {
+                    this.todoList = new TodoList(todoListsIds[0]);
+                }
+
+            });
 
         /**
          * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
