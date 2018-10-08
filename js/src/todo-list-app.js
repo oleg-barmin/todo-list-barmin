@@ -1,10 +1,7 @@
 import {EventBus, EventTypes} from "./event/event";
-import {DashboardController} from "./dashboardController";
-import {SignInForm} from "./view/signInForm";
-import {AddTaskForm} from "./view/addTaskForm";
-import {TodoWidget} from "./view/todoWidget";
 import {Authentication} from "./authentication";
-import {SignInController} from "./signInController";
+import {DashboardPage} from "./page/dashboardPage";
+import {SignInPage} from "./page/signInPage";
 
 /**
  * Starts a to-do list app.
@@ -18,6 +15,7 @@ export class TodoListApp {
      */
     constructor(rootElement) {
         this.root = rootElement;
+        this.authentication = new Authentication();
     }
 
     /**
@@ -30,32 +28,15 @@ export class TodoListApp {
         this.root.append(`<div hidden class="eventBus"></div>`);
 
         this.eventBus = new EventBus(this.root.find(".eventBus"));
-        this.authentication = new Authentication();
+
         const container = $(this.root.find(".container")[0]);
 
-        this.todoController = new DashboardController(this.eventBus, this.authentication);
-        this.signInController = new SignInController(this.eventBus, this.authentication);
-
         this.eventBus.subscribe(EventTypes.SignInCompleted, () => {
-            container.empty();
-
-            container.append(`<div class="row justify-content-md-center">
-                                <div class="col-md-auto">
-                                    <h1>To-Do</h1>
-                                </div>
-                                </div>
-                            <div class="addTaskForm row justify-content-md-center"></div>
-                            <div class="todoWidget"></div>`);
-
-            let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
-            let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
-
-            addTaskForm.render();
-            taskView.render();
+            new DashboardPage(container, this.eventBus, this.authentication).render();
         });
 
-        let signInForm = new SignInForm(container, this.eventBus);
-        signInForm.render()
+        new SignInPage(container, this.eventBus, this.authentication).render();
+
     }
 }
 
