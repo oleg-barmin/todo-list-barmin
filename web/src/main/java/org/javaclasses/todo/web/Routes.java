@@ -8,11 +8,21 @@ import static java.lang.String.format;
 public class Routes {
 
     private static final String AUTHENTICATION_ROUTE = "/auth";
+    private static final String USER_LISTS_ROUTE = "/lists";
     private static final String TODO_LIST_ROUTE = format("/lists/%s", Params.getTodoListIdParam());
     private static final String TASK_ROUTE = format("/lists/%s/%s", Params.getTodoListIdParam(),
                                                     Params.getTaskIdParam());
 
     private Routes() {
+    }
+
+    /**
+     * Provides Users lists route.
+     *
+     * @return user lists route
+     */
+    public static String getUserListsRoute() {
+        return USER_LISTS_ROUTE;
     }
 
     /**
