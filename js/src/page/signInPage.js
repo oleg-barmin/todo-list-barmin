@@ -17,8 +17,10 @@ export class SignInPage extends Page {
         this.element.empty();
         this.element.append(`<div class='container'></div>`);
 
+        const container = this.element.find(".container");
+
         this.signInController = new SignInController(this.eventBus, this.authentication);
-        this.signInForm = new SignInForm(this.element, this.eventBus);
+        this.signInForm = new SignInForm(container, this.eventBus);
 
         this.signInForm.render()
     }

@@ -24,12 +24,14 @@ export class TodoListApp {
      * Creates an environment for necessary components and renders them.
      */
     start() {
-        this.root.append(`<div class='container'></div>`);
+        const pageContainerClass = "pageContainer";
+
+        this.root.append(`<div class="${pageContainerClass}"></div>`);
         this.root.append(`<div hidden class="eventBus"></div>`);
 
         this.eventBus = new EventBus(this.root.find(".eventBus"));
 
-        const container = $(this.root.find(".container")[0]);
+        const container = $(this.root.find(`.${pageContainerClass}`)[0]);
 
         this.eventBus.subscribe(EventTypes.SignInCompleted, () => {
             new DashboardPage(container, this.eventBus, this.authentication).render();
