@@ -162,6 +162,8 @@
 
     /**
      * Used to identify tasks.
+     *
+     * @author Oleg Barmin
      */
     class TaskId {
 
@@ -178,7 +180,7 @@
         /**
          * Compares `TaskId` objects by stored ID.
          *
-         * @param taskId `TaskId` to compare with
+         * @param {TaskId} taskId `TaskId` to compare with
          *
          * @throws TypeError if given `taskId` is not TaskId class instance
          *
@@ -194,16 +196,16 @@
     }
 
     /**
-     * Generates unique TaskId for `Task`.
+     * Generates unique `TaskId` for `Task`.
      *
      * Current implementation based on uuid v4.
      */
     class TaskIdGenerator {
 
         /**
-         * Generates unique TaskID.
+         * Generates unique `TaskID`.
          *
-         * @returns {TaskId} ID generated TaskID.
+         * @returns {TaskId} ID generated.
          */
         static generateID() {
             if (typeof(require) !== 'undefined') {
@@ -321,9 +323,12 @@
 
         /**
          * Creates `TodoList` instance.
+         *
+         * @param {TodoListId} todoListId ID of to-do list
          */
-        constructor() {
+        constructor(todoListId) {
             this._tasksArray = [];
+            this.todoListId = todoListId;
         }
 
         /**

@@ -186,146 +186,15 @@
         NewTaskValidationFailed: new EventType("NewTaskValidationFailed"),
         TaskUpdateFailed: new EventType("TaskUpdateFailed"),
         TaskRemoved: new EventType("TaskRemoved"),
-        TaskUpdated: new EventType("TaskUpdated")
+        TaskUpdated: new EventType("TaskUpdated"),
+        CredentialsSubmitted: new EventType("CredentialsSubmitted"),
+        SignInFailed: new EventType("SignInFailed"),
+        SignInCompleted: new EventType("SignInCompleted"),
+        SignOutCompleted: new EventType("SignOutCompleted")
     };
 
     /**
-     * Declares basic class for all sub-classes.
-     * Each `TodoComponent` sub-class should be connect with {@link EventBus},
-     * and contain a element to render into.
-     * Render method should be implemented to render the component into the `element`.
-     *
-     * @abstract
-     */
-    class TodoComponent {
-
-        /**
-         * Saves given element to render into and `EventBus` to connect with controller.
-         *
-         * @param {jQuery} element jQuery element to render into
-         * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
-         */
-        constructor(element, eventBus){
-            this.element = element;
-            this.eventBus = eventBus;
-        }
-
-        /**
-         * Renders component into given element.
-         */
-        render(){}
-    }
-
-    /**
-     * Occurred when new task was added on view.
-     *
-     * @extends Event
-     */
-    class AddTaskRequest extends Event{
-
-        /**
-         * Creates `AddTaskRequest` instance.
-         *
-         * @param {string} taskDescription description of new task
-         */
-        constructor(taskDescription){
-            super(EventTypes.AddTaskRequest);
-            this.taskDescription = taskDescription;
-        }
-    }
-
-    /**
-     * Component which responsible for rendering and processing of add task form.
-     */
-    class AddTaskForm extends TodoComponent {
-
-        /**
-         * Creates `AddTaskForm` instance.
-         *
-         * @param {jQuery} element jQuery element to render into
-         * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
-         */
-        constructor(element, eventBus) {
-            super(element, eventBus);
-        }
-
-        /**
-         * Renders tasks container and subscribes to necessary Events.
-         */
-        render() {
-            const container = this.element;
-            const descriptionTextAreaClass = "descriptionTextArea";
-            const addTaskBtnClass = "addTaskBtn";
-            const errorContainerClass = "errorMsgContainer";
-
-            container.empty();
-
-            container.append(`<div class="col">
-                <textarea class="${descriptionTextAreaClass} form-control w-100"></textarea>
-            </div>
-            <div class="col col-1 align-self-end">
-                <button class="${addTaskBtnClass} btn btn-default btn-primary w-100">Add</button>
-            </div>
-            <div class="w-100"></div>
-            <div class="col alert alert-danger invisible errorMsgContainer w-100 pl-3" role="alert">
-            </div>`);
-
-            const addTaskBtn = container.find(`.${addTaskBtnClass}`);
-            const descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
-            const errorDiv = container.find(`.${errorContainerClass}`);
-            const eventBus = this.eventBus;
-
-            /**
-             * Renders given error message under `descriptionTextAreaClass`.
-             *
-             * @param {string} errorMsg error message to render
-             */
-            const showErrorCallback = errorMsg => {
-                errorDiv.empty();
-                let iconSpan = $("<div>");
-                iconSpan.addClass("octicon");
-                iconSpan.addClass("octicon-stop");
-                errorDiv.append(iconSpan);
-                errorDiv.append(" " + errorMsg);
-            };
-
-            /**
-             * Processes `NewTaskAdded` event.
-             * Makes `descriptionTextArea` and `errorDiv` empty and invisible.
-             */
-            const newTaskAddedCallback = () => {
-                descriptionTextArea.val('');
-                errorDiv.empty();
-                errorDiv.addClass("invisible");
-            };
-
-            /**
-             * Processes `NewTaskValidationFailed`.
-             * Makes `errorDiv` visible and appends into it error message from occurred `NewTaskValidationFailed` event.
-             *
-             * @param {NewTaskValidationFailed} newTaskValidationFailedEvent `NewTaskValidationFailed` with
-             *        error message to display.
-             */
-            const newTaskValidationFailedCallback = newTaskValidationFailedEvent => {
-                errorDiv.removeClass("invisible");
-                showErrorCallback(newTaskValidationFailedEvent.errorMsg);
-            };
-
-            eventBus.subscribe(EventTypes.NewTaskAdded, newTaskAddedCallback);
-            eventBus.subscribe(EventTypes.NewTaskValidationFailed, newTaskValidationFailedCallback);
-
-            addTaskBtn.click(() => eventBus.post(new AddTaskRequest(descriptionTextArea.val())));
-            descriptionTextArea.keydown(keyboardEvent => {
-                if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === "Enter") {
-                    eventBus.post(new AddTaskRequest(descriptionTextArea.val()));
-                }
-            });
-        }
-
-    }
-
-    /**
-     * Sign in user by his username and password and stored his token.
+     * Authenticate user by his username and password and signs out users from the system.
      *
      * @author Oleg Barmin
      */
@@ -338,11 +207,10 @@
             this.token = null;
         }
 
-
         /**
          * Returns `Promise` which signs in user with given username and password.
          *
-         * <p>If given credentials is valid promise will be resolved and
+         * If given credentials is valid promise will be resolved and
          * token of user session will be stored, otherwise
          * AuthenticationFailedException will be thrown inside promise.
          *
@@ -359,8 +227,8 @@
 
                 xmlHttpRequest.onload = () => {
                     if (xmlHttpRequest.status === 200) {
-                        this.token = JSON.parse(xmlHttpRequest.response);
-                        resolve();
+                        this.token = JSON.parse(xmlHttpRequest.response).value;
+                        resolve(this.token);
                     } else {
                         reject(new AuthenticationFailedException());
                     }
@@ -368,6 +236,33 @@
 
                 xmlHttpRequest.open("POST", "/auth");
                 xmlHttpRequest.setRequestHeader("Authentication", "Basic " + encodedCredentials);
+                xmlHttpRequest.send();
+            });
+        }
+
+        /**
+         * Returns `Promise` which signs out user with stored token.
+         *
+         * If sign-out performed successfully this promise will be resolved and
+         * token of user session will be erased.
+         *
+         * @returns {Promise} to work with
+         */
+        signOut() {
+            return new Promise((resolve, reject) => {
+                const xmlHttpRequest = new XMLHttpRequest();
+
+                xmlHttpRequest.onload = () => {
+                    if (xmlHttpRequest.status === 200) {
+                        resolve();
+                        this.token = null;
+                    } else {
+                        reject();
+                    }
+                };
+
+                xmlHttpRequest.open("DELETE", "/auth");
+                xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
                 xmlHttpRequest.send();
             });
         }
@@ -547,6 +442,8 @@
 
     /**
      * Used to identify tasks.
+     *
+     * @author Oleg Barmin
      */
     class TaskId {
 
@@ -563,7 +460,7 @@
         /**
          * Compares `TaskId` objects by stored ID.
          *
-         * @param taskId `TaskId` to compare with
+         * @param {TaskId} taskId `TaskId` to compare with
          *
          * @throws TypeError if given `taskId` is not TaskId class instance
          *
@@ -579,16 +476,51 @@
     }
 
     /**
-     * Generates unique TaskId for `Task`.
+     * Used to identify `TodoList`s.
+     *
+     * @author Oleg Barmin
+     */
+    class TodoListId {
+
+        /**
+         * Creates `TodoListId` instance.
+         *
+         * @param id ID to store
+         */
+        constructor(id) {
+            Preconditions.checkStringNotEmpty(id, "ID");
+            this.id = id;
+        }
+
+        /**
+         * Compares `TodoListId` objects by stored ID.
+         *
+         * @param {TodoListId} todoListId `TodoListId` to compare with
+         *
+         * @throws TypeError if given `todoListId` is not TodoListId class instance
+         *
+         * @returns {number} result positive, negative or 0 if given task is less, greater or equal to current.
+         */
+        compareTo(todoListId) {
+            if (!(todoListId instanceof TodoListId)) {
+                throw new TypeError("Object of TodoListId was expected");
+            }
+
+            return this.id.localeCompare(todoListId.id);
+        }
+    }
+
+    /**
+     * Generates unique `TaskId` for `Task`.
      *
      * Current implementation based on uuid v4.
      */
     class TaskIdGenerator {
 
         /**
-         * Generates unique TaskID.
+         * Generates unique `TaskID`.
          *
-         * @returns {TaskId} ID generated TaskID.
+         * @returns {TaskId} ID generated.
          */
         static generateID() {
             if (typeof(require) !== 'undefined') {
@@ -706,9 +638,12 @@
 
         /**
          * Creates `TodoList` instance.
+         *
+         * @param {TodoListId} todoListId ID of to-do list
          */
-        constructor() {
+        constructor(todoListId) {
             this._tasksArray = [];
+            this.todoListId = todoListId;
         }
 
         /**
@@ -1062,6 +997,27 @@
     }
 
     /**
+     * Generates unique `TodoListId` for `TodoList`.
+     *
+     * Current implementation based on uuid v4.
+     */
+    class TodoListIdGenerator {
+
+        /**
+         * Generates unique `TodoListId`.
+         *
+         * @returns {TodoListId} ID generated TaskID.
+         */
+        static generateID() {
+            if (typeof(require) !== 'undefined') {
+                return require('uuid/v4')();
+            }
+            const rawId = uuidv4();
+            return new TodoListId(rawId);
+        }
+    }
+
+    /**
      * Event-based facade for {@link TodoList}.
      */
     class DashboardController {
@@ -1074,11 +1030,26 @@
          *
          * @param {EventBus} eventBus evenBus to work with
          * @param {Authentication} authentication to authorized operations
+         * @param {UserLists} userLists service to work with user lists.
          */
-        constructor(eventBus, authentication) {
-            this.todoList = new TodoList();
+        constructor(eventBus, authentication, userLists) {
+            this.userLists = userLists;
             this.eventBus = eventBus;
             this.authentication = authentication;
+
+            this.userLists.readLists()
+                .then(todoListsIds => {
+                    if (todoListsIds.length === 0) {
+                        const todoList = new TodoList(TodoListIdGenerator.generateID());
+                        this.userLists.create(todoList.todoListId)
+                            .then(() => {
+                                this.todoList = todoList;
+                            });
+                    } else {
+                        this.todoList = new TodoList(todoListsIds[0]);
+                    }
+
+                });
 
             /**
              * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
@@ -1159,10 +1130,21 @@
                 }
             };
 
-            eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
-            eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
-            eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
-            eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
+            const addTaskHandler =
+                eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
+            const removeTaskHandler =
+                eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
+            const completeTaskHandler =
+                eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
+            const updateTaskHandler =
+                eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
+
+            eventBus.subscribe(EventTypes.SignOutCompleted, () => {
+                eventBus.unsubscribe(EventTypes.AddTaskRequest, addTaskHandler);
+                eventBus.unsubscribe(EventTypes.TaskRemovalRequested, removeTaskHandler);
+                eventBus.unsubscribe(EventTypes.TaskCompletionRequested, completeTaskHandler);
+                eventBus.unsubscribe(EventTypes.TaskUpdateRequested, updateTaskHandler);
+            });
         }
 
     }
@@ -1784,11 +1766,79 @@
     }
 
     /**
+     * Occurs when user was successfully signed out from to-do list application.
+     *
+     * @author Oleg Barmin
+     */
+    class SignOutCompleted extends Event {
+
+        /**
+         * Creates `SignOutCompleted` instance.
+         */
+        constructor() {
+            super(EventTypes.SignOutCompleted);
+        }
+    }
+
+    /**
+     * Navigation bar which allows users to perform operation, which available across all pages.
+     *
+     * @author Oleg Barmin
+     */
+    class NavBar extends UiComponent {
+
+        /**
+         * Creates `NavBar` instance.
+         *
+         * @param {jQuery} element element to render into
+         * @param {EventBus} evenBus to subscribe and post component specific events
+         * @param {Authentication} authentication to authenticate user
+         */
+        constructor(element, evenBus, authentication) {
+            super(element, evenBus);
+            this.authentication = authentication;
+        }
+
+        render() {
+            this.element.empty();
+            const signOutBtnClass = "signOutBtn";
+            this.element.append(`<nav class="navbar navbar-light bg-light justify-content-between">
+  <a class="navbar-brand"></a>
+  <button class="${signOutBtnClass} btn btn-primary my-2 my-sm-0" type="submit">Sign Out</button>
+</nav>`);
+
+            let signOutBtn = this.element.find(`.${signOutBtnClass}`);
+
+            signOutBtn.click(() => {
+                this.authentication.signOut()
+                    .then(() => {
+                        this.eventBus.post(new SignOutCompleted());
+                    });
+            });
+
+        }
+    }
+
+    /**
      * Provides user access to core functionality of to-do list application.
      *
      * @author Oleg Barmin
      */
     class DashboardPage extends Page {
+
+
+        /**
+         * Creates `DashboardPage` instance.
+         *
+         * @param {jQuery} element element to render page into
+         * @param {EventBus} eventBus to subscribe and post page specific events
+         * @param {Authentication} authentication to control user session
+         * @param {UserLists} userLists to work with user lists
+         */
+        constructor(element, eventBus, authentication, userLists) {
+            super(element, eventBus, authentication);
+            this.userLists = userLists;
+        }
 
         /**
          * Renders `DashboardPage` into given element.
@@ -1796,10 +1846,13 @@
         render() {
             this.element.empty();
 
-            this.element.append(`<div class='container'></div>`);
-            const container = $(this.element.find(".container")[0]);
+            const navBarContainerClass = "navBarContainer";
 
-            this.dashboardController = new DashboardController(this.eventBus, this.authentication);
+            this.element.append(`<div class='${navBarContainerClass}'></div>`);
+            this.element.append(`<div class='container'></div>`);
+
+            const container = $(this.element.find(".container")[0]);
+            const navBarContainer = $(this.element.find(`.${navBarContainerClass}`)[0]);
 
             container.append(`<div class="row justify-content-md-center">
                                 <div class="col-md-auto">
@@ -1809,9 +1862,14 @@
                             <div class="addTaskForm row justify-content-md-center"></div>
                             <div class="todoWidget"></div>`);
 
+            this.dashboardController = new DashboardController(this.eventBus,
+                this.authentication, this.userLists);
+
+            let navBar = new NavBar(navBarContainer, this.eventBus, this.authentication);
             let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
             let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
 
+            navBar.render();
             addTaskForm.render();
             taskView.render();
         }
@@ -1826,9 +1884,12 @@
 
         /**
          * Creates `SignInCompleted` instance.
+         *
+         * @param token of user who signed in
          */
-        constructor() {
+        constructor(token) {
             super(EventTypes.SignInCompleted);
+            this.token = token;
         }
     }
 
@@ -1877,15 +1938,20 @@
 
                 this.authentication
                     .signIn(username, password)
-                    .then(() => {
-                        this.eventBus.post(new SignInCompleted());
+                    .then((token) => {
+                        this.eventBus.post(new SignInCompleted(token));
                     })
                     .catch(() => {
                         this.eventBus.post(new SignInFailed());
                     });
             };
 
-            eventBus.subscribe(EventTypes.CredentialsSubmitted, credentialsSubmittedRequestCallback);
+            const credentialsSubmittedHandler = eventBus.subscribe(EventTypes.CredentialsSubmitted,
+                credentialsSubmittedRequestCallback);
+
+            eventBus.subscribe(EventTypes.SignOutCompleted, () => {
+                eventBus.unsubscribe(EventTypes.SignOutCompleted, credentialsSubmittedHandler);
+            });
         }
     }
 
@@ -1983,10 +2049,82 @@
             this.element.empty();
             this.element.append(`<div class='container'></div>`);
 
+            const container = this.element.find(".container");
+
             this.signInController = new SignInController(this.eventBus, this.authentication);
-            this.signInForm = new SignInForm(this.element, this.eventBus);
+            this.signInForm = new SignInForm(container, this.eventBus);
 
             this.signInForm.render();
+        }
+    }
+
+    /**
+     * Allow to manage user to-do lists by sending requests to server.
+     */
+    class UserLists {
+
+        /**
+         * Creates `UserLists` instance.
+         *
+         * @param token token of user
+         */
+        constructor(token) {
+            this.token = token;
+        }
+
+        /**
+         * Sends read all to-do list request of user by his token.
+         *
+         * Method provides `Promise` instance which is resolved in case
+         * if to-do list ID was received successfully, otherwise promise will be rejected.
+         *
+         * @returns {Promise} promise to work with.
+         */
+        readLists() {
+            return new Promise((resolve, reject) => {
+                const xmlHttpRequest = new XMLHttpRequest();
+
+                xmlHttpRequest.onload = () => {
+                    if (xmlHttpRequest.status === 200) {
+                        const todoLists = JSON.parse(xmlHttpRequest.response);
+                        const todoListIds = todoLists.map((el) => new TodoListId(el.id.value));
+                        resolve(todoListIds);
+                    } else {
+                        reject();
+                    }
+                };
+
+                xmlHttpRequest.open("GET", "/lists");
+                xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
+                xmlHttpRequest.send();
+            });
+        }
+
+        /**
+         * Sends creates new to-do lists with given ID request.
+         *
+         * Method provides `Promise` instance which is resolved in case
+         * if to-do list was created successfully, otherwise promise will be rejected.
+         *
+         * @param {TodoListId} todoListId ID of to-do list to create with
+         * @returns {Promise} promise to work with
+         */
+        create(todoListId) {
+            return new Promise((resolve, reject) => {
+                const xmlHttpRequest = new XMLHttpRequest();
+
+                xmlHttpRequest.onload = () => {
+                    if (xmlHttpRequest.status === 200) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                };
+
+                xmlHttpRequest.open("POST", `/lists/${todoListId.id}`);
+                xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
+                xmlHttpRequest.send();
+            });
         }
     }
 
@@ -2011,19 +2149,30 @@
          * Creates an environment for necessary components and renders them.
          */
         start() {
-            this.root.append(`<div class='container'></div>`);
+            const pageContainerClass = "pageContainer";
+
+            this.root.append(`<div class="${pageContainerClass}"></div>`);
             this.root.append(`<div hidden class="eventBus"></div>`);
 
             this.eventBus = new EventBus(this.root.find(".eventBus"));
 
-            const container = $(this.root.find(".container")[0]);
+            const container = $(this.root.find(`.${pageContainerClass}`)[0]);
 
-            this.eventBus.subscribe(EventTypes.SignInCompleted, () => {
-                new DashboardPage(container, this.eventBus, this.authentication).render();
+            this.signInPage = new SignInPage(container, this.eventBus, this.authentication);
+
+            this.eventBus.subscribe(EventTypes.SignInCompleted, (event) => {
+                this.userLists = new UserLists(event.token);
+                this.dashboardPage = new DashboardPage(container, this.eventBus,
+                    this.authentication, this.userLists);
+                this.dashboardPage.render();
             });
 
-            new SignInPage(container, this.eventBus, this.authentication).render();
+            this.eventBus.subscribe(EventTypes.SignOutCompleted, () => {
+                this.signInPage.render();
+            });
 
+
+            this.signInPage.render();
         }
     }
 

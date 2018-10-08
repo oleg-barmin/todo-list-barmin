@@ -347,6 +347,8 @@
 
     /**
      * Used to identify tasks.
+     *
+     * @author Oleg Barmin
      */
     class TaskId {
 
@@ -363,7 +365,7 @@
         /**
          * Compares `TaskId` objects by stored ID.
          *
-         * @param taskId `TaskId` to compare with
+         * @param {TaskId} taskId `TaskId` to compare with
          *
          * @throws TypeError if given `taskId` is not TaskId class instance
          *
@@ -379,16 +381,51 @@
     }
 
     /**
-     * Generates unique TaskId for `Task`.
+     * Used to identify `TodoList`s.
+     *
+     * @author Oleg Barmin
+     */
+    class TodoListId {
+
+        /**
+         * Creates `TodoListId` instance.
+         *
+         * @param id ID to store
+         */
+        constructor(id) {
+            Preconditions.checkStringNotEmpty(id, "ID");
+            this.id = id;
+        }
+
+        /**
+         * Compares `TodoListId` objects by stored ID.
+         *
+         * @param {TodoListId} todoListId `TodoListId` to compare with
+         *
+         * @throws TypeError if given `todoListId` is not TodoListId class instance
+         *
+         * @returns {number} result positive, negative or 0 if given task is less, greater or equal to current.
+         */
+        compareTo(todoListId) {
+            if (!(todoListId instanceof TodoListId)) {
+                throw new TypeError("Object of TodoListId was expected");
+            }
+
+            return this.id.localeCompare(todoListId.id);
+        }
+    }
+
+    /**
+     * Generates unique `TaskId` for `Task`.
      *
      * Current implementation based on uuid v4.
      */
     class TaskIdGenerator {
 
         /**
-         * Generates unique TaskID.
+         * Generates unique `TaskID`.
          *
-         * @returns {TaskId} ID generated TaskID.
+         * @returns {TaskId} ID generated.
          */
         static generateID() {
             if (typeof(require) !== 'undefined') {
@@ -506,9 +543,12 @@
 
         /**
          * Creates `TodoList` instance.
+         *
+         * @param {TodoListId} todoListId ID of to-do list
          */
-        constructor() {
+        constructor(todoListId) {
             this._tasksArray = [];
+            this.todoListId = todoListId;
         }
 
         /**
@@ -862,10 +902,31 @@
     }
 
     /**
-     * Sign in user by his username and password and stored his token.
+     * Authenticate user by his username and password and signs out users from the system.
      *
      * @author Oleg Barmin
      */
+
+    /**
+     * Generates unique `TodoListId` for `TodoList`.
+     *
+     * Current implementation based on uuid v4.
+     */
+    class TodoListIdGenerator {
+
+        /**
+         * Generates unique `TodoListId`.
+         *
+         * @returns {TodoListId} ID generated TaskID.
+         */
+        static generateID() {
+            if (typeof(require) !== 'undefined') {
+                return require('uuid/v4')();
+            }
+            const rawId = uuidv4();
+            return new TodoListId(rawId);
+        }
+    }
 
     /**
      * Event-based facade for {@link TodoList}.
@@ -880,11 +941,26 @@
          *
          * @param {EventBus} eventBus evenBus to work with
          * @param {Authentication} authentication to authorized operations
+         * @param {UserLists} userLists service to work with user lists.
          */
-        constructor(eventBus, authentication) {
-            this.todoList = new TodoList();
+        constructor(eventBus, authentication, userLists) {
+            this.userLists = userLists;
             this.eventBus = eventBus;
             this.authentication = authentication;
+
+            this.userLists.readLists()
+                .then(todoListsIds => {
+                    if (todoListsIds.length === 0) {
+                        const todoList = new TodoList(TodoListIdGenerator.generateID());
+                        this.userLists.create(todoList.todoListId)
+                            .then(() => {
+                                this.todoList = todoList;
+                            });
+                    } else {
+                        this.todoList = new TodoList(todoListsIds[0]);
+                    }
+
+                });
 
             /**
              * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
@@ -965,10 +1041,21 @@
                 }
             };
 
-            eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
-            eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
-            eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
-            eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
+            const addTaskHandler =
+                eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
+            const removeTaskHandler =
+                eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
+            const completeTaskHandler =
+                eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
+            const updateTaskHandler =
+                eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
+
+            eventBus.subscribe(EventTypes.SignOutCompleted, () => {
+                eventBus.unsubscribe(EventTypes.AddTaskRequest, addTaskHandler);
+                eventBus.unsubscribe(EventTypes.TaskRemovalRequested, removeTaskHandler);
+                eventBus.unsubscribe(EventTypes.TaskCompletionRequested, completeTaskHandler);
+                eventBus.unsubscribe(EventTypes.TaskUpdateRequested, updateTaskHandler);
+            });
         }
 
     }
