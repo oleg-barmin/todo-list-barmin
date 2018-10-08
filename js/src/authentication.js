@@ -1,5 +1,5 @@
 /**
- * Sign in user by his username and password and stored his token.
+ * Authenticate user by his username and password and signs out users from the system.
  *
  * @author Oleg Barmin
  */
@@ -16,7 +16,7 @@ export class Authentication {
     /**
      * Returns `Promise` which signs in user with given username and password.
      *
-     * <p>If given credentials is valid promise will be resolved and
+     * If given credentials is valid promise will be resolved and
      * token of user session will be stored, otherwise
      * AuthenticationFailedException will be thrown inside promise.
      *
@@ -33,7 +33,7 @@ export class Authentication {
 
             xmlHttpRequest.onload = () => {
                 if (xmlHttpRequest.status === 200) {
-                    this.token = JSON.parse(xmlHttpRequest.response);
+                    this.token = JSON.parse(xmlHttpRequest.response).value;
                     resolve()
                 } else {
                     reject(new AuthenticationFailedException());
@@ -42,6 +42,33 @@ export class Authentication {
 
             xmlHttpRequest.open("POST", "/auth");
             xmlHttpRequest.setRequestHeader("Authentication", "Basic " + encodedCredentials);
+            xmlHttpRequest.send();
+        });
+    }
+
+    /**
+     * Returns `Promise` which signs out user with stored token.
+     *
+     * If sign-out performed successfully this promise will be resolved and
+     * token of user session will be erased.
+     *
+     * @returns {Promise} to work with
+     */
+    signOut() {
+        return new Promise((resolve, reject) => {
+            const xmlHttpRequest = new XMLHttpRequest();
+
+            xmlHttpRequest.onload = () => {
+                if (xmlHttpRequest.status === 200) {
+                    resolve();
+                    this.token = null;
+                } else {
+                    reject();
+                }
+            };
+
+            xmlHttpRequest.open("DELETE", "/auth");
+            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
             xmlHttpRequest.send();
         });
     }
