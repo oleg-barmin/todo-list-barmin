@@ -31,19 +31,28 @@ export class DashboardController {
         this.eventBus = eventBus;
         this.authentication = authentication;
 
+        /**
+         * Creates initial to-do list for new user.
+         */
+        const createInitialsTodoList = () => {
+            const todoList = new TodoList(TodoListIdGenerator.generateID());
+            this.userLists.create(todoList.todoListId)
+                .then(() => {
+                    this.todoList = todoList;
+                });
+        };
+
         this.userLists.readLists()
             .then(todoListsIds => {
-                if (todoListsIds.length === 0) {
-                    const todoList = new TodoList(TodoListIdGenerator.generateID());
-                    this.userLists.create(todoList.todoListId)
-                        .then(() => {
-                            this.todoList = todoList;
-                        });
-                } else {
-                    this.todoList = new TodoList(todoListsIds[0]);
+                    if (todoListsIds.length === 0) {
+                        // if user has no lists - create one
+                        createInitialsTodoList();
+                    }
+                    else {
+                        this.todoList = new TodoList(todoListsIds[0]);
+                    }
                 }
-
-            });
+            );
 
         /**
          * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
