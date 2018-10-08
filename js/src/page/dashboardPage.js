@@ -35,7 +35,7 @@ export class DashboardPage extends Page {
 
         this.dashboardController = new DashboardController(this.eventBus, this.authentication);
 
-        let navBar = new NavBar(navBarContainer, this.eventBus);
+        let navBar = new NavBar(navBarContainer, this.eventBus, this.authentication);
         let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
         let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
 
