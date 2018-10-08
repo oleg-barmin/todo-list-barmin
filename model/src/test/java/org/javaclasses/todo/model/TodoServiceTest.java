@@ -16,6 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -166,6 +168,41 @@ class TodoServiceTest {
                                       .execute();
 
         assertEquals(3, tasks.size(), "TodoList had to contain 3 Tasks, but it didn't.");
+    }
+
+    @Test
+    @DisplayName("retrieve all to-do list of user.")
+    void testReadTodoListsOfUser() {
+        createUser();
+        Token token = authentication.signIn(username, password);
+        UserId owner = authentication.validate(token);
+
+        TodoList firstTodoList = new TodoList.TodoListBuilder()
+                .setTodoListId(new TodoListId(UUID.randomUUID()
+                                                  .toString()))
+                .setOwner(owner)
+                .build();
+        TodoList secondTodoList = new TodoList.TodoListBuilder()
+                .setTodoListId(new TodoListId(UUID.randomUUID()
+                                                  .toString()))
+                .setOwner(owner)
+                .build();
+
+        todoListStorage.write(firstTodoList);
+        todoListStorage.write(secondTodoList);
+
+        Collection<TodoList> uploadedTodoLists = new ArrayList<>();
+        uploadedTodoLists.add(firstTodoList);
+        uploadedTodoLists.add(secondTodoList);
+
+        List<TodoList> todoLists = todoService.readUserTodoLists()
+                                              .authorizedWith(token)
+                                              .execute();
+
+        assertEquals(2, todoLists.size(), "user has to have 2 to-do lists, but it didn't.");
+        assertTrue(uploadedTodoLists.containsAll(todoLists),
+                   "read all uploaded to-do lists, but it don't.");
+
     }
 
     @Test
