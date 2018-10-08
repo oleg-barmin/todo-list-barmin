@@ -539,7 +539,7 @@
 
     /**
      * Declares basic class for all sub-classes.
-     * Each `TodoComponent` sub-class should be connect with {@link EventBus},
+     * Each `UiComponent` sub-class should be connect with {@link EventBus},
      * and contain a element to render into.
      * Render method should be implemented to render the component into the `element`.
      *
@@ -1207,7 +1207,7 @@
 
     }
 
-    QUnit.module("TodoWidget should");
+    QUnit.module("TasksWidget should");
     QUnit.test("merge TaskView array and given Tasks array and preserve", assert => {
         const transportElement = $("#eventBus");
         const eventBus = new EventBus(transportElement);

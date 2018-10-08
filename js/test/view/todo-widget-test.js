@@ -4,7 +4,7 @@ import {EventBus} from "../../src/event/event";
 import {TaskEditingStarted} from "../../src/event/taskEditingStarted";
 import {TaskEdit} from "../../src/view/taskEdit";
 
-QUnit.module("TodoWidget should");
+QUnit.module("TasksWidget should");
 QUnit.test("merge TaskView array and given Tasks array and preserve", assert => {
     const transportElement = $("#eventBus");
     const eventBus = new EventBus(transportElement);

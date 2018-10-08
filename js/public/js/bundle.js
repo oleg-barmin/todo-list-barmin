@@ -325,6 +325,71 @@
     }
 
     /**
+     * Sign in user by his username and password and stored his token.
+     *
+     * @author Oleg Barmin
+     */
+    class Authentication {
+
+        /**
+         * Creates `Authentication` instance.
+         */
+        constructor() {
+            this.token = null;
+        }
+
+
+        /**
+         * Returns `Promise` which signs in user with given username and password.
+         *
+         * <p>If given credentials is valid promise will be resolved and
+         * token of user session will be stored, otherwise
+         * AuthenticationFailedException will be thrown inside promise.
+         *
+         * @param {String} username username of user who tries to sign-in
+         * @param {String} password password of user who tries to sign-in
+         * @returns {Promise} to work with
+         */
+        signIn(username, password) {
+            return new Promise((resolve, reject) => {
+                const usernameAndPassword = username + ":" + password;
+                const encodedCredentials = btoa(usernameAndPassword);
+
+                const xmlHttpRequest = new XMLHttpRequest();
+
+                xmlHttpRequest.onload = () => {
+                    if (xmlHttpRequest.status === 200) {
+                        this.token = JSON.parse(xmlHttpRequest.response);
+                        resolve();
+                    } else {
+                        reject(new AuthenticationFailedException());
+                    }
+                };
+
+                xmlHttpRequest.open("POST", "/auth");
+                xmlHttpRequest.setRequestHeader("Authentication", "Basic " + encodedCredentials);
+                xmlHttpRequest.send();
+            });
+        }
+    }
+
+    /**
+     * Occurs when user typed in invalid username or password during authentication.
+     *
+     * @author Oleg Barmin
+     */
+    class AuthenticationFailedException extends Error {
+
+        /**
+         * Creates `AuthenticationFailedException` instance.
+         */
+        constructor() {
+            super("Authentication failed.");
+        }
+
+    }
+
+    /**
      * Static methods that help a method or constructor check whether it was invoked
      * with correct parameters.
      */
@@ -999,19 +1064,21 @@
     /**
      * Event-based facade for {@link TodoList}.
      */
-    class Controller {
+    class DashboardController {
 
         /**
-         * Creates `Controller` instance.
+         * Creates `DashboardController` instance.
          *
          * During construction of instance it creates new `TodoList` instance,
          * where it will contains all tasks, and EventBus to process occurred events.
          *
          * @param {EventBus} eventBus evenBus to work with
+         * @param {Authentication} authentication to authorized operations
          */
-        constructor(eventBus) {
+        constructor(eventBus, authentication) {
             this.todoList = new TodoList();
             this.eventBus = eventBus;
+            this.authentication = authentication;
 
             /**
              * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
@@ -1087,7 +1154,8 @@
                     this.eventBus.post(new TaskUpdated(taskUpdateEvent.taskId));
                     this.eventBus.post(new TaskListUpdated(this.todoList.all()));
                 } catch (e) {
-                    this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId, "New task description cannot be empty."));
+                    this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId,
+                        "New task description cannot be empty."));
                 }
             };
 
@@ -1095,6 +1163,142 @@
             eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
             eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
             eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
+        }
+
+    }
+
+    /**
+     * Declares basic class for all sub-classes.
+     * Each `UiComponent` sub-class should be connect with {@link EventBus},
+     * and contain a element to render into.
+     * Render method should be implemented to render the component into the `element`.
+     *
+     * @abstract
+     */
+    class UiComponent {
+
+        /**
+         * Saves given element to render into and `EventBus` to connect with controller.
+         *
+         * @param {jQuery} element jQuery element to render into
+         * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
+         */
+        constructor(element, eventBus) {
+            this.element = element;
+            this.eventBus = eventBus;
+        }
+
+        /**
+         * Renders component into given element.
+         */
+        render() {
+        }
+    }
+
+    /**
+     * Occurred when new task was added on view.
+     *
+     * @extends Event
+     */
+    class AddTaskRequest extends Event {
+
+        /**
+         * Creates `AddTaskRequest` instance.
+         *
+         * @param {string} taskDescription description of new task
+         */
+        constructor(taskDescription) {
+            super(EventTypes.AddTaskRequest);
+            this.taskDescription = taskDescription;
+        }
+    }
+
+    /**
+     * Component which responsible for rendering and processing of add task form.
+     */
+    class AddTaskForm extends UiComponent {
+
+        /**
+         * Creates `AddTaskForm` instance.
+         *
+         * @param {jQuery} element jQuery element to render into
+         * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
+         */
+        constructor(element, eventBus) {
+            super(element, eventBus);
+        }
+
+        /**
+         * Renders tasks container and subscribes to necessary Events.
+         */
+        render() {
+            const container = this.element;
+            const descriptionTextAreaClass = "descriptionTextArea";
+            const addTaskBtnClass = "addTaskBtn";
+            const errorContainerClass = "errorMsgContainer";
+
+            container.empty();
+
+            container.append(`<div class="col">
+                <textarea class="${descriptionTextAreaClass} form-control w-100"></textarea>
+            </div>
+            <div class="col col-1 align-self-end">
+                <button class="${addTaskBtnClass} btn btn-default btn-primary w-100">Add</button>
+            </div>
+            <div class="w-100"></div>
+            <div class="col alert alert-danger invisible errorMsgContainer w-100 pl-3" role="alert">
+            </div>`);
+
+            const addTaskBtn = container.find(`.${addTaskBtnClass}`);
+            const descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
+            const errorDiv = container.find(`.${errorContainerClass}`);
+            const eventBus = this.eventBus;
+
+            /**
+             * Renders given error message under `descriptionTextAreaClass`.
+             *
+             * @param {string} errorMsg error message to render
+             */
+            const showErrorCallback = errorMsg => {
+                errorDiv.empty();
+                let iconSpan = $("<div>");
+                iconSpan.addClass("octicon");
+                iconSpan.addClass("octicon-stop");
+                errorDiv.append(iconSpan);
+                errorDiv.append(" " + errorMsg);
+            };
+
+            /**
+             * Processes `NewTaskAdded` event.
+             * Makes `descriptionTextArea` and `errorDiv` empty and invisible.
+             */
+            const newTaskAddedCallback = () => {
+                descriptionTextArea.val('');
+                errorDiv.empty();
+                errorDiv.addClass("invisible");
+            };
+
+            /**
+             * Processes `NewTaskValidationFailed`.
+             * Makes `errorDiv` visible and appends into it error message from occurred `NewTaskValidationFailed` event.
+             *
+             * @param {NewTaskValidationFailed} newTaskValidationFailedEvent `NewTaskValidationFailed` with
+             *        error message to display.
+             */
+            const newTaskValidationFailedCallback = newTaskValidationFailedEvent => {
+                errorDiv.removeClass("invisible");
+                showErrorCallback(newTaskValidationFailedEvent.errorMsg);
+            };
+
+            eventBus.subscribe(EventTypes.NewTaskAdded, newTaskAddedCallback);
+            eventBus.subscribe(EventTypes.NewTaskValidationFailed, newTaskValidationFailedCallback);
+
+            addTaskBtn.click(() => eventBus.post(new AddTaskRequest(descriptionTextArea.val())));
+            descriptionTextArea.keydown(keyboardEvent => {
+                if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === "Enter") {
+                    eventBus.post(new AddTaskRequest(descriptionTextArea.val()));
+                }
+            });
         }
 
     }
@@ -1156,9 +1360,9 @@
     /**
      * Component which responsible for rendering and processing of task in display state.
      *
-     * @extends TodoComponent
+     * @extends UiComponent
      */
-    class TaskDisplay extends TodoComponent {
+    class TaskDisplay extends UiComponent {
 
         /**
          * Creates `TaskView` instance.
@@ -1267,9 +1471,9 @@
     /**
      * Component which responsible for rendering and processing of task in edit state.
      *
-     * @extends TodoComponent
+     * @extends UiComponent
      */
-    class TaskEdit extends TodoComponent {
+    class TaskEdit extends UiComponent {
 
         /**
          * Creates `TaskEdit` instance.
@@ -1393,9 +1597,9 @@
      *  - save new task description
      *  - cancel editing (switch to `TaskDisplay` state)
      *
-     * @extends TodoComponent
+     * @extends UiComponent
      */
-    class TaskView extends TodoComponent {
+    class TaskView extends UiComponent {
 
         /**
          * Creates `TaskView` instance.
@@ -1491,9 +1695,9 @@
      * When {@link NewTaskAdded} happens gets new tasks,
      * removes previous task list and renders new tasks from `NewTaskAdded`.
      *
-     * @extends TodoComponent
+     * @extends UiComponent
      */
-    class TodoWidget extends TodoComponent {
+    class TodoWidget extends UiComponent {
 
         /**
          * Creates `TodoWidget` instance.
@@ -1558,6 +1762,235 @@
     }
 
     /**
+     * Renders necessary information to user according to current state of to-do list application.
+     *
+     * Only one page per application should be rendered.
+     *
+     * @author Oleg Barmin
+     */
+    class Page extends UiComponent {
+
+        /**
+         * Creates `Page` instance.
+         *
+         * @param {jQuery} element element to render page into
+         * @param {EventBus} eventBus to subscribe and publish page specific events
+         * @param {Authentication} authentication to authenticate users.
+         */
+        constructor(element, eventBus, authentication) {
+            super(element, eventBus);
+            this.authentication = authentication;
+        }
+    }
+
+    /**
+     * Provides user access to core functionality of to-do list application.
+     *
+     * @author Oleg Barmin
+     */
+    class DashboardPage extends Page {
+
+        /**
+         * Renders `DashboardPage` into given element.
+         */
+        render() {
+            this.element.empty();
+
+            this.element.append(`<div class='container'></div>`);
+            const container = $(this.element.find(".container")[0]);
+
+            this.dashboardController = new DashboardController(this.eventBus, this.authentication);
+
+            container.append(`<div class="row justify-content-md-center">
+                                <div class="col-md-auto">
+                                    <h1>To-Do</h1>
+                                </div>
+                                </div>
+                            <div class="addTaskForm row justify-content-md-center"></div>
+                            <div class="todoWidget"></div>`);
+
+            let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
+            let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
+
+            addTaskForm.render();
+            taskView.render();
+        }
+    }
+
+    /**
+     * Occurs when user was successfully signed in into to-do list application.
+     *
+     * @author Oleg Barmin
+     */
+    class SignInCompleted extends Event {
+
+        /**
+         * Creates `SignInCompleted` instance.
+         */
+        constructor() {
+            super(EventTypes.SignInCompleted);
+        }
+    }
+
+    /**
+     * Occurs when user tried to sign-in with invalid username or password.
+     *
+     * @author Oleg Barmin
+     */
+    class SignInFailed extends Event {
+
+        /**
+         * Creates `SignInFailed` instance.
+         */
+        constructor() {
+            super(EventTypes.SignInFailed);
+        }
+    }
+
+    /**
+     * Event based facade for `SignInPage`.
+     *
+     * @author Oleg Barmin
+     */
+    class SignInController {
+
+        /**
+         * Creates `SignInController` instance.
+         *
+         * @param {EventBus} eventBus to subscribe on page specific events
+         * @param {Authentication} authentication to authenticate users
+         */
+        constructor(eventBus, authentication) {
+            this.eventBus = eventBus;
+            this.authentication = authentication;
+
+            /**
+             * Posts `SignInCompleted` event if user was successfully authenticated,
+             * otherwise posts `SignInFailed` event.
+             *
+             * @param {CredentialsSubmitted} credentialsSubmittedEvent event
+             *         which contains username and password typed in by user
+             */
+            const credentialsSubmittedRequestCallback = credentialsSubmittedEvent => {
+                const username = credentialsSubmittedEvent.username;
+                const password = credentialsSubmittedEvent.password;
+
+                this.authentication
+                    .signIn(username, password)
+                    .then(() => {
+                        this.eventBus.post(new SignInCompleted());
+                    })
+                    .catch(() => {
+                        this.eventBus.post(new SignInFailed());
+                    });
+            };
+
+            eventBus.subscribe(EventTypes.CredentialsSubmitted, credentialsSubmittedRequestCallback);
+        }
+    }
+
+    /**
+     * Occurs when end-user tries to sing-in into to-do list application.
+     *
+     * @author Oleg Barmin
+     */
+    class CredentialsSubmitted extends Event {
+
+        /**
+         * Creates `CredentialsSubmitted` instance.
+         *
+         * @param {String} username username of user
+         * @param {String} password password of user
+         */
+        constructor(username, password) {
+            super(EventTypes.CredentialsSubmitted);
+            this.username = username;
+            this.password = password;
+        }
+    }
+
+    /**
+     * Sign-in form which meets unauthenticated user on homepage of to-do list application.
+     *
+     * <p>End-user has to sign-in through this form to get access to
+     * all to-do list application functionality.
+     *
+     * @author Oleg Barmin
+     */
+    class SignInForm extends UiComponent {
+
+        /**
+         * Creates `SignInForm` instance.
+         *
+         * @param {jQuery} element element to render into
+         * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
+         */
+        constructor(element, eventBus) {
+            super(element, eventBus);
+        }
+
+        /**
+         * Renders `SignInForm` into the given element.
+         */
+        render() {
+            this.element.append(`<div class="row justify-content-md-center">
+        <div class="col-4" id="login-form">
+            <h2 class="text-center">Sign In</h2>
+            <input class="usernameInput form-control" placeholder="Username">
+            <input class="passwordInput mt-2 form-control" placeholder="Password" type="password">
+            <label class="d-none errorLabel mt-2 form-control alert alert-danger">Invalid username or password.</label>
+            <button class="loginBtn mt-2 form-control btn btn-primary">Sign In</button>
+        </div>
+    </div>`);
+
+            const loginDiv = this.element.find("#login-form");
+
+            const usernameInput = loginDiv.find(".usernameInput");
+            const passwordInput = loginDiv.find(".passwordInput");
+            const errorLabel = loginDiv.find(".errorLabel");
+            const loginBtn = loginDiv.find(".loginBtn");
+
+            /**
+             * Shows error label.
+             */
+            const signInFailedCallback = () => {
+                errorLabel.removeClass("d-none");
+            };
+
+            this.eventBus.subscribe(EventTypes.SignInFailed, signInFailedCallback);
+
+            loginBtn.click(() => {
+                const username = usernameInput.val();
+                const password = passwordInput.val();
+                this.eventBus.post(new CredentialsSubmitted(username, password));
+
+            });
+        }
+    }
+
+    /**
+     * Page which allows to end-user to authenticate into to-do list application
+     * and get access to applications functionality.
+     *
+     * @author Oleg Barmin
+     */
+    class SignInPage extends Page {
+
+        /**
+         * Renders `SingInPage` into the given element.
+         */
+        render() {
+            this.element.empty();
+            this.element.append(`<div class='container'></div>`);
+
+            this.signInController = new SignInController(this.eventBus, this.authentication);
+            this.signInForm = new SignInForm(this.element, this.eventBus);
+
+            this.signInForm.render();
+        }
+    }
+
+    /**
      * Starts a to-do list app.
      */
     class TodoListApp {
@@ -1569,6 +2002,7 @@
          */
         constructor(rootElement) {
             this.root = rootElement;
+            this.authentication = new Authentication();
         }
 
         /**
@@ -1577,26 +2011,19 @@
          * Creates an environment for necessary components and renders them.
          */
         start() {
-            this.root.append("<div class='container'></div>");
-            let container = $(this.root.find(".container")[0]);
+            this.root.append(`<div class='container'></div>`);
+            this.root.append(`<div hidden class="eventBus"></div>`);
 
-            container.append(`<div hidden class="eventBus"></div>
-        <div class="row justify-content-md-center">
-            <div class="col-md-auto">
-                <h1>To-Do</h1>
-            </div>
-        </div>
-        <div class="addTaskForm row justify-content-md-center"></div>
-        <div class="todoWidget"></div>`);
+            this.eventBus = new EventBus(this.root.find(".eventBus"));
 
-            this.eventBus = new EventBus(container.find(".eventBus"));
-            this.controller = new Controller(this.eventBus);
+            const container = $(this.root.find(".container")[0]);
 
-            let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
-            let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
+            this.eventBus.subscribe(EventTypes.SignInCompleted, () => {
+                new DashboardPage(container, this.eventBus, this.authentication).render();
+            });
 
-            addTaskForm.render();
-            taskView.render();
+            new SignInPage(container, this.eventBus, this.authentication).render();
+
         }
     }
 

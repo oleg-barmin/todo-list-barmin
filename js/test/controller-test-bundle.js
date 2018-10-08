@@ -862,21 +862,29 @@
     }
 
     /**
+     * Sign in user by his username and password and stored his token.
+     *
+     * @author Oleg Barmin
+     */
+
+    /**
      * Event-based facade for {@link TodoList}.
      */
-    class Controller {
+    class DashboardController {
 
         /**
-         * Creates `Controller` instance.
+         * Creates `DashboardController` instance.
          *
          * During construction of instance it creates new `TodoList` instance,
          * where it will contains all tasks, and EventBus to process occurred events.
          *
          * @param {EventBus} eventBus evenBus to work with
+         * @param {Authentication} authentication to authorized operations
          */
-        constructor(eventBus) {
+        constructor(eventBus, authentication) {
             this.todoList = new TodoList();
             this.eventBus = eventBus;
+            this.authentication = authentication;
 
             /**
              * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
@@ -952,7 +960,8 @@
                     this.eventBus.post(new TaskUpdated(taskUpdateEvent.taskId));
                     this.eventBus.post(new TaskListUpdated(this.todoList.all()));
                 } catch (e) {
-                    this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId, "New task description cannot be empty."));
+                    this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId,
+                        "New task description cannot be empty."));
                 }
             };
 
@@ -1039,13 +1048,13 @@
 
     }
 
-    QUnit.module("Controller should");
+    QUnit.module("DashboardController should");
     QUnit.test("", assert => {
         let transportElement = $("#eventBus");
         const eventBus = new EventBus(transportElement);
 
         const todoList = new TodoList();
-        const controller = new Controller(eventBus);
+        const controller = new DashboardController(eventBus);
         controller.todoList = todoList;
 
         let newTaskAddedWasPosted = false;

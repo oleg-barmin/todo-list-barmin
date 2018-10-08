@@ -1,18 +1,18 @@
 import {EventBus, EventTypes} from "../src/event/event";
-import {Controller} from "../src/controller";
+import {DashboardController} from "../src/dashboardController";
 import {AddTaskRequest} from "../src/event/addTaskRequest";
 import {TodoList} from "../src/model/todo-list";
 import {TaskCompletionRequested} from "../src/event/taskCompletionRequested";
 import {TaskRemovalRequested} from "../src/event/taskRemovalRequested";
 import {TaskUpdateRequested} from "../src/event/taskUpdateRequested";
 
-QUnit.module("Controller should");
+QUnit.module("DashboardController should");
 QUnit.test("", assert => {
     let transportElement = $("#eventBus");
     const eventBus = new EventBus(transportElement);
 
     const todoList = new TodoList();
-    const controller = new Controller(eventBus);
+    const controller = new DashboardController(eventBus);
     controller.todoList = todoList;
 
     let newTaskAddedWasPosted = false;
