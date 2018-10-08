@@ -1,16 +1,16 @@
 import {TaskId} from "./identifiers";
 
 /**
- * Generates unique TaskId for `Task`.
+ * Generates unique `TaskId` for `Task`.
  *
  * Current implementation based on uuid v4.
  */
 export class TaskIdGenerator {
 
     /**
-     * Generates unique TaskID.
+     * Generates unique `TaskID`.
      *
-     * @returns {TaskId} ID generated TaskID.
+     * @returns {TaskId} ID generated.
      */
     static generateID() {
         if (typeof(require) !== 'undefined') {
