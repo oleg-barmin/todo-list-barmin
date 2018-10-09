@@ -24,10 +24,10 @@ export class NavBar extends UiComponent {
     render() {
         this.element.empty();
         const signOutBtnClass = "signOutBtn";
-        this.element.append(`<nav class="navbar navbar-light bg-light justify-content-between">
-  <a class="navbar-brand"></a>
-  <a class="${signOutBtnClass} btn btn-light my-2 my-sm-0" type="submit">Sign Out</a>
-</nav>`);
+        this.element.append(`<nav class="navbar bg-primary justify-content-between">
+                              <a class="navbar-brand"></a>
+                              <a class="${signOutBtnClass} text-white" href="#">Sign Out</a>
+                            </nav>`);
 
         let signOutBtn = this.element.find(`.${signOutBtnClass}`);
 
