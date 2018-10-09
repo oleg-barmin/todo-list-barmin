@@ -1,8 +1,9 @@
 import {DashboardController} from "../dashboardController";
-import {AddTaskForm} from "../view/addTaskForm";
-import {TodoWidget} from "../view/todoWidget";
 import {Page} from "./page";
 import {NavBar} from "../view/navBar";
+import {TodoListView} from "../view/todoListView";
+import {TodoList} from "../model/todo-list";
+import {TodoListIdGenerator} from "../lib/todoListIdGenerator";
 
 /**
  * Provides user access to core functionality of to-do list application.
@@ -31,31 +32,48 @@ export class DashboardPage extends Page {
     render() {
         this.element.empty();
 
+        // Renders navigation bar.
         const navBarContainerClass = "navBarContainer";
-
         this.element.append(`<div class='${navBarContainerClass}'></div>`);
-        this.element.append(`<div class='container'></div>`);
-
-        const container = $(this.element.find(".container")[0]);
-        const navBarContainer = $(this.element.find(`.${navBarContainerClass}`)[0]);
-
-        container.append(`<div class="row justify-content-md-center">
-                                <div class="col-md-auto">
-                                    <h1>To-Do</h1>
-                                </div>
-                                </div>
-                            <div class="addTaskForm row justify-content-md-center"></div>
-                            <div class="todoWidget"></div>`);
-
-        this.dashboardController = new DashboardController(this.eventBus,
-            this.authentication, this.userLists);
-
+        const navBarContainer = this.element.find(`.${navBarContainerClass}`);
         let navBar = new NavBar(navBarContainer, this.eventBus, this.authentication);
-        let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
-        let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
-
         navBar.render();
-        addTaskForm.render();
-        taskView.render();
+
+        /**
+         * Renders `TodoListView`s for all given to-do list IDs.
+         *
+         * @param {Array} todoListsIds array of ID of to-do lists
+         */
+        const renderTodoListsArray = todoListsIds => {
+            const userTodoListsId = todoListsIds.map(el => el);
+
+            this.dashboardController = new DashboardController(this.eventBus,
+                this.authentication, userTodoListsId);
+
+            userTodoListsId.forEach(el => {
+                this.element.append(`<div class='container'></div>`);
+                const container = this.element.find(".container").last();
+                new TodoListView(container, this.eventBus, el).render();
+            })
+        };
+
+        /**
+         * Renders all to-do lists of user, if user has no to-do list yet one to-do list will be created.
+         *
+         * @param {Array} todoListsIds array of IDs of to-do lists to render.
+         */
+        const prepareDashboard = todoListsIds => {
+            if (todoListsIds.length === 0) {
+                // if user has no lists - create one
+                const todoList = new TodoList(TodoListIdGenerator.generateID(), this.authentication.token);
+                this.userLists.create(todoList.todoListId)
+                    .then(() => renderTodoListsArray([todoList.todoListId]));
+            }
+            else {
+                renderTodoListsArray(todoListsIds)
+            }
+        };
+
+        this.userLists.readLists().then(prepareDashboard);
     }
 }
