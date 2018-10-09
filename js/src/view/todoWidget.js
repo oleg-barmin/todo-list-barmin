@@ -9,6 +9,7 @@ import {TaskView} from "./taskView";
  * removes previous task list and renders new tasks from `NewTaskAdded`.
  *
  * @extends UiComponent
+ * @author Oleg Barmin
  */
 export class TodoWidget extends UiComponent {
 
@@ -17,9 +18,11 @@ export class TodoWidget extends UiComponent {
      *
      * @param {jQuery} element JQuery element where all task should be appended
      * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
+     * @param {TodoListId} todoListId ID of to-do list to which `TodoWidget` is related to
      */
-    constructor(element, eventBus) {
+    constructor(element, eventBus, todoListId) {
         super(element, eventBus);
+        this.todoListId = todoListId;
         this.taskViewArray = [];
     }
 
@@ -34,18 +37,18 @@ export class TodoWidget extends UiComponent {
      *
      * @private
      */
-    _merge(taskViewArray, taskArray){
+    _merge(taskViewArray, taskArray) {
         return taskArray.map((task, index) => {
 
             const taskContainer = this.element.append(`<div class="row no-gutters mt-2"></div>`).children().last();
             const taskViewWithCurrentTask = taskViewArray.find(element => element.task.id.compareTo(task.id) === 0);
 
-            if(taskViewWithCurrentTask){
+            if (taskViewWithCurrentTask) {
                 taskViewWithCurrentTask.update(taskContainer, ++index, task);
                 return taskViewWithCurrentTask;
             }
 
-            return new TaskView(taskContainer, this.eventBus, ++index, task);
+            return new TaskView(taskContainer, this.eventBus, ++index, task, this.todoListId);
         });
     }
 
@@ -62,9 +65,11 @@ export class TodoWidget extends UiComponent {
          * @param {TaskListUpdated} taskListUpdatedEvent occurred `TaskListUpdated` event with array of new tasks.
          */
         const taskListUpdatedCallback = taskListUpdatedEvent => {
-            this.element.empty();
-            this.taskViewArray = this._merge(this.taskViewArray, taskListUpdatedEvent.taskArray);
-            this.taskViewArray.forEach(taskView => taskView.render());
+            if (taskListUpdatedEvent.todoListId === this.todoListId) {
+                this.element.empty();
+                this.taskViewArray = this._merge(this.taskViewArray, taskListUpdatedEvent.taskArray);
+                this.taskViewArray.forEach(taskView => taskView.render());
+            }
         };
 
         this.eventBus.subscribe(EventTypes.TaskListUpdated, taskListUpdatedCallback);

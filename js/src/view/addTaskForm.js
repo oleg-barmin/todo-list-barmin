@@ -1,10 +1,12 @@
 import {UiComponent} from "./uiComponent";
-import {TaskAddRequest} from "../event/taskAddRequest";
+import {TaskAddRequested} from "../event/taskAddRequested";
 import {EventTypes} from "../event/event";
 
 
 /**
  * Component which responsible for rendering and processing of add task form.
+ *
+ * @author Oleg Barmin
  */
 export class AddTaskForm extends UiComponent {
 
@@ -13,9 +15,11 @@ export class AddTaskForm extends UiComponent {
      *
      * @param {jQuery} element jQuery element to render into
      * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
+     * @param {TodoListId} todoListId ID of to-do list to which `AddTaskForm` is related to
      */
-    constructor(element, eventBus) {
+    constructor(element, eventBus, todoListId) {
         super(element, eventBus);
+        this.todoListId = todoListId;
     }
 
     /**
@@ -83,10 +87,10 @@ export class AddTaskForm extends UiComponent {
         eventBus.subscribe(EventTypes.NewTaskAdded, newTaskAddedCallback);
         eventBus.subscribe(EventTypes.NewTaskValidationFailed, newTaskValidationFailedCallback);
 
-        addTaskBtn.click(() => eventBus.post(new TaskAddRequest(descriptionTextArea.val())));
+        addTaskBtn.click(() => eventBus.post(new TaskAddRequested(descriptionTextArea.val(), this.todoListId)));
         descriptionTextArea.keydown(keyboardEvent => {
             if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === "Enter") {
-                eventBus.post(new TaskAddRequest(descriptionTextArea.val()));
+                eventBus.post(new TaskAddRequested(descriptionTextArea.val(), this.todoListId));
             }
         });
     }

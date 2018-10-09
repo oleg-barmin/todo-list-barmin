@@ -7,6 +7,7 @@ import {TaskUpdateRequested} from "../event/taskUpdateRequested";
  * Component which responsible for rendering and processing of task in display state.
  *
  * @extends UiComponent
+ * @author Oleg Barmin
  */
 export class TaskDisplay extends UiComponent {
 
@@ -17,12 +18,14 @@ export class TaskDisplay extends UiComponent {
      * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
      * @param {Number} number number of the task in the list of tasks
      * @param {Task} task task to render
+     * @param {TodoListId} todoListId ID of to-do list to which `TaskDisplay` is related to
      */
-    constructor(element, eventBus, number, task) {
+    constructor(element, eventBus, number, task, todoListId) {
         super(element, eventBus);
         this.eventBus = eventBus;
         this.task = task;
         this.number = number;
+        this.todoListId = todoListId;
     }
 
     /**
@@ -58,11 +61,11 @@ export class TaskDisplay extends UiComponent {
         const editBtn = this.element.find(`.${editBtnClass}`);
         const taskDescriptionDiv = this.element.find(`.${taskDescriptionDivClass}`);
 
-        completeBtn.click(() => this.eventBus.post(new TaskUpdateRequested(task.id, escapedTaskDescription, true)));
+        completeBtn.click(() => this.eventBus.post(new TaskUpdateRequested(task.id, escapedTaskDescription, true, this.todoListId)));
         editBtn.click(() => this.eventBus.post(new TaskEditingStarted(task.id)));
         removeBtn.click(() => {
             if (confirm("Delete the task?")) {
-                this.eventBus.post(new TaskRemovalRequested(task.id));
+                this.eventBus.post(new TaskRemovalRequested(task.id, this.todoListId));
             }
         });
 

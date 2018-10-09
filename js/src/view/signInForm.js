@@ -56,7 +56,6 @@ export class SignInForm extends UiComponent {
             const username = usernameInput.val();
             const password = passwordInput.val();
             this.eventBus.post(new CredentialsSubmitted(username, password))
-
         })
     }
 }

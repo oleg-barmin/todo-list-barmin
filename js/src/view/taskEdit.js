@@ -7,6 +7,7 @@ import {EventTypes} from "../event/event";
  * Component which responsible for rendering and processing of task in edit state.
  *
  * @extends UiComponent
+ * @author Oleg Barmin
  */
 export class TaskEdit extends UiComponent {
 
@@ -17,12 +18,14 @@ export class TaskEdit extends UiComponent {
      * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
      * @param {Number} number number of the task in the list of tasks
      * @param {Task} task task to render
+     * @param {TodoListId} todoListId ID of to-do list to which `TaskEdit` is related to
      */
-    constructor(element, eventBus, number, task) {
+    constructor(element, eventBus, number, task, todoListId) {
         super(element, eventBus);
         this.eventBus = eventBus;
         this.task = task;
         this.number = number;
+        this.todoListId = todoListId;
         this.currentInput = task.description;
         this.errorMsg = null;
     }
@@ -68,7 +71,7 @@ export class TaskEdit extends UiComponent {
             errorLabel.append(this.errorMsg);
         };
 
-        if(this.errorMsg){
+        if (this.errorMsg) {
             renderErrorMsgCallback(this.errorMsg)
         }
 
@@ -99,7 +102,7 @@ export class TaskEdit extends UiComponent {
                 this.eventBus.post(new TaskEditingCanceled(this.task.id));
                 return;
             }
-            this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription, false));
+            this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription, false, this.todoListId));
         };
 
         saveBtn.click(saveCallback);

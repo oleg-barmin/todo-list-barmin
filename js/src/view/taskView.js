@@ -23,6 +23,7 @@ import {TaskEdit} from "./taskEdit";
  *  - cancel editing (switch to `TaskDisplay` state)
  *
  * @extends UiComponent
+ * @author Oleg Barmin
  */
 export class TaskView extends UiComponent {
 
@@ -33,20 +34,26 @@ export class TaskView extends UiComponent {
      * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
      * @param {Number} number number of the task in the list of tasks
      * @param {Task} task task to render
+     * @param {TodoListId} todoListId ID of to-do list to which `TaskView` is related to
      */
-    constructor(element, eventBus, number, task) {
+    constructor(element, eventBus, number, task, todoListId) {
         super(element, eventBus);
 
         this.eventBus = eventBus;
         this.task = task;
         this.number = number;
-        this.currentState = new TaskDisplay(null, this.eventBus, null, null);
+        this.todoListId = todoListId;
+        this.currentState = new TaskDisplay(null, this.eventBus, null, null, this.todoListId);
 
         const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingStarted,
             occurredEvent => {
                 if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                     this.element.empty();
-                    this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task);
+                    this.currentState = new TaskEdit(this.element,
+                        this.eventBus,
+                        this.number,
+                        this.task,
+                        this.todoListId);
                     this.currentState.render();
                 }
             });
@@ -55,7 +62,11 @@ export class TaskView extends UiComponent {
             occurredEvent => {
                 if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                     this.element.empty();
-                    this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                    this.currentState = new TaskDisplay(this.element,
+                        this.eventBus,
+                        this.number,
+                        this.task,
+                        this.todoListId);
                     this.currentState.render();
                 }
             });
@@ -64,7 +75,10 @@ export class TaskView extends UiComponent {
             occurredEvent => {
                 if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                     this.element.empty();
-                    this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                    this.currentState = new TaskDisplay(this.element,
+                        this.eventBus,
+                        this.number, this.task,
+                        this.todoListId);
                     this.currentState.render();
                 }
             });

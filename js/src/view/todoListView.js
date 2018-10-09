@@ -10,6 +10,18 @@ import {TodoWidget} from "./todoWidget";
 export class TodoListView extends UiComponent {
 
     /**
+     * Creates `TodoListView` instance.
+     *
+     * @param {jQuery} element element to render into
+     * @param {EventBus} eventBus to subscribe and post component specific events.
+     * @param {TodoListId} todoListId ID of to-do list to render
+     */
+    constructor(element, eventBus, todoListId) {
+        super(element, eventBus);
+        this.todoListId = todoListId;
+    }
+
+    /**
      * Renders `TodoListView` component into given element.
      */
     render() {
@@ -24,8 +36,8 @@ export class TodoListView extends UiComponent {
                             <div class="todoWidget"></div>`);
 
 
-        let addTaskForm = new AddTaskForm(this.element.find(".addTaskForm"), this.eventBus);
-        let taskView = new TodoWidget(this.element.find(".todoWidget"), this.eventBus);
+        let addTaskForm = new AddTaskForm(this.element.find(".addTaskForm"), this.eventBus, this.todoListId);
+        let taskView = new TodoWidget(this.element.find(".todoWidget"), this.eventBus, this.todoListId);
 
         addTaskForm.render();
         taskView.render();
