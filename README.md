@@ -34,8 +34,25 @@ $ ./gradlew build
 ```
 
 ### Running
-To run server you have to execute following command:
+To run server you have to perform two steps:
+
+1) Build Jar.
+<p>To build jar you have to execute following command.
+
 ```sh
-$ ./gradlew run --args <port>
+$ ./gradlew buildJar
 ```
-If port number was not provided application will start on port 4567.
+It will be build into build/jar
+
+2) Run build jar.
+
+To build jar you have to execute following command:
+```sh
+$ java -jar /build/jar/todo-list-barmin-1.0-SNAPSHOT.jar
+```
+Server will start without users and on port 4567.
+
+If you want to run server with default user and specifient port run:
+```sh
+$ java -Dtodo.username=<username> -Dtodo.password=<password> -Dtodo.port=<port> -jar /build/jar/todo-list-barmin-1.0-SNAPSHOT.jar
+```
