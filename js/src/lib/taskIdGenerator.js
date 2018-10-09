@@ -4,6 +4,8 @@ import {TaskId} from "./identifiers";
  * Generates unique `TaskId` for `Task`.
  *
  * Current implementation based on uuid v4.
+ *
+ * @author Oleg Barmin
  */
 export class TaskIdGenerator {
 

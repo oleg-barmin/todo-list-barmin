@@ -4,6 +4,7 @@ import {Event, EventTypes} from "./event";
  * Occurs when task with specified ID need to be removed.
  *
  * @extends Event
+ * @author Oleg Barmin
  */
 export class TaskRemovalRequested extends Event {
 

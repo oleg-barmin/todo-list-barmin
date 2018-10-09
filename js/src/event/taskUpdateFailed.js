@@ -4,6 +4,7 @@ import {Event, EventTypes} from "./event";
  * Occurs when `TaskUpdateRequested` cannot be processed.
  *
  * @extends Event
+ * @author Oleg Barmin
  */
 export class TaskUpdateFailed extends Event {
 

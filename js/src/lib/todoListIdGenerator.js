@@ -4,6 +4,8 @@ import {TodoListId} from "./identifiers";
  * Generates unique `TodoListId` for `TodoList`.
  *
  * Current implementation based on uuid v4.
+ *
+ * @author Oleg Barmin
  */
 export class TodoListIdGenerator {
 

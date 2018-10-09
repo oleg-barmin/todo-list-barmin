@@ -4,6 +4,7 @@ import {Event, EventTypes} from "./event";
  * Occurs when end-user tries to cancel a task editing.
  *
  * @extends Event
+ * @author Oleg Barmin
  */
 export class TaskEditingCanceled extends Event {
 

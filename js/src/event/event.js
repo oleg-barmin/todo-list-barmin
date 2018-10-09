@@ -1,5 +1,7 @@
 /**
  * Is an event which happened in {@link TodoListApp} and marks what happened in `TodoListApp`.
+ *
+ * @author Oleg Barmin
  */
 export class Event {
 
@@ -67,6 +69,8 @@ export class Event {
  * `
  *
  * Implementation of "event bus" design pattern, based on jQuery.
+ *
+ * @author Oleg Barmin
  */
 export class EventBus {
 
@@ -152,6 +156,8 @@ export class EventBus {
 
 /**
  * Marks type of {@link Event} to {@link EventBus} bind and call callback of specified `EventType`.
+ *
+ * @author Oleg Barmin
  */
 export class EventType {
 

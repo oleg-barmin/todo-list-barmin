@@ -2,6 +2,8 @@ import {TodoListId} from "./lib/identifiers";
 
 /**
  * Allow to manage user to-do lists by sending requests to server.
+ *
+ * @author Oleg Barmin
  */
 export class UserLists {
 

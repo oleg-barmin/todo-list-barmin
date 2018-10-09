@@ -2,6 +2,9 @@ import {Event, EventTypes} from "./event";
 
 /**
  * Occurs when processing of `TaskRemovalRequested` event was performed successfully.
+ *
+ * @extends Event
+ * @author Oleg Barmin
  */
 export class TaskRemoved extends Event{
 

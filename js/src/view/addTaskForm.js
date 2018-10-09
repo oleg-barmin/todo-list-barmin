@@ -6,6 +6,7 @@ import {EventTypes} from "../event/event";
 /**
  * Component which responsible for rendering and processing of add task form.
  *
+ * @extends UiComponent
  * @author Oleg Barmin
  */
 export class AddTaskForm extends UiComponent {

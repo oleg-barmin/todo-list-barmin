@@ -4,6 +4,7 @@ import {Event, EventTypes} from "./event";
  * Occurred when new task was added on view.
  *
  * @extends Event
+ * @author Oleg Barmin
  */
 export class TaskAddRequested extends Event {
 

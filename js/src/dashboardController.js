@@ -11,6 +11,8 @@ import {Authentication} from "./authentication";
 
 /**
  * Event-based facade for {@link TodoList}.
+ *
+ * @author Oleg Barmin
  */
 export class DashboardController {
 

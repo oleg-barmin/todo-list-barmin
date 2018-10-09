@@ -6,6 +6,8 @@ import {UserLists} from "./userLists";
 
 /**
  * Starts a to-do list app.
+ *
+ * @author Oleg Barmin
  */
 export class TodoListApp {
 

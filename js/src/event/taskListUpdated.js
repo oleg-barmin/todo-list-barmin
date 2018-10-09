@@ -4,6 +4,7 @@ import {Event, EventTypes} from "./event";
  * Occurs when controller updated list of tasks.
  *
  * @extends Event
+ * @author Oleg Barmin
  */
 export class TaskListUpdated extends Event {
 

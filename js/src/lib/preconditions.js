@@ -1,6 +1,8 @@
 /**
  * Static methods that help a method or constructor check whether it was invoked
  * with correct parameters.
+ *
+ * @author Oleg Barmin
  */
 export class Preconditions {
 
@@ -67,6 +69,7 @@ export class Preconditions {
  * Indicates that a null or undefined argument was found while it wasn't expected.
  *
  * @extends Error
+ * @author Oleg Barmin
  */
 export class ParameterIsNotDefinedException extends Error {
 
@@ -105,6 +108,8 @@ export class DatePointsToFutureException extends Error {
 
 /**
  * Indicates that given task description is undefined, null or empty.
+ *
+ * @author Oleg Barmin
  */
 export class EmptyStringException extends Error {
 
@@ -117,7 +122,7 @@ export class EmptyStringException extends Error {
     constructor(value, stringName) {
         super(`String '${stringName}' should be a string and cannot be undefined, null or empty. Actual value: '${value}'`);
         this.name = this.constructor.name;
-        if(value === ""){
+        if (value === "") {
             this.message = "Task description cannot be empty."
         }
     }

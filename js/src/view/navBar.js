@@ -4,6 +4,7 @@ import {SignOutCompleted} from "../event/signOutCompleted";
 /**
  * Navigation bar which allows users to perform operation, which available across all pages.
  *
+ * @extends UiComponent
  * @author Oleg Barmin
  */
 export class NavBar extends UiComponent {

@@ -8,6 +8,7 @@ import {EventTypes} from "../event/event";
  * <p>End-user has to sign-in through this form to get access to
  * all to-do list application functionality.
  *
+ * @extends UiComponent
  * @author Oleg Barmin
  */
 export class SignInForm extends UiComponent {

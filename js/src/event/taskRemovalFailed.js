@@ -4,6 +4,7 @@ import {Event, EventTypes} from "./event";
  * Occurs when `TaskRemovalRequested` cannot be processed was failed.
  *
  * @extends Event
+ * @author Oleg Barmin
  */
 export class TaskRemovalFailed extends Event {
 

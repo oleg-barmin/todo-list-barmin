@@ -4,6 +4,7 @@ import {Event, EventTypes} from "./event";
  * Occurs when end-user submitted changes of a task description.
  *
  * @extends Event
+ * @author Oleg Barmin
  */
 export class TaskUpdateRequested extends Event {
 

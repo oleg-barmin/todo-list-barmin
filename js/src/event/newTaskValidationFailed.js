@@ -5,6 +5,7 @@ import {Event, EventTypes} from "./event";
  * Occurs when validation of description of new task in `NewTaskValidationFailed` was failed.
  *
  * @extends Event
+ * @author Oleg Barmin
  */
 export class NewTaskValidationFailed extends Event{
 

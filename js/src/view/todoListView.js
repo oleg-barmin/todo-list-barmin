@@ -5,6 +5,7 @@ import {TodoWidget} from "./todoWidget";
 /**
  * Component which responsible for rendering of `TodoList`.
  *
+ * @extends UiComponent
  * @author Oleg Barmin
  */
 export class TodoListView extends UiComponent {
