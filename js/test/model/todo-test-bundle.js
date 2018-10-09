@@ -579,14 +579,6 @@
             new EmptyStringException("", "any string"),
             "EmptyStringException when checkStringNotEmpty() argument contains only of multiple spaces."
         );
-
-        const futureDate = new Date();
-        futureDate.setFullYear(2020);
-        assert.throws(
-            () => Preconditions.checkDateInPast(futureDate, "any date"),
-            new DatePointsToFutureException(futureDate),
-            "DatePointsToFutureException when checkDateInPast() argument is date that point to future."
-        );
     });
 
     QUnit.module("TasksSorter should ");

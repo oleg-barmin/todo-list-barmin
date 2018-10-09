@@ -6,6 +6,8 @@
 
     /**
      * Is an event which happened in {@link TodoListApp} and marks what happened in `TodoListApp`.
+     *
+     * @author Oleg Barmin
      */
     class Event {
 
@@ -73,6 +75,8 @@
      * `
      *
      * Implementation of "event bus" design pattern, based on jQuery.
+     *
+     * @author Oleg Barmin
      */
     class EventBus {
 
@@ -158,6 +162,8 @@
 
     /**
      * Marks type of {@link Event} to {@link EventBus} bind and call callback of specified `EventType`.
+     *
+     * @author Oleg Barmin
      */
     class EventType {
 

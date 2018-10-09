@@ -14,25 +14,10 @@ export default [
         },
     },
     {
-        input: 'js/test/controller-test.js',
-        output: {
-            file: 'js/test/controller-test-bundle.js',
-            format: 'umd',
-        },
-    },
-    {
         input: 'js/src/todo-list-app.js',
         output: {
             name: "bundle",
             file: 'js/public/js/bundle.js',
-            format: 'umd',
-        }
-    },
-    {
-        input: 'js/test/view/todo-widget-test.js',
-        output: {
-            name: "bundle",
-            file: 'js/test/view/todo-widget-test-bundle.js',
             format: 'umd',
         }
     }
