@@ -1,190 +1,179 @@
-import {EmptyStringException, Preconditions} from "../lib/preconditions.js";
+import {Preconditions} from "../lib/preconditions.js";
 import {Task} from "./task.js";
 import {TaskIdGenerator} from "../lib/taskIdGenerator.js";
-import {TasksClone} from "../lib/todolists.js";
+import {TaskId} from "../lib/identifiers";
 
 /**
- * Tasks to-do.
+ * Sends requests to the server to manage tasks of one
+ * to-do list which ID was given during construction.
  *
- * Allows:
- *  - add new tasks
- *  - marks them as completed
- *  - update their descriptions
- *  - remove from list
+ * Allows to:
+ *  - add new tasks;
+ *  - mark tasks as completed;
+ *  - update tasks with new descriptions and status;
+ *  - remove tasks from list;
+ *  - retrieve sorted list of tasks (tasks are sorted by {@link TaskSorter}).
  *
- * Task is being sorted by:
+ * Tasks is being sorted by:
  * - Status (uncompleted tasks first, completed last).
  * - Date of last update.
  * - Lexicographically by description.
  *
- * Example:
- * ```
- *  const todoList = new TodoList();
- *  const firstTaskId = todoList.add("first task");
- *  const secondTaskId = todoList.add("second task");
- *  const thirdTaskId = todoList.add("third task");
- * ```
- * Task list will be sorted by creation date:
- * - third task
- * - second task
- * - first task
- *
- * Then lets complete third task.
- * ```
- * todoList.complete(thirdTaskId);
- * ```
- *
- * Now list will look this way:
- * - second task
- * - first task
- * - ~~third task~~
- *
- * if you update the first task, it will move to the top of the list.
- * ```
- * todoList.update(firstTaskId, "updated first task");
- * ```
- *
- * - <b>updated first task</b>
- * - second task
- * - ~~third task~~
+ * @author Oleg Barmin
  */
 export class TodoList {
 
     /**
      * Creates `TodoList` instance.
      *
-     * @param {TodoListId} todoListId ID of to-do list
+     * @param {TodoListId} todoListId ID of this to-do lists
+     * @param token token of user who works with this to-do list
      */
-    constructor(todoListId) {
+    constructor(todoListId, token) {
         this._tasksArray = [];
         this.todoListId = todoListId;
+        this.token = token;
     }
 
     /**
-     * Adds new task to `TodoList`.
+     * Sends request to add `Task` into this to-do list.
      *
      * @param {string} taskDescription description of the task to add
+     * @returns {Promise} promise to work with. If request was processed successfully
+     *                    promise will be resolved, otherwise it will be rejected.
      *
-     * @throws EmptyStringException if given task description is not defined or empty
-     *
-     * @returns {TaskId} id copy of ID of task that was added
+     * @throws EmptyStringException if given task description is empty.
      */
     add(taskDescription) {
-        taskDescription = Preconditions.checkStringNotEmpty(taskDescription, "task description");
+        Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
-        const taskId = TaskIdGenerator.generateID();
-        const currentDate = new Date();
-        const taskToAdd = new Task(taskId, taskDescription, currentDate);
-        this._tasksArray.push(taskToAdd);
+        return new Promise((resolve, reject) => {
+            const taskId = TaskIdGenerator.generateID();
+            const xmlHttpRequest = new XMLHttpRequest();
 
-        TaskSorter.sortTasksArray(this._tasksArray);
+            const createTaskPayload = {
+                taskDescription: taskDescription.trim()
+            };
 
-        return TasksClone.cloneObject(taskId);
+            xmlHttpRequest.onload = () => {
+                if (xmlHttpRequest.status === 200) {
+                    resolve()
+                } else {
+                    reject();
+                }
+            };
+
+            xmlHttpRequest.open("POST", `/lists/${this.todoListId.id}/${taskId.id}`);
+            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
+            xmlHttpRequest.send(JSON.stringify(createTaskPayload));
+        });
     }
 
     /**
-     * Finds task by its ID.
+     * Sends request to update task with given ID with new status and description.
      *
-     * @param {TaskId} taskId ID of specified task
-     * @returns {Task} task task with specified ID
-     * @private
-     */
-    _getTaskById(taskId) {
-        for (let cur of this._tasksArray) {
-            if (cur.id.compareTo(taskId) === 0) {
-                return cur;
-            }
-        }
-    }
-
-    /**
-     * Finds task by ID and marks it as completed.
-     *
-     * @param {TaskId} taskId ID of specified task
-     *
-     * @throws TaskNotFoundException if task with specified ID was not found
-     * @throws TaskAlreadyCompletedException if task with specified ID is already completed
-     */
-    complete(taskId) {
-        Preconditions.isDefined(taskId, "task ID");
-
-        const storedTask = this._getTaskById(taskId);
-
-        if (!storedTask) {
-            throw new TaskNotFoundException(taskId);
-        }
-
-        if (storedTask.completed) {
-            throw new TaskAlreadyCompletedException(taskId);
-        }
-        storedTask.completed = true;
-        storedTask.lastUpdateDate = new Date();
-        TaskSorter.sortTasksArray(this._tasksArray);
-    }
-
-    /**
-     * Finds task by ID and updates its description.
-     *
-     * @param {TaskId} taskId ID of the specified task
+     * @param {TaskId} taskId ID of task to update
      * @param {string} updatedDescription new description of the task
+     * @param {boolean} status new status of task
+     * @return {Promise} promise to work with. If request was processed successfully
+     *                   promise will be resolved, otherwise it will be rejected.
      *
-     * @throws TaskNotFoundException if task with specified ID was not found
-     * @throws CannotUpdateCompletedTaskException if try to updated completed task
+     * @throws ParameterIsNotDefinedException if given `taskId` is undefined or null
+     * @throws EmptyStringException if given description is undefined, null  or empty
      */
-    update(taskId, updatedDescription) {
+    update(taskId, updatedDescription, status = false) {
         Preconditions.isDefined(taskId, "task ID");
-        updatedDescription = Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
+        Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
 
-        const taskToUpdate = this._getTaskById(taskId);
+        return new Promise((resolve, reject) => {
+            const xmlHttpRequest = new XMLHttpRequest();
 
-        if (!taskToUpdate) {
-            throw new TaskNotFoundException(taskId);
-        }
+            const updateTaskPayload = {
+                taskStatus: status,
+                taskDescription: updatedDescription.trim()
+            };
 
-        if (taskToUpdate.completed) {
-            throw new CannotUpdateCompletedTaskException(taskId);
-        }
+            xmlHttpRequest.onload = () => {
+                if (xmlHttpRequest.status === 200) {
+                    resolve()
+                } else {
+                    reject();
+                }
+            };
 
-        taskToUpdate.description = updatedDescription;
-        taskToUpdate.lastUpdateDate = new Date();
-
-        TaskSorter.sortTasksArray(this._tasksArray);
+            xmlHttpRequest.open("PUT", `/lists/${this.todoListId.id}/${taskId.id}`);
+            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
+            xmlHttpRequest.send(JSON.stringify(updateTaskPayload));
+        });
     }
 
     /**
-     * Removes task with given ID from to-do list.
+     * Sends request to remove task with given ID.
      *
      * @param {TaskId} taskId ID of task to delete
+     * @return {Promise} promise to work with. If request was processed successfully
+     *                  promise will be resolved, otherwise it will be rejected.
      *
-     * @throws TaskNotFoundException if task with specified ID was not found
+     * @throws ParameterIsNotDefinedException if given `taskId` is undefined or null
      */
     remove(taskId) {
         Preconditions.isDefined(taskId, "task ID");
 
-        const desiredTask = this._tasksArray.find((element, index, array) => {
-            if (element.id.compareTo(taskId) === 0) {
-                array.splice(index, 1);
-                return true;
-            }
-        });
+        return new Promise((resolve, reject) => {
+            const xmlHttpRequest = new XMLHttpRequest();
 
-        if (!desiredTask) {
-            throw new TaskNotFoundException(taskId);
-        }
+            xmlHttpRequest.onload = () => {
+                if (xmlHttpRequest.status === 200) {
+                    resolve();
+                } else {
+                    reject();
+                }
+            };
+
+            xmlHttpRequest.open("DELETE", `/lists/${this.todoListId.id}/${taskId.id}`);
+            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
+            xmlHttpRequest.send();
+        });
     }
 
     /**
-     * Returns copy of all tasks stored in to-do list.
+     * Sends request to retrieve all tasks of this `TodoList`.
      *
-     * @returns {Array} tasksArray copy of array with task
+     * @return {Promise} promise to work with. If request was processed successfully
+     *                   promise will be resolved and sorted array of `Task`s will be returned,
+     *                   otherwise it will be rejected.
      */
     all() {
-        return TasksClone.cloneArray(this._tasksArray);
+        return new Promise((resolve, reject) => {
+            const xmlHttpRequest = new XMLHttpRequest();
+
+            xmlHttpRequest.onload = () => {
+                if (xmlHttpRequest.status === 200) {
+                    const rawTasks = JSON.parse(xmlHttpRequest.response);
+                    const tasks = rawTasks.map((el) => {
+                        return new Task(new TaskId(el.id.value),
+                            el.description,
+                            new Date(el.creationDate),
+                            el.completed,
+                            new Date(el.lastUpdateDate))
+                    });
+                    resolve(TaskSorter.sortTasksArray(tasks));
+                } else {
+                    reject();
+                }
+            };
+
+            xmlHttpRequest.open("GET", `/lists/${this.todoListId.id}`);
+            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
+            xmlHttpRequest.send();
+        });
     }
 }
 
 /**
  * Stores algorithm to sort an array of  `Task`.
+ *
+ * @author Oleg Barmin
  */
 export class TaskSorter {
 
@@ -198,7 +187,7 @@ export class TaskSorter {
      * @param {Array} array with tasks to sort
      */
     static sortTasksArray(array) {
-        array.sort((firstTask, secondTask) => {
+        return array.sort((firstTask, secondTask) => {
             if (firstTask.completed === secondTask.completed) {
                 const compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
                 if (compareByDateResult !== 0) {
@@ -213,60 +202,5 @@ export class TaskSorter {
 
             return firstTask.completed ? 1 : -1;
         });
-    }
-}
-
-/**
- * Indicates that task was not found.
- *
- * @extends Error
- */
-export class TaskNotFoundException extends Error {
-
-    /**
-     * Crates `TaskNotFoundException` instance.
-     *
-     * @param {TaskId} taskId ID if the task that was not found
-     */
-    constructor(taskId) {
-        super(`Task with ID ${taskId.id} was not found.`);
-        this.name = this.constructor.name;
-    }
-}
-
-
-/**
- * Indicates that task was already completed.
- *
- * @extends Error
- */
-export class TaskAlreadyCompletedException extends Error {
-
-    /**
-     * Crates `TaskAlreadyCompletedException` instance.
-     *
-     * @param {TaskId} taskId  ID of task which was already completed.
-     */
-    constructor(taskId) {
-        super(`Task with ID ${taskId.id} is alredy completed.`);
-        this.name = this.constructor.name;
-    }
-}
-
-/**
- * Occurs when trying to update completed task.
- *
- * @extends Error
- */
-export class CannotUpdateCompletedTaskException extends Error {
-
-    /**
-     * Crates `CannotUpdateCompletedTaskException` instance.
-     *
-     * @param {TaskId} taskId ID of task which was already completed before update attempt.
-     */
-    constructor(taskId) {
-        super(`Completed tasks cannot be updated. Task with ID: ${taskId} is completed.`);
-        this.name = this.constructor.name;
     }
 }
