@@ -2,7 +2,6 @@ import {DashboardController} from "../dashboardController";
 import {Page} from "./page";
 import {NavBar} from "../view/navBar";
 import {TodoListView} from "../view/todoListView";
-import {TodoList} from "../model/todo-list";
 import {TodoListIdGenerator} from "../lib/todoListIdGenerator";
 
 /**
@@ -65,9 +64,9 @@ export class DashboardPage extends Page {
         const prepareDashboard = todoListsIds => {
             if (todoListsIds.length === 0) {
                 // if user has no lists - create one
-                const todoList = new TodoList(TodoListIdGenerator.generateID(), this.authentication.token);
-                this.userLists.create(todoList.todoListId)
-                    .then(() => renderTodoListsArray([todoList.todoListId]));
+                const initialTodoListId = TodoListIdGenerator.generateID();
+                this.userLists.create(initialTodoListId)
+                    .then(() => renderTodoListsArray([initialTodoListId]));
             }
             else {
                 renderTodoListsArray(todoListsIds)
