@@ -1,7 +1,7 @@
 import {UiComponent} from "./uiComponent";
 import {TaskRemovalRequested} from "../event/taskRemovalRequested";
-import {TaskCompletionRequested} from "../event/taskCompletionRequested";
 import {TaskEditingStarted} from "../event/taskEditingStarted";
+import {TaskUpdateRequested} from "../event/taskUpdateRequested";
 
 /**
  * Component which responsible for rendering and processing of task in display state.
@@ -58,7 +58,7 @@ export class TaskDisplay extends UiComponent {
         const editBtn = this.element.find(`.${editBtnClass}`);
         const taskDescriptionDiv = this.element.find(`.${taskDescriptionDivClass}`);
 
-        completeBtn.click(() => this.eventBus.post(new TaskCompletionRequested(task.id)));
+        completeBtn.click(() => this.eventBus.post(new TaskUpdateRequested(task.id, escapedTaskDescription, true)));
         editBtn.click(() => this.eventBus.post(new TaskEditingStarted(task.id)));
         removeBtn.click(() => {
             if (confirm("Delete the task?")) {

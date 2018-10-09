@@ -99,7 +99,7 @@ export class TaskEdit extends UiComponent {
                 this.eventBus.post(new TaskEditingCanceled(this.task.id));
                 return;
             }
-            this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription));
+            this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription, false));
         };
 
         saveBtn.click(saveCallback);

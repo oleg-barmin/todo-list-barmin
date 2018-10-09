@@ -1,5 +1,5 @@
 import {UiComponent} from "./uiComponent";
-import {AddTaskRequest} from "../event/addTaskRequest";
+import {TaskAddRequest} from "../event/taskAddRequest";
 import {EventTypes} from "../event/event";
 
 
@@ -83,10 +83,10 @@ export class AddTaskForm extends UiComponent {
         eventBus.subscribe(EventTypes.NewTaskAdded, newTaskAddedCallback);
         eventBus.subscribe(EventTypes.NewTaskValidationFailed, newTaskValidationFailedCallback);
 
-        addTaskBtn.click(() => eventBus.post(new AddTaskRequest(descriptionTextArea.val())));
+        addTaskBtn.click(() => eventBus.post(new TaskAddRequest(descriptionTextArea.val())));
         descriptionTextArea.keydown(keyboardEvent => {
             if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === "Enter") {
-                eventBus.post(new AddTaskRequest(descriptionTextArea.val()));
+                eventBus.post(new TaskAddRequest(descriptionTextArea.val()));
             }
         });
     }

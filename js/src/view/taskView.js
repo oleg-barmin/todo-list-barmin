@@ -70,7 +70,7 @@ export class TaskView extends UiComponent {
             });
 
         const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemoved,
-            (occurredEvent) => {
+            occurredEvent => {
                 if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                     this.element.remove();
                     this.eventBus.unsubscribe(EventTypes.TaskEditingStarted, startTaskEditingHandler);
@@ -79,13 +79,6 @@ export class TaskView extends UiComponent {
                     this.eventBus.unsubscribe(EventTypes.TaskUpdated, taskUpdatePerformedHandler);
                 }
             });
-    }
-
-    /**
-     * todo jsDoc
-     */
-    isEditing() {
-        return this.currentState instanceof TaskEdit;
     }
 
     /**
