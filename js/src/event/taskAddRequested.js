@@ -5,15 +5,17 @@ import {Event, EventTypes} from "./event";
  *
  * @extends Event
  */
-export class TaskAddRequest extends Event {
+export class TaskAddRequested extends Event {
 
     /**
-     * Creates `TaskAddRequest` instance.
+     * Creates `TaskAddRequested` instance.
      *
      * @param {string} taskDescription description of new task
+     * @param {TodoListId} todoListId ID of `TodoList` to which task was added
      */
-    constructor(taskDescription){
+    constructor(taskDescription, todoListId) {
         super(EventTypes.TaskAddRequest);
+        this.todoListId = todoListId;
         this.taskDescription = taskDescription;
     }
 }

@@ -11,9 +11,11 @@ export class TaskRemovalRequested extends Event {
      * Creates `TaskRemovalRequested` instance.
      *
      * @param {TaskId} taskId ID of task to remove.
+     * @param {TodoListId} todoListId ID of `TodoList` which task was removed
      */
-    constructor(taskId) {
+    constructor(taskId, todoListId) {
         super(EventTypes.TaskRemovalRequested);
         this.taskId = taskId;
+        this.todoListId = todoListId;
     }
 }
