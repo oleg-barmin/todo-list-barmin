@@ -43,26 +43,6 @@ export class Preconditions {
         }
         return stringToCheck;
     }
-
-
-    /**
-     * Validates that given date point to future.
-     *
-     * @param {Date} dateToCheck date to validate
-     * @param {string} parameterName name of parameter being checked
-     *
-     * @throws DatePointsToFutureException if given date points to future
-     * @throws ParameterIsNotDefinedException if given date is not defined
-     *
-     * @returns {Date} date given date if it is valid
-     */
-    static checkDateInPast(dateToCheck, parameterName) {
-        Preconditions.isDefined(dateToCheck, parameterName);
-        if ((new Date() - dateToCheck) < 0) {
-            throw new DatePointsToFutureException(dateToCheck)
-        }
-        return dateToCheck;
-    }
 }
 
 /**
@@ -81,27 +61,6 @@ export class ParameterIsNotDefinedException extends Error {
      */
     constructor(value, parameterName) {
         super(`Parameter '${parameterName}' should be not null and not undefined, Actual value: '${value}'`);
-        this.name = this.constructor.name;
-    }
-
-    code() {
-    }
-}
-
-/**
- * Indicates that date that was given to date point to future.
- *
- * @extends Error
- */
-export class DatePointsToFutureException extends Error {
-
-    /**
-     * Crates `DatePointsToFutureException` instance.
-     *
-     * @param {Date} date date which point to future.
-     */
-    constructor(date) {
-        super(`Given date '${date}' points to future.`);
         this.name = this.constructor.name;
     }
 }
