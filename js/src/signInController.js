@@ -39,7 +39,7 @@ export class SignInController {
         const credentialsSubmittedHandler = eventBus.subscribe(EventTypes.CredentialsSubmitted,
             credentialsSubmittedRequestCallback);
 
-        eventBus.subscribe(EventTypes.SignOutCompleted,
-            () => eventBus.unsubscribe(EventTypes.SignOutCompleted, credentialsSubmittedHandler))
+        eventBus.subscribe(EventTypes.SignInCompleted,
+            () => eventBus.unsubscribe(EventTypes.CredentialsSubmitted, credentialsSubmittedHandler));
     }
 }
