@@ -8,7 +8,6 @@ import {TaskUpdateFailed} from "./event/taskUpdateFailed";
 import {TaskRemoved} from "./event/taskRemoved";
 import {TaskUpdated} from "./event/taskUpdated";
 import {Authentication} from "./authentication";
-import {TodoListIdGenerator} from "./lib/todoListIdGenerator";
 
 /**
  * Event-based facade for {@link TodoList}.
@@ -23,71 +22,56 @@ export class DashboardController {
      *
      * @param {EventBus} eventBus evenBus to work with
      * @param {Authentication} authentication to authorized operations
-     * @param {UserLists} userLists service to work with user lists.
+     * @param {Array} todoListIds ID of `TodoList`s to work with
      */
-    constructor(eventBus, authentication, userLists) {
-        this.userLists = userLists;
+    constructor(eventBus, authentication, todoListIds) {
         this.eventBus = eventBus;
         this.authentication = authentication;
+        this.todoLists = new Map();
 
-        /**
-         * Creates initial to-do list for new user.
-         */
-        const createInitialsTodoList = () => {
-            const todoList = new TodoList(TodoListIdGenerator.generateID(), authentication.token);
-            this.userLists.create(todoList.todoListId)
-                .then(() => {
-                    this.todoList = todoList;
-                });
-        };
+        todoListIds.forEach(el => {
+            this.todoLists.set(el.id, new TodoList(el, this.authentication.token));
 
-        this.userLists.readLists()
-            .then(todoListsIds => {
-                    if (todoListsIds.length === 0) {
-                        // if user has no lists - create one
-                        createInitialsTodoList();
-                    }
-                    else {
-                        this.todoList = new TodoList(todoListsIds[0], authentication.token);
-                    }
-                }
-            );
+            this.todoLists.get(el.id).all().then(tasks => {
+                this.eventBus.post(new TaskListUpdated(tasks, el));
+            }).catch(() => {
+                alert("task list update failed.")
+            });
+        });
 
         /**
          * Sends requests to receive all tasks of this `TodoList`.
          *
-         * If response code was 200: posts `TaskListUpdated` event with received tasks,
-         * otherwise:
+         * If response code was 200: posts `TaskListUpdated` event with received tasks
+         * of to-do list which tasks was updated.
          */
-        const updateTaskList = () => {
-            this.todoList.all()
+        const updateTaskList = (todoListId) => {
+            this.todoLists.get(todoListId.id).all()
                 .then(tasks => {
-                    this.eventBus.post(new TaskListUpdated(tasks));
-                })
-                .catch(() => {
-                    alert("task list update failed.")
-                });
+                    this.eventBus.post(new TaskListUpdated(tasks, todoListId));
+                }).catch(() => {
+                alert("task list update failed.")
+            });
         };
 
         /**
-         * Adds new task with description stored in occurred `TaskAddRequest` to `TodoList`.
+         * Adds new task with description stored in occurred `TaskAddRequested` to `TodoList`.
          *
          * if given description is valid:
          *      - posts {@link NewTaskAdded}
          *      - posts {@link TaskListUpdated} with new task list.
          * Otherwise {@link NewTaskValidationFailed} will be posted
          *
-         * @param {TaskAddRequest} addTaskEvent `TaskAddRequest` with description of the task to add.
+         * @param {TaskAddRequested} taskAddRequested `TaskAddRequested` with description of the task to add.
          */
-        const addTaskRequestCallback = addTaskEvent => {
+        const addTaskRequestCallback = taskAddRequested => {
             try {
-                this.todoList.add(addTaskEvent.taskDescription)
+                this.todoLists.get(taskAddRequested.todoListId.id).add(taskAddRequested.taskDescription)
                     .then(() => {
                         this.eventBus.post(new NewTaskAdded());
-                        updateTaskList();
+                        updateTaskList(taskAddRequested.todoListId);
                     })
                     .catch(() => alert("task adding failed."));
-
             } catch (e) {
                 this.eventBus.post(new NewTaskValidationFailed(e.message));
             }
@@ -103,10 +87,10 @@ export class DashboardController {
          */
         const taskRemovalRequestCallback = taskRemovalEvent => {
             try {
-                this.todoList.remove(taskRemovalEvent.taskId)
+                this.todoLists.get(taskRemovalEvent.todoListId.id).remove(taskRemovalEvent.taskId)
                     .then(() => {
                         this.eventBus.post(new TaskRemoved(taskRemovalEvent.taskId));
-                        updateTaskList();
+                        updateTaskList(taskRemovalEvent.todoListId);
                     });
             } catch (e) {
                 this.eventBus.post(new TaskRemovalFailed("Task removal fail."))
@@ -127,12 +111,12 @@ export class DashboardController {
          */
         const taskUpdateRequestCallback = taskUpdateEvent => {
             try {
-                this.todoList.update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription, taskUpdateEvent.status)
+                this.todoLists.get(taskUpdateEvent.todoListId.id).update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription, taskUpdateEvent.status)
                     .then(() => {
                         if (!taskUpdateEvent.status) {
                             this.eventBus.post(new TaskUpdated(taskUpdateEvent.taskId));
                         }
-                        updateTaskList();
+                        updateTaskList(taskUpdateEvent.todoListId);
                     });
             } catch (e) {
                 this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId,
