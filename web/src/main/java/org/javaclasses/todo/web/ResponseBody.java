@@ -1,9 +1,6 @@
 package org.javaclasses.todo.web;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.util.Date;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -22,8 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 class ResponseBody<V> {
 
     private static final ResponseBody<?> EMPTY = new ResponseBody<>();
-    private static final Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateToLongAdapter())
-                                                      .create();
+    private static final Gson gson = GsonFactory.getGson();
     private final V value;
 
     /**
