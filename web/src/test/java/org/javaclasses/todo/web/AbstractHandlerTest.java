@@ -1,6 +1,8 @@
 package org.javaclasses.todo.web;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.entity.Task;
 import org.javaclasses.todo.model.entity.TaskId;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import static io.restassured.RestAssured.given;
 import static org.javaclasses.todo.web.Configurations.getContentType;
@@ -34,6 +37,8 @@ import static org.javaclasses.todo.web.given.TestRoutesProvider.getTodoListUrl;
 abstract class AbstractHandlerTest {
 
     private final TestApplicationEnv testApplicationEnv = new TestApplicationEnv();
+    private static final Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateToLongAdapter())
+                                                      .create();
 
     /**
      * Creates new {@link RequestSpecification} to test cases with multiple users.
@@ -118,8 +123,9 @@ abstract class AbstractHandlerTest {
      * @return {@code Task} with given ID
      */
     Task readTask(TodoListId todoListId, TaskId taskId, RequestSpecification specification) {
-        return specification.get(getTaskUrl(todoListId, taskId))
-                            .as(Task.class);
+        String json = specification.get(getTaskUrl(todoListId, taskId))
+                                   .asString();
+        return gson.fromJson(json, Task.class);
     }
 
     /**
@@ -145,7 +151,8 @@ abstract class AbstractHandlerTest {
      * @return {@code Collection} of all {@code SampleTask}s from {@code TodoList} with given ID.
      */
     Collection<SampleTask> readTasks(TodoListId todoListId, RequestSpecification specification) {
-        return toSampleTasksCollection(specification.get(getTodoListUrl(todoListId))
-                                                    .as(Task[].class));
+        String json = specification.get(getTodoListUrl(todoListId))
+                                   .asString();
+        return toSampleTasksCollection(gson.fromJson(json, Task[].class));
     }
 }

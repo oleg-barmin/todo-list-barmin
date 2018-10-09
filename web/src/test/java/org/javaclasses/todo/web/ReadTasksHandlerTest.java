@@ -1,6 +1,8 @@
 package org.javaclasses.todo.web;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.javaclasses.todo.model.entity.Task;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
@@ -30,6 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @DisplayName("ReadTaskHandler should")
 class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
+
+    private static final Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateToLongAdapter())
+                                                      .create();
 
     // Bob data
     private final SampleUser bob = getBob();
@@ -51,8 +57,10 @@ class ReadTasksHandlerTest extends AbstractSecuredHandlerTest {
         response.then()
                 .statusCode(HTTP_OK);
 
-        Collection<SampleTask> receivedTasks = toSampleTasksCollection(response.body()
-                                                                               .as(Task[].class));
+        String json = response.body()
+                              .asString();
+        Collection<SampleTask> receivedTasks = toSampleTasksCollection(gson.fromJson(json, Task[].class));
+
         assertTrue(uploadedSampleTasks.containsAll(Lists.newArrayList(receivedTasks)),
                    "provide all tasks of to-do list, but it don't.");
     }
