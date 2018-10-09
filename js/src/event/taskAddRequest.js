@@ -5,15 +5,15 @@ import {Event, EventTypes} from "./event";
  *
  * @extends Event
  */
-export class AddTaskRequest extends Event{
+export class TaskAddRequest extends Event {
 
     /**
-     * Creates `AddTaskRequest` instance.
+     * Creates `TaskAddRequest` instance.
      *
      * @param {string} taskDescription description of new task
      */
     constructor(taskDescription){
-        super(EventTypes.AddTaskRequest);
+        super(EventTypes.TaskAddRequest);
         this.taskDescription = taskDescription;
     }
 }

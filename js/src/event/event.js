@@ -167,7 +167,7 @@ export class EventType {
 
 
 export const EventTypes = {
-    AddTaskRequest: new EventType("AddTaskRequest"),
+    TaskAddRequest: new EventType("TaskAddRequest"),
     NewTaskAdded: new EventType("NewTaskAdded"),
     TaskListUpdated: new EventType("TaskListUpdated"),
     TaskCompletionRequested: new EventType("TaskCompletionRequested"),
