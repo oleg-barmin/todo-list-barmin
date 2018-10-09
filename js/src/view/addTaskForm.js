@@ -81,8 +81,10 @@ export class AddTaskForm extends UiComponent {
          *        error message to display.
          */
         const newTaskValidationFailedCallback = newTaskValidationFailedEvent => {
-            errorDiv.removeClass("invisible");
-            showErrorCallback(newTaskValidationFailedEvent.errorMsg);
+            if (newTaskValidationFailedEvent.todoListId.id === this.todoListId.id) {
+                errorDiv.removeClass("invisible");
+                showErrorCallback(newTaskValidationFailedEvent.errorMsg);
+            }
         };
 
         eventBus.subscribe(EventTypes.NewTaskAdded, newTaskAddedCallback);

@@ -52,7 +52,7 @@ export class DashboardController {
                 .then(tasks => {
                     this.eventBus.post(new TaskListUpdated(tasks, todoListId));
                 }).catch(() => {
-                alert("task list update failed.")
+                alert("Failed to update tasks list, try to reload page.")
             });
         };
 
@@ -72,10 +72,11 @@ export class DashboardController {
                     .then(() => {
                         this.eventBus.post(new NewTaskAdded());
                         updateTaskList(taskAddRequested.todoListId);
-                    })
-                    .catch(() => alert("task adding failed."));
+                    }).catch(() => {
+                    alert("Failed to add task, try to reload page.")
+                });
             } catch (e) {
-                this.eventBus.post(new NewTaskValidationFailed(e.message));
+                this.eventBus.post(new NewTaskValidationFailed(e.message, taskAddRequested.todoListId));
             }
         };
 
@@ -93,7 +94,9 @@ export class DashboardController {
                     .then(() => {
                         this.eventBus.post(new TaskRemoved(taskRemovalEvent.taskId));
                         updateTaskList(taskRemovalEvent.todoListId);
-                    });
+                    }).catch(() => {
+                    alert("Failed to remove task, try to reload page.")
+                });
             } catch (e) {
                 this.eventBus.post(new TaskRemovalFailed("Task removal fail."))
             }
@@ -119,7 +122,9 @@ export class DashboardController {
                             this.eventBus.post(new TaskUpdated(taskUpdateEvent.taskId));
                         }
                         updateTaskList(taskUpdateEvent.todoListId);
-                    });
+                    }).catch(() => {
+                    alert("Failed to update task, try to reload page.")
+                });
             } catch (e) {
                 this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId,
                     "New task description cannot be empty."))

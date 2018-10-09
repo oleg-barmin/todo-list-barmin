@@ -13,9 +13,11 @@ export class NewTaskValidationFailed extends Event{
      * Creates `NewTaskValidationFailed` instance.
      *
      * @param {string} errorMsg description of error
+     * @param {TodoListId} todoListId ID of to-do list
      */
-    constructor(errorMsg){
+    constructor(errorMsg, todoListId) {
         super(EventTypes.NewTaskValidationFailed);
         this.errorMsg = errorMsg;
+        this.todoListId = todoListId;
     }
 }
