@@ -28,7 +28,7 @@ export class SignInForm extends UiComponent {
      */
     render() {
         this.element.append(`<div class="row justify-content-md-center">
-        <div class="col-4" id="login-form">
+        <div class="col-4 login-form">
             <h2 class="text-center">Sign In</h2>
             <input class="usernameInput form-control" placeholder="Username">
             <input class="passwordInput mt-2 form-control" placeholder="Password" type="password">
@@ -37,7 +37,7 @@ export class SignInForm extends UiComponent {
         </div>
     </div>`);
 
-        const loginDiv = this.element.find("#login-form");
+        const loginDiv = this.element.find(".login-form");
 
         const usernameInput = loginDiv.find(".usernameInput");
         const passwordInput = loginDiv.find(".passwordInput");
@@ -45,18 +45,20 @@ export class SignInForm extends UiComponent {
         const loginBtn = loginDiv.find(".loginBtn");
 
         /**
-         * Shows error label.
+         * Posts `CredentialsSubmitted` with typed in username and password.
          */
-        const signInFailedCallback = () => {
-            errorLabel.removeClass("d-none");
-        };
-
-        this.eventBus.subscribe(EventTypes.SignInFailed, signInFailedCallback);
-
-        loginBtn.click(() => {
+        const sendSubmittedCredentials = () => {
             const username = usernameInput.val();
             const password = passwordInput.val();
             this.eventBus.post(new CredentialsSubmitted(username, password))
-        })
+        };
+
+        this.eventBus.subscribe(EventTypes.SignInFailed, () => errorLabel.removeClass("d-none"));
+        loginBtn.click(sendSubmittedCredentials);
+        loginDiv.keydown(keyboardEvent => {
+            if (keyboardEvent.key === "Enter") {
+                sendSubmittedCredentials();
+            }
+        });
     }
 }
