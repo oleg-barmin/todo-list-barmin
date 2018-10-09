@@ -24,35 +24,34 @@ manages to-do lists and tasks on its own and then uploads it to the server (curr
 * [npm](https://www.npmjs.com/) - to build JS module.
 
 ### Installation
-Before work with application you have to resolve all npm dependencies:
+Before work with application you have to resolve all Gradle dependencies:
 ```sh
-$ npm build
+$ ./gradlew clean build
 ```
-and Gradle dependencies.
+
+And npm dependencies:
 ```sh
-$ ./gradlew build
+$ npm install
 ```
 
 ### Running
 To run server you have to perform two steps:
 
-1) Build Jar.
-<p>To build jar you have to execute following command.
-
+#####First step: build jar.
+To build jar you have to execute following command.
 ```sh
 $ ./gradlew buildJar
 ```
 It will be build into build/jar
 
-2) Run build jar.
-
-To build jar you have to execute following command:
+#####Second step: run build jar.
+To start server with default setting (no preregistered users) you have to execute following command:
 ```sh
-$ java -jar /build/jar/todo-list-barmin-1.0-SNAPSHOT.jar
+$ java -jar build/jar/todo-list-barmin-1.0-SNAPSHOT.jar
 ```
 Server will start without users and on port 4567.
 
-If you want to run server with default user and specifient port run:
+If you want to run server with preregistered user and on desired port run:
 ```sh
-$ java -Dtodo.username=<username> -Dtodo.password=<password> -Dtodo.port=<port> -jar /build/jar/todo-list-barmin-1.0-SNAPSHOT.jar
+$ java -Dtodo.username=<username> -Dtodo.password=<password> -Dtodo.port=<port> -jar build/jar/todo-list-barmin-1.0-SNAPSHOT.jar
 ```
