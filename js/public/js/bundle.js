@@ -204,7 +204,58 @@
          * Creates `Authentication` instance.
          */
         constructor() {
-            this.token = null;
+            this._token = null;
+            this.tokenHeader = "X-Todo-Token";
+        }
+
+        /**
+         * Returns stored token.
+         *
+         * @return {string} token value
+         */
+        get token() {
+            return this._token;
+        }
+
+        /**
+         * @param value value attempted to set to token.
+         * @throws Error if try to call this method.
+         */
+        static set token(value) {
+            throw new Error("Authentication token cannot be set from outside of class.")
+        }
+
+        /**
+         * Validates if session token exists in local storage,
+         * if it is then sends request to validate is this token expired.
+         *
+         * @return {Promise} to work with, which is rejected
+         * if token wasn't stored in local storage or stored token expired,
+         * otherwise promise is resolved.
+         */
+        checkSignInUser() {
+            return new Promise((resolve, reject) => {
+                const token = localStorage.getItem(this.tokenHeader);
+                if (token) {
+                    const xmlHttpRequest = new XMLHttpRequest();
+                    xmlHttpRequest.onload = () => {
+                        if (xmlHttpRequest.status === 200) {
+                            this._token = token;
+                            resolve();
+                        } else {
+                            localStorage.removeItem(this.tokenHeader);
+                            this._token = null;
+                            reject();
+                        }
+                    };
+                    xmlHttpRequest.open("GET", "/auth");
+                    xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
+                    xmlHttpRequest.send();
+                } else {
+                    reject();
+                }
+            });
+
         }
 
         /**
@@ -227,8 +278,9 @@
 
                 xmlHttpRequest.onload = () => {
                     if (xmlHttpRequest.status === 200) {
-                        this.token = JSON.parse(xmlHttpRequest.response).value;
-                        resolve(this.token);
+                        this._token = JSON.parse(xmlHttpRequest.response).value;
+                        localStorage.setItem(this.tokenHeader, this._token);
+                        resolve(this._token);
                     } else {
                         reject(new AuthenticationFailedException());
                     }
@@ -255,14 +307,15 @@
                 xmlHttpRequest.onload = () => {
                     if (xmlHttpRequest.status === 200) {
                         resolve();
-                        this.token = null;
+                        this._token = null;
                     } else {
                         reject();
                     }
+                    localStorage.removeItem(this.tokenHeader);
                 };
 
                 xmlHttpRequest.open("DELETE", "/auth");
-                xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
+                xmlHttpRequest.setRequestHeader(this.tokenHeader, this._token);
                 xmlHttpRequest.send();
             });
         }
@@ -287,6 +340,8 @@
     /**
      * Static methods that help a method or constructor check whether it was invoked
      * with correct parameters.
+     *
+     * @author Oleg Barmin
      */
     class Preconditions {
 
@@ -327,32 +382,13 @@
             }
             return stringToCheck;
         }
-
-
-        /**
-         * Validates that given date point to future.
-         *
-         * @param {Date} dateToCheck date to validate
-         * @param {string} parameterName name of parameter being checked
-         *
-         * @throws DatePointsToFutureException if given date points to future
-         * @throws ParameterIsNotDefinedException if given date is not defined
-         *
-         * @returns {Date} date given date if it is valid
-         */
-        static checkDateInPast(dateToCheck, parameterName) {
-            Preconditions.isDefined(dateToCheck, parameterName);
-            if ((new Date() - dateToCheck) < 0) {
-                throw new DatePointsToFutureException(dateToCheck)
-            }
-            return dateToCheck;
-        }
     }
 
     /**
      * Indicates that a null or undefined argument was found while it wasn't expected.
      *
      * @extends Error
+     * @author Oleg Barmin
      */
     class ParameterIsNotDefinedException extends Error {
 
@@ -366,31 +402,12 @@
             super(`Parameter '${parameterName}' should be not null and not undefined, Actual value: '${value}'`);
             this.name = this.constructor.name;
         }
-
-        code() {
-        }
-    }
-
-    /**
-     * Indicates that date that was given to date point to future.
-     *
-     * @extends Error
-     */
-    class DatePointsToFutureException extends Error {
-
-        /**
-         * Crates `DatePointsToFutureException` instance.
-         *
-         * @param {Date} date date which point to future.
-         */
-        constructor(date) {
-            super(`Given date '${date}' points to future.`);
-            this.name = this.constructor.name;
-        }
     }
 
     /**
      * Indicates that given task description is undefined, null or empty.
+     *
+     * @author Oleg Barmin
      */
     class EmptyStringException extends Error {
 
@@ -403,40 +420,9 @@
         constructor(value, stringName) {
             super(`String '${stringName}' should be a string and cannot be undefined, null or empty. Actual value: '${value}'`);
             this.name = this.constructor.name;
-            if(value === ""){
+            if (value === "") {
                 this.message = "Task description cannot be empty.";
             }
-        }
-    }
-
-    /**
-     * Task to do.
-     *
-     * It stores task ID, its description, status (is it completed or not),
-     * date of creation and date of last update (if task wasn't updated
-     * the date of creation equals to last update date).
-     */
-    class Task {
-
-        /**
-         * Creates task instance.
-         *
-         * @param {TaskId} id task ID
-         * @param {string} description description of the task
-         * @param {Date} creationDate date when task was created
-         *
-         */
-        constructor(id, description, creationDate) {
-            this.id = id;
-            this.description = description;
-            this.completed = false;
-            this.creationDate = creationDate;
-            this.lastUpdateDate = creationDate;
-        }
-
-        toString() {
-            return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
-                + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
         }
     }
 
@@ -514,6 +500,8 @@
      * Generates unique `TaskId` for `Task`.
      *
      * Current implementation based on uuid v4.
+     *
+     * @author Oleg Barmin
      */
     class TaskIdGenerator {
 
@@ -532,259 +520,128 @@
     }
 
     /**
-     * Provides static methods to clone arrays of tasks and single tasks.
-     */
-    class TasksClone {
-
-        /**
-         * Deep copies given `Array` of `Task`.
-         *
-         * @param {Array} array array to copy
-         * @returns {Array} arrayCopy copy of given array
-         */
-        static cloneArray(array) {
-            if (!(array instanceof Array)) {
-                throw new TypeError("Array expected. Actual value: " + array)
-            }
-            let arrayCopy = [];
-
-            for (let i = 0; i < array.length; i++) {
-                let currentElement = array[i];
-                if (typeof currentElement === "object") {
-                    arrayCopy[i] = TasksClone.cloneObject(currentElement);
-                    continue;
-                }
-                arrayCopy[i] = currentElement;
-            }
-            arrayCopy.__proto__ = Array.prototype;
-            return arrayCopy;
-        }
-
-        /**
-         * Deep copies given `Task`.
-         *
-         * @param {*} objectToClone object to clone
-         * @returns {*} copy of given `Task`
-         */
-        static cloneObject(objectToClone) {
-            if (typeof objectToClone !== "object") {
-                return objectToClone;
-            }
-            let objCopy = {};
-
-            for (let key in objectToClone) {
-                let currentProperty = objectToClone[key];
-                if (typeof currentProperty === "object") {
-                    if (currentProperty instanceof Array) {
-                        objCopy[key] = TasksClone.cloneArray(currentProperty);
-                        continue;
-                    }
-                    objCopy[key] = TasksClone.cloneObject(currentProperty);
-                    continue
-                }
-                objCopy[key] = currentProperty;
-            }
-            objCopy.__proto__ = objectToClone.constructor.prototype;
-            return objCopy;
-        }
-    }
-
-    /**
-     * Tasks to-do.
+     * Sends requests to the server to manage tasks of one
+     * to-do list which ID was given during construction.
      *
-     * Allows:
-     *  - add new tasks
-     *  - marks them as completed
-     *  - update their descriptions
-     *  - remove from list
+     * Allows to:
+     *  - add new tasks;
+     *  - mark tasks as completed;
+     *  - update tasks with new descriptions and status;
+     *  - remove tasks from list;
+     *  - retrieve sorted list of tasks (tasks are sorted by {@link TaskSorter}).
      *
-     * Task is being sorted by:
+     * Tasks is being sorted by:
      * - Status (uncompleted tasks first, completed last).
      * - Date of last update.
      * - Lexicographically by description.
      *
-     * Example:
-     * ```
-     *  const todoList = new TodoList();
-     *  const firstTaskId = todoList.add("first task");
-     *  const secondTaskId = todoList.add("second task");
-     *  const thirdTaskId = todoList.add("third task");
-     * ```
-     * Task list will be sorted by creation date:
-     * - third task
-     * - second task
-     * - first task
-     *
-     * Then lets complete third task.
-     * ```
-     * todoList.complete(thirdTaskId);
-     * ```
-     *
-     * Now list will look this way:
-     * - second task
-     * - first task
-     * - ~~third task~~
-     *
-     * if you update the first task, it will move to the top of the list.
-     * ```
-     * todoList.update(firstTaskId, "updated first task");
-     * ```
-     *
-     * - <b>updated first task</b>
-     * - second task
-     * - ~~third task~~
+     * @author Oleg Barmin
      */
     class TodoList {
 
         /**
          * Creates `TodoList` instance.
          *
-         * @param {TodoListId} todoListId ID of to-do list
+         * @param {TodoListId} todoListId ID of this to-do lists
+         * @param token token of user who works with this to-do list
+         * @param {Backend} backend to send requests
          */
-        constructor(todoListId) {
-            this._tasksArray = [];
+        constructor(todoListId, token, backend) {
             this.todoListId = todoListId;
+            this.token = token;
+            this.backend = backend;
         }
 
         /**
-         * Adds new task to `TodoList`.
+         * Sends request to add `Task` into this to-do list.
          *
          * @param {string} taskDescription description of the task to add
+         * @returns {Promise} promise to work with. If request was processed successfully
+         *                    promise will be resolved, otherwise it will be rejected.
          *
-         * @throws EmptyStringException if given task description is not defined or empty
-         *
-         * @returns {TaskId} id copy of ID of task that was added
+         * @throws EmptyStringException if given task description is empty.
          */
         add(taskDescription) {
-            taskDescription = Preconditions.checkStringNotEmpty(taskDescription, "task description");
+            Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
             const taskId = TaskIdGenerator.generateID();
-            const currentDate = new Date();
-            const taskToAdd = new Task(taskId, taskDescription, currentDate);
-            this._tasksArray.push(taskToAdd);
+            const xmlHttpRequest = new XMLHttpRequest();
 
-            TaskSorter.sortTasksArray(this._tasksArray);
+            const payload = {
+                taskDescription: taskDescription.trim()
+            };
 
-            return TasksClone.cloneObject(taskId);
+            return this.backend.addTask(this.todoListId, taskId, payload, this.token)
         }
 
         /**
-         * Finds task by its ID.
+         * Sends request to updateTask task with given ID with new status and description.
          *
-         * @param {TaskId} taskId ID of specified task
-         * @returns {Task} task task with specified ID
-         * @private
-         */
-        _getTaskById(taskId) {
-            for (let cur of this._tasksArray) {
-                if (cur.id.compareTo(taskId) === 0) {
-                    return cur;
-                }
-            }
-        }
-
-        /**
-         * Finds task by ID and marks it as completed.
-         *
-         * @param {TaskId} taskId ID of specified task
-         *
-         * @throws TaskNotFoundException if task with specified ID was not found
-         * @throws TaskAlreadyCompletedException if task with specified ID is already completed
-         */
-        complete(taskId) {
-            Preconditions.isDefined(taskId, "task ID");
-
-            const storedTask = this._getTaskById(taskId);
-
-            if (!storedTask) {
-                throw new TaskNotFoundException(taskId);
-            }
-
-            if (storedTask.completed) {
-                throw new TaskAlreadyCompletedException(taskId);
-            }
-            storedTask.completed = true;
-            storedTask.lastUpdateDate = new Date();
-            TaskSorter.sortTasksArray(this._tasksArray);
-        }
-
-        /**
-         * Finds task by ID and updates its description.
-         *
-         * @param {TaskId} taskId ID of the specified task
+         * @param {TaskId} taskId ID of task to updateTask
          * @param {string} updatedDescription new description of the task
+         * @param {boolean} status new status of task
+         * @return {Promise} promise to work with. If request was processed successfully
+         *                   promise will be resolved, otherwise it will be rejected.
          *
-         * @throws TaskNotFoundException if task with specified ID was not found
-         * @throws CannotUpdateCompletedTaskException if try to updated completed task
+         * @throws ParameterIsNotDefinedException if given `taskId` is undefined or null
+         * @throws EmptyStringException if given description is undefined, null  or empty
          */
-        update(taskId, updatedDescription) {
+        update(taskId, updatedDescription, status = false) {
             Preconditions.isDefined(taskId, "task ID");
-            updatedDescription = Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
+            Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
 
-            const taskToUpdate = this._getTaskById(taskId);
+            const payload = {
+                taskStatus: status,
+                taskDescription: updatedDescription.trim()
+            };
 
-            if (!taskToUpdate) {
-                throw new TaskNotFoundException(taskId);
-            }
-
-            if (taskToUpdate.completed) {
-                throw new CannotUpdateCompletedTaskException(taskId);
-            }
-
-            taskToUpdate.description = updatedDescription;
-            taskToUpdate.lastUpdateDate = new Date();
-
-            TaskSorter.sortTasksArray(this._tasksArray);
+            return this.backend.updateTask(this.todoListId, taskId, payload, this.token);
         }
 
         /**
-         * Removes task with given ID from to-do list.
+         * Sends request to removeTask task with given ID.
          *
          * @param {TaskId} taskId ID of task to delete
+         * @return {Promise} promise to work with. If request was processed successfully
+         *                  promise will be resolved, otherwise it will be rejected.
          *
-         * @throws TaskNotFoundException if task with specified ID was not found
+         * @throws ParameterIsNotDefinedException if given `taskId` is undefined or null
          */
         remove(taskId) {
             Preconditions.isDefined(taskId, "task ID");
-
-            const desiredTask = this._tasksArray.find((element, index, array) => {
-                if (element.id.compareTo(taskId) === 0) {
-                    array.splice(index, 1);
-                    return true;
-                }
-            });
-
-            if (!desiredTask) {
-                throw new TaskNotFoundException(taskId);
-            }
+            return this.backend.removeTask(this.todoListId, taskId, this.token);
         }
 
         /**
-         * Returns copy of all tasks stored in to-do list.
+         * Sends request to retrieve all tasks of this `TodoList`.
          *
-         * @returns {Array} tasksArray copy of array with task
+         * @return {Promise} promise to work with. If request was processed successfully
+         *                   promise will be resolved and sorted array of `Task`s will be returned,
+         *                   otherwise it will be rejected.
          */
         all() {
-            return TasksClone.cloneArray(this._tasksArray);
+            return this.backend.readTasksFrom(this.todoListId, this.token)
         }
     }
 
     /**
      * Stores algorithm to sort an array of  `Task`.
+     *
+     * @author Oleg Barmin
      */
     class TaskSorter {
 
         /**
          * Sorts array of tasks by:
          * - Status (uncompleted then completed).
-         * - Date of last update.
+         * - Date of last updateTask.
          * - Lexicographically by description.
          * - Lexicographically by ID.
          *
          * @param {Array} array with tasks to sort
          */
         static sortTasksArray(array) {
-            array.sort((firstTask, secondTask) => {
+            return array.sort((firstTask, secondTask) => {
                 if (firstTask.completed === secondTask.completed) {
                     const compareByDateResult = secondTask.lastUpdateDate - firstTask.lastUpdateDate;
                     if (compareByDateResult !== 0) {
@@ -803,64 +660,10 @@
     }
 
     /**
-     * Indicates that task was not found.
-     *
-     * @extends Error
-     */
-    class TaskNotFoundException extends Error {
-
-        /**
-         * Crates `TaskNotFoundException` instance.
-         *
-         * @param {TaskId} taskId ID if the task that was not found
-         */
-        constructor(taskId) {
-            super(`Task with ID ${taskId.id} was not found.`);
-            this.name = this.constructor.name;
-        }
-    }
-
-
-    /**
-     * Indicates that task was already completed.
-     *
-     * @extends Error
-     */
-    class TaskAlreadyCompletedException extends Error {
-
-        /**
-         * Crates `TaskAlreadyCompletedException` instance.
-         *
-         * @param {TaskId} taskId  ID of task which was already completed.
-         */
-        constructor(taskId) {
-            super(`Task with ID ${taskId.id} is alredy completed.`);
-            this.name = this.constructor.name;
-        }
-    }
-
-    /**
-     * Occurs when trying to update completed task.
-     *
-     * @extends Error
-     */
-    class CannotUpdateCompletedTaskException extends Error {
-
-        /**
-         * Crates `CannotUpdateCompletedTaskException` instance.
-         *
-         * @param {TaskId} taskId ID of task which was already completed before update attempt.
-         */
-        constructor(taskId) {
-            super(`Completed tasks cannot be updated. Task with ID: ${taskId} is completed.`);
-            this.name = this.constructor.name;
-        }
-    }
-
-    /**
      * Occurs when controller adds new task to the model.
      *
      * @extends Event
+     * @author Oleg Barmin
      */
     class NewTaskAdded extends Event {
 
@@ -873,9 +676,10 @@
     }
 
     /**
-     * Occurs when validation of description of new task in `AddTaskRequest` was failed.
+     * Occurs when validation of description of new task in `NewTaskValidationFailed` was failed.
      *
      * @extends Event
+     * @author Oleg Barmin
      */
     class NewTaskValidationFailed extends Event{
 
@@ -883,28 +687,12 @@
          * Creates `NewTaskValidationFailed` instance.
          *
          * @param {string} errorMsg description of error
+         * @param {TodoListId} todoListId ID of to-do list
          */
-        constructor(errorMsg){
+        constructor(errorMsg, todoListId) {
             super(EventTypes.NewTaskValidationFailed);
             this.errorMsg = errorMsg;
-        }
-    }
-
-    /**
-     * Occurs when `TaskCompletionRequest` cannot be processed was failed.
-     *
-     * @extends Event
-     */
-    class TaskCompletionFailed extends Event {
-
-        /**
-         * Creates `TaskRemovalFailed` instance.
-         *
-         * @param {string} errorMsg description of error
-         */
-        constructor(errorMsg) {
-            super(EventTypes.TaskCompletionFailed);
-            this.errorMsg = errorMsg;
+            this.todoListId = todoListId;
         }
     }
 
@@ -912,6 +700,7 @@
      * Occurs when `TaskRemovalRequested` cannot be processed was failed.
      *
      * @extends Event
+     * @author Oleg Barmin
      */
     class TaskRemovalFailed extends Event {
 
@@ -930,6 +719,7 @@
      * Occurs when controller updated list of tasks.
      *
      * @extends Event
+     * @author Oleg Barmin
      */
     class TaskListUpdated extends Event {
 
@@ -937,10 +727,12 @@
          * Creates `TaskListUpdated` instance.
          *
          * @param {Array} taskArray sorted array of task from model.
+         * @param {TodoListId } todoListId ID of `TodoList` which task was updated
          */
-        constructor(taskArray) {
+        constructor(taskArray, todoListId) {
             super(EventTypes.TaskListUpdated);
             this.taskArray = taskArray;
+            this.todoListId = todoListId;
         }
     }
 
@@ -948,6 +740,7 @@
      * Occurs when `TaskUpdateRequested` cannot be processed.
      *
      * @extends Event
+     * @author Oleg Barmin
      */
     class TaskUpdateFailed extends Event {
 
@@ -966,6 +759,9 @@
 
     /**
      * Occurs when processing of `TaskRemovalRequested` event was performed successfully.
+     *
+     * @extends Event
+     * @author Oleg Barmin
      */
     class TaskRemoved extends Event{
 
@@ -982,6 +778,9 @@
 
     /**
      * Occurs when processing of `TaskUpdateRequested` event was performed successfully.
+     *
+     * @extends Event
+     * @author Oleg Barmin
      */
     class TaskUpdated extends Event{
 
@@ -997,28 +796,181 @@
     }
 
     /**
-     * Generates unique `TodoListId` for `TodoList`.
+     * Task to do.
      *
-     * Current implementation based on uuid v4.
+     * It stores task ID, its description, status (is it completed or not),
+     * date of creation and date of last update (if task wasn't updated
+     * the date of creation equals to last update date).
+     *
+     * @author Oleg Barmin
      */
-    class TodoListIdGenerator {
+    class Task {
 
         /**
-         * Generates unique `TodoListId`.
+         * Creates task instance.
          *
-         * @returns {TodoListId} ID generated TaskID.
+         * @param {TaskId} id task ID
+         * @param {string} description description of the task
+         * @param {Date} creationDate date when task was created
+         *
+         * @param {boolean} [completed=false] status of task (completed or not)
+         * @param {Date} [lastUpdate=creationDate] date of last task update
          */
-        static generateID() {
-            if (typeof(require) !== 'undefined') {
-                return require('uuid/v4')();
-            }
-            const rawId = uuidv4();
-            return new TodoListId(rawId);
+        constructor(id, description, creationDate, completed = false, lastUpdate = creationDate) {
+            this.id = id;
+            this.description = description;
+            this.completed = completed;
+            this.creationDate = creationDate;
+            this.lastUpdateDate = lastUpdate;
+        }
+
+        toString() {
+            return `Task: [ID = ${this.id}, description = ${this.description}, completed = ${this.completed}, `
+                + `creation date = ${this.creationDate}, last update date = ${this.lastUpdateDate}]`
+        }
+    }
+
+    /**
+     * Service which sends requests to the server with given host.
+     *
+     * @author Oleg Barmin
+     */
+    class Backend {
+
+        /**
+         * Creates `Backend` instance with given URL.
+         *
+         * Given URL should be in following format: `<protocol name>://<hostname>`.
+         *
+         * Examples of URL:
+         * - `https://www.google.com`;
+         * - `https://www.amazon.com`;
+         * - `http://localhost:8080`.
+         *
+         * @param {string} url base URL of server.
+         */
+        constructor(url) {
+            this.url = `${url}/`;
+        }
+
+        /**
+         * Sends add task request.
+         *
+         * @param {TodoListId} todoListId ID of to-do list of task
+         * @param {TaskId} taskId ID of task to add
+         * @param payload payload of request
+         * @param token token of user session.
+         * @return {Promise} promise to work process request result.
+         */
+        addTask(todoListId, taskId, payload, token) {
+            return new Promise((resolve, reject) => {
+                const xmlHttpRequest = new XMLHttpRequest();
+
+                xmlHttpRequest.onload = () => {
+                    if (xmlHttpRequest.status === 200) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                };
+                xmlHttpRequest.open("POST", `${this.url}/lists/${todoListId.id}/${taskId.id}`);
+                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.send(JSON.stringify(payload));
+            });
+        }
+
+        /**
+         * Sends update task request.
+         *
+         * @param {TodoListId} todoListId ID of to-do list of task
+         * @param {TaskId} taskId ID of task to update
+         * @param payload payload of request
+         * @param token token of user session
+         * @return {Promise} promise to work process request result.
+         */
+        updateTask(todoListId, taskId, payload, token) {
+            return new Promise((resolve, reject) => {
+                const xmlHttpRequest = new XMLHttpRequest();
+
+                xmlHttpRequest.onload = () => {
+                    if (xmlHttpRequest.status === 200) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                };
+
+                xmlHttpRequest.open("PUT", `/lists/${todoListId.id}/${taskId.id}`);
+                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.send(JSON.stringify(payload));
+            });
+        }
+
+        /**
+         * Sends remove task request.
+         *
+         * @param {TodoListId} todoListId ID of to-do list of task
+         * @param {TaskId} taskId ID of task to remove
+         * @param token token of user session
+         * @return {Promise} promise to work process request result.
+         */
+        removeTask(todoListId, taskId, token) {
+            return new Promise((resolve, reject) => {
+                const xmlHttpRequest = new XMLHttpRequest();
+
+                xmlHttpRequest.onload = () => {
+                    if (xmlHttpRequest.status === 200) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                };
+
+                xmlHttpRequest.open("DELETE", `/lists/${todoListId.id}/${taskId.id}`);
+                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.send();
+            });
+        }
+
+        /**
+         * Sends read all tasks of to-do list request.
+         *
+         * @param {TodoListId} todoListId ID of to-do list to read tasks from
+         * @param token token of user session
+         * @return {Promise} promise to work process request result,
+         * which contains array of {@link Task} if request was successful.
+         */
+        readTasksFrom(todoListId, token) {
+            return new Promise((resolve, reject) => {
+                const xmlHttpRequest = new XMLHttpRequest();
+
+                xmlHttpRequest.onload = () => {
+                    if (xmlHttpRequest.status === 200) {
+                        const rawTasks = JSON.parse(xmlHttpRequest.response);
+                        const tasks = rawTasks.map((el) => {
+                            return new Task(new TaskId(el.id.value),
+                                el.description,
+                                new Date(el.creationDate),
+                                el.completed,
+                                new Date(el.lastUpdateDate))
+                        });
+                        resolve(TaskSorter.sortTasksArray(tasks));
+                    } else {
+                        reject();
+                    }
+                };
+
+                xmlHttpRequest.open("GET", `/lists/${todoListId.id}`);
+                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.send();
+            });
         }
     }
 
     /**
      * Event-based facade for {@link TodoList}.
+     *
+     * @author Oleg Barmin
      */
     class DashboardController {
 
@@ -1030,44 +982,60 @@
          *
          * @param {EventBus} eventBus evenBus to work with
          * @param {Authentication} authentication to authorized operations
-         * @param {UserLists} userLists service to work with user lists.
+         * @param {Array} todoListIds ID of `TodoList`s to work with
          */
-        constructor(eventBus, authentication, userLists) {
-            this.userLists = userLists;
+        constructor(eventBus, authentication, todoListIds) {
             this.eventBus = eventBus;
             this.authentication = authentication;
+            this.backend = new Backend(window.location.origin);
+            this.todoLists = new Map();
 
-            this.userLists.readLists()
-                .then(todoListsIds => {
-                    if (todoListsIds.length === 0) {
-                        const todoList = new TodoList(TodoListIdGenerator.generateID());
-                        this.userLists.create(todoList.todoListId)
-                            .then(() => {
-                                this.todoList = todoList;
-                            });
-                    } else {
-                        this.todoList = new TodoList(todoListsIds[0]);
-                    }
+            todoListIds.forEach(el => {
+                this.todoLists.set(el.id, new TodoList(el, this.authentication.token, this.backend));
 
+                this.todoLists.get(el.id).all().then(tasks => {
+                    this.eventBus.post(new TaskListUpdated(tasks, el));
+                }).catch(() => {
+                    alert("task list updateTask failed.");
                 });
+            });
 
             /**
-             * Adds new task with description stored in occurred `AddTaskRequest` to `TodoList`.
+             * Sends requests to receive all tasks of this `TodoList`.
+             *
+             * If response code was 200: posts `TaskListUpdated` event with received tasks
+             * of to-do list which tasks was updated.
+             */
+            const updateTaskList = (todoListId) => {
+                this.todoLists.get(todoListId.id).all()
+                    .then(tasks => {
+                        this.eventBus.post(new TaskListUpdated(tasks, todoListId));
+                    }).catch(() => {
+                    alert("Failed to updateTask tasks list, try to reload page.");
+                });
+            };
+
+            /**
+             * Adds new task with description stored in occurred `TaskAddRequested` to `TodoList`.
              *
              * if given description is valid:
              *      - posts {@link NewTaskAdded}
              *      - posts {@link TaskListUpdated} with new task list.
              * Otherwise {@link NewTaskValidationFailed} will be posted
              *
-             * @param {AddTaskRequest} addTaskEvent `AddTaskRequest` with description of the task to add.
+             * @param {TaskAddRequested} taskAddRequested `TaskAddRequested` with description of the task to add.
              */
-            const addTaskRequestCallback = addTaskEvent => {
+            const addTaskRequestCallback = taskAddRequested => {
                 try {
-                    this.todoList.add(addTaskEvent.taskDescription);
-                    this.eventBus.post(new NewTaskAdded());
-                    this.eventBus.post(new TaskListUpdated(this.todoList.all()));
+                    this.todoLists.get(taskAddRequested.todoListId.id).add(taskAddRequested.taskDescription)
+                        .then(() => {
+                            this.eventBus.post(new NewTaskAdded());
+                            updateTaskList(taskAddRequested.todoListId);
+                        }).catch(() => {
+                        alert("Failed to add task, try to reload page.");
+                    });
                 } catch (e) {
-                    this.eventBus.post(new NewTaskValidationFailed(e.message));
+                    this.eventBus.post(new NewTaskValidationFailed(e.message, taskAddRequested.todoListId));
                 }
             };
 
@@ -1077,33 +1045,19 @@
              * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
              * Otherwise: posts {@link TaskRemovalFailed}.
              *
-             * @param {TaskRemovalRequested} taskRemovalEvent `TaskRemovalRequested` event with ID of the task to remove.
+             * @param {TaskRemovalRequested} taskRemovalEvent `TaskRemovalRequested` event with ID of the task to removeTask.
              */
             const taskRemovalRequestCallback = taskRemovalEvent => {
                 try {
-                    this.todoList.remove(taskRemovalEvent.taskId);
-                    this.eventBus.post(new TaskRemoved(taskRemovalEvent.taskId));
-                    this.eventBus.post(new TaskListUpdated(this.todoList.all()));
+                    this.todoLists.get(taskRemovalEvent.todoListId.id).remove(taskRemovalEvent.taskId)
+                        .then(() => {
+                            this.eventBus.post(new TaskRemoved(taskRemovalEvent.taskId));
+                            updateTaskList(taskRemovalEvent.todoListId);
+                        }).catch(() => {
+                        alert("Failed to removeTask task, try to reload page.");
+                    });
                 } catch (e) {
                     this.eventBus.post(new TaskRemovalFailed("Task removal fail."));
-                }
-            };
-
-            /**
-             * Completes task in `TodoList` by ID which stored in occurred `TaskCompletionRequested`.
-             *
-             * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
-             * Otherwise: posts {@link TaskCompletionFailed}.
-             *
-             * @param {TaskCompletionRequested} taskCompletionEvent `TaskCompletionRequested` event
-             *        which contains ID of task to complete.
-             */
-            const taskCompletionRequestedCallback = taskCompletionEvent => {
-                try {
-                    this.todoList.complete(taskCompletionEvent.taskId);
-                    this.eventBus.post(new TaskListUpdated(this.todoList.all()));
-                } catch (e) {
-                    this.eventBus.post(new TaskCompletionFailed("Task completion fail."));
                 }
             };
 
@@ -1117,13 +1071,19 @@
              * Otherwise: posts {@link TaskUpdateFailed}.
              *
              * @param {TaskUpdateRequested} taskUpdateEvent `TaskUpdateRequested` event
-             *        which contains ID of task to update and its new description.
+             *        which contains ID of task to updateTask and its new description.
              */
             const taskUpdateRequestCallback = taskUpdateEvent => {
                 try {
-                    this.todoList.update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription);
-                    this.eventBus.post(new TaskUpdated(taskUpdateEvent.taskId));
-                    this.eventBus.post(new TaskListUpdated(this.todoList.all()));
+                    this.todoLists.get(taskUpdateEvent.todoListId.id).update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription, taskUpdateEvent.status)
+                        .then(() => {
+                            if (!taskUpdateEvent.status) {
+                                this.eventBus.post(new TaskUpdated(taskUpdateEvent.taskId));
+                            }
+                            updateTaskList(taskUpdateEvent.todoListId);
+                        }).catch(() => {
+                        alert("Failed to updateTask task, try to reload page.");
+                    });
                 } catch (e) {
                     this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId,
                         "New task description cannot be empty."));
@@ -1131,18 +1091,15 @@
             };
 
             const addTaskHandler =
-                eventBus.subscribe(EventTypes.AddTaskRequest, addTaskRequestCallback);
+                eventBus.subscribe(EventTypes.TaskAddRequest, addTaskRequestCallback);
             const removeTaskHandler =
                 eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
-            const completeTaskHandler =
-                eventBus.subscribe(EventTypes.TaskCompletionRequested, taskCompletionRequestedCallback);
             const updateTaskHandler =
                 eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
 
             eventBus.subscribe(EventTypes.SignOutCompleted, () => {
-                eventBus.unsubscribe(EventTypes.AddTaskRequest, addTaskHandler);
+                eventBus.unsubscribe(EventTypes.TaskAddRequest, addTaskHandler);
                 eventBus.unsubscribe(EventTypes.TaskRemovalRequested, removeTaskHandler);
-                eventBus.unsubscribe(EventTypes.TaskCompletionRequested, completeTaskHandler);
                 eventBus.unsubscribe(EventTypes.TaskUpdateRequested, updateTaskHandler);
             });
         }
@@ -1178,25 +1135,109 @@
     }
 
     /**
+     * Renders necessary information to user according to current state of to-do list application.
+     *
+     * Only one page per application should be rendered.
+     *
+     * @author Oleg Barmin
+     */
+    class Page extends UiComponent {
+
+        /**
+         * Creates `Page` instance.
+         *
+         * @param {jQuery} element element to render page into
+         * @param {EventBus} eventBus to subscribe and publish page specific events
+         * @param {Authentication} authentication to authenticate users.
+         */
+        constructor(element, eventBus, authentication) {
+            super(element, eventBus);
+            this.authentication = authentication;
+        }
+    }
+
+    /**
+     * Occurs when user was successfully signed out from to-do list application.
+     *
+     * @extends Event
+     * @author Oleg Barmin
+     */
+    class SignOutCompleted extends Event {
+
+        /**
+         * Creates `SignOutCompleted` instance.
+         */
+        constructor() {
+            super(EventTypes.SignOutCompleted);
+        }
+    }
+
+    /**
+     * Navigation bar which allows users to perform operation, which available across all pages.
+     *
+     * @extends UiComponent
+     * @author Oleg Barmin
+     */
+    class NavBar extends UiComponent {
+
+        /**
+         * Creates `NavBar` instance.
+         *
+         * @param {jQuery} element element to render into
+         * @param {EventBus} evenBus to subscribe and post component specific events
+         * @param {Authentication} authentication to authenticate user
+         */
+        constructor(element, evenBus, authentication) {
+            super(element, evenBus);
+            this.authentication = authentication;
+        }
+
+        render() {
+            this.element.empty();
+            const signOutBtnClass = "signOutBtn";
+            this.element.append(`<nav class="navbar bg-primary justify-content-between">
+                              <a class="navbar-brand"></a>
+                              <a class="${signOutBtnClass} text-white" href="#">Sign Out</a>
+                            </nav>`);
+
+            let signOutBtn = this.element.find(`.${signOutBtnClass}`);
+
+            signOutBtn.click(() => {
+                this.authentication.signOut()
+                    .then(() => {
+                        this.eventBus.post(new SignOutCompleted());
+                    });
+            });
+
+        }
+    }
+
+    /**
      * Occurred when new task was added on view.
      *
      * @extends Event
+     * @author Oleg Barmin
      */
-    class AddTaskRequest extends Event {
+    class TaskAddRequested extends Event {
 
         /**
-         * Creates `AddTaskRequest` instance.
+         * Creates `TaskAddRequested` instance.
          *
          * @param {string} taskDescription description of new task
+         * @param {TodoListId} todoListId ID of `TodoList` to which task was added
          */
-        constructor(taskDescription) {
-            super(EventTypes.AddTaskRequest);
+        constructor(taskDescription, todoListId) {
+            super(EventTypes.TaskAddRequest);
+            this.todoListId = todoListId;
             this.taskDescription = taskDescription;
         }
     }
 
     /**
      * Component which responsible for rendering and processing of add task form.
+     *
+     * @extends UiComponent
+     * @author Oleg Barmin
      */
     class AddTaskForm extends UiComponent {
 
@@ -1205,9 +1246,11 @@
          *
          * @param {jQuery} element jQuery element to render into
          * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
+         * @param {TodoListId} todoListId ID of to-do list to which `AddTaskForm` is related to
          */
-        constructor(element, eventBus) {
+        constructor(element, eventBus, todoListId) {
             super(element, eventBus);
+            this.todoListId = todoListId;
         }
 
         /**
@@ -1268,17 +1311,19 @@
              *        error message to display.
              */
             const newTaskValidationFailedCallback = newTaskValidationFailedEvent => {
-                errorDiv.removeClass("invisible");
-                showErrorCallback(newTaskValidationFailedEvent.errorMsg);
+                if (newTaskValidationFailedEvent.todoListId.id === this.todoListId.id) {
+                    errorDiv.removeClass("invisible");
+                    showErrorCallback(newTaskValidationFailedEvent.errorMsg);
+                }
             };
 
             eventBus.subscribe(EventTypes.NewTaskAdded, newTaskAddedCallback);
             eventBus.subscribe(EventTypes.NewTaskValidationFailed, newTaskValidationFailedCallback);
 
-            addTaskBtn.click(() => eventBus.post(new AddTaskRequest(descriptionTextArea.val())));
+            addTaskBtn.click(() => eventBus.post(new TaskAddRequested(descriptionTextArea.val(), this.todoListId)));
             descriptionTextArea.keydown(keyboardEvent => {
                 if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === "Enter") {
-                    eventBus.post(new AddTaskRequest(descriptionTextArea.val()));
+                    eventBus.post(new TaskAddRequested(descriptionTextArea.val(), this.todoListId));
                 }
             });
         }
@@ -1289,6 +1334,7 @@
      * Occurs when task with specified ID need to be removed.
      *
      * @extends Event
+     * @author Oleg Barmin
      */
     class TaskRemovalRequested extends Event {
 
@@ -1296,28 +1342,12 @@
          * Creates `TaskRemovalRequested` instance.
          *
          * @param {TaskId} taskId ID of task to remove.
+         * @param {TodoListId} todoListId ID of `TodoList` which task was removed
          */
-        constructor(taskId) {
+        constructor(taskId, todoListId) {
             super(EventTypes.TaskRemovalRequested);
             this.taskId = taskId;
-        }
-    }
-
-    /**
-     * Occurs when task with specified ID need to be completed.
-     *
-     * @extends Event
-     */
-    class TaskCompletionRequested extends Event {
-
-        /**
-         * Creates `TaskCompletionRequested` instance.
-         *
-         * @param {TaskId} taskId ID of task to remove.
-         */
-        constructor(taskId) {
-            super(EventTypes.TaskCompletionRequested);
-            this.taskId = taskId;
+            this.todoListId = todoListId;
         }
     }
 
@@ -1325,6 +1355,7 @@
      * Occurs when end-user tries to edit a task.
      *
      * @extends Event
+     * @author Oleg Barmin
      */
     class TaskEditingStarted extends Event {
 
@@ -1340,9 +1371,36 @@
     }
 
     /**
+     * Occurs when end-user submitted changes of a task description.
+     *
+     * @extends Event
+     * @author Oleg Barmin
+     */
+    class TaskUpdateRequested extends Event {
+
+        /**
+         * Creates `TaskUpdateRequested` instance.
+         *
+         * @param {TaskId} taskId ID of task which description needs to be updated
+         * @param {string} newTaskDescription new description of task
+         * @param {boolean} [status=false] status of tasks
+         * @param {TodoListId} todoListId ID of `TodoList` which task update was requested
+         */
+        constructor(taskId, newTaskDescription, status = false, todoListId) {
+            super(EventTypes.TaskUpdateRequested);
+            this.taskId = taskId;
+            this.status = status;
+            this.newTaskDescription = newTaskDescription;
+            this.todoListId = todoListId;
+        }
+
+    }
+
+    /**
      * Component which responsible for rendering and processing of task in display state.
      *
      * @extends UiComponent
+     * @author Oleg Barmin
      */
     class TaskDisplay extends UiComponent {
 
@@ -1353,12 +1411,14 @@
          * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
          * @param {Number} number number of the task in the list of tasks
          * @param {Task} task task to render
+         * @param {TodoListId} todoListId ID of to-do list to which `TaskDisplay` is related to
          */
-        constructor(element, eventBus, number, task) {
+        constructor(element, eventBus, number, task, todoListId) {
             super(element, eventBus);
             this.eventBus = eventBus;
             this.task = task;
             this.number = number;
+            this.todoListId = todoListId;
         }
 
         /**
@@ -1394,11 +1454,11 @@
             const editBtn = this.element.find(`.${editBtnClass}`);
             const taskDescriptionDiv = this.element.find(`.${taskDescriptionDivClass}`);
 
-            completeBtn.click(() => this.eventBus.post(new TaskCompletionRequested(task.id)));
+            completeBtn.click(() => this.eventBus.post(new TaskUpdateRequested(task.id, escapedTaskDescription, true, this.todoListId)));
             editBtn.click(() => this.eventBus.post(new TaskEditingStarted(task.id)));
             removeBtn.click(() => {
                 if (confirm("Delete the task?")) {
-                    this.eventBus.post(new TaskRemovalRequested(task.id));
+                    this.eventBus.post(new TaskRemovalRequested(task.id, this.todoListId));
                 }
             });
 
@@ -1415,6 +1475,7 @@
      * Occurs when end-user tries to cancel a task editing.
      *
      * @extends Event
+     * @author Oleg Barmin
      */
     class TaskEditingCanceled extends Event {
 
@@ -1430,30 +1491,10 @@
     }
 
     /**
-     * Occurs when end-user submitted changes of a task description.
-     *
-     * @extends Event
-     */
-    class TaskUpdateRequested extends Event{
-
-        /**
-         * Creates `TaskUpdateRequested` instance.
-         *
-         * @param {TaskId} taskId ID of task which description needs to be updated
-         * @param {string} newTaskDescription new description of task.
-         */
-        constructor(taskId, newTaskDescription) {
-            super(EventTypes.TaskUpdateRequested);
-            this.taskId = taskId;
-            this.newTaskDescription = newTaskDescription;
-        }
-
-    }
-
-    /**
      * Component which responsible for rendering and processing of task in edit state.
      *
      * @extends UiComponent
+     * @author Oleg Barmin
      */
     class TaskEdit extends UiComponent {
 
@@ -1464,12 +1505,14 @@
          * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
          * @param {Number} number number of the task in the list of tasks
          * @param {Task} task task to render
+         * @param {TodoListId} todoListId ID of to-do list to which `TaskEdit` is related to
          */
-        constructor(element, eventBus, number, task) {
+        constructor(element, eventBus, number, task, todoListId) {
             super(element, eventBus);
             this.eventBus = eventBus;
             this.task = task;
             this.number = number;
+            this.todoListId = todoListId;
             this.currentInput = task.description;
             this.errorMsg = null;
         }
@@ -1493,7 +1536,8 @@
                 </div>
                 <div class="w-100"></div>
                 <div class="col">
-                <label class="${errorLabelClass} alert alert-danger invisible w-100 alert-danger"></label>
+                <label class="col-sm-auto pr-0"></label>
+                <label class="${errorLabelClass} col-9 invisible alert alert-danger p-1 mt-1"></label>
             </div>`
             );
 
@@ -1515,7 +1559,7 @@
                 errorLabel.append(this.errorMsg);
             };
 
-            if(this.errorMsg){
+            if (this.errorMsg) {
                 renderErrorMsgCallback(this.errorMsg);
             }
 
@@ -1546,7 +1590,7 @@
                     this.eventBus.post(new TaskEditingCanceled(this.task.id));
                     return;
                 }
-                this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription));
+                this.eventBus.post(new TaskUpdateRequested(this.task.id, newTaskDescription, false, this.todoListId));
             };
 
             saveBtn.click(saveCallback);
@@ -1580,6 +1624,7 @@
      *  - cancel editing (switch to `TaskDisplay` state)
      *
      * @extends UiComponent
+     * @author Oleg Barmin
      */
     class TaskView extends UiComponent {
 
@@ -1590,20 +1635,26 @@
          * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
          * @param {Number} number number of the task in the list of tasks
          * @param {Task} task task to render
+         * @param {TodoListId} todoListId ID of to-do list to which `TaskView` is related to
          */
-        constructor(element, eventBus, number, task) {
+        constructor(element, eventBus, number, task, todoListId) {
             super(element, eventBus);
 
             this.eventBus = eventBus;
             this.task = task;
             this.number = number;
-            this.currentState = new TaskDisplay(null, this.eventBus, null, null);
+            this.todoListId = todoListId;
+            this.currentState = new TaskDisplay(null, this.eventBus, null, null, this.todoListId);
 
             const startTaskEditingHandler = this.eventBus.subscribe(EventTypes.TaskEditingStarted,
                 occurredEvent => {
                     if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                         this.element.empty();
-                        this.currentState = new TaskEdit(this.element, this.eventBus, this.number, this.task);
+                        this.currentState = new TaskEdit(this.element,
+                            this.eventBus,
+                            this.number,
+                            this.task,
+                            this.todoListId);
                         this.currentState.render();
                     }
                 });
@@ -1612,7 +1663,11 @@
                 occurredEvent => {
                     if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                         this.element.empty();
-                        this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                        this.currentState = new TaskDisplay(this.element,
+                            this.eventBus,
+                            this.number,
+                            this.task,
+                            this.todoListId);
                         this.currentState.render();
                     }
                 });
@@ -1621,13 +1676,16 @@
                 occurredEvent => {
                     if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                         this.element.empty();
-                        this.currentState = new TaskDisplay(this.element, this.eventBus, this.number, this.task);
+                        this.currentState = new TaskDisplay(this.element,
+                            this.eventBus,
+                            this.number, this.task,
+                            this.todoListId);
                         this.currentState.render();
                     }
                 });
 
             const taskRemovalPerformedHandler = this.eventBus.subscribe(EventTypes.TaskRemoved,
-                (occurredEvent) => {
+                occurredEvent => {
                     if (occurredEvent.taskId.compareTo(this.task.id) === 0) {
                         this.element.remove();
                         this.eventBus.unsubscribe(EventTypes.TaskEditingStarted, startTaskEditingHandler);
@@ -1636,13 +1694,6 @@
                         this.eventBus.unsubscribe(EventTypes.TaskUpdated, taskUpdatePerformedHandler);
                     }
                 });
-        }
-
-        /**
-         * todo jsDoc
-         */
-        isEditing() {
-            return this.currentState instanceof TaskEdit;
         }
 
         /**
@@ -1678,6 +1729,7 @@
      * removes previous task list and renders new tasks from `NewTaskAdded`.
      *
      * @extends UiComponent
+     * @author Oleg Barmin
      */
     class TodoWidget extends UiComponent {
 
@@ -1686,9 +1738,11 @@
          *
          * @param {jQuery} element JQuery element where all task should be appended
          * @param {EventBus} eventBus `EventBus` to subscribe and publish component-specific events
+         * @param {TodoListId} todoListId ID of to-do list to which `TodoWidget` is related to
          */
-        constructor(element, eventBus) {
+        constructor(element, eventBus, todoListId) {
             super(element, eventBus);
+            this.todoListId = todoListId;
             this.taskViewArray = [];
         }
 
@@ -1703,18 +1757,18 @@
          *
          * @private
          */
-        _merge(taskViewArray, taskArray){
+        _merge(taskViewArray, taskArray) {
             return taskArray.map((task, index) => {
 
                 const taskContainer = this.element.append(`<div class="row no-gutters mt-2"></div>`).children().last();
                 const taskViewWithCurrentTask = taskViewArray.find(element => element.task.id.compareTo(task.id) === 0);
 
-                if(taskViewWithCurrentTask){
+                if (taskViewWithCurrentTask) {
                     taskViewWithCurrentTask.update(taskContainer, ++index, task);
                     return taskViewWithCurrentTask;
                 }
 
-                return new TaskView(taskContainer, this.eventBus, ++index, task);
+                return new TaskView(taskContainer, this.eventBus, ++index, task, this.todoListId);
             });
         }
 
@@ -1731,9 +1785,11 @@
              * @param {TaskListUpdated} taskListUpdatedEvent occurred `TaskListUpdated` event with array of new tasks.
              */
             const taskListUpdatedCallback = taskListUpdatedEvent => {
-                this.element.empty();
-                this.taskViewArray = this._merge(this.taskViewArray, taskListUpdatedEvent.taskArray);
-                this.taskViewArray.forEach(taskView => taskView.render());
+                if (taskListUpdatedEvent.todoListId === this.todoListId) {
+                    this.element.empty();
+                    this.taskViewArray = this._merge(this.taskViewArray, taskListUpdatedEvent.taskArray);
+                    this.taskViewArray.forEach(taskView => taskView.render());
+                }
             };
 
             this.eventBus.subscribe(EventTypes.TaskListUpdated, taskListUpdatedCallback);
@@ -1744,78 +1800,68 @@
     }
 
     /**
-     * Renders necessary information to user according to current state of to-do list application.
+     * Component which responsible for rendering of `TodoList`.
      *
-     * Only one page per application should be rendered.
-     *
+     * @extends UiComponent
      * @author Oleg Barmin
      */
-    class Page extends UiComponent {
+    class TodoListView extends UiComponent {
 
         /**
-         * Creates `Page` instance.
-         *
-         * @param {jQuery} element element to render page into
-         * @param {EventBus} eventBus to subscribe and publish page specific events
-         * @param {Authentication} authentication to authenticate users.
-         */
-        constructor(element, eventBus, authentication) {
-            super(element, eventBus);
-            this.authentication = authentication;
-        }
-    }
-
-    /**
-     * Occurs when user was successfully signed out from to-do list application.
-     *
-     * @author Oleg Barmin
-     */
-    class SignOutCompleted extends Event {
-
-        /**
-         * Creates `SignOutCompleted` instance.
-         */
-        constructor() {
-            super(EventTypes.SignOutCompleted);
-        }
-    }
-
-    /**
-     * Navigation bar which allows users to perform operation, which available across all pages.
-     *
-     * @author Oleg Barmin
-     */
-    class NavBar extends UiComponent {
-
-        /**
-         * Creates `NavBar` instance.
+         * Creates `TodoListView` instance.
          *
          * @param {jQuery} element element to render into
-         * @param {EventBus} evenBus to subscribe and post component specific events
-         * @param {Authentication} authentication to authenticate user
+         * @param {EventBus} eventBus to subscribe and post component specific events.
+         * @param {TodoListId} todoListId ID of to-do list to render
          */
-        constructor(element, evenBus, authentication) {
-            super(element, evenBus);
-            this.authentication = authentication;
+        constructor(element, eventBus, todoListId) {
+            super(element, eventBus);
+            this.todoListId = todoListId;
         }
 
+        /**
+         * Renders `TodoListView` component into given element.
+         */
         render() {
             this.element.empty();
-            const signOutBtnClass = "signOutBtn";
-            this.element.append(`<nav class="navbar navbar-light bg-light justify-content-between">
-  <a class="navbar-brand"></a>
-  <button class="${signOutBtnClass} btn btn-primary my-2 my-sm-0" type="submit">Sign Out</button>
-</nav>`);
 
-            let signOutBtn = this.element.find(`.${signOutBtnClass}`);
+            this.element.append(`<div class="row justify-content-md-center">
+                                <div class="col-md-auto">
+                                    <h1>To-Do</h1>
+                                </div>
+                                </div>
+                            <div class="addTaskForm row justify-content-md-center"></div>
+                            <div class="todoWidget"></div>`);
 
-            signOutBtn.click(() => {
-                this.authentication.signOut()
-                    .then(() => {
-                        this.eventBus.post(new SignOutCompleted());
-                    });
-            });
 
+            let addTaskForm = new AddTaskForm(this.element.find(".addTaskForm"), this.eventBus, this.todoListId);
+            let taskView = new TodoWidget(this.element.find(".todoWidget"), this.eventBus, this.todoListId);
+
+            addTaskForm.render();
+            taskView.render();
+        }
+    }
+
+    /**
+     * Generates unique `TodoListId` for `TodoList`.
+     *
+     * Current implementation based on uuid v4.
+     *
+     * @author Oleg Barmin
+     */
+    class TodoListIdGenerator {
+
+        /**
+         * Generates unique `TodoListId`.
+         *
+         * @returns {TodoListId} ID generated TaskID.
+         */
+        static generateID() {
+            if (typeof(require) !== 'undefined') {
+                return require('uuid/v4')();
+            }
+            const rawId = uuidv4();
+            return new TodoListId(rawId);
         }
     }
 
@@ -1846,38 +1892,56 @@
         render() {
             this.element.empty();
 
+            // Renders navigation bar.
             const navBarContainerClass = "navBarContainer";
-
             this.element.append(`<div class='${navBarContainerClass}'></div>`);
-            this.element.append(`<div class='container'></div>`);
-
-            const container = $(this.element.find(".container")[0]);
-            const navBarContainer = $(this.element.find(`.${navBarContainerClass}`)[0]);
-
-            container.append(`<div class="row justify-content-md-center">
-                                <div class="col-md-auto">
-                                    <h1>To-Do</h1>
-                                </div>
-                                </div>
-                            <div class="addTaskForm row justify-content-md-center"></div>
-                            <div class="todoWidget"></div>`);
-
-            this.dashboardController = new DashboardController(this.eventBus,
-                this.authentication, this.userLists);
-
+            const navBarContainer = this.element.find(`.${navBarContainerClass}`);
             let navBar = new NavBar(navBarContainer, this.eventBus, this.authentication);
-            let addTaskForm = new AddTaskForm(container.find(".addTaskForm"), this.eventBus);
-            let taskView = new TodoWidget(container.find(".todoWidget"), this.eventBus);
-
             navBar.render();
-            addTaskForm.render();
-            taskView.render();
+
+            /**
+             * Renders `TodoListView`s for all given to-do list IDs.
+             *
+             * @param {Array} todoListsIds array of ID of to-do lists
+             */
+            const renderTodoListsArray = todoListsIds => {
+                const userTodoListsId = todoListsIds.map(el => el);
+
+                this.dashboardController = new DashboardController(this.eventBus,
+                    this.authentication, userTodoListsId);
+
+                userTodoListsId.forEach(el => {
+                    this.element.append(`<div class='container'></div>`);
+                    const container = this.element.find(".container").last();
+                    new TodoListView(container, this.eventBus, el).render();
+                });
+            };
+
+            /**
+             * Renders all to-do lists of user, if user has no to-do list yet one to-do list will be created.
+             *
+             * @param {Array} todoListsIds array of IDs of to-do lists to render.
+             */
+            const prepareDashboard = todoListsIds => {
+                if (todoListsIds.length === 0) {
+                    // if user has no lists - create one
+                    const initialTodoListId = TodoListIdGenerator.generateID();
+                    this.userLists.create(initialTodoListId)
+                        .then(() => renderTodoListsArray([initialTodoListId]));
+                }
+                else {
+                    renderTodoListsArray(todoListsIds);
+                }
+            };
+
+            this.userLists.readLists().then(prepareDashboard);
         }
     }
 
     /**
      * Occurs when user was successfully signed in into to-do list application.
      *
+     * @extends Event
      * @author Oleg Barmin
      */
     class SignInCompleted extends Event {
@@ -1896,6 +1960,7 @@
     /**
      * Occurs when user tried to sign-in with invalid username or password.
      *
+     * @extends Event
      * @author Oleg Barmin
      */
     class SignInFailed extends Event {
@@ -1938,20 +2003,15 @@
 
                 this.authentication
                     .signIn(username, password)
-                    .then((token) => {
-                        this.eventBus.post(new SignInCompleted(token));
-                    })
-                    .catch(() => {
-                        this.eventBus.post(new SignInFailed());
-                    });
+                    .then(token => this.eventBus.post(new SignInCompleted(token)))
+                    .catch(() => this.eventBus.post(new SignInFailed()));
             };
 
             const credentialsSubmittedHandler = eventBus.subscribe(EventTypes.CredentialsSubmitted,
                 credentialsSubmittedRequestCallback);
 
-            eventBus.subscribe(EventTypes.SignOutCompleted, () => {
-                eventBus.unsubscribe(EventTypes.SignOutCompleted, credentialsSubmittedHandler);
-            });
+            eventBus.subscribe(EventTypes.SignInCompleted,
+                () => eventBus.unsubscribe(EventTypes.CredentialsSubmitted, credentialsSubmittedHandler));
         }
     }
 
@@ -1959,6 +2019,7 @@
      * Occurs when end-user tries to sing-in into to-do list application.
      *
      * @author Oleg Barmin
+     * @extends Event
      */
     class CredentialsSubmitted extends Event {
 
@@ -1981,6 +2042,7 @@
      * <p>End-user has to sign-in through this form to get access to
      * all to-do list application functionality.
      *
+     * @extends UiComponent
      * @author Oleg Barmin
      */
     class SignInForm extends UiComponent {
@@ -2000,7 +2062,7 @@
          */
         render() {
             this.element.append(`<div class="row justify-content-md-center">
-        <div class="col-4" id="login-form">
+        <div class="col-4 login-form">
             <h2 class="text-center">Sign In</h2>
             <input class="usernameInput form-control" placeholder="Username">
             <input class="passwordInput mt-2 form-control" placeholder="Password" type="password">
@@ -2009,7 +2071,7 @@
         </div>
     </div>`);
 
-            const loginDiv = this.element.find("#login-form");
+            const loginDiv = this.element.find(".login-form");
 
             const usernameInput = loginDiv.find(".usernameInput");
             const passwordInput = loginDiv.find(".passwordInput");
@@ -2017,19 +2079,20 @@
             const loginBtn = loginDiv.find(".loginBtn");
 
             /**
-             * Shows error label.
+             * Posts `CredentialsSubmitted` with typed in username and password.
              */
-            const signInFailedCallback = () => {
-                errorLabel.removeClass("d-none");
-            };
-
-            this.eventBus.subscribe(EventTypes.SignInFailed, signInFailedCallback);
-
-            loginBtn.click(() => {
+            const sendSubmittedCredentials = () => {
                 const username = usernameInput.val();
                 const password = passwordInput.val();
                 this.eventBus.post(new CredentialsSubmitted(username, password));
+            };
 
+            this.eventBus.subscribe(EventTypes.SignInFailed, () => errorLabel.removeClass("d-none"));
+            loginBtn.click(sendSubmittedCredentials);
+            loginDiv.keydown(keyboardEvent => {
+                if (keyboardEvent.key === "Enter") {
+                    sendSubmittedCredentials();
+                }
             });
         }
     }
@@ -2060,6 +2123,8 @@
 
     /**
      * Allow to manage user to-do lists by sending requests to server.
+     *
+     * @author Oleg Barmin
      */
     class UserLists {
 
@@ -2130,6 +2195,8 @@
 
     /**
      * Starts a to-do list app.
+     *
+     * @author Oleg Barmin
      */
     class TodoListApp {
 
@@ -2149,30 +2216,28 @@
          * Creates an environment for necessary components and renders them.
          */
         start() {
-            const pageContainerClass = "pageContainer";
+            this.eventBus = new EventBus(this.root);
 
-            this.root.append(`<div class="${pageContainerClass}"></div>`);
-            this.root.append(`<div hidden class="eventBus"></div>`);
+            this.signInPage = new SignInPage(this.root, this.eventBus, this.authentication);
 
-            this.eventBus = new EventBus(this.root.find(".eventBus"));
-
-            const container = $(this.root.find(`.${pageContainerClass}`)[0]);
-
-            this.signInPage = new SignInPage(container, this.eventBus, this.authentication);
-
-            this.eventBus.subscribe(EventTypes.SignInCompleted, (event) => {
-                this.userLists = new UserLists(event.token);
-                this.dashboardPage = new DashboardPage(container, this.eventBus,
-                    this.authentication, this.userLists);
+            const signInCompletedCallback = () => {
+                this.userLists = new UserLists(this.authentication.token);
+                this.dashboardPage = new DashboardPage(this.root, this.eventBus, this.authentication, this.userLists);
                 this.dashboardPage.render();
-            });
+            };
 
-            this.eventBus.subscribe(EventTypes.SignOutCompleted, () => {
-                this.signInPage.render();
-            });
+            this.eventBus.subscribe(EventTypes.SignInCompleted, signInCompletedCallback);
+            this.eventBus.subscribe(EventTypes.SignOutCompleted, () => this.signInPage.render());
 
-
-            this.signInPage.render();
+            this.authentication.checkSignInUser()
+                .then(() => {
+                    this.userLists = new UserLists(this.authentication.token);
+                    this.dashboardPage = new DashboardPage(this.root, this.eventBus, this.authentication, this.userLists);
+                    this.dashboardPage.render();
+                })
+                .catch(() => {
+                    this.signInPage.render();
+                });
         }
     }
 
