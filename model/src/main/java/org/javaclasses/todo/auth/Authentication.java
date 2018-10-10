@@ -35,15 +35,35 @@ public class Authentication {
     }
 
     /**
+     * Validate is username or password values is empty.
+     *
+     * @param username username to validate
+     * @param password password to validate
+     */
+    private static void validateCredentials(Username username, Password password) {
+        if (username.getValue()
+                    .trim()
+                    .isEmpty() || password.getValue()
+                                          .trim()
+                                          .isEmpty()) {
+            throw new EmptyCredentialsException();
+        }
+
+    }
+
+    /**
      * Sign in user into the system by given {@link Username} and {@link Password} and
      * provides {@code Token} of the session.
      *
      * @param username username of the user to sign in
      * @param password password of the user to sign in
      * @return {@code Token} of the session
+     * @throws EmptyCredentialsException if username or password is empty
      * @throws InvalidCredentialsException if user with given username doesn't exist or given password is invalid.
      */
     public Token signIn(Username username, Password password) throws InvalidCredentialsException {
+        validateCredentials(username, password);
+
         Optional<User> userByUsername = userStorage.findBy(username);
 
         if (userByUsername.isPresent()) {
@@ -64,30 +84,6 @@ public class Authentication {
         }
 
         throw new InvalidCredentialsException();
-    }
-
-    /**
-     * Creates user in the system if user with given username hasn't exists yet.
-     *
-     * @param username username of new user
-     * @param password password of new user
-     * @throws UserAlreadyExistsException if user with given username already exists.
-     */
-    public void createUser(Username username, Password password) throws UserAlreadyExistsException {
-        Optional<User> userByUsername = userStorage.findBy(username);
-
-        if (userByUsername.isPresent()) {
-            throw new UserAlreadyExistsException(username);
-        }
-
-        UserId userId = new UserId(UUID.randomUUID()
-                                       .toString());
-        User user = new User(userId);
-
-        user.setUsername(username);
-        user.setPassword(password);
-
-        userStorage.write(user);
     }
 
     /**
@@ -117,5 +113,32 @@ public class Authentication {
         }
 
         throw new AuthorizationFailedException(token);
+    }
+
+    /**
+     * Creates user in the system if user with given username hasn't exists yet.
+     *
+     * @param username username of new user
+     * @param password password of new user
+     * @throws EmptyCredentialsException  if username or password is empty
+     * @throws UserAlreadyExistsException if user with given username already exists
+     */
+    public void createUser(Username username, Password password) throws UserAlreadyExistsException {
+        validateCredentials(username, password);
+
+        Optional<User> userByUsername = userStorage.findBy(username);
+
+        if (userByUsername.isPresent()) {
+            throw new UserAlreadyExistsException(username);
+        }
+
+        UserId userId = new UserId(UUID.randomUUID()
+                                       .toString());
+        User user = new User(userId);
+
+        user.setUsername(username);
+        user.setPassword(password);
+
+        userStorage.write(user);
     }
 }

@@ -54,11 +54,6 @@ class AuthenticationTest {
     }
 
     @Test
-    /*
-     * In negative case test we don't need user ID, because
-     * if test performs properly exception will occur.
-     */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("throw UserAlreadyExistsException.")
     void testCreateUserWithExistingUsername() {
         authentication.createUser(username, password);
@@ -66,6 +61,19 @@ class AuthenticationTest {
 
         Assertions.assertThrows(UserAlreadyExistsException.class,
                                 () -> authentication.createUser(username, secondUserPassword));
+    }
+
+    @Test
+    @DisplayName("throw EmptyCredentialsException if try to create user with empty username or password.")
+    void testCreateUserWithEmptyCredentials() {
+        Username emptyUsername = new Username("");
+        Password emptyPassword = new Password("");
+
+        Assertions.assertThrows(EmptyCredentialsException.class,
+                                () -> authentication.createUser(username, emptyPassword));
+
+        Assertions.assertThrows(EmptyCredentialsException.class,
+                                () -> authentication.createUser(emptyUsername, password));
     }
 
     @Test
@@ -90,8 +98,7 @@ class AuthenticationTest {
 
     @Test
     /*
-     * In negative case test we don't need user ID, because
-     * if test performs properly exception will occur.
+     * To test sign out token is not needed.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("throw InvalidCredentialsException if try to sign in with invalid credentials.")
@@ -105,11 +112,24 @@ class AuthenticationTest {
     }
 
     @Test
-    @DisplayName("sign out users.")
     /*
-     * To test sign out user ID is not needed.
+     * To test sign out token is not needed.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
+    @DisplayName("throw EmptyCredentialsException if try to sign in user with empty username or password.")
+    void tesSignInUserWithEmptyCredentials() {
+        Username emptyUsername = new Username("");
+        Password emptyPassword = new Password("");
+
+        Assertions.assertThrows(EmptyCredentialsException.class,
+                                () -> authentication.signIn(username, emptyPassword));
+
+        Assertions.assertThrows(EmptyCredentialsException.class,
+                                () -> authentication.signIn(emptyUsername, password));
+    }
+
+    @Test
+    @DisplayName("sign out users.")
     void testSignOut() {
         authentication.createUser(username, password);
         Token token = authentication.signIn(username, password);
@@ -125,10 +145,6 @@ class AuthenticationTest {
     }
 
     @Test
-    /*
-     * To test sign out user ID is not needed.
-     */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("throw no exception if sign out with expired token.")
     void testSignOutWithExpiredToken() {
         authentication.createUser(username, password);
@@ -139,10 +155,6 @@ class AuthenticationTest {
     }
 
     @Test
-    /*
-     * To test validation of expired token user ID is not needed.
-     */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @DisplayName("throw AccessDeniedException if token to validate expired.")
     void testValidate() {
         authentication.createUser(username, password);
