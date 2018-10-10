@@ -32,7 +32,7 @@ export class SignInForm extends UiComponent {
             <h2 class="text-center">Sign In</h2>
             <input class="usernameInput form-control" placeholder="Username">
             <input class="passwordInput mt-2 form-control" placeholder="Password" type="password">
-            <label class="d-none errorLabel mt-2 form-control alert alert-danger">Invalid username or password.</label>
+            <label class="d-none errorLabel mt-2 form-control alert alert-danger"></label>
             <button class="loginBtn mt-2 form-control btn btn-primary">Sign In</button>
         </div>
     </div>`);
@@ -50,10 +50,20 @@ export class SignInForm extends UiComponent {
         const sendSubmittedCredentials = () => {
             const username = usernameInput.val();
             const password = passwordInput.val();
+
+            if (username.trim().length === 0 || password.trim().length === 0) {
+                errorLabel.text("Username/password field cannot be empty.");
+                errorLabel.removeClass("d-none");
+                return;
+            }
+
             this.eventBus.post(new CredentialsSubmitted(username, password))
         };
 
-        this.eventBus.subscribe(EventTypes.SignInFailed, () => errorLabel.removeClass("d-none"));
+        this.eventBus.subscribe(EventTypes.SignInFailed, () => {
+            errorLabel.text("Invalid username or password.");
+            errorLabel.removeClass("d-none")
+        });
         loginBtn.click(sendSubmittedCredentials);
         loginDiv.keydown(keyboardEvent => {
             if (keyboardEvent.key === "Enter") {
