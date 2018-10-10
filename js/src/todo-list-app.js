@@ -27,19 +27,13 @@ export class TodoListApp {
      * Creates an environment for necessary components and renders them.
      */
     start() {
-        const pageContainerClass = "pageContainer";
-
-        this.root.append(`<div class="${pageContainerClass}"></div>`);
         this.eventBus = new EventBus(this.root);
 
-        const pageContainer = $(this.root.find(`.${pageContainerClass}`)[0]);
-
-
-        this.signInPage = new SignInPage(pageContainer, this.eventBus, this.authentication);
+        this.signInPage = new SignInPage(this.root, this.eventBus, this.authentication);
 
         const signInCompletedCallback = () => {
             this.userLists = new UserLists(this.authentication.token);
-            this.dashboardPage = new DashboardPage(pageContainer, this.eventBus, this.authentication, this.userLists);
+            this.dashboardPage = new DashboardPage(this.root, this.eventBus, this.authentication, this.userLists);
             this.dashboardPage.render();
         };
 
@@ -49,7 +43,7 @@ export class TodoListApp {
         this.authentication.checkSignInUser()
             .then(() => {
                 this.userLists = new UserLists(this.authentication.token);
-                this.dashboardPage = new DashboardPage(pageContainer, this.eventBus, this.authentication, this.userLists);
+                this.dashboardPage = new DashboardPage(this.root, this.eventBus, this.authentication, this.userLists);
                 this.dashboardPage.render();
             })
             .catch(() => {
