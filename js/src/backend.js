@@ -22,7 +22,8 @@ export class Backend {
      * @param {string} url base URL of server.
      */
     constructor(url) {
-        this.url = `${url}/`;
+        this.urlBuilder = new UrlBuilder(url);
+        this.tokenHeader = "X-Todo-Token";
     }
 
     /**
@@ -45,8 +46,8 @@ export class Backend {
                     reject();
                 }
             };
-            xmlHttpRequest.open("POST", `${this.url}/lists/${todoListId.id}/${taskId.id}`);
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+            xmlHttpRequest.open(HttpMethods.POST, this.urlBuilder.buildTaskUrl(todoListId, taskId));
+            xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
             xmlHttpRequest.send(JSON.stringify(payload));
         });
     }
@@ -72,8 +73,8 @@ export class Backend {
                 }
             };
 
-            xmlHttpRequest.open("PUT", `/lists/${todoListId.id}/${taskId.id}`);
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+            xmlHttpRequest.open(HttpMethods.PUT, this.urlBuilder.buildTaskUrl(todoListId, taskId));
+            xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
             xmlHttpRequest.send(JSON.stringify(payload));
         });
     }
@@ -98,8 +99,8 @@ export class Backend {
                 }
             };
 
-            xmlHttpRequest.open("DELETE", `/lists/${todoListId.id}/${taskId.id}`);
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+            xmlHttpRequest.open(HttpMethods.DELETE, this.urlBuilder.buildTaskUrl(todoListId, taskId));
+            xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
             xmlHttpRequest.send();
         });
     }
@@ -132,9 +133,53 @@ export class Backend {
                 }
             };
 
-            xmlHttpRequest.open("GET", `/lists/${todoListId.id}`);
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+            xmlHttpRequest.open(HttpMethods.GET, this.urlBuilder.buildTodoListUrl(todoListId));
+            xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
             xmlHttpRequest.send();
         });
+    }
+}
+
+/**
+ * Builds URLs to endpoints of to-do list application.
+ *
+ * @author Oleg Barmin
+ */
+class UrlBuilder {
+
+    constructor(url) {
+        this.url = url;
+    }
+
+    buildTaskUrl(todoListId, taskId) {
+        return `${this.url}/lists/${todoListId.id}/${taskId.id}`
+    }
+
+    buildTodoListUrl(todoListId) {
+        return `${this.url}/lists/${todoListId.id}`
+    }
+}
+
+/**
+ * Provides HTTP methods names.
+ *
+ * @author Oleg Barmin
+ */
+class HttpMethods {
+
+    static get GET() {
+        return "GET";
+    }
+
+    static get POST() {
+        return "POST";
+    }
+
+    static get DELETE() {
+        return "DELETE";
+    }
+
+    static get PUT() {
+        return "PUT";
     }
 }
