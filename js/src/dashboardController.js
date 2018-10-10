@@ -39,7 +39,7 @@ export class DashboardController {
             this.todoLists.get(el.id).all().then(tasks => {
                 this.eventBus.post(new TaskListUpdated(tasks, el));
             }).catch(() => {
-                alert("task list update failed.")
+                alert("task list updateTask failed.")
             });
         });
 
@@ -54,7 +54,7 @@ export class DashboardController {
                 .then(tasks => {
                     this.eventBus.post(new TaskListUpdated(tasks, todoListId));
                 }).catch(() => {
-                alert("Failed to update tasks list, try to reload page.")
+                alert("Failed to updateTask tasks list, try to reload page.")
             });
         };
 
@@ -88,7 +88,7 @@ export class DashboardController {
          * If task with given ID was found in `TodoList` posts {@link TaskListUpdated} with new task list.
          * Otherwise: posts {@link TaskRemovalFailed}.
          *
-         * @param {TaskRemovalRequested} taskRemovalEvent `TaskRemovalRequested` event with ID of the task to remove.
+         * @param {TaskRemovalRequested} taskRemovalEvent `TaskRemovalRequested` event with ID of the task to removeTask.
          */
         const taskRemovalRequestCallback = taskRemovalEvent => {
             try {
@@ -97,7 +97,7 @@ export class DashboardController {
                         this.eventBus.post(new TaskRemoved(taskRemovalEvent.taskId));
                         updateTaskList(taskRemovalEvent.todoListId);
                     }).catch(() => {
-                    alert("Failed to remove task, try to reload page.")
+                    alert("Failed to removeTask task, try to reload page.")
                 });
             } catch (e) {
                 this.eventBus.post(new TaskRemovalFailed("Task removal fail."))
@@ -114,7 +114,7 @@ export class DashboardController {
          * Otherwise: posts {@link TaskUpdateFailed}.
          *
          * @param {TaskUpdateRequested} taskUpdateEvent `TaskUpdateRequested` event
-         *        which contains ID of task to update and its new description.
+         *        which contains ID of task to updateTask and its new description.
          */
         const taskUpdateRequestCallback = taskUpdateEvent => {
             try {
@@ -125,7 +125,7 @@ export class DashboardController {
                         }
                         updateTaskList(taskUpdateEvent.todoListId);
                     }).catch(() => {
-                    alert("Failed to update task, try to reload page.")
+                    alert("Failed to updateTask task, try to reload page.")
                 });
             } catch (e) {
                 this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId,
