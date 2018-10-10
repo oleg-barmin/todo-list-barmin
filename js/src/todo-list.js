@@ -48,7 +48,6 @@ export class TodoList {
         Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
         const taskId = TaskIdGenerator.generateID();
-        const xmlHttpRequest = new XMLHttpRequest();
 
         const payload = {
             taskDescription: taskDescription.trim()
@@ -103,7 +102,10 @@ export class TodoList {
      *                   otherwise it will be rejected.
      */
     all() {
-        return this.backend.readTasksFrom(this.todoListId, this.token)
+        return new Promise((resolve) => {
+            this.backend.readTasksFrom(this.todoListId, this.token)
+                .then((tasks) => resolve(TaskSorter.sortTasksArray(tasks)))
+        })
     }
 }
 

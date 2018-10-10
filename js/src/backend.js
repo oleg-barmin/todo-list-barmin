@@ -1,9 +1,8 @@
 import {Task} from "./model/task";
 import {TaskId} from "./lib/identifiers";
-import {TaskSorter} from "./model/todo-list";
 
 /**
- * Service which sends requests to the server with given host.
+ * Service which sends requests to the server with given URL.
  *
  * @author Oleg Barmin
  */
@@ -33,7 +32,7 @@ export class Backend {
      * @param {TaskId} taskId ID of task to add
      * @param payload payload of request
      * @param token token of user session.
-     * @return {Promise} promise to work process request result.
+     * @return {Promise} promise to process request result.
      */
     addTask(todoListId, taskId, payload, token) {
         return new Promise((resolve, reject) => {
@@ -59,7 +58,7 @@ export class Backend {
      * @param {TaskId} taskId ID of task to update
      * @param payload payload of request
      * @param token token of user session
-     * @return {Promise} promise to work process request result.
+     * @return {Promise} promise to process request result.
      */
     updateTask(todoListId, taskId, payload, token) {
         return new Promise((resolve, reject) => {
@@ -85,7 +84,7 @@ export class Backend {
      * @param {TodoListId} todoListId ID of to-do list of task
      * @param {TaskId} taskId ID of task to remove
      * @param token token of user session
-     * @return {Promise} promise to work process request result.
+     * @return {Promise} promise to process request result.
      */
     removeTask(todoListId, taskId, token) {
         return new Promise((resolve, reject) => {
@@ -110,7 +109,7 @@ export class Backend {
      *
      * @param {TodoListId} todoListId ID of to-do list to read tasks from
      * @param token token of user session
-     * @return {Promise} promise to work process request result,
+     * @return {Promise} promise to process request result,
      * which contains array of {@link Task} if request was successful.
      */
     readTasksFrom(todoListId, token) {
@@ -127,7 +126,7 @@ export class Backend {
                             el.completed,
                             new Date(el.lastUpdateDate))
                     });
-                    resolve(TaskSorter.sortTasksArray(tasks));
+                    resolve(tasks);
                 } else {
                     reject();
                 }
