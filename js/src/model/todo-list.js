@@ -1,5 +1,4 @@
 import {Preconditions} from "../lib/preconditions.js";
-import {Task} from "./task.js";
 import {TaskIdGenerator} from "../lib/taskIdGenerator.js";
 import {TaskId} from "../lib/identifiers";
 
@@ -28,11 +27,12 @@ export class TodoList {
      *
      * @param {TodoListId} todoListId ID of this to-do lists
      * @param token token of user who works with this to-do list
+     * @param {Backend} backend to send requests
      */
-    constructor(todoListId, token) {
-        this._tasksArray = [];
+    constructor(todoListId, token, backend) {
         this.todoListId = todoListId;
         this.token = token;
+        this.backend = backend;
     }
 
     /**
@@ -47,32 +47,20 @@ export class TodoList {
     add(taskDescription) {
         Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
-        return new Promise((resolve, reject) => {
-            const taskId = TaskIdGenerator.generateID();
-            const xmlHttpRequest = new XMLHttpRequest();
+        const taskId = TaskIdGenerator.generateID();
+        const xmlHttpRequest = new XMLHttpRequest();
 
-            const createTaskPayload = {
-                taskDescription: taskDescription.trim()
-            };
+        const payload = {
+            taskDescription: taskDescription.trim()
+        };
 
-            xmlHttpRequest.onload = () => {
-                if (xmlHttpRequest.status === 200) {
-                    resolve()
-                } else {
-                    reject();
-                }
-            };
-
-            xmlHttpRequest.open("POST", `/lists/${this.todoListId.id}/${taskId.id}`);
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
-            xmlHttpRequest.send(JSON.stringify(createTaskPayload));
-        });
+        return this.backend.addTask(this.todoListId, taskId, payload, this.token)
     }
 
     /**
-     * Sends request to update task with given ID with new status and description.
+     * Sends request to updateTask task with given ID with new status and description.
      *
-     * @param {TaskId} taskId ID of task to update
+     * @param {TaskId} taskId ID of task to updateTask
      * @param {string} updatedDescription new description of the task
      * @param {boolean} status new status of task
      * @return {Promise} promise to work with. If request was processed successfully
@@ -85,30 +73,16 @@ export class TodoList {
         Preconditions.isDefined(taskId, "task ID");
         Preconditions.checkStringNotEmpty(updatedDescription, "updated description");
 
-        return new Promise((resolve, reject) => {
-            const xmlHttpRequest = new XMLHttpRequest();
+        const payload = {
+            taskStatus: status,
+            taskDescription: updatedDescription.trim()
+        };
 
-            const updateTaskPayload = {
-                taskStatus: status,
-                taskDescription: updatedDescription.trim()
-            };
-
-            xmlHttpRequest.onload = () => {
-                if (xmlHttpRequest.status === 200) {
-                    resolve()
-                } else {
-                    reject();
-                }
-            };
-
-            xmlHttpRequest.open("PUT", `/lists/${this.todoListId.id}/${taskId.id}`);
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
-            xmlHttpRequest.send(JSON.stringify(updateTaskPayload));
-        });
+        return this.backend.updateTask(this.todoListId, taskId, payload, this.token);
     }
 
     /**
-     * Sends request to remove task with given ID.
+     * Sends request to removeTask task with given ID.
      *
      * @param {TaskId} taskId ID of task to delete
      * @return {Promise} promise to work with. If request was processed successfully
@@ -118,22 +92,7 @@ export class TodoList {
      */
     remove(taskId) {
         Preconditions.isDefined(taskId, "task ID");
-
-        return new Promise((resolve, reject) => {
-            const xmlHttpRequest = new XMLHttpRequest();
-
-            xmlHttpRequest.onload = () => {
-                if (xmlHttpRequest.status === 200) {
-                    resolve();
-                } else {
-                    reject();
-                }
-            };
-
-            xmlHttpRequest.open("DELETE", `/lists/${this.todoListId.id}/${taskId.id}`);
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
-            xmlHttpRequest.send();
-        });
+        return this.backend.removeTask(this.todoListId, taskId, this.token);
     }
 
     /**
@@ -144,29 +103,7 @@ export class TodoList {
      *                   otherwise it will be rejected.
      */
     all() {
-        return new Promise((resolve, reject) => {
-            const xmlHttpRequest = new XMLHttpRequest();
-
-            xmlHttpRequest.onload = () => {
-                if (xmlHttpRequest.status === 200) {
-                    const rawTasks = JSON.parse(xmlHttpRequest.response);
-                    const tasks = rawTasks.map((el) => {
-                        return new Task(new TaskId(el.id.value),
-                            el.description,
-                            new Date(el.creationDate),
-                            el.completed,
-                            new Date(el.lastUpdateDate))
-                    });
-                    resolve(TaskSorter.sortTasksArray(tasks));
-                } else {
-                    reject();
-                }
-            };
-
-            xmlHttpRequest.open("GET", `/lists/${this.todoListId.id}`);
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
-            xmlHttpRequest.send();
-        });
+        return this.backend.readTasksFrom(this.todoListId, this.token)
     }
 }
 
@@ -180,7 +117,7 @@ export class TaskSorter {
     /**
      * Sorts array of tasks by:
      * - Status (uncompleted then completed).
-     * - Date of last update.
+     * - Date of last updateTask.
      * - Lexicographically by description.
      * - Lexicographically by ID.
      *

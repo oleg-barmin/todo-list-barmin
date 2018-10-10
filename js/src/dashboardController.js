@@ -8,6 +8,7 @@ import {TaskUpdateFailed} from "./event/taskUpdateFailed";
 import {TaskRemoved} from "./event/taskRemoved";
 import {TaskUpdated} from "./event/taskUpdated";
 import {Authentication} from "./authentication";
+import {Backend} from "./backend";
 
 /**
  * Event-based facade for {@link TodoList}.
@@ -29,10 +30,11 @@ export class DashboardController {
     constructor(eventBus, authentication, todoListIds) {
         this.eventBus = eventBus;
         this.authentication = authentication;
+        this.backend = new Backend(window.location.origin);
         this.todoLists = new Map();
 
         todoListIds.forEach(el => {
-            this.todoLists.set(el.id, new TodoList(el, this.authentication.token));
+            this.todoLists.set(el.id, new TodoList(el, this.authentication.token, this.backend));
 
             this.todoLists.get(el.id).all().then(tasks => {
                 this.eventBus.post(new TaskListUpdated(tasks, el));
