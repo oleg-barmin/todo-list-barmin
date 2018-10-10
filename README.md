@@ -22,16 +22,13 @@ manages to-do lists and tasks on its own and then uploads it to the server (curr
 ### Prerequisites
 * [JDK 8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) or higher.
 * [npm](https://www.npmjs.com/) - to build JS module.
+* [rollup.js](https://rollupjs.org/) - to build JS bundles.
 
 ### Installation
 Before work with application you have to resolve all Gradle dependencies:
 ```sh
-$ ./gradlew clean build
-```
-
-And npm dependencies:
-```sh
-$ npm install
+$ ./gradlew clean
+$ ./gradlew build
 ```
 
 ### Running
