@@ -6,6 +6,8 @@
 
     /**
      * Is an event which happened in {@link TodoListApp} and marks what happened in `TodoListApp`.
+     *
+     * @author Oleg Barmin
      */
     class Event {
 
@@ -73,6 +75,8 @@
      * `
      *
      * Implementation of "event bus" design pattern, based on jQuery.
+     *
+     * @author Oleg Barmin
      */
     class EventBus {
 
@@ -158,6 +162,8 @@
 
     /**
      * Marks type of {@link Event} to {@link EventBus} bind and call callback of specified `EventType`.
+     *
+     * @author Oleg Barmin
      */
     class EventType {
 
@@ -173,7 +179,7 @@
 
 
     const EventTypes = {
-        AddTaskRequest: new EventType("AddTaskRequest"),
+        TaskAddRequest: new EventType("TaskAddRequested"),
         NewTaskAdded: new EventType("NewTaskAdded"),
         TaskListUpdated: new EventType("TaskListUpdated"),
         TaskCompletionRequested: new EventType("TaskCompletionRequested"),
@@ -206,6 +212,7 @@
         constructor() {
             this._token = null;
             this.tokenHeader = "X-Todo-Token";
+            this.tokenKey = "org.javaclasses.todo.token";
         }
 
         /**
@@ -235,7 +242,7 @@
          */
         checkSignInUser() {
             return new Promise((resolve, reject) => {
-                const token = localStorage.getItem(this.tokenHeader);
+                const token = localStorage.getItem(this.tokenKey);
                 if (token) {
                     const xmlHttpRequest = new XMLHttpRequest();
                     xmlHttpRequest.onload = () => {
@@ -243,7 +250,7 @@
                             this._token = token;
                             resolve();
                         } else {
-                            localStorage.removeItem(this.tokenHeader);
+                            localStorage.removeItem(this.tokenKey);
                             this._token = null;
                             reject();
                         }
@@ -279,7 +286,7 @@
                 xmlHttpRequest.onload = () => {
                     if (xmlHttpRequest.status === 200) {
                         this._token = JSON.parse(xmlHttpRequest.response).value;
-                        localStorage.setItem(this.tokenHeader, this._token);
+                        localStorage.setItem(this.tokenKey, this._token);
                         resolve(this._token);
                     } else {
                         reject(new AuthenticationFailedException());
@@ -311,7 +318,7 @@
                     } else {
                         reject();
                     }
-                    localStorage.removeItem(this.tokenHeader);
+                    localStorage.removeItem(this.tokenKey);
                 };
 
                 xmlHttpRequest.open("DELETE", "/auth");
@@ -407,6 +414,7 @@
     /**
      * Indicates that given task description is undefined, null or empty.
      *
+     * @extends Error
      * @author Oleg Barmin
      */
     class EmptyStringException extends Error {
@@ -565,7 +573,6 @@
             Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
             const taskId = TaskIdGenerator.generateID();
-            const xmlHttpRequest = new XMLHttpRequest();
 
             const payload = {
                 taskDescription: taskDescription.trim()
@@ -620,7 +627,10 @@
          *                   otherwise it will be rejected.
          */
         all() {
-            return this.backend.readTasksFrom(this.todoListId, this.token)
+            return new Promise((resolve) => {
+                this.backend.readTasksFrom(this.todoListId, this.token)
+                    .then((tasks) => resolve(TaskSorter.sortTasksArray(tasks)));
+            })
         }
     }
 
@@ -669,9 +679,12 @@
 
         /**
          * Creates `NewTaskAdded` instance.
+         *
+         * @param {TodoListId} todoListId ID of to-do list to which task was added.
          */
-        constructor() {
+        constructor(todoListId) {
             super(EventTypes.NewTaskAdded);
+            this.todoListId = todoListId;
         }
     }
 
@@ -831,7 +844,7 @@
     }
 
     /**
-     * Service which sends requests to the server with given host.
+     * Service which sends requests to the server with given URL.
      *
      * @author Oleg Barmin
      */
@@ -850,7 +863,8 @@
          * @param {string} url base URL of server.
          */
         constructor(url) {
-            this.url = `${url}/`;
+            this.urlBuilder = new UrlBuilder(url);
+            this.tokenHeader = "X-Todo-Token";
         }
 
         /**
@@ -860,7 +874,7 @@
          * @param {TaskId} taskId ID of task to add
          * @param payload payload of request
          * @param token token of user session.
-         * @return {Promise} promise to work process request result.
+         * @return {Promise} promise to process request result.
          */
         addTask(todoListId, taskId, payload, token) {
             return new Promise((resolve, reject) => {
@@ -873,8 +887,8 @@
                         reject();
                     }
                 };
-                xmlHttpRequest.open("POST", `${this.url}/lists/${todoListId.id}/${taskId.id}`);
-                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.open(HttpMethods.POST, this.urlBuilder.buildTaskUrl(todoListId, taskId));
+                xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
                 xmlHttpRequest.send(JSON.stringify(payload));
             });
         }
@@ -886,7 +900,7 @@
          * @param {TaskId} taskId ID of task to update
          * @param payload payload of request
          * @param token token of user session
-         * @return {Promise} promise to work process request result.
+         * @return {Promise} promise to process request result.
          */
         updateTask(todoListId, taskId, payload, token) {
             return new Promise((resolve, reject) => {
@@ -900,8 +914,8 @@
                     }
                 };
 
-                xmlHttpRequest.open("PUT", `/lists/${todoListId.id}/${taskId.id}`);
-                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.open(HttpMethods.PUT, this.urlBuilder.buildTaskUrl(todoListId, taskId));
+                xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
                 xmlHttpRequest.send(JSON.stringify(payload));
             });
         }
@@ -912,7 +926,7 @@
          * @param {TodoListId} todoListId ID of to-do list of task
          * @param {TaskId} taskId ID of task to remove
          * @param token token of user session
-         * @return {Promise} promise to work process request result.
+         * @return {Promise} promise to process request result.
          */
         removeTask(todoListId, taskId, token) {
             return new Promise((resolve, reject) => {
@@ -926,8 +940,8 @@
                     }
                 };
 
-                xmlHttpRequest.open("DELETE", `/lists/${todoListId.id}/${taskId.id}`);
-                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.open(HttpMethods.DELETE, this.urlBuilder.buildTaskUrl(todoListId, taskId));
+                xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
                 xmlHttpRequest.send();
             });
         }
@@ -937,7 +951,7 @@
          *
          * @param {TodoListId} todoListId ID of to-do list to read tasks from
          * @param token token of user session
-         * @return {Promise} promise to work process request result,
+         * @return {Promise} promise to process request result,
          * which contains array of {@link Task} if request was successful.
          */
         readTasksFrom(todoListId, token) {
@@ -954,16 +968,60 @@
                                 el.completed,
                                 new Date(el.lastUpdateDate))
                         });
-                        resolve(TaskSorter.sortTasksArray(tasks));
+                        resolve(tasks);
                     } else {
                         reject();
                     }
                 };
 
-                xmlHttpRequest.open("GET", `/lists/${todoListId.id}`);
-                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.open(HttpMethods.GET, this.urlBuilder.buildTodoListUrl(todoListId));
+                xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
                 xmlHttpRequest.send();
             });
+        }
+    }
+
+    /**
+     * Builds URLs to endpoints of to-do list application.
+     *
+     * @author Oleg Barmin
+     */
+    class UrlBuilder {
+
+        constructor(url) {
+            this.url = url;
+        }
+
+        buildTaskUrl(todoListId, taskId) {
+            return `${this.url}/lists/${todoListId.id}/${taskId.id}`
+        }
+
+        buildTodoListUrl(todoListId) {
+            return `${this.url}/lists/${todoListId.id}`
+        }
+    }
+
+    /**
+     * Provides HTTP methods names.
+     *
+     * @author Oleg Barmin
+     */
+    class HttpMethods {
+
+        static get GET() {
+            return "GET";
+        }
+
+        static get POST() {
+            return "POST";
+        }
+
+        static get DELETE() {
+            return "DELETE";
+        }
+
+        static get PUT() {
+            return "PUT";
         }
     }
 
@@ -1029,7 +1087,7 @@
                 try {
                     this.todoLists.get(taskAddRequested.todoListId.id).add(taskAddRequested.taskDescription)
                         .then(() => {
-                            this.eventBus.post(new NewTaskAdded());
+                            this.eventBus.post(new NewTaskAdded(taskAddRequested.todoListId));
                             updateTaskList(taskAddRequested.todoListId);
                         }).catch(() => {
                         alert("Failed to add task, try to reload page.");
@@ -1197,7 +1255,7 @@
             const signOutBtnClass = "signOutBtn";
             this.element.append(`<nav class="navbar bg-primary justify-content-between">
                               <a class="navbar-brand"></a>
-                              <a class="${signOutBtnClass} text-white" href="#">Sign Out</a>
+                              <a class="${signOutBtnClass} text-white" href="#">Sign out</a>
                             </nav>`);
 
             let signOutBtn = this.element.find(`.${signOutBtnClass}`);
@@ -1296,9 +1354,12 @@
             /**
              * Processes `NewTaskAdded` event.
              * Makes `descriptionTextArea` and `errorDiv` empty and invisible.
+             *
+             * @param {NewTaskAdded} event `NewTaskAdded` event which happened.
              */
-            const newTaskAddedCallback = () => {
-                descriptionTextArea.val('');
+            const newTaskAddedCallback = (event) => {
+                if (this.todoListId.id === event.todoListId.id)
+                    descriptionTextArea.val('');
                 errorDiv.empty();
                 errorDiv.addClass("invisible");
             };
@@ -1926,8 +1987,15 @@
                 if (todoListsIds.length === 0) {
                     // if user has no lists - create one
                     const initialTodoListId = TodoListIdGenerator.generateID();
+
+                    // TODO:10/10/2018:oleg.barmin: leave creation of only one to-do list.
+                    const secondTodoListId = TodoListIdGenerator.generateID();
                     this.userLists.create(initialTodoListId)
-                        .then(() => renderTodoListsArray([initialTodoListId]));
+                        .then(() => {
+                            this.userLists.create(secondTodoListId).then(() => {
+                                renderTodoListsArray([initialTodoListId, secondTodoListId]);
+                            });
+                        });
                 }
                 else {
                     renderTodoListsArray(todoListsIds);
@@ -2066,7 +2134,7 @@
             <h2 class="text-center">Sign In</h2>
             <input class="usernameInput form-control" placeholder="Username">
             <input class="passwordInput mt-2 form-control" placeholder="Password" type="password">
-            <label class="d-none errorLabel mt-2 form-control alert alert-danger">Invalid username or password.</label>
+            <label class="d-none errorLabel mt-2 form-control alert alert-danger"></label>
             <button class="loginBtn mt-2 form-control btn btn-primary">Sign In</button>
         </div>
     </div>`);
@@ -2084,10 +2152,20 @@
             const sendSubmittedCredentials = () => {
                 const username = usernameInput.val();
                 const password = passwordInput.val();
+
+                if (username.trim().length === 0 || password.trim().length === 0) {
+                    errorLabel.text("Username/password field cannot be empty.");
+                    errorLabel.removeClass("d-none");
+                    return;
+                }
+
                 this.eventBus.post(new CredentialsSubmitted(username, password));
             };
 
-            this.eventBus.subscribe(EventTypes.SignInFailed, () => errorLabel.removeClass("d-none"));
+            this.eventBus.subscribe(EventTypes.SignInFailed, () => {
+                errorLabel.text("Invalid username or password.");
+                errorLabel.removeClass("d-none");
+            });
             loginBtn.click(sendSubmittedCredentials);
             loginDiv.keydown(keyboardEvent => {
                 if (keyboardEvent.key === "Enter") {

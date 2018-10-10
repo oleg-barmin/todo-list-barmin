@@ -75,6 +75,7 @@
     /**
      * Indicates that given task description is undefined, null or empty.
      *
+     * @extends Error
      * @author Oleg Barmin
      */
     class EmptyStringException extends Error {

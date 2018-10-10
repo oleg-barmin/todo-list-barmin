@@ -75,6 +75,7 @@
     /**
      * Indicates that given task description is undefined, null or empty.
      *
+     * @extends Error
      * @author Oleg Barmin
      */
     class EmptyStringException extends Error {
@@ -233,7 +234,6 @@
             Preconditions.checkStringNotEmpty(taskDescription, "task description");
 
             const taskId = TaskIdGenerator.generateID();
-            const xmlHttpRequest = new XMLHttpRequest();
 
             const payload = {
                 taskDescription: taskDescription.trim()
@@ -288,7 +288,10 @@
          *                   otherwise it will be rejected.
          */
         all() {
-            return this.backend.readTasksFrom(this.todoListId, this.token)
+            return new Promise((resolve) => {
+                this.backend.readTasksFrom(this.todoListId, this.token)
+                    .then((tasks) => resolve(TaskSorter.sortTasksArray(tasks)));
+            })
         }
     }
 
@@ -386,7 +389,7 @@
     }
 
     /**
-     * Service which sends requests to the server with given host.
+     * Service which sends requests to the server with given URL.
      *
      * @author Oleg Barmin
      */
@@ -405,7 +408,8 @@
          * @param {string} url base URL of server.
          */
         constructor(url) {
-            this.url = `${url}/`;
+            this.urlBuilder = new UrlBuilder(url);
+            this.tokenHeader = "X-Todo-Token";
         }
 
         /**
@@ -415,7 +419,7 @@
          * @param {TaskId} taskId ID of task to add
          * @param payload payload of request
          * @param token token of user session.
-         * @return {Promise} promise to work process request result.
+         * @return {Promise} promise to process request result.
          */
         addTask(todoListId, taskId, payload, token) {
             return new Promise((resolve, reject) => {
@@ -428,8 +432,8 @@
                         reject();
                     }
                 };
-                xmlHttpRequest.open("POST", `${this.url}/lists/${todoListId.id}/${taskId.id}`);
-                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.open(HttpMethods.POST, this.urlBuilder.buildTaskUrl(todoListId, taskId));
+                xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
                 xmlHttpRequest.send(JSON.stringify(payload));
             });
         }
@@ -441,7 +445,7 @@
          * @param {TaskId} taskId ID of task to update
          * @param payload payload of request
          * @param token token of user session
-         * @return {Promise} promise to work process request result.
+         * @return {Promise} promise to process request result.
          */
         updateTask(todoListId, taskId, payload, token) {
             return new Promise((resolve, reject) => {
@@ -455,8 +459,8 @@
                     }
                 };
 
-                xmlHttpRequest.open("PUT", `/lists/${todoListId.id}/${taskId.id}`);
-                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.open(HttpMethods.PUT, this.urlBuilder.buildTaskUrl(todoListId, taskId));
+                xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
                 xmlHttpRequest.send(JSON.stringify(payload));
             });
         }
@@ -467,7 +471,7 @@
          * @param {TodoListId} todoListId ID of to-do list of task
          * @param {TaskId} taskId ID of task to remove
          * @param token token of user session
-         * @return {Promise} promise to work process request result.
+         * @return {Promise} promise to process request result.
          */
         removeTask(todoListId, taskId, token) {
             return new Promise((resolve, reject) => {
@@ -481,8 +485,8 @@
                     }
                 };
 
-                xmlHttpRequest.open("DELETE", `/lists/${todoListId.id}/${taskId.id}`);
-                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.open(HttpMethods.DELETE, this.urlBuilder.buildTaskUrl(todoListId, taskId));
+                xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
                 xmlHttpRequest.send();
             });
         }
@@ -492,7 +496,7 @@
          *
          * @param {TodoListId} todoListId ID of to-do list to read tasks from
          * @param token token of user session
-         * @return {Promise} promise to work process request result,
+         * @return {Promise} promise to process request result,
          * which contains array of {@link Task} if request was successful.
          */
         readTasksFrom(todoListId, token) {
@@ -509,16 +513,60 @@
                                 el.completed,
                                 new Date(el.lastUpdateDate))
                         });
-                        resolve(TaskSorter.sortTasksArray(tasks));
+                        resolve(tasks);
                     } else {
                         reject();
                     }
                 };
 
-                xmlHttpRequest.open("GET", `/lists/${todoListId.id}`);
-                xmlHttpRequest.setRequestHeader("X-Todo-Token", token);
+                xmlHttpRequest.open(HttpMethods.GET, this.urlBuilder.buildTodoListUrl(todoListId));
+                xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
                 xmlHttpRequest.send();
             });
+        }
+    }
+
+    /**
+     * Builds URLs to endpoints of to-do list application.
+     *
+     * @author Oleg Barmin
+     */
+    class UrlBuilder {
+
+        constructor(url) {
+            this.url = url;
+        }
+
+        buildTaskUrl(todoListId, taskId) {
+            return `${this.url}/lists/${todoListId.id}/${taskId.id}`
+        }
+
+        buildTodoListUrl(todoListId) {
+            return `${this.url}/lists/${todoListId.id}`
+        }
+    }
+
+    /**
+     * Provides HTTP methods names.
+     *
+     * @author Oleg Barmin
+     */
+    class HttpMethods {
+
+        static get GET() {
+            return "GET";
+        }
+
+        static get POST() {
+            return "POST";
+        }
+
+        static get DELETE() {
+            return "DELETE";
+        }
+
+        static get PUT() {
+            return "PUT";
         }
     }
 
