@@ -2,6 +2,7 @@ package org.javaclasses.todo.web;
 
 import com.google.common.base.Splitter;
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.Password;
 import org.javaclasses.todo.model.entity.Token;
 import org.javaclasses.todo.model.entity.Username;
@@ -10,6 +11,7 @@ import java.util.Base64;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static org.javaclasses.todo.web.SecuredAbstractRequestHandler.getXTodoToken;
 
 /**
  * Process user authentication requests.
@@ -155,6 +157,53 @@ class AuthenticationController {
         @Override
         HttpResponse process(RequestData requestData, Token token) {
             authentication.signOut(token);
+            return HttpResponse.ok();
+        }
+    }
+
+    /**
+     * Validates if token given in request is still active.
+     */
+    static class TokenValidationHandler extends AbstractRequestHandler {
+
+        private final Authentication authentication;
+
+        /**
+         * Creates {@code TokenValidationHandler} instance.
+         *
+         * @param authentication authentication service to work with
+         */
+        TokenValidationHandler(Authentication authentication) {
+            this.authentication = authentication;
+        }
+
+        /**
+         * Validates token given in request header.
+         *
+         * @param requestData data of request
+         * @return {@code HttpResponse} with 401 status code if:
+         * - no token header was provided;
+         * - given token is non-active.
+         * If token is valid returns response with 200 status code.
+         */
+        /*
+         * Method validates token, so if during token validation no exception was throw, then token is valid.
+         */
+        @SuppressWarnings("ResultOfMethodCallIgnored")
+        @Override
+        HttpResponse process(RequestData requestData) {
+            String headerValue = requestData.getRequestHeaders()
+                                            .getHeaderValue(getXTodoToken());
+
+            if (headerValue == null) {
+                return HttpResponse.unauthorized();
+            }
+
+            try {
+                authentication.validate(new Token(headerValue));
+            } catch (AuthorizationFailedException exception) {
+                return HttpResponse.unauthorized();
+            }
             return HttpResponse.ok();
         }
     }

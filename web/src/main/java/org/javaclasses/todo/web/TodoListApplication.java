@@ -20,6 +20,7 @@ import spark.Service;
 import static java.lang.System.getProperty;
 import static org.javaclasses.todo.web.AuthenticationController.AuthenticationHandler;
 import static org.javaclasses.todo.web.AuthenticationController.SingOutHandler;
+import static org.javaclasses.todo.web.AuthenticationController.TokenValidationHandler;
 import static org.javaclasses.todo.web.Configurations.getDefaultPort;
 import static org.javaclasses.todo.web.ExceptionHandlers.AuthorizationFailedHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.EmptyTaskDescriptionHandler;
@@ -115,6 +116,7 @@ public class TodoListApplication {
         // authentication routes
         service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
 
+        service.get(getAuthenticationRoute(), new TokenValidationHandler(authentication));
         service.post(getAuthenticationRoute(), new AuthenticationHandler(authentication));
         service.delete(getAuthenticationRoute(), new SingOutHandler(authentication));
 
