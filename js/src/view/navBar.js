@@ -26,7 +26,7 @@ export class NavBar extends UiComponent {
         const signOutBtnClass = "signOutBtn";
         this.element.append(`<nav class="navbar bg-primary justify-content-between">
                               <a class="navbar-brand"></a>
-                              <a class="${signOutBtnClass} text-white" href="#">Sign Out</a>
+                              <a class="${signOutBtnClass} text-white" href="#">Sign out</a>
                             </nav>`);
 
         let signOutBtn = this.element.find(`.${signOutBtnClass}`);
