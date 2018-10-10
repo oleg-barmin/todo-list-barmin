@@ -10,8 +10,11 @@ export class NewTaskAdded extends Event {
 
     /**
      * Creates `NewTaskAdded` instance.
+     *
+     * @param {TodoListId} todoListId ID of to-do list to which task was added.
      */
-    constructor() {
+    constructor(todoListId) {
         super(EventTypes.NewTaskAdded);
+        this.todoListId = todoListId;
     }
 }

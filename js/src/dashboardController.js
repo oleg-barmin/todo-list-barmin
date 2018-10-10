@@ -1,4 +1,4 @@
-import {TodoList} from "./model/todo-list";
+import {TodoList} from "./todo-list";
 import {EventTypes} from "./event/event";
 import {NewTaskAdded} from "./event/newTaskAdded";
 import {NewTaskValidationFailed} from "./event/newTaskValidationFailed";
@@ -72,7 +72,7 @@ export class DashboardController {
             try {
                 this.todoLists.get(taskAddRequested.todoListId.id).add(taskAddRequested.taskDescription)
                     .then(() => {
-                        this.eventBus.post(new NewTaskAdded());
+                        this.eventBus.post(new NewTaskAdded(taskAddRequested.todoListId));
                         updateTaskList(taskAddRequested.todoListId);
                     }).catch(() => {
                     alert("Failed to add task, try to reload page.")

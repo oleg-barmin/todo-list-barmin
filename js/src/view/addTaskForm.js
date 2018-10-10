@@ -66,9 +66,12 @@ export class AddTaskForm extends UiComponent {
         /**
          * Processes `NewTaskAdded` event.
          * Makes `descriptionTextArea` and `errorDiv` empty and invisible.
+         *
+         * @param {NewTaskAdded} event `NewTaskAdded` event which happened.
          */
-        const newTaskAddedCallback = () => {
-            descriptionTextArea.val('');
+        const newTaskAddedCallback = (event) => {
+            if (this.todoListId.id === event.todoListId.id)
+                descriptionTextArea.val('');
             errorDiv.empty();
             errorDiv.addClass("invisible")
         };
