@@ -9,7 +9,53 @@ export class Authentication {
      * Creates `Authentication` instance.
      */
     constructor() {
-        this.token = null;
+        this._token = null;
+        this.tokenHeader = "X-Todo-Token";
+    }
+
+    /**
+     * Returns stored token.
+     *
+     * @return {string} token value
+     */
+    get token() {
+        return this._token;
+    }
+
+    /**
+     * @param value value attempted to set to token.
+     * @throws Error if try to call this method.
+     */
+    static set token(value) {
+        throw new Error("Authentication token cannot be set from outside of class.")
+    }
+
+    /**
+     * Validates if session token exists in local storage,
+     * if it is then sends request to validate is this token expired.
+     *
+     * @return {Promise} to work with, which is rejected
+     * if token wasn't stored in local storage or stored token expired,
+     * otherwise promise is resolved.
+     */
+    checkSignInUser() {
+        return new Promise((resolve, reject) => {
+            const token = localStorage.getItem(this.tokenHeader);
+            if (token) {
+                const xmlHttpRequest = new XMLHttpRequest();
+                xmlHttpRequest.onload = () => {
+                    if (xmlHttpRequest.status === 200) {
+                        this._token = token;
+                        resolve()
+                    } else {
+                        reject();
+                    }
+                };
+                this._token = token;
+            }
+            reject();
+        });
+
     }
 
     /**
@@ -32,8 +78,9 @@ export class Authentication {
 
             xmlHttpRequest.onload = () => {
                 if (xmlHttpRequest.status === 200) {
-                    this.token = JSON.parse(xmlHttpRequest.response).value;
-                    resolve(this.token)
+                    this._token = JSON.parse(xmlHttpRequest.response).value;
+                    localStorage.setItem(this.tokenHeader, this._token);
+                    resolve(this._token)
                 } else {
                     reject(new AuthenticationFailedException());
                 }
@@ -60,14 +107,15 @@ export class Authentication {
             xmlHttpRequest.onload = () => {
                 if (xmlHttpRequest.status === 200) {
                     resolve();
-                    this.token = null;
+                    this._token = null;
                 } else {
                     reject();
                 }
+                localStorage.removeItem(this.tokenHeader);
             };
 
             xmlHttpRequest.open("DELETE", "/auth");
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
+            xmlHttpRequest.setRequestHeader(this.tokenHeader, this._token);
             xmlHttpRequest.send();
         });
     }

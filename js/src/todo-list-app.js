@@ -34,20 +34,27 @@ export class TodoListApp {
 
         const pageContainer = $(this.root.find(`.${pageContainerClass}`)[0]);
 
-        const signInCompletedCallback = event => {
-            this.userLists = new UserLists(event.token);
-            this.dashboardPage = new DashboardPage(pageContainer, this.eventBus,
-                this.authentication, this.userLists);
+
+        this.signInPage = new SignInPage(pageContainer, this.eventBus, this.authentication);
+
+        const signInCompletedCallback = () => {
+            this.userLists = new UserLists(this.authentication.token);
+            this.dashboardPage = new DashboardPage(pageContainer, this.eventBus, this.authentication, this.userLists);
             this.dashboardPage.render();
         };
 
         this.eventBus.subscribe(EventTypes.SignInCompleted, signInCompletedCallback);
-        this.eventBus.subscribe(EventTypes.SignOutCompleted, () => {
-            this.signInPage.render();
-        });
+        this.eventBus.subscribe(EventTypes.SignOutCompleted, () => this.signInPage.render());
 
-        this.signInPage = new SignInPage(pageContainer, this.eventBus, this.authentication);
-        this.signInPage.render();
+        this.authentication.checkSignInUser()
+            .then(() => {
+                this.userLists = new UserLists(this.authentication.token);
+                this.dashboardPage = new DashboardPage(pageContainer, this.eventBus, this.authentication, this.userLists);
+                this.dashboardPage.render();
+            })
+            .catch(() => {
+                this.signInPage.render();
+            });
     }
 }
 
