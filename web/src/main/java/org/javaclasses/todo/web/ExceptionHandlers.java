@@ -1,6 +1,7 @@
 package org.javaclasses.todo.web;
 
 import com.google.gson.JsonSyntaxException;
+import org.javaclasses.todo.auth.EmptyCredentialsException;
 import org.javaclasses.todo.auth.InvalidCredentialsException;
 import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.EmptyTaskDescriptionException;
@@ -43,6 +44,20 @@ class ExceptionHandlers {
         @Override
         public void handle(AuthorizationFailedException exception, Request request, Response response) {
             HttpResponse httpResponse = HttpResponse.forbidden();
+            httpResponse.writeTo(response);
+        }
+    }
+
+    /**
+     * Handles thrown {@link EmptyCredentialsException}.
+     *
+     * <p>Occurs when tries to authenticate with empty username or password.
+     */
+    public static class EmptyCredentialsHandler implements ExceptionHandler<EmptyCredentialsException> {
+
+        @Override
+        public void handle(EmptyCredentialsException exception, Request request, Response response) {
+            HttpResponse httpResponse = HttpResponse.internalError();
             httpResponse.writeTo(response);
         }
     }

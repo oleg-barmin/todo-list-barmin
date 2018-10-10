@@ -5,7 +5,7 @@ package org.javaclasses.todo.auth;
  *
  * @author Oleg Barmin
  */
-class EmptyCredentialsException extends RuntimeException {
+public class EmptyCredentialsException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

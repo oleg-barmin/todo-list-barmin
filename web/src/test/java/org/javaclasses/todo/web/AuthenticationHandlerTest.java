@@ -12,6 +12,7 @@ import java.util.Base64;
 
 import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -77,7 +78,6 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
 
         specification.header(headerName(), getAuthenticationHeaderValue(bob.getUsername(),
                                                                         bob.getPassword()))
-                     .when()
                      .post(getAuthenticationRoute())
                      .then()
                      .statusCode(HTTP_OK)
@@ -94,10 +94,28 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
 
         specification.header(headerName(), getAuthenticationHeaderValue(bob.getUsername(),
                                                                         invalidPassword))
-                     .when()
                      .post(getAuthenticationRoute())
                      .then()
                      .statusCode(HTTP_UNAUTHORIZED);
+    }
+
+    @Test
+    @DisplayName("response with status 500 when try to authenticate with empty username or password.")
+    void testEmptyCredentialsAuthentication() {
+        Username emptyUsername = new Username("");
+        Password emptyPassword = new Password("");
+
+        specification.header(headerName(), getAuthenticationHeaderValue(bob.getUsername(),
+                                                                        emptyPassword))
+                     .post(getAuthenticationRoute())
+                     .then()
+                     .statusCode(HTTP_INTERNAL_ERROR);
+
+        specification.header(headerName(), getAuthenticationHeaderValue(emptyUsername,
+                                                                        bob.getPassword()))
+                     .post(getAuthenticationRoute())
+                     .then()
+                     .statusCode(HTTP_INTERNAL_ERROR);
     }
 
     @Test
@@ -106,7 +124,6 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         specification.header("WRONG_HEADER",
                              getAuthenticationHeaderValue(bob.getUsername(),
                                                           bob.getPassword()))
-                     .when()
                      .post(getAuthenticationRoute())
                      .then()
                      .statusCode(HTTP_UNAUTHORIZED);
@@ -119,7 +136,6 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         specification.header(headerName(),
                              "INVALID " + getEncodedCredentials(bob.getUsername(),
                                                                 bob.getPassword()))
-                     .when()
                      .post(getAuthenticationRoute())
                      .then()
                      .statusCode(HTTP_BAD_REQUEST);
@@ -131,7 +147,6 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         //missing space after authentication scheme
         specification.header(headerName(),
                              "INVALID" + getEncodedCredentials(bob.getUsername(), bob.getPassword()))
-                     .when()
                      .post(getAuthenticationRoute())
                      .then()
                      .statusCode(describedAs("responds with status code 400 " +
@@ -152,7 +167,6 @@ class AuthenticationHandlerTest extends AbstractHandlerTest {
         //invalid credentials format
         specification.header(headerName(),
                              "Basic " + encode(invalidFormatCredentials))
-                     .when()
                      .post(getAuthenticationRoute())
                      .then()
                      .statusCode(describedAs("responds with status code 400" +
