@@ -27,8 +27,7 @@ manages to-do lists and tasks on its own and then uploads it to the server (curr
 ### Installation
 Before work with application you have to resolve all Gradle dependencies:
 ```sh
-$ ./gradlew clean
-$ ./gradlew build
+$ ./gradlew clean build
 ```
 
 ### Running
@@ -41,7 +40,7 @@ $ ./gradlew buildJar
 ```
 It will be build into build/jar
 
-#####Second step: run build jar.
+#####Second step: run previously build jar.
 To start server with default setting (no preregistered users) you have to execute following command:
 ```sh
 $ java -jar build/jar/todo-list-barmin-1.0-SNAPSHOT.jar
