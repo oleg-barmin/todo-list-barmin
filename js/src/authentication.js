@@ -48,12 +48,17 @@ export class Authentication {
                         this._token = token;
                         resolve()
                     } else {
+                        localStorage.removeItem(this.tokenHeader);
+                        this._token = null;
                         reject();
                     }
                 };
-                this._token = token;
+                xmlHttpRequest.open("GET", "/auth");
+                xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
+                xmlHttpRequest.send();
+            } else {
+                reject();
             }
-            reject();
         });
 
     }
