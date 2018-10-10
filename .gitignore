@@ -12,3 +12,7 @@
 /.idea/uiDesigner.xml
 /.idea/workspace.xml
 /model/out/
+/js/test/model/todo-list-test-bundle.js
+/js/test/lib/lib-test-bundle.js
+/js/test/event/even-bus-test-bundle.js
+/js/public/js/bundle.js
