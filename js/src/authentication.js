@@ -11,6 +11,7 @@ export class Authentication {
     constructor() {
         this._token = null;
         this.tokenHeader = "X-Todo-Token";
+        this.tokenKey = "org.javaclasses.todo.token"
     }
 
     /**
@@ -40,7 +41,7 @@ export class Authentication {
      */
     checkSignInUser() {
         return new Promise((resolve, reject) => {
-            const token = localStorage.getItem(this.tokenHeader);
+            const token = localStorage.getItem(this.tokenKey);
             if (token) {
                 const xmlHttpRequest = new XMLHttpRequest();
                 xmlHttpRequest.onload = () => {
@@ -48,7 +49,7 @@ export class Authentication {
                         this._token = token;
                         resolve()
                     } else {
-                        localStorage.removeItem(this.tokenHeader);
+                        localStorage.removeItem(this.tokenKey);
                         this._token = null;
                         reject();
                     }
@@ -84,7 +85,7 @@ export class Authentication {
             xmlHttpRequest.onload = () => {
                 if (xmlHttpRequest.status === 200) {
                     this._token = JSON.parse(xmlHttpRequest.response).value;
-                    localStorage.setItem(this.tokenHeader, this._token);
+                    localStorage.setItem(this.tokenKey, this._token);
                     resolve(this._token)
                 } else {
                     reject(new AuthenticationFailedException());
@@ -116,7 +117,7 @@ export class Authentication {
                 } else {
                     reject();
                 }
-                localStorage.removeItem(this.tokenHeader);
+                localStorage.removeItem(this.tokenKey);
             };
 
             xmlHttpRequest.open("DELETE", "/auth");
