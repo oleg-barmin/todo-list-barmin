@@ -1,6 +1,6 @@
-import {Preconditions} from "../lib/preconditions.js";
-import {TaskIdGenerator} from "../lib/taskIdGenerator.js";
-import {TaskId} from "../lib/identifiers";
+import {Preconditions} from "./lib/preconditions.js";
+import {TaskIdGenerator} from "./lib/taskIdGenerator.js";
+import {TaskId} from "./lib/identifiers";
 
 /**
  * Sends requests to the server to manage tasks of one
