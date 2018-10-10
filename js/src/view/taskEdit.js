@@ -49,7 +49,8 @@ export class TaskEdit extends UiComponent {
                 </div>
                 <div class="w-100"></div>
                 <div class="col">
-                <label class="${errorLabelClass} alert alert-danger invisible w-100 alert-danger"></label>
+                <label class="col-sm-auto pr-0"></label>
+                <label class="${errorLabelClass} col-9 invisible alert alert-danger p-1 mt-1"></label>
             </div>`
         );
 
