@@ -190,7 +190,8 @@ export const EventTypes = {
     CredentialsSubmitted: new EventType("CredentialsSubmitted"),
     SignInFailed: new EventType("SignInFailed"),
     SignInCompleted: new EventType("SignInCompleted"),
-    SignOutCompleted: new EventType("SignOutCompleted")
+    SignOutCompleted: new EventType("SignOutCompleted"),
+    TodoListsUpdated: new EventType("TodoListsUpdated")
 };
 
 
