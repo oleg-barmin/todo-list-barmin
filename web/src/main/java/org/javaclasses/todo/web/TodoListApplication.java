@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.JsonSyntaxException;
 import org.javaclasses.todo.ServiceFactory;
 import org.javaclasses.todo.auth.Authentication;
+import org.javaclasses.todo.auth.EmptyCredentialsException;
 import org.javaclasses.todo.auth.InvalidCredentialsException;
 import org.javaclasses.todo.model.AuthorizationFailedException;
 import org.javaclasses.todo.model.EmptyTaskDescriptionException;
@@ -23,6 +24,7 @@ import static org.javaclasses.todo.web.AuthenticationController.SingOutHandler;
 import static org.javaclasses.todo.web.AuthenticationController.TokenValidationHandler;
 import static org.javaclasses.todo.web.Configurations.getDefaultPort;
 import static org.javaclasses.todo.web.ExceptionHandlers.AuthorizationFailedHandler;
+import static org.javaclasses.todo.web.ExceptionHandlers.EmptyCredentialsHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.EmptyTaskDescriptionHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.InvalidCredentialsHandler;
 import static org.javaclasses.todo.web.ExceptionHandlers.JsonSyntaxExceptionHandler;
@@ -112,6 +114,7 @@ public class TodoListApplication {
         // general exception handlers
         service.exception(AuthorizationFailedException.class, new AuthorizationFailedHandler());
         service.exception(JsonSyntaxException.class, new JsonSyntaxExceptionHandler());
+        service.exception(EmptyCredentialsException.class, new EmptyCredentialsHandler());
 
         // authentication routes
         service.exception(InvalidCredentialsException.class, new InvalidCredentialsHandler());
