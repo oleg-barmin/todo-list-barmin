@@ -21,6 +21,13 @@ export default [
         },
     },
     {
+        input: 'js/test/sign-in-controller-test.js',
+        output: {
+            file: 'js/test/sign-in-controller-test-bundle.js',
+            format: 'umd',
+        },
+    },
+    {
         input: 'js/src/todo-list-app.js',
         output: {
             name: "bundle",
