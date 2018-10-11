@@ -1,9 +1,11 @@
 package org.javaclasses.todo.web;
 
+import com.google.common.testing.EqualsTester;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.javaclasses.todo.model.entity.User;
 import org.javaclasses.todo.model.entity.UserId;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +18,33 @@ import static org.junit.jupiter.api.Assertions.fail;
 @DisplayName("RequestBody should")
 class RequestBodyTest {
 
+    @DisplayName("process equals and hashcode methods correctly.")
+    @Test
+    void testEqualsAndHashcode() {
+        new EqualsTester().addEqualityGroup(RequestBody.of(""), RequestBody.of(""))
+                          .testEquals();
+
+        String body = "request body.";
+
+        new EqualsTester().addEqualityGroup(RequestBody.of(body), RequestBody.of(body))
+                          .testEquals();
+    }
+
+    // If test performs properly NullPointerException will be throw, so return value won't be received.
+    // null is given in test needs.
+    @SuppressWarnings({"ConstantConditions", "ResultOfMethodCallIgnored"})
+    @Test
+    @DisplayName("throw NullPointerException when given value is null.")
+    void testNullBody() {
+        Assertions.assertThrows(NullPointerException.class, () -> RequestBody.of(null));
+    }
+
+
     @Test
     @DisplayName("deserialize given JSON to object of given class.")
     void testDeserializeStoredJson() {
         User user = new User(new UserId(UUID.randomUUID()
                                             .toString()));
-
         String userJson = new Gson().toJson(user);
 
         RequestBody requestBody = RequestBody.of(userJson);
