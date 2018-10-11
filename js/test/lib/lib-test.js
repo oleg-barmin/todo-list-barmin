@@ -1,5 +1,5 @@
 import {EmptyStringException, ParameterIsNotDefinedException, Preconditions} from "../../src/lib/preconditions";
-import {TaskSorter} from "../../src/model/todo-list";
+import {TaskSorter} from "../../src/todo-list";
 import {TaskIdGenerator} from "../../src/lib/taskIdGenerator";
 import {Task} from "../../src/model/task";
 import {TaskId} from "../../src/lib/identifiers";

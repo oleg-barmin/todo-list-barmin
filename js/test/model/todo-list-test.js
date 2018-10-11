@@ -1,4 +1,4 @@
-import {TodoList} from "../../src/model/todo-list";
+import {TodoList} from "../../src/todo-list";
 import {TodoListIdGenerator} from "../../src/lib/todoListIdGenerator";
 import {TaskIdGenerator} from "../../src/lib/taskIdGenerator";
 import {EmptyStringException, ParameterIsNotDefinedException} from "../../src/lib/preconditions";
