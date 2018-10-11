@@ -31,6 +31,8 @@ export class TodoListApp {
      * Creates an environment for necessary components and renders them.
      */
     start() {
+        this.root.css("min-width", "1000px");
+
         this.eventBus = new EventBus(this.root);
         this.signInPage = new SignInPage(this.root, this.eventBus, this.authentication);
 
