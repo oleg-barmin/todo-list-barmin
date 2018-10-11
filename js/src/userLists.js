@@ -10,9 +10,11 @@ export class UserLists {
     /**
      * Creates `UserLists` instance.
      *
+     * @param {Backend} backend to send request
      * @param token token of user
      */
-    constructor(token) {
+    constructor(backend, token) {
+        this.backend = backend;
         this.token = token;
     }
 
@@ -26,21 +28,13 @@ export class UserLists {
      */
     readLists() {
         return new Promise((resolve, reject) => {
-            const xmlHttpRequest = new XMLHttpRequest();
-
-            xmlHttpRequest.onload = () => {
-                if (xmlHttpRequest.status === 200) {
-                    const todoLists = JSON.parse(xmlHttpRequest.response);
+            this.backend.readUserLists(this.token)
+                .then((body) => {
+                    const todoLists = JSON.parse(body);
                     const todoListIds = todoLists.map((el) => new TodoListId(el.id.value));
-                    resolve(todoListIds);
-                } else {
-                    reject();
-                }
-            };
-
-            xmlHttpRequest.open("GET", "/lists");
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
-            xmlHttpRequest.send();
+                    resolve(todoListIds)
+                })
+                .catch(reject)
         });
     }
 
@@ -55,19 +49,9 @@ export class UserLists {
      */
     create(todoListId) {
         return new Promise((resolve, reject) => {
-            const xmlHttpRequest = new XMLHttpRequest();
-
-            xmlHttpRequest.onload = () => {
-                if (xmlHttpRequest.status === 200) {
-                    resolve();
-                } else {
-                    reject();
-                }
-            };
-
-            xmlHttpRequest.open("POST", `/lists/${todoListId.id}`);
-            xmlHttpRequest.setRequestHeader("X-Todo-Token", this.token);
-            xmlHttpRequest.send();
+            this.backend.createList(todoListId, this.token)
+                .then(resolve)
+                .catch(reject)
         });
     }
 }

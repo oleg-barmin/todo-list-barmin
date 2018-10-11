@@ -1,5 +1,5 @@
 import {Task} from "./model/task";
-import {TaskId} from "./lib/identifiers";
+import {TaskId, TodoListId} from "./lib/identifiers";
 
 /**
  * Service which sends requests to the server with given URL.
@@ -209,6 +209,55 @@ export class Backend {
             xmlHttpRequest.send();
         });
     }
+
+    /**
+     * Send read user to-do lists request.
+     *
+     * @param token token of user session
+     * @return {Promise} promise to process request result, if it was resolved response body will be returned.
+     */
+    readUserLists(token) {
+        return new Promise((resolve, reject) => {
+            const xmlHttpRequest = new XMLHttpRequest();
+
+            xmlHttpRequest.onload = () => {
+                if (xmlHttpRequest.status === 200) {
+                    resolve(xmlHttpRequest.response);
+                } else {
+                    reject();
+                }
+            };
+
+            xmlHttpRequest.open(HttpMethods.GET, this.urlBuilder.getListsUrl());
+            xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
+            xmlHttpRequest.send();
+        });
+    }
+
+    /**
+     * Sends create to-do list request.
+     *
+     * @param {TodoListId} todoListId ID of to-do list to create
+     * @param token token of user session
+     * @return {Promise} promise to process request result
+     */
+    createList(todoListId, token) {
+        return new Promise((resolve, reject) => {
+            const xmlHttpRequest = new XMLHttpRequest();
+
+            xmlHttpRequest.onload = () => {
+                if (xmlHttpRequest.status === 200) {
+                    resolve();
+                } else {
+                    reject();
+                }
+            };
+
+            xmlHttpRequest.open(HttpMethods.POST, this.urlBuilder.buildTodoListUrl(todoListId));
+            xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
+            xmlHttpRequest.send();
+        });
+    }
 }
 
 /**
@@ -235,7 +284,7 @@ class UrlBuilder {
      * @return {string} URL to desired task
      */
     buildTaskUrl(todoListId, taskId) {
-        return `${this.url}/lists/${todoListId.id}/${taskId.id}`
+        return `${this.getListsUrl()}/${todoListId.id}/${taskId.id}`
     }
 
     /**
@@ -245,7 +294,7 @@ class UrlBuilder {
      * @return {string} URL to desired to-do list
      */
     buildTodoListUrl(todoListId) {
-        return `${this.url}/lists/${todoListId.id}`
+        return `${this.getListsUrl()}/${todoListId.id}`
     }
 
     /**
@@ -255,6 +304,15 @@ class UrlBuilder {
      */
     getAuthUrl() {
         return `${this.url}/auth`;
+    }
+
+    /**
+     * Provides URL to lists.
+     *
+     * @return {string} URL to lists
+     */
+    getListsUrl() {
+        return `${this.url}/lists`;
     }
 }
 
