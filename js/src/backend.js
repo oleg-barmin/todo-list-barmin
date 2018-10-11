@@ -137,6 +137,78 @@ export class Backend {
             xmlHttpRequest.send();
         });
     }
+
+    /**
+     * Sends requests to validate user token.
+     *
+     * @param token token of user session
+     * @return {Promise} promise to process request result
+     */
+    sendValidateTokenUser(token) {
+        return new Promise((resolve, reject) => {
+            const xmlHttpRequest = new XMLHttpRequest();
+            xmlHttpRequest.onload = () => {
+                if (xmlHttpRequest.status === 200) {
+                    resolve()
+                } else {
+                    reject();
+                }
+            };
+            xmlHttpRequest.open(HttpMethods.GET, this.urlBuilder.getAuthUrl());
+            xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
+            xmlHttpRequest.send();
+        });
+    }
+
+    /**
+     * Sends sign in user request.
+     *
+     * @param {string} header header name to send request with
+     * @param {string} headerValue value of header to send request with
+     * @return {Promise} promise to process request result,
+     * if it was resolved response body will be returned
+     */
+    signInUser(header, headerValue) {
+        return new Promise((resolve, reject) => {
+            const xmlHttpRequest = new XMLHttpRequest();
+
+            xmlHttpRequest.onload = () => {
+                if (xmlHttpRequest.status === 200) {
+                    resolve(xmlHttpRequest.response)
+                } else {
+                    reject();
+                }
+            };
+
+            xmlHttpRequest.open(HttpMethods.POST, this.urlBuilder.getAuthUrl());
+            xmlHttpRequest.setRequestHeader(header, headerValue);
+            xmlHttpRequest.send();
+        });
+    }
+
+    /**
+     * Sends requests to sign out user
+     *
+     * @param token token of user session
+     * @return {Promise} promise to process request result
+     */
+    signOutUser(token) {
+        return new Promise((resolve, reject) => {
+            const xmlHttpRequest = new XMLHttpRequest();
+
+            xmlHttpRequest.onload = () => {
+                if (xmlHttpRequest.status === 200) {
+                    resolve();
+                } else {
+                    reject();
+                }
+            };
+
+            xmlHttpRequest.open(HttpMethods.DELETE, this.urlBuilder.getAuthUrl());
+            xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
+            xmlHttpRequest.send();
+        });
+    }
 }
 
 /**
@@ -146,16 +218,43 @@ export class Backend {
  */
 class UrlBuilder {
 
+    /**
+     * Creates `UrlBuilder` instance.
+     *
+     * @param {string} url base URL of server
+     */
     constructor(url) {
         this.url = url;
     }
 
+    /**
+     * Builds URL to access tasks.
+     *
+     * @param {TodoListId} todoListId ID of to-do list to which belongs desired task
+     * @param {TaskId} taskId ID of desired task
+     * @return {string} URL to desired task
+     */
     buildTaskUrl(todoListId, taskId) {
         return `${this.url}/lists/${todoListId.id}/${taskId.id}`
     }
 
+    /**
+     * Builds URL to access to-do lists with given ID.
+     *
+     * @param {TodoListId} todoListId ID of desired to-do list
+     * @return {string} URL to desired to-do list
+     */
     buildTodoListUrl(todoListId) {
         return `${this.url}/lists/${todoListId.id}`
+    }
+
+    /**
+     * Provides URL to authentication service.
+     *
+     * @return {string} URL to authentication service
+     */
+    getAuthUrl() {
+        return `${this.url}/auth`;
     }
 }
 

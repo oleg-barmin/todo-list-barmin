@@ -7,11 +7,14 @@ export class Authentication {
 
     /**
      * Creates `Authentication` instance.
+     *
+     * @param {Backend} backend to send requests
      */
-    constructor() {
+    constructor(backend) {
         this._token = null;
         this.tokenHeader = "X-Todo-Token";
-        this.tokenKey = "org.javaclasses.todo.token"
+        this.tokenKey = "org.javaclasses.todo.token";
+        this.backend = backend;
     }
 
     /**
@@ -42,26 +45,20 @@ export class Authentication {
     checkSignInUser() {
         return new Promise((resolve, reject) => {
             const token = localStorage.getItem(this.tokenKey);
+
             if (token) {
-                const xmlHttpRequest = new XMLHttpRequest();
-                xmlHttpRequest.onload = () => {
-                    if (xmlHttpRequest.status === 200) {
-                        this._token = token;
-                        resolve()
-                    } else {
-                        localStorage.removeItem(this.tokenKey);
-                        this._token = null;
-                        reject();
-                    }
-                };
-                xmlHttpRequest.open("GET", "/auth");
-                xmlHttpRequest.setRequestHeader(this.tokenHeader, token);
-                xmlHttpRequest.send();
+                this.backend.sendValidateTokenUser(token).then(() => {
+                    this._token = token;
+                    resolve()
+                }).catch(() => {
+                    localStorage.removeItem(this.tokenKey);
+                    this._token = null;
+                    reject();
+                });
             } else {
                 reject();
             }
         });
-
     }
 
     /**
@@ -80,21 +77,14 @@ export class Authentication {
             const usernameAndPassword = username + ":" + password;
             const encodedCredentials = btoa(usernameAndPassword);
 
-            const xmlHttpRequest = new XMLHttpRequest();
-
-            xmlHttpRequest.onload = () => {
-                if (xmlHttpRequest.status === 200) {
-                    this._token = JSON.parse(xmlHttpRequest.response).value;
+            return this.backend.signInUser("Authentication", `Basic ${encodedCredentials}`)
+                .then((body) => {
+                    this._token = JSON.parse(body).value;
                     localStorage.setItem(this.tokenKey, this._token);
                     resolve(this._token)
-                } else {
+                }).catch(() => {
                     reject(new AuthenticationFailedException());
-                }
-            };
-
-            xmlHttpRequest.open("POST", "/auth");
-            xmlHttpRequest.setRequestHeader("Authentication", "Basic " + encodedCredentials);
-            xmlHttpRequest.send();
+                });
         });
     }
 
@@ -107,22 +97,13 @@ export class Authentication {
      * @returns {Promise} to work with
      */
     signOut() {
-        return new Promise((resolve, reject) => {
-            const xmlHttpRequest = new XMLHttpRequest();
-
-            xmlHttpRequest.onload = () => {
-                if (xmlHttpRequest.status === 200) {
-                    resolve();
+        return new Promise((resolve) => {
+            this.backend.signOutUser(this.token)
+                .finally(() => {
                     this._token = null;
-                } else {
-                    reject();
-                }
-                localStorage.removeItem(this.tokenKey);
-            };
-
-            xmlHttpRequest.open("DELETE", "/auth");
-            xmlHttpRequest.setRequestHeader(this.tokenHeader, this._token);
-            xmlHttpRequest.send();
+                    localStorage.removeItem(this.tokenKey);
+                    resolve();
+                });
         });
     }
 }
