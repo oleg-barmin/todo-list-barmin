@@ -25,37 +25,26 @@ export class DashboardController {
      *
      * @param {EventBus} eventBus evenBus to work with
      * @param {Authentication} authentication to authorized operations
-     * @param {Array} todoListIds ID of `TodoList`s to work with
+     * @param {Backend} backend to send request to server
      */
-    constructor(eventBus, authentication, todoListIds) {
+    constructor(eventBus, authentication, backend) {
         this.eventBus = eventBus;
         this.authentication = authentication;
-        this.backend = new Backend(window.location.origin);
+        this.backend = backend;
         this.todoLists = new Map();
-
-        todoListIds.forEach(el => {
-            this.todoLists.set(el.id, new TodoList(el, this.authentication.token, this.backend));
-
-            this.todoLists.get(el.id).all().then(tasks => {
-                this.eventBus.post(new TaskListUpdated(tasks, el));
-            }).catch(() => {
-                alert("task list updateTask failed.")
-            });
-        });
 
         /**
          * Sends requests to receive all tasks of this `TodoList`.
          *
          * If response code was 200: posts `TaskListUpdated` event with received tasks
          * of to-do list which tasks was updated.
+         *
+         * @param {TodoListId} todoListId ID of to-do list which tasks must be updated
          */
         const updateTaskList = (todoListId) => {
             this.todoLists.get(todoListId.id).all()
-                .then(tasks => {
-                    this.eventBus.post(new TaskListUpdated(tasks, todoListId));
-                }).catch(() => {
-                alert("Failed to updateTask tasks list, try to reload page.")
-            });
+                .then(tasks => this.eventBus.post(new TaskListUpdated(tasks, todoListId)))
+                .catch(() => alert("Failed to updateTask tasks list, try to reload page."));
         };
 
         /**
@@ -74,9 +63,7 @@ export class DashboardController {
                     .then(() => {
                         this.eventBus.post(new NewTaskAdded(taskAddRequested.todoListId));
                         updateTaskList(taskAddRequested.todoListId);
-                    }).catch(() => {
-                    alert("Failed to add task, try to reload page.")
-                });
+                    }).catch(() => alert("Failed to add task, try to reload page."));
             } catch (e) {
                 this.eventBus.post(new NewTaskValidationFailed(e.message, taskAddRequested.todoListId));
             }
@@ -96,9 +83,7 @@ export class DashboardController {
                     .then(() => {
                         this.eventBus.post(new TaskRemoved(taskRemovalEvent.taskId));
                         updateTaskList(taskRemovalEvent.todoListId);
-                    }).catch(() => {
-                    alert("Failed to removeTask task, try to reload page.")
-                });
+                    }).catch(() => alert("Failed to removeTask task, try to reload page."));
             } catch (e) {
                 this.eventBus.post(new TaskRemovalFailed("Task removal fail."))
             }
@@ -118,19 +103,32 @@ export class DashboardController {
          */
         const taskUpdateRequestCallback = taskUpdateEvent => {
             try {
-                this.todoLists.get(taskUpdateEvent.todoListId.id).update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription, taskUpdateEvent.status)
+                this.todoLists.get(taskUpdateEvent.todoListId.id)
+                    .update(taskUpdateEvent.taskId, taskUpdateEvent.newTaskDescription, taskUpdateEvent.status)
                     .then(() => {
                         if (!taskUpdateEvent.status) {
                             this.eventBus.post(new TaskUpdated(taskUpdateEvent.taskId));
                         }
                         updateTaskList(taskUpdateEvent.todoListId);
-                    }).catch(() => {
-                    alert("Failed to updateTask task, try to reload page.")
-                });
+                    }).catch(() => alert("Failed to updateTask task, try to reload page."));
             } catch (e) {
                 this.eventBus.post(new TaskUpdateFailed(taskUpdateEvent.taskId,
                     "New task description cannot be empty."))
             }
+        };
+
+        /**
+         * Updates to-do lists and posts `TaskListUpdated` event for each to-do list to update their tasks.
+         *
+         * @param {TodoListsUpdated} event event which occurred
+         */
+        const todoListsUpdated = event => {
+            event.todoListIds.forEach(el => {
+                this.todoLists.set(el.id, new TodoList(el, this.authentication.token, this.backend));
+                this.todoLists.get(el.id).all()
+                    .then(tasks => this.eventBus.post(new TaskListUpdated(tasks, el)))
+                    .catch(() => alert("to-do list updateTask failed."));
+            });
         };
 
         const addTaskHandler =
@@ -139,11 +137,14 @@ export class DashboardController {
             eventBus.subscribe(EventTypes.TaskRemovalRequested, taskRemovalRequestCallback);
         const updateTaskHandler =
             eventBus.subscribe(EventTypes.TaskUpdateRequested, taskUpdateRequestCallback);
+        const todoListUpdatedCallback =
+            eventBus.subscribe(EventTypes.TodoListsUpdated, todoListsUpdated);
 
         eventBus.subscribe(EventTypes.SignOutCompleted, () => {
             eventBus.unsubscribe(EventTypes.TaskAddRequest, addTaskHandler);
             eventBus.unsubscribe(EventTypes.TaskRemovalRequested, removeTaskHandler);
             eventBus.unsubscribe(EventTypes.TaskUpdateRequested, updateTaskHandler);
+            eventBus.unsubscribe(EventTypes.TodoListsUpdated, todoListUpdatedCallback);
         })
     }
 
