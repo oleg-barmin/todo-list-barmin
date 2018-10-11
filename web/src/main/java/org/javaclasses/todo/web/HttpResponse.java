@@ -4,6 +4,7 @@ import spark.Response;
 
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -49,6 +50,7 @@ class HttpResponse<B> {
      * @return response with 200 status code and given body
      */
     static <B> HttpResponse ok(B body) {
+        checkNotNull(body);
         return new HttpResponse<>(HTTP_OK, body);
     }
 
