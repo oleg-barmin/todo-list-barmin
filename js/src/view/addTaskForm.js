@@ -41,8 +41,8 @@ export class AddTaskForm extends UiComponent {
                 <button class="${addTaskBtnClass} btn btn-default btn-primary w-100">Add</button>
             </div>
             <div class="w-100"></div>
-            <div class="col alert alert-danger invisible errorMsgContainer w-100 pl-3" role="alert">
-            </div>`);
+            <div class="col alert alert-danger invisible errorMsgContainer w-100 ml-3 mt-2 mr-3"></div>
+            <div class="col col-1 align-self-end"></div>`);
 
         const addTaskBtn = container.find(`.${addTaskBtnClass}`);
         const descriptionTextArea = container.find(`.${descriptionTextAreaClass}`);
