@@ -2,6 +2,8 @@ package org.javaclasses.todo.web;
 
 import com.google.gson.Gson;
 
+import java.util.Objects;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.javaclasses.todo.web.GsonFactory.getGson;
 
@@ -88,5 +90,22 @@ class RequestBody {
      */
     boolean isEmpty() {
         return value == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RequestBody)) {
+            return false;
+        }
+        RequestBody that = (RequestBody) o;
+        return Objects.equals(value, that.value);
     }
 }
