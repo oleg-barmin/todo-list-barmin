@@ -148,4 +148,15 @@ export class DashboardController {
         })
     }
 
+    /**
+     * Initializes `DashboardController` for him to be able to react on occurred events.
+     *
+     * @param {EventBus} eventBus for controller to subscribe and post specific events
+     * @param {Authentication} authentication to authenticate user
+     * @param {Backend} backend to send requests to server
+     */
+    static initializeController(eventBus, authentication, backend) {
+        new DashboardController(eventBus, authentication, backend);
+    }
+
 }

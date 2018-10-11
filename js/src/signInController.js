@@ -42,4 +42,14 @@ export class SignInController {
         eventBus.subscribe(EventTypes.SignInCompleted,
             () => eventBus.unsubscribe(EventTypes.CredentialsSubmitted, credentialsSubmittedHandler));
     }
+
+    /**
+     * Initializes `SignInController` for him to be able to react on occurred events.
+     *
+     * @param {EventBus} eventBus for controller to subscribe and post specific events
+     * @param {Authentication} authentication to authenticate user
+     */
+    static initializeController(eventBus, authentication) {
+        new SignInController(eventBus, authentication);
+    }
 }

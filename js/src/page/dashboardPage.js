@@ -39,8 +39,7 @@ export class DashboardPage extends Page {
         let navBar = new NavBar(navBarContainer, this.eventBus, this.authentication);
         navBar.render();
 
-        this.dashboardController = new DashboardController(this.eventBus,
-            this.authentication, this.backend);
+        DashboardController.initializeController(this.eventBus, this.authentication, this.backend);
 
         /**
          * Renders all to-do lists of user, if user has no to-do list yet one to-do list will be created.
